@@ -2,100 +2,7 @@
 // Clean design matching unified page layout
 
 // Container - aligned with global .ai-page
-.home-container {
-  padding: 0;
-  width: 100%;
-}
 
-// Header Section
-.home-header {
-  margin-bottom: 2rem;
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 3rem;
-    }
-  }
-
-  &__welcome {
-    flex: 1;
-  }
-
-  &__title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 0.25rem;
-    color: var(--text-color);
-  }
-
-  &__subtitle {
-    font-size: 0.875rem;
-    color: var(--text-color-secondary);
-    margin: 0;
-  }
-
-  &__filters {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
-}
-
-// Filter Group (Organization/Workspace Selectors)
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  min-width: 200px;
-
-  &__label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-color-secondary);
-  }
-
-  &__wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  &__action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-    border: 1px solid var(--surface-border);
-    border-radius: 0.375rem;
-    background: var(--surface-card);
-    color: var(--text-color-secondary);
-    cursor: pointer;
-    transition: all 200ms ease;
-    font-size: 0.875rem;
-
-    &:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      background: var(--surface-100);
-    }
-  }
-}
 
 // API Key Card
 .api-key-card {
@@ -105,6 +12,7 @@
   gap: 1rem;
   padding: 1.25rem;
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   border-radius: 0.75rem;
   background: var(--surface-card);
   border: 1px solid var(--surface-border);

@@ -25,6 +25,50 @@ export class AppMenuComponent implements OnInit {
     this.userProfile = parseJwt<any>(jwt)
 
       this.model = [
+
+        {
+          label: 'Observability',
+          icon: 'pi pi-fw pi-compass',
+          routerLink: ['/ai'],
+          items: [
+            { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/ai'] },
+            {
+              label: 'Dashboard',
+              icon: 'pi pi-fw pi-chart-bar',
+              routerLink: ['/ai/dashboard'],
+            },
+            {
+              label: 'API Calls',
+              icon: 'pi pi-fw pi-chart-pie',
+              routerLink: ['/ai/analytics'],
+            },
+            {
+              label: 'LLM Calls',
+              icon: 'pi pi-fw pi-box',
+              routerLink: ['/ai/llm-calls'],
+            },
+            {
+              label: 'Traces',
+              icon: 'pi pi-fw pi-forward',
+              routerLink: ['/ai/traces'],
+            },
+            {
+              label: 'Agent Executions',
+              icon: 'pi pi-fw pi-play',
+              routerLink: ['/ai/executions'],
+            },
+            {
+              label: 'Developer Agents',
+              icon: 'pi pi-fw pi-code',
+              routerLink: ['/ai/developer-executions'],
+            },
+            {
+              label: 'Users',
+              icon: 'pi pi-fw pi-users',
+              routerLink: ['/ai/users'],
+            },
+          ],
+        },
         {
           label: 'Governance',
           icon: 'pi pi-fw pi-verified',
@@ -89,65 +133,15 @@ export class AppMenuComponent implements OnInit {
           ],
         },
         {
-          label: 'Platform',
-          icon: 'pi pi-fw pi-server',
-          routerLink: ['/ai'],
-          items: [
-            {
-              label: 'Deployment Overview',
-              icon: 'pi pi-fw pi-objects-column',
-              routerLink: ['/ai/platform'],
-            },
-          ],
-        },
-        {
-          label: 'Observability',
-          icon: 'pi pi-fw pi-compass',
-          routerLink: ['/ai'],
-          items: [
-            { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/ai'] },
-            {
-              label: 'Dashboard',
-              icon: 'pi pi-fw pi-chart-bar',
-              routerLink: ['/ai/dashboard'],
-            },
-            {
-              label: 'API Calls',
-              icon: 'pi pi-fw pi-chart-pie',
-              routerLink: ['/ai/analytics'],
-            },
-            {
-              label: 'LLM Calls',
-              icon: 'pi pi-fw pi-box',
-              routerLink: ['/ai/llm-calls'],
-            },
-            {
-              label: 'Traces',
-              icon: 'pi pi-fw pi-forward',
-              routerLink: ['/ai/traces'],
-            },
-            {
-              label: 'Agent Executions',
-              icon: 'pi pi-fw pi-play',
-              routerLink: ['/ai/executions'],
-            },
-            {
-              label: 'Developer Agents',
-              icon: 'pi pi-fw pi-code',
-              routerLink: ['/ai/developer-executions'],
-            },
-            {
-              label: 'Users',
-              icon: 'pi pi-fw pi-users',
-              routerLink: ['/ai/users'],
-            },
-          ],
-        },
-        {
           label: 'Management',
           icon: 'pi pi-fw pi-box',
           routerLink: ['/ai'],
           items: [
+            {
+              label: 'Platform Overview',
+              icon: 'pi pi-fw pi-objects-column',
+              routerLink: ['/ai/platform'],
+            },
             {
               label: 'Prompts',
               icon: 'pi pi-fw pi-file-word',
