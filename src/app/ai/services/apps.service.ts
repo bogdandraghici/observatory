@@ -8,17 +8,20 @@ const API_URL = environment.baseUrl
 @Injectable({ providedIn: 'root' })
 export class AppService {
 
-  async createApp(appName: any, orgId: any): Promise<any> {
+  async createApp(appName: any, orgId: any, workspaceId?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/project`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
+    const body: any = {
       name: appName,
       org_id: orgId,
       is_default: false
+    }
+    if (workspaceId) {
+      body.workspace_id = workspaceId
     }
 
     const options = {

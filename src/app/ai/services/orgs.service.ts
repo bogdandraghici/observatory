@@ -34,6 +34,27 @@ export class OrgService {
   }
 
 
+  async createWorkspace(orgId: string, name: string): Promise<any> {
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/org/${orgId}/workspaces`
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    const body = { name }
+    const options = {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
   async getOrgsWithApps(): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/org`

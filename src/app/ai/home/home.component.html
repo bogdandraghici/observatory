@@ -28,15 +28,22 @@
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Workspace</label>
-        <p-select
-          [options]="workspaces"
-          [(ngModel)]="selectedWorkspace"
-          optionLabel="name"
-          optionValue="id"
-          [showClear]="true"
-          (onChange)="workspaceChanged($event)"
-          placeholder="All Workspaces"
-        ></p-select>
+        <div class="filter-group__row">
+          <p-select
+            [options]="workspaces"
+            [(ngModel)]="selectedWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="true"
+            (onChange)="workspaceChanged($event)"
+            placeholder="All Workspaces"
+          ></p-select>
+          @if (isDefaultOrg()) {
+            <button class="btn-icon" (click)="showDialogWorkspace()" pTooltip="Create Workspace">
+              <i class="pi pi-plus"></i>
+            </button>
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -84,30 +91,21 @@
           </div>
         </div>
         <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--agents">
+            <i class="pi pi-android"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ getTotalAgents() }}</span>
+            <span class="stat-card__label">Agents</span>
+          </div>
+        </div>
+        <div class="stat-card">
           <div class="stat-card__icon stat-card__icon--runs">
             <i class="pi pi-play"></i>
           </div>
           <div class="stat-card__content">
             <span class="stat-card__value">{{ getTotalRuns() }}</span>
             <span class="stat-card__label">Total Runs (7D)</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__icon stat-card__icon--datasets">
-            <i class="pi pi-database"></i>
-          </div>
-          <div class="stat-card__content">
-            <span class="stat-card__value">{{ datasets?.length || 0 }}</span>
-            <span class="stat-card__label">Datasets</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__icon stat-card__icon--latency">
-            <i class="pi pi-clock"></i>
-          </div>
-          <div class="stat-card__content">
-            <span class="stat-card__value">{{ getAvgLatency() }}s</span>
-            <span class="stat-card__label">Avg P50 Latency</span>
           </div>
         </div>
       </div>
@@ -147,12 +145,18 @@
         </h2>
         <span class="section-header__count">{{ apps?.length || 0 }} projects</span>
       </div>
-      @if (!isSaaSMode) {
-        <button class="btn-add" (click)="showDialogProject()">
-          <i class="pi pi-plus"></i>
-          Add Project
+      <div class="section-header__actions">
+        <button class="btn-integrate" (click)="showIntegrateDialog()">
+          <i class="pi pi-code"></i>
+          Integrate
         </button>
-      }
+        @if (isDefaultOrg()) {
+          <button class="btn-add" (click)="showDialogProject()">
+            <i class="pi pi-plus"></i>
+            Add Project
+          </button>
+        }
+      </div>
     </div>
 
     <div class="projects-grid">
@@ -169,60 +173,18 @@
           </div>
           <h3 class="empty-state__title">No projects yet</h3>
           <p class="empty-state__description">
-            @if (!isSaaSMode) {
+            @if (isDefaultOrg()) {
               Create your first project to start monitoring your AI applications
-            }
-            @if (isSaaSMode) {
-              Contact your administrator to create a project
+            } @else {
+              Projects will appear here when events are reported
             }
           </p>
-          @if (!isSaaSMode) {
+          @if (isDefaultOrg()) {
             <button class="btn-add btn-add--primary" (click)="showDialogProject()">
               <i class="pi pi-plus"></i>
               Create Project
             </button>
           }
-        </div>
-      }
-    </div>
-  </section>
-
-  <!-- Datasets Section -->
-  <section class="section-datasets">
-    <div class="section-header">
-      <div class="section-header__left">
-        <h2 class="section-header__title">
-          <i class="pi pi-database"></i>
-          Datasets & Testing
-        </h2>
-        <span class="section-header__count">{{ datasets?.length || 0 }} datasets</span>
-      </div>
-      <button class="btn-add" (click)="showDialogDataset()">
-        <i class="pi pi-plus"></i>
-        Add Dataset
-      </button>
-    </div>
-
-    <div class="datasets-grid">
-      @for (dataset of datasets; track dataset) {
-        <dataset-details-widget
-          [dataset]="dataset"
-          (datasetChanged)="reloadAll($event)"
-        ></dataset-details-widget>
-      }
-      @if (!datasets || datasets.length === 0) {
-        <div class="empty-state">
-          <div class="empty-state__icon">
-            <i class="pi pi-database"></i>
-          </div>
-          <h3 class="empty-state__title">No datasets yet</h3>
-          <p class="empty-state__description">
-            Create datasets from production data to test and evaluate your LLM applications
-          </p>
-          <button class="btn-add btn-add--primary" (click)="showDialogDataset()">
-            <i class="pi pi-plus"></i>
-            Create Dataset
-          </button>
         </div>
       }
     </div>
@@ -277,9 +239,96 @@
   </ng-template>
 </p-dialog>
 
-<!-- Create Dataset Dialog -->
+<!-- Integration Dialog -->
 <p-dialog
-  [(visible)]="visibleDataset"
+  [(visible)]="visibleIntegrate"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="integrate-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-code"></i>
+      <span>Integrate with Observatory</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="integrate-content">
+      <!-- Workspace & Project selectors -->
+      <div class="integrate-selectors">
+        <div class="form-field">
+          <label>Workspace</label>
+          <p-select
+            [options]="getIntegrateWorkspaces()"
+            [(ngModel)]="integrateWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            (onChange)="integrateWorkspaceChanged()"
+            placeholder="Select Workspace"
+            styleClass="integrate-select"
+          ></p-select>
+        </div>
+        <div class="form-field">
+          <label>Project</label>
+          <p-select
+            [options]="getIntegrateProjects()"
+            [(ngModel)]="integrateProject"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            placeholder="Select Project"
+            styleClass="integrate-select"
+          ></p-select>
+        </div>
+      </div>
+
+      <!-- Integration method selector -->
+      <div class="integrate-methods">
+        <label class="integrate-methods__label">Integration Method</label>
+        <div class="integrate-methods__grid">
+          @for (method of integrationMethods; track method.value) {
+            <button
+              class="integrate-method-btn"
+              [class.integrate-method-btn--active]="selectedIntegration === method.value"
+              (click)="selectedIntegration = method.value"
+            >
+              <i [class]="method.icon"></i>
+              <span>{{ method.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Code block -->
+      <div class="integrate-code">
+        <div class="integrate-code__header">
+          <span class="integrate-code__lang">Python</span>
+          <button class="integrate-code__copy" (click)="copyIntegrationCode()" pTooltip="Copy code">
+            <i class="pi pi-copy"></i>
+            Copy
+          </button>
+        </div>
+        <pre class="integrate-code__block"><code>{{ getIntegrationCode() }}</code></pre>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Close"
+        (click)="closeIntegrateDialog()"
+        styleClass="p-button-text"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Create Workspace Dialog -->
+<p-dialog
+  [(visible)]="visibleWorkspace"
   [modal]="true"
   [closeOnEscape]="true"
   [draggable]="false"
@@ -288,19 +337,19 @@
 >
   <ng-template pTemplate="header">
     <div class="dialog-header">
-      <i class="pi pi-database"></i>
-      <span>Create New Dataset</span>
+      <i class="pi pi-th-large"></i>
+      <span>Create New Workspace</span>
     </div>
   </ng-template>
   <ng-template pTemplate="content">
     <div class="dialog-content">
       <div class="form-field">
-        <label for="datasetName">Dataset Name</label>
+        <label for="workspaceName">Workspace Name</label>
         <input
           pInputText
-          id="datasetName"
-          [(ngModel)]="newDatasetName"
-          placeholder="Enter dataset name"
+          id="workspaceName"
+          [(ngModel)]="newWorkspaceName"
+          placeholder="Enter workspace name"
           class="form-input"
         />
       </div>
@@ -310,13 +359,13 @@
     <div class="dialog-footer">
       <p-button
         label="Cancel"
-        (click)="closeDialogDataset()"
+        (click)="closeDialogWorkspace()"
         styleClass="p-button-text"
       ></p-button>
       <p-button
-        label="Create Dataset"
-        (click)="saveDataset()"
-        [disabled]="!newDatasetName"
+        label="Create Workspace"
+        (click)="saveWorkspace()"
+        [disabled]="!newWorkspaceName"
       ></p-button>
     </div>
   </ng-template>
