@@ -1,0 +1,134 @@
+<div class="stat-card" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center justify-between mb-3 w-full">
+    <div class="flex items-center gap-2">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-code"></i>
+      </div>
+      <span class="stat-card__title">Developer Executions</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-select
+        [options]="agents"
+        [(ngModel)]="selectedAgent"
+        optionLabel="name"
+        [showClear]="true"
+        (onChange)="filterByAgent($event)"
+        placeholder="Filter by agent"
+      ></p-select>
+      <p-button
+        icon="pi pi-refresh"
+        [rounded]="true"
+        [text]="true"
+        pTooltip="Refresh"
+        tooltipPosition="top"
+        (click)="populateTable(null, appId, hours)"
+      ></p-button>
+    </div>
+  </div>
+
+  @if (appId && hours) {
+    <p-table
+      #dt2
+      [value]="executions"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [lazy]="true"
+      (onLazyLoad)="populateTable($event, appId, hours)"
+      selectionMode="single"
+      [(selection)]="selectedItem"
+      dataKey="request_id"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      styleClass="p-datatable-sm"
+      (onRowSelect)="rowSelect($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      >
+      <ng-template pTemplate="header">
+        <tr>
+          <th><i class="pi pi-info-circle"></i></th>
+          <th>Start Time</th>
+          <th>Agent</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>Tokens</th>
+          <th>Cost</th>
+          <th>Nodes</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-execution>
+        <tr [pSelectableRow]="execution">
+          <td>
+            @if (execution.status === 'success') {
+              <i
+                class="pi pi-check-circle"
+                style="color: #4ade80"
+              ></i>
+            }
+            @if (execution.status === 'error' || waitedToMuch(execution)) {
+              <i
+                class="pi pi-exclamation-circle"
+                style="color: #f87171"
+              ></i>
+            }
+            @if (execution.status === 'started' && !waitedToMuch(execution)) {
+              <i
+                class="pi pi-question-circle"
+                style="color: #fb923c"
+              ></i>
+            }
+          </td>
+          <td>
+            {{ formatTime(execution.time) }}
+          </td>
+          <td>
+            <p-tag [value]="execution.agent" severity="info" [rounded]="true"></p-tag>
+          </td>
+          <td class="font-bold">
+            @if (execution.status === 'started' && !waitedToMuch(execution)) {
+              <p-progressBar
+                mode="indeterminate"
+                [style]="{ height: '12px' }"
+              ></p-progressBar>
+            }
+            @if (execution.status === 'success') {
+              <p-tag
+                icon="pi pi-clock"
+                [value]="execution.duration + 's'"
+                [severity]="execution.latency"
+              ></p-tag>
+            }
+          </td>
+          <td>
+            <p-tag
+              [value]="execution.status"
+              [severity]="execution.status === 'success' ? 'success' : execution.status === 'error' ? 'danger' : 'warn'"
+            ></p-tag>
+          </td>
+          <td class="font-bold">
+            {{ execution.tokens }}
+          </td>
+          <td>
+            {{ formatCost(execution.cost) }}
+          </td>
+          <td class="font-bold">
+            {{ execution.no_req }}
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="11">
+            <empty-state-widget message="No developer executions found."></empty-state-widget>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>
+
+<execution-detail
+  [(detailVisible)]="detailVisible"
+  (detailVisibleChange)="hideDetails()"
+  [selectedExecution]="selectedItem"
+></execution-detail>

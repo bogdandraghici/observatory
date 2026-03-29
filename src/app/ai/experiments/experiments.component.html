@@ -1,0 +1,304 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Experiments</h1>
+      <p class="page-header__subtitle">Run evaluations on datasets to measure AI extraction accuracy</p>
+    </div>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <p-tabs [(value)]="activeTab">
+    <p-tablist>
+      <p-tab value="0">Experiments</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-chart-bar"></i>
+              </div>
+              <span class="stat-card__title">Experiments</span>
+            </div>
+            <p-button label="Create Experiment" icon="pi pi-plus" (click)="openCreateDialog()"></p-button>
+          </div>
+          <p-table [value]="experiments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Dataset</th>
+                <th>Provider / Model</th>
+                <th>Evaluators</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="width: 10rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-exp>
+              <tr>
+                <td class="font-semibold">{{ exp.name }}</td>
+                <td><p-tag [value]="exp.experiment_type"></p-tag></td>
+                <td>{{ getDatasetName(exp.dataset_id) }}</td>
+                <td>{{ exp.llm_provider }} / {{ exp.llm_name }}</td>
+                <td>
+                  @for (ev of exp.associated_evaluators; track ev) {
+                    <p-tag [value]="ev" severity="secondary" styleClass="mr-1 mb-1"></p-tag>
+                  }
+                </td>
+                <td><p-tag [value]="exp.status" [severity]="getStatusSeverity(exp.status)"></p-tag></td>
+                <td>{{ exp.created_at | date:'short' }}</td>
+                <td>
+                  <div class="flex gap-1">
+                    @if (exp.status === 'CREATED' || exp.status === 'FAILED') {
+                      <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
+                    }
+                    @if (exp.status === 'RUNNING') {
+                      <i class="pi pi-spin pi-spinner" style="font-size: 1.2rem; padding: 0.5rem;"></i>
+                    }
+                    @if (exp.status === 'COMPLETED') {
+                      <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
+                    }
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="8" class="text-center p-6">No experiments found. Click "Create Experiment" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Create Experiment Dialog -->
+<p-dialog [(visible)]="createDialogVisible" header="Create Experiment" [modal]="true" [style]="{width: '40rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div>
+      <label class="font-semibold block mb-1">Name</label>
+      <input type="text" pInputText [(ngModel)]="experimentForm.name" class="w-full" placeholder="e.g., Document Extraction Accuracy v1" />
+    </div>
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Dataset</label>
+        <p-select [options]="datasets" [(ngModel)]="experimentForm.dataset_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}" placeholder="Select dataset"></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Experiment Type</label>
+        <p-select [options]="experimentTypeOptions" [(ngModel)]="experimentForm.experiment_type" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">LLM Provider</label>
+        <p-select [options]="providerOptions" [(ngModel)]="experimentForm.llm_provider" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">LLM Model</label>
+        <input type="text" pInputText [(ngModel)]="experimentForm.llm_name" class="w-full" placeholder="e.g., gpt-4.1-nano" />
+      </div>
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Evaluators</label>
+      <p-multiSelect [options]="getEvaluatorOptions()" [(ngModel)]="experimentForm.evaluators" appendTo="body" [style]="{'width':'100%'}" placeholder="Select evaluators"></p-multiSelect>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="createDialogVisible = false"></p-button>
+    <p-button label="Create" icon="pi pi-check" (click)="createExperiment()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Results Dialog -->
+<p-dialog [(visible)]="resultsDialogVisible" [header]="'Results: ' + (currentExperiment?.name || '')" [modal]="true" [style]="{width: '56rem'}" [maximizable]="true">
+  @if (currentSummary) {
+    <p-tabs [(value)]="resultsTab">
+      <p-tablist>
+        <p-tab value="0">Summary</p-tab>
+        <p-tab value="1">By Document Type</p-tab>
+        <p-tab value="2">By Field</p-tab>
+        <p-tab value="3">Raw Results</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- Summary Tab -->
+        <p-tabpanel value="0">
+          <div class="flex flex-col gap-4 pt-3">
+            <h6 class="m-0">Overall Metrics</h6>
+            <div class="flex gap-4 flex-wrap">
+              @for (key of getSummaryKeys(); track key) {
+                <div class="stat-card" style="min-width: 12rem; flex-direction: column; align-items: stretch;">
+                  <div class="stat-card__title mb-2">{{ key }}</div>
+                  @if (currentSummary[key]?.avg !== null && currentSummary[key]?.avg !== undefined) {
+                    <div class="text-2xl font-bold" [style.color]="getScoreColor(currentSummary[key].avg)">
+                      {{ (currentSummary[key].avg * 100).toFixed(1) }}%
+                    </div>
+                    <div class="flex gap-3 mt-1" style="color: var(--text-color-secondary)">
+                      <small>Min: {{ (currentSummary[key].min * 100).toFixed(1) }}%</small>
+                      <small>Max: {{ (currentSummary[key].max * 100).toFixed(1) }}%</small>
+                      <small>N: {{ currentSummary[key].count }}</small>
+                    </div>
+                  } @else {
+                    <div class="text-2xl font-bold">-</div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- By Document Type Tab -->
+        <p-tabpanel value="1">
+          <div class="pt-3">
+            @if (getDocumentTypes().length > 0) {
+              <p-table [value]="getDocumentTypes()" styleClass="p-datatable-sm">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Document Type</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1</th>
+                    <th>Count</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-docType>
+                  <tr>
+                    <td class="font-semibold">{{ docType }}</td>
+                    <td>
+                      @if (getDocTypeMetrics(docType).field_precision !== undefined) {
+                        <span [style.color]="getScoreColor(getDocTypeMetrics(docType).field_precision)">
+                          {{ (getDocTypeMetrics(docType).field_precision * 100).toFixed(1) }}%
+                        </span>
+                      } @else { - }
+                    </td>
+                    <td>
+                      @if (getDocTypeMetrics(docType).field_recall !== undefined) {
+                        <span [style.color]="getScoreColor(getDocTypeMetrics(docType).field_recall)">
+                          {{ (getDocTypeMetrics(docType).field_recall * 100).toFixed(1) }}%
+                        </span>
+                      } @else { - }
+                    </td>
+                    <td>
+                      @if (getDocTypeMetrics(docType).field_f1 !== undefined) {
+                        <span [style.color]="getScoreColor(getDocTypeMetrics(docType).field_f1)">
+                          {{ (getDocTypeMetrics(docType).field_f1 * 100).toFixed(1) }}%
+                        </span>
+                      } @else { - }
+                    </td>
+                    <td>{{ getDocTypeMetrics(docType).count || '-' }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            } @else {
+              <p style="color: var(--text-color-secondary)">No document type breakdown available. Use field_precision/field_recall/field_f1 evaluators with datasets that include document_type.</p>
+            }
+          </div>
+        </p-tabpanel>
+
+        <!-- By Field Tab -->
+        <p-tabpanel value="2">
+          <div class="pt-3">
+            @if (getFieldNames().length > 0) {
+              <p-table [value]="getFieldNames()" styleClass="p-datatable-sm">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Field</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-field>
+                  <tr>
+                    <td class="font-semibold">{{ field }}</td>
+                    <td>
+                      <span [style.color]="getScoreColor(getFieldMetrics(field).precision)">
+                        {{ (getFieldMetrics(field).precision * 100).toFixed(1) }}%
+                      </span>
+                    </td>
+                    <td>
+                      <span [style.color]="getScoreColor(getFieldMetrics(field).recall)">
+                        {{ (getFieldMetrics(field).recall * 100).toFixed(1) }}%
+                      </span>
+                    </td>
+                    <td>
+                      <span [style.color]="getScoreColor(getFieldMetrics(field).f1)">
+                        {{ (getFieldMetrics(field).f1 * 100).toFixed(1) }}%
+                      </span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            } @else {
+              <p style="color: var(--text-color-secondary)">No per-field breakdown available.</p>
+            }
+          </div>
+        </p-tabpanel>
+
+        <!-- Raw Results Tab -->
+        <p-tabpanel value="3">
+          <div class="pt-3">
+            <p-table [value]="currentResults" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 3rem">#</th>
+                  <th>Dataset Item</th>
+                  <th>Results</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-r let-i="rowIndex">
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td><small style="word-break: break-all;">{{ r.dataset_item_id }}</small></td>
+                  <td>
+                    @for (key of getResultKeys(r.results); track key) {
+                      <div class="flex items-center gap-2 mb-1">
+                        <span class="font-semibold text-sm">{{ key }}:</span>
+                        @if (r.results[key]?.score !== null && r.results[key]?.score !== undefined) {
+                          <span [style.color]="getScoreColor(r.results[key].score)">
+                            {{ (r.results[key].score * 100).toFixed(1) }}%
+                          </span>
+                        }
+                        @if (r.results[key]?.comment) {
+                          <small style="color: var(--text-color-secondary)">{{ r.results[key].comment }}</small>
+                        }
+                      </div>
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  }
+  <ng-template pTemplate="footer">
+    <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="resultsDialogVisible = false"></p-button>
+  </ng-template>
+</p-dialog>

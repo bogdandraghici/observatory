@@ -1,0 +1,356 @@
+{
+    "data": [
+        {
+            "name": "Getting Started",
+            "icon": "pi pi-home",
+            "children": [
+                {
+                    "name": "Installation",
+                    "routerLink": "/installation"
+                },
+                {
+                    "name": "Configuration",
+                    "routerLink": "/configuration"
+                },
+                {
+                    "name": "Playground",
+                    "routerLink": "/playground"
+                }
+            ]
+        },
+        {
+            "name": "AI Agents",
+            "icon": "pi pi-microchip-ai",
+            "children": [
+                {
+                    "name": "Introduction",
+                    "routerLink": "/agents/introduction"
+                },
+                {
+                    "name": "Analyst",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/analyst/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/analyst/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/analyst/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Assistant",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/assistant/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/assistant/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/assistant/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Architect",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/assistant/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/assistant/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/assistant/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Auditor",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/assistant/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/assistant/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/assistant/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Command",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/command/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/command/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/command/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Designer",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Developer",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Inspector",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Integrator",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Optimizer",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Strategist",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Supervisor",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                },
+                {
+                    "name": "Writer",
+                    "children": [
+                        {
+                            "name": "About",
+                            "routerLink": "/agents/designer/about"
+                        },
+                        {
+                            "name": "Capabilities",
+                            "routerLink": "/agents/designer/capabilities"
+                        },
+                        {
+                            "name": "How-to use it",
+                            "routerLink": "/agents/designer/how-to"
+                        }
+                    ]
+                }
+            
+            ]
+        },
+        {
+            "name": "AI Document Intelligence",
+            "icon": "pi pi-file-pdf",
+            "children": [
+                {
+                    "name": "About",
+                    "routerLink": "/guides/accessibility"
+                }
+            ]
+        },
+        {
+            "name": "AI Observatory",
+            "icon": "pi pi-star",
+            "children": [
+                {
+                    "name": "About",
+                    "routerLink": "/guides/accessibility"
+                },
+                {
+                    "name": "Interface",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "API",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "Data",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "Security",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "Privacy",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "Terms",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "Contact",
+                    "routerLink": "/guides/csslayer"
+                }
+            ]
+        },
+        {
+            "name": "Guides",
+            "icon": "pi pi-book",
+            "children": [
+                {
+                    "name": "Accessibility",
+                    "routerLink": "/guides/accessibility"
+                },
+                {
+                    "name": "CSS Layer",
+                    "routerLink": "/guides/csslayer"
+                },
+                {
+                    "name": "FlowX.AI TV",
+                    "href": "https://www.youtube.com/@flowx_ai3398/featured"
+                }
+            ]
+        },
+        {
+            "name": "Support",
+            "icon": "pi pi-question",
+            "children": [
+                {
+                    "name": "Long Term Support",
+                    "routerLink": "/lts"
+                }
+            ]
+        },
+        {
+            "name": "Discover",
+            "icon": "pi pi-search",
+            "children": [
+                {
+                    "name": "About Us",
+                    "routerLink": "/team"
+                },
+                {
+                    "name": "Roadmap",
+                    "routerLink": "/roadmap"
+                },
+                {
+                    "name": "Twitter",
+                    "href": "https://twitter.com/prime_ng"
+                },
+                {
+                    "name": "Partners",
+                    "routerLink": "https://flowx.ai/partners"
+                },
+                {
+                    "name": "Newsletter",
+                    "href": "https://flowx.ai/newsletter"
+                }
+            ]
+        }
+    ]
+}

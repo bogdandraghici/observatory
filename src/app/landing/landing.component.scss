@@ -1,0 +1,61 @@
+// FlowX Observatory Landing Page Styles
+// Theme variables are defined in each component for standalone usage
+
+::ng-deep {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// Landing Wrapper - Theme Classes
+.landing-wrapper {
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 300ms ease, color 300ms ease;
+
+  &.layout-dark {
+    --bg-primary: #090909;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    background: #090909;
+    color: #ffffff;
+  }
+
+  &.layout-light {
+    --bg-primary: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --card-bg: rgba(0, 0, 0, 0.02);
+    --card-border: rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    color: #111827;
+  }
+}
+
+// Legacy support
+.landing-inverse {
+  background: var(--bg-primary);
+}
+.landing-inverse-title {
+  color: var(--text-primary);
+}
+.landing-inverse-text {
+  color: var(--text-secondary);
+}
+.landing-box-bg {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  transition: all 300ms ease;
+  &:hover {
+    border-color: rgba(253, 185, 19, 0.3);
+  }
+}

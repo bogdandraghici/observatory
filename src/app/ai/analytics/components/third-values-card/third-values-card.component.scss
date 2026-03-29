@@ -1,0 +1,34 @@
+// Third Values Card Styles
+// Matching landing page card design language
+
+$gold: #fdb913;
+$gold-light: rgba(253, 185, 19, 0.1);
+$success-color: #10b981;
+$danger-color: #f87171;
+
+.danger-label {
+  color: $danger-color;
+}
+
+.success-label {
+  color: $success-color;
+}
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .analytics-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 300ms ease;
+
+    &:hover {
+      border-color: rgba(253, 185, 19, 0.3);
+      box-shadow: 0 0 30px rgba(253, 185, 19, 0.1);
+    }
+  }
+}

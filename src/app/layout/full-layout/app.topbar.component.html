@@ -1,0 +1,135 @@
+<div class="layout-topbar">
+  <!-- Left Section: Menu Toggle & Logo -->
+  <div class="topbar-left">
+    <button
+      #menubutton
+      class="topbar-menu-btn"
+      (click)="layoutService.onMenuToggle()"
+    >
+      <i class="ph ph-sidebar"></i>
+    </button>
+
+    <a class="topbar-logo" routerLink="/">
+      <img
+        [src]="'assets/layout/images/' + (darkMode ? 'observatory-light' : 'observatory-dark') + '.svg'"
+        alt="Observatory"
+      />
+    </a>
+
+    <span class="topbar-separator"></span>
+
+    <!-- Breadcrumb -->
+    <nav class="topbar-breadcrumb">
+      @for (crumb of breadcrumbs; track crumb.label; let last = $last) {
+        <span class="breadcrumb-text" [class.breadcrumb-text--active]="last">{{ crumb.label }}</span>
+        @if (!last) {
+          <i class="pi pi-angle-right breadcrumb-separator"></i>
+        }
+      }
+    </nav>
+  </div>
+
+  <!-- Right Section: Actions -->
+  <div class="topbar-right">
+    <!-- Quick Actions -->
+    <div class="topbar-actions">
+      <!-- Page Tour -->
+      <button
+        class="topbar-action-btn"
+        (click)="startPageTour()"
+        pTooltip="Page Tour"
+        tooltipPosition="bottom"
+        [disabled]="tourLoading"
+      >
+        <i [class]="tourLoading ? 'pi pi-spin pi-spinner' : 'pi pi-compass'"></i>
+      </button>
+
+      <!-- Documentation Link -->
+      <a
+        href="https://observatory-docs.theta.flowxai.dev"
+        target="_blank"
+        class="topbar-action-btn"
+        pTooltip="Documentation"
+        tooltipPosition="bottom"
+      >
+        <i class="pi pi-book"></i>
+      </a>
+
+      <!-- Theme Toggle -->
+      <button
+        class="topbar-action-btn"
+        (click)="changeTheme($event)"
+        [pTooltip]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        tooltipPosition="bottom"
+      >
+        <i [class]="darkMode ? 'pi pi-sun' : 'pi pi-moon'"></i>
+      </button>
+
+    </div>
+
+    <span class="topbar-separator"></span>
+
+    <!-- User Menu -->
+    <div class="topbar-user">
+      <button
+        #topbarmenubutton
+        class="topbar-user-btn"
+        (click)="layoutService.showProfileSidebar()"
+      >
+        <p-avatar
+          [label]="userInitial"
+          styleClass="topbar-avatar"
+          shape="circle"
+        ></p-avatar>
+        <span class="topbar-user-name">{{ userName }}</span>
+        <i class="pi pi-chevron-down topbar-user-chevron"></i>
+      </button>
+
+      <!-- User Dropdown -->
+      <div
+        #topbarmenu
+        class="topbar-user-menu"
+        [ngClass]="{ 'topbar-user-menu--active': layoutService.state.profileSidebarVisible }"
+      >
+        <div class="user-menu-header">
+          <p-avatar
+            [label]="userInitial"
+            size="large"
+            shape="circle"
+            styleClass="user-menu-avatar"
+          ></p-avatar>
+          <div class="user-menu-info">
+            <span class="user-menu-name">{{ userName }}</span>
+            <span class="user-menu-email">{{ userEmail }}</span>
+          </div>
+        </div>
+
+        <div class="user-menu-divider"></div>
+
+        <nav class="user-menu-nav">
+          <a [routerLink]="'/ai/users'" class="user-menu-item">
+            <i class="pi pi-user"></i>
+            <span>Profile</span>
+          </a>
+          <a [routerLink]="'/ai/settings'" class="user-menu-item">
+            <i class="pi pi-cog"></i>
+            <span>Settings</span>
+          </a>
+          <a [routerLink]="'/ai'" class="user-menu-item">
+            <i class="pi pi-home"></i>
+            <span>Dashboard</span>
+          </a>
+        </nav>
+
+        <div class="user-menu-divider"></div>
+
+        <div class="user-menu-footer">
+          <button class="user-menu-item user-menu-item--danger" (click)="logout()">
+            <i class="pi pi-sign-out"></i>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

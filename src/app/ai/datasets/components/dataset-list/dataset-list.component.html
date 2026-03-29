@@ -1,0 +1,108 @@
+<p-toast></p-toast>
+
+<div class="stat-card" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center justify-between mb-3 w-full">
+    <div class="flex items-center gap-2">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-database"></i>
+      </div>
+      <span class="stat-card__title">Datasets</span>
+    </div>
+    <p-button label="Add Dataset" icon="pi pi-plus" (click)="addDataset.emit()"></p-button>
+  </div>
+
+  @if (orgId) {
+    <p-table
+      #dt2
+      [value]="datasets"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [lazy]="true"
+      (onLazyLoad)="populateTable($event, appId, hours)"
+      selectionMode="single"
+      [(selection)]="selectedItem"
+      dataKey="id"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      styleClass="p-datatable-sm"
+      (onRowSelect)="rowSelect($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      (onPage)="pageChange($event)"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex">
+          <span class="p-input-icon-left ml-auto">
+            <input
+              pInputText
+              type="text"
+              (input)="dt2.filterGlobal($event.target.value, 'contains')"
+              placeholder="Search by dataset name"
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header" let-dataset>
+        <tr>
+          <th>Name</th>
+          <th>No of Items</th>
+          <th>Created At</th>
+          <th style="width: 7rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-dataset>
+        <tr [pSelectableRow]="dataset">
+          <td class="font-semibold">{{ dataset.name }}</td>
+          <td>
+            <p-tag [value]="dataset.no_of_items || 'N/A'" severity="info" [rounded]="false"></p-tag>
+          </td>
+          <td>{{ formatTime(dataset.created_at) }}</td>
+          <td>
+            <div class="flex gap-1">
+              <p-button
+                icon="pi pi-upload"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                pTooltip="Upload CSV"
+                tooltipPosition="top"
+                (click)="triggerCsvUpload(dataset, csvFileInput); $event.stopPropagation()"
+              ></p-button>
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                pTooltip="Delete"
+                tooltipPosition="top"
+                (click)="confirmDelete(dataset); $event.stopPropagation()"
+              ></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-6">No datasets found. Click "Add Dataset" to get started.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog header="Confirm Delete" [(visible)]="deleteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
+  <p>Are you sure you want to delete dataset <strong>{{ datasetToDelete?.name }}</strong>?</p>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="deleteDialogVisible = false"></p-button>
+    <p-button label="Delete" icon="pi pi-trash" severity="danger" (click)="deleteDataset()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<input
+  #csvFileInput
+  type="file"
+  accept=".csv"
+  style="display: none"
+  (change)="onCsvFileSelected($event)"
+/>

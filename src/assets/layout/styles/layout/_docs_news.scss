@@ -1,0 +1,92 @@
+.docs-layout-news {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    width: 100%;
+    height: 2rem;
+    padding: 0 2rem;
+    background-color: var(--primary-color);
+
+    .docs-layout-news-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - var(--scrollbar-width, 0px));
+        height: 100%;
+    }
+
+    .docs-layout-news-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 0%;
+    }
+
+    .docs-layout-news-text {
+        line-height: 1.5;
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        min-width: 0%;
+        font-weight: 500;
+        color: var(--primary-color-text);
+    }
+
+    .docs-layout-news-link {
+        margin-left: 0.5rem;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+
+    .docs-layout-news-link,
+    .docs-layout-news-link:visited,
+    .docs-layout-news-link:active {
+        color:var(--primary-color-text);
+        font-weight:700;
+    }
+    .docs-layout-news-link:hover {
+        text-decoration: underline;
+    }
+
+    .docs-layout-news-close {
+        line-height: 1.5;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: background-color 0.3s;
+        margin-left: 0.5rem;
+        color: var(--primary-color-text);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+.docs-layout-news-active {
+    .docs-layout-topbar {
+        top: 2rem;
+    }
+
+    .docs-layout-sidebar,
+    .doc-section-nav {
+        top: 8rem;
+    }
+
+    .docs-layout-content {
+        padding-top: 8rem;
+    }
+
+    .doc-section-label,
+    .doc-table tbody td .doc-option-name,
+    .doc-table tbody td > i {
+        scroll-margin-top: 8.5rem;
+    }
+}

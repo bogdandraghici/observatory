@@ -1,0 +1,66 @@
+name: Lint Dockerfile
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+        - './Dockerfile'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: "Hadolint"
+    permissions:
+      contents: read
+      pull-requests: 'write'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Hadolint
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf #v3.1.0
+        with:
+          dockerfile: ./Dockerfile
+          failure-threshold: error
+
+      - name: Update Pull Request
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
+        with:
+          script: |
+            const output = `
+            #### Hadolint output:
+            \`\`\`
+            ${process.env.HADOLINT_RESULTS}
+            \`\`\`
+            `;
+            const { data: issueComments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            commentToUpdate = issueComments.find((comment) =>
+              comment.body.includes("Hadolint output:")
+            );
+
+            if (commentToUpdate) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: commentToUpdate.id,
+                body: output,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: output,
+              });
+            }

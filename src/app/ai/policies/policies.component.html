@@ -1,0 +1,415 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Policy Engine</h1>
+      <p class="page-header__subtitle">Define and enforce governance policies</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Evaluate" icon="pi pi-play" severity="info" (click)="evaluateAll()"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" optionValue="id" placeholder="All Projects" [showClear]="true" class="w-[12rem]"></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="stat-cards-grid mb-4">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-file-edit"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Total Policies</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ totalPolicies }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-check-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Compliant Apps</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ compliantApps }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <i class="pi pi-times-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Non-compliant</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ nonCompliantApps }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--purple">
+        <i class="pi pi-percentage"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Coverage</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ coveragePercent }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <p-tabs [(value)]="activeTab">
+    <p-tablist>
+      <p-tab value="0">Policies</p-tab>
+      <p-tab value="1">Packs</p-tab>
+      <p-tab value="2">Assignments</p-tab>
+      <p-tab value="3">Compliance</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Policies Tab -->
+      <p-tabpanel value="0">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-file-edit"></i>
+              </div>
+              <span class="stat-card__title">Policies</span>
+            </div>
+            <p-button label="Create Policy" icon="pi pi-plus" (click)="createPolicy()"></p-button>
+          </div>
+          <p-table [value]="policies" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Category</th>
+                <th>Enforcement</th>
+                <th>Rules</th>
+                <th>Active</th>
+                <th style="width: 7rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-policy>
+              <tr>
+                <td class="font-semibold">{{ policy.name }}</td>
+                <td>v{{ policy.version }}</td>
+                <td><p-tag [value]="policy.category" [severity]="getCategorySeverity(policy.category)"></p-tag></td>
+                <td><p-tag [value]="policy.enforcement_level" [severity]="getEnforcementSeverity(policy.enforcement_level)"></p-tag></td>
+                <td>{{ policy.rules?.length || 0 }} rules</td>
+                <td><p-tag [value]="policy.is_active ? 'Active' : 'Inactive'" [severity]="policy.is_active ? 'success' : 'secondary'"></p-tag></td>
+                <td>
+                  <div class="flex gap-1">
+                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPolicy(policy)"></p-button>
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(policy, 'policy')"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="7" class="text-center p-6">No policies found. Click "Create Policy" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Packs Tab -->
+      <p-tabpanel value="1">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--purple">
+                <i class="pi pi-box"></i>
+              </div>
+              <span class="stat-card__title">Policy Packs</span>
+            </div>
+            <div class="flex gap-2">
+              <p-button label="Use Template" icon="pi pi-book" severity="secondary" (click)="openTemplateDialog()"></p-button>
+              <p-button label="Create Pack" icon="pi pi-plus" (click)="createPack()"></p-button>
+            </div>
+          </div>
+          <p-table [value]="packs" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Framework</th>
+                <th>Policies</th>
+                <th>Version</th>
+                <th>Active</th>
+                <th style="width: 7rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-pack>
+              <tr>
+                <td class="font-semibold">{{ pack.name }}</td>
+                <td><p-tag [value]="pack.framework" [severity]="getCategorySeverity(pack.framework)"></p-tag></td>
+                <td>{{ pack.policy_ids?.length || 0 }} policies</td>
+                <td>v{{ pack.version }}</td>
+                <td><p-tag [value]="pack.is_active ? 'Active' : 'Inactive'" [severity]="pack.is_active ? 'success' : 'secondary'"></p-tag></td>
+                <td>
+                  <div class="flex gap-1">
+                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPack(pack)"></p-button>
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(pack, 'pack')"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="6" class="text-center p-6">No packs found. Click "Create Pack" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Assignments Tab -->
+      <p-tabpanel value="2">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--amber">
+                <i class="pi pi-link"></i>
+              </div>
+              <span class="stat-card__title">Assignments</span>
+            </div>
+            <p-button label="Create Assignment" icon="pi pi-plus" (click)="createAssignment()"></p-button>
+          </div>
+          <p-table [value]="assignments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Pack</th>
+                <th>Project</th>
+                <th>Assigned By</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="width: 5rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-a>
+              <tr>
+                <td class="font-semibold">{{ getPackName(a.policy_pack_id) }}</td>
+                <td>{{ getAppName(a.project_id) }}</td>
+                <td>{{ a.assigned_by }}</td>
+                <td><p-tag [value]="a.status" [severity]="a.status === 'active' ? 'success' : 'warn'"></p-tag></td>
+                <td>{{ a.created_at | date:'short' }}</td>
+                <td>
+                  <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(a, 'assignment')"></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="6" class="text-center p-6">No assignments found. Click "Create Assignment" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Compliance Tab -->
+      <p-tabpanel value="3">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--green">
+              <i class="pi pi-shield"></i>
+            </div>
+            <span class="stat-card__title">Compliance Dashboard</span>
+          </div>
+          <p-table [value]="compliance" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Project</th>
+                <th>Assigned Packs</th>
+                <th>Compliant</th>
+                <th>Score</th>
+                <th>Last Evaluated</th>
+                <th>Evaluations</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-c>
+              <tr>
+                <td class="font-semibold">{{ c.project_name }}</td>
+                <td>{{ c.assigned_packs?.join(', ') || 'None' }}</td>
+                <td>
+                  @if (c.evaluation_count === 0) {
+                    <p-tag value="Not Evaluated" severity="secondary"></p-tag>
+                  } @else {
+                    <p-tag [value]="c.compliant ? 'Compliant' : 'Non-compliant'" [severity]="c.compliant ? 'success' : 'danger'"></p-tag>
+                  }
+                </td>
+                <td>{{ (c.score * 100).toFixed(1) }}%</td>
+                <td>{{ c.last_evaluated | date:'short' }}</td>
+                <td>{{ c.evaluation_count }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="6" class="text-center p-6">No compliance data</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Policy Dialog -->
+<p-dialog [(visible)]="policyDialogVisible" [header]="editMode ? 'Edit Policy' : 'Create Policy'" [modal]="true" [style]="{width: '42rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="policyForm.name" class="w-full" />
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Category</label>
+        <p-select [options]="categoryOptions" [(ngModel)]="policyForm.category" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Description</label>
+        <textarea pInputTextarea [(ngModel)]="policyForm.description" class="w-full" rows="2"></textarea>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Enforcement Level</label>
+        <p-select [options]="enforcementOptions" [(ngModel)]="policyForm.enforcement_level" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+    </div>
+    <div>
+      <label class="font-semibold block mb-2">Rules</label>
+      @for (rule of policyForm.rules; track $index) {
+        <div class="flex items-center gap-2 mb-2">
+          <p-select [options]="metricOptions" [(ngModel)]="rule.metric" placeholder="Metric" appendTo="body" class="flex-1"></p-select>
+          <p-select [options]="operatorOptions" [(ngModel)]="rule.operator" placeholder="Op" appendTo="body" [style]="{width: '8rem'}"></p-select>
+          <input type="number" pInputText [(ngModel)]="rule.threshold" placeholder="Value" style="width:6rem;" />
+          <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" (click)="removeRule($index)"></p-button>
+        </div>
+      }
+      <p-button label="Add Rule" icon="pi pi-plus" severity="secondary" [text]="true" size="small" (click)="addRule()"></p-button>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="policyDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (onClick)="savePolicy()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Pack Dialog -->
+<p-dialog [(visible)]="packDialogVisible" [header]="editMode ? 'Edit Pack' : 'Create Pack'" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="packForm.name" class="w-full" />
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Framework</label>
+        <p-select [options]="frameworkOptions" [(ngModel)]="packForm.framework" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Description</label>
+        <textarea pInputTextarea [(ngModel)]="packForm.description" class="w-full" rows="2"></textarea>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Policies</label>
+        <p-multiSelect [options]="getPolicyOptions()" [(ngModel)]="packForm.policy_ids" appendTo="body" class="w-full"></p-multiSelect>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="packDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (onClick)="savePack()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Assignment Dialog -->
+<p-dialog [(visible)]="assignmentDialogVisible" header="Create Assignment" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Policy Pack</label>
+        <p-select [options]="packs" [(ngModel)]="assignmentForm.policy_pack_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Project</label>
+        <p-select [options]="apps" [(ngModel)]="assignmentForm.project_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="assignmentDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (onClick)="saveAssignment()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Evaluation Results Dialog -->
+<p-dialog [(visible)]="evalDialogVisible" header="Evaluation Results" [modal]="true" [style]="{width: '42rem'}">
+  <div class="flex flex-col gap-3 pt-2">
+    @for (ev of evalResults; track ev.id) {
+      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold">{{ getPolicyName(ev.policy_id) }}</span>
+          <p-tag [value]="ev.overall_pass ? 'PASS' : 'FAIL'" [severity]="ev.overall_pass ? 'success' : 'danger'"></p-tag>
+        </div>
+        <div class="mb-3">Score: {{ (ev.score * 100).toFixed(1) }}%</div>
+        @for (r of ev.rule_results; track r.rule_id) {
+          <div class="flex items-center gap-2 mb-1">
+            <i [class]="r.passed ? 'pi pi-check-circle text-green-500' : 'pi pi-times-circle text-red-500'"></i>
+            <span>{{ r.name || r.metric }}: {{ r.metric }} {{ r.operator }} {{ r.threshold }}</span>
+            @if (r.actual_value !== null && r.actual_value !== undefined) {
+              <span>(actual: {{ r.actual_value }})</span>
+            }
+          </div>
+        }
+      </div>
+    }
+    @if (evalResults.length === 0) {
+      <div class="text-center p-6">No evaluation results</div>
+    }
+  </div>
+</p-dialog>
+
+<!-- Template Dialog -->
+<p-dialog [(visible)]="templateDialogVisible" header="Apply Template Pack" [modal]="true" [style]="{width: '42rem'}">
+  <div class="flex flex-col gap-3 pt-2">
+    <p class="text-sm" style="color:#64748b">Select a governance framework to auto-create pre-built policies and a pack.</p>
+    @for (tpl of templateOptions; track tpl.framework) {
+      <div class="stat-card" style="flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer;">
+        <div class="flex flex-col gap-1">
+          <span class="font-semibold">{{ tpl.name }}</span>
+          <span class="text-sm" style="color:#64748b">{{ tpl.description }}</span>
+          <span class="text-xs" style="color:#94a3b8">{{ tpl.policyCount }} policies</span>
+        </div>
+        <p-button label="Apply" icon="pi pi-check" size="small" (click)="applyTemplate(tpl.framework)"></p-button>
+      </div>
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="templateDialogVisible = false"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Delete Dialog -->
+<p-dialog header="Confirm Delete" [(visible)]="deleteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
+  <p>Are you sure you want to delete this {{ deleteType }}?</p>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="deleteDialogVisible = false"></p-button>
+    <p-button label="Delete" icon="pi pi-trash" severity="danger" (click)="deleteItem()"></p-button>
+  </ng-template>
+</p-dialog>

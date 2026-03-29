@@ -1,0 +1,270 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Drift Monitor</h1>
+      <p class="page-header__subtitle">Detect and track metric distribution changes</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Compute Drift" icon="pi pi-refresh" severity="info" (click)="computeDrift()"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Organization"
+          (onChange)="orgChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Project"
+          [showClear]="true"
+          (onChange)="appChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Period</label>
+        <p-select
+          [options]="periodOptions"
+          [(ngModel)]="hours"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="periodChanged()"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  @if (selectedApp) {
+    <div class="stat-cards-grid mb-4">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-chart-bar"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Metrics Monitored</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ metricsMonitored }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <i class="pi pi-arrows-h"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Drifts Detected</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ driftsDetected }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Significant Drifts</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ significantDrifts }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Last Computed</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ lastComputed }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Drift Results Table -->
+  @if (selectedApp) {
+    <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <i class="pi pi-table"></i>
+        </div>
+        <span class="stat-card__title">Drift Results</span>
+      </div>
+      <p-table [value]="driftResults" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Metric</th>
+            <th>Drift Score</th>
+            <th>Detected</th>
+            <th>Severity</th>
+            <th>Method</th>
+            <th>Detected At</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-result>
+          <tr>
+            <td class="font-semibold" style="text-transform: capitalize;">{{ result.metric }}</td>
+            <td>{{ result.drift_score | number:'1.4-4' }}</td>
+            <td>
+              <p-tag
+                [value]="result.drift_detected ? 'Yes' : 'No'"
+                [severity]="result.drift_detected ? 'danger' : 'success'"
+              ></p-tag>
+            </td>
+            <td>
+              <p-tag [value]="result.severity" [severity]="getDriftSeverity(result.severity)"></p-tag>
+            </td>
+            <td>{{ result.test_method }}</td>
+            <td>{{ result.detected_at | date:'short' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="6" class="text-center p-6">No drift results. Click "Compute Drift" to analyze.</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Charts -->
+    @if (driftResults.length > 0) {
+      <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(2, 1fr); align-items: start;">
+        <div class="stat-card" style="flex-direction: column; align-items: stretch;  min-height: 320px;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <i class="pi pi-chart-line"></i>
+            </div>
+            <span class="stat-card__title">Drift Timeline</span>
+          </div>
+          <div style="position:relative; height:250px; width:100%;">
+            <canvas id="driftTimelineCanvas"></canvas>
+          </div>
+        </div>
+        <div class="stat-card" style="flex-direction: column; align-items: stretch;  min-height: 320px;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <i class="pi pi-chart-bar"></i>
+            </div>
+            <span class="stat-card__title">Distribution Comparison (P50)</span>
+          </div>
+          <div style="position:relative; height:250px; width:100%;">
+            <canvas id="distributionCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- Org Drift Overview -->
+  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-sitemap"></i>
+      </div>
+      <span class="stat-card__title">Org Drift Overview</span>
+    </div>
+    <p-table [value]="dashboard" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Project</th>
+          <th>Total Drifts</th>
+          <th>Latency</th>
+          <th>Tokens</th>
+          <th>Cost</th>
+          <th>Error Rate</th>
+          <th>OCR Quality</th>
+          <th>Page Count</th>
+          <th>Doc Confidence</th>
+          <th>Last Computed</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td class="font-semibold">{{ item.app_name }}</td>
+          <td>
+            @if (item.total_drifts > 0) {
+              <p-tag [value]="item.total_drifts + ''" severity="danger"></p-tag>
+            } @else {
+              <span>0</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.latency) {
+              <p-tag [value]="item.metrics.latency.severity" [severity]="getDriftSeverity(item.metrics.latency.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.tokens) {
+              <p-tag [value]="item.metrics.tokens.severity" [severity]="getDriftSeverity(item.metrics.tokens.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.cost) {
+              <p-tag [value]="item.metrics.cost.severity" [severity]="getDriftSeverity(item.metrics.cost.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.error_rate) {
+              <p-tag [value]="item.metrics.error_rate.severity" [severity]="getDriftSeverity(item.metrics.error_rate.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.ocr_quality) {
+              <p-tag [value]="item.metrics.ocr_quality.severity" [severity]="getDriftSeverity(item.metrics.ocr_quality.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.page_count) {
+              <p-tag [value]="item.metrics.page_count.severity" [severity]="getDriftSeverity(item.metrics.page_count.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>
+            @if (item.metrics?.doc_confidence) {
+              <p-tag [value]="item.metrics.doc_confidence.severity" [severity]="getDriftSeverity(item.metrics.doc_confidence.severity)"></p-tag>
+            } @else {
+              <span>-</span>
+            }
+          </td>
+          <td>{{ item.last_computed ? (item.last_computed | date:'short') : '-' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="10" class="text-center p-6">No drift data. Compute drift for individual apps to populate.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

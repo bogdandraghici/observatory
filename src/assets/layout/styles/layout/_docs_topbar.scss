@@ -1,0 +1,79 @@
+.docs-layout-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(100% - var(--scrollbar-width, 0px));
+    z-index: 1100;
+    transition: background-color .5s, border-color .5s;
+    border-bottom: 1px solid transparent;
+    
+
+    &.docs-layout-topbar-sticky {
+        border-bottom: 1px solid var(--surface-border);
+        background-color: var(--topbar-sticky-bg);
+        backdrop-filter: blur(8px);
+    }
+    .docs-layout-topbar-logo {
+        display: flex;
+        align-items: center;
+        color: var(--surface-900);
+        font-size: 1.5rem;
+        font-weight: 300;
+        width: 300px;
+        padding: 0;
+        border-radius: 12px;
+
+        img {
+            height: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        &:focus {
+            @include focused();
+        }
+    }
+}
+
+.docs-layout-topbar-inner {
+    height: 4rem;
+    padding: 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--surface-900);
+
+    .docs-layout-topbar-logo-container {
+        width: 250px;
+        margin-right: 4rem;
+    }
+
+    .docs-layout-topbar-logo,
+    .docs-layout-topbar-icon {
+        border-radius: var(--border-radius);
+        @include focus-visible();
+
+        svg {
+            width: 120px;
+        }
+    }
+
+    .docs-layout-topbar-logo {
+        display: inline-flex;
+
+        svg {
+            width: 120px;
+        }
+    }
+
+    .docs-layout-topbar-icon {
+        display: none;
+
+        svg {
+            width: 25px;
+        }
+    }
+    
+    .menu-button {
+        display: none;
+    }
+}

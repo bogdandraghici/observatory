@@ -1,0 +1,377 @@
+<div class="home-container">
+  <!-- Header Section -->
+  <header class="home-header">
+    <div class="home-header__content">
+      <div class="home-header__welcome">
+        <h1 class="home-header__title">
+          Welcome to <span class="text-gold">Observatory</span>
+        </h1>
+        <p class="home-header__subtitle">
+          Monitor, debug, and optimize your AI applications
+        </p>
+      </div>
+
+      <div class="home-header__filters">
+        <div class="filter-group">
+          <label class="filter-group__label">Organization</label>
+          <div class="filter-group__wrapper">
+            <p-select
+              [options]="orgs"
+              [(ngModel)]="selectedOrg"
+              optionLabel="name"
+              optionValue="id"
+              [showClear]="false"
+              (onChange)="orgChanged($event)"
+              placeholder="Select Organization"
+            ></p-select>
+            @if (!isSaaSMode) {
+              <button
+                class="filter-group__action"
+                (click)="showDialogOrganization()"
+                pTooltip="Create new organization"
+              >
+                <i class="pi pi-plus"></i>
+              </button>
+            }
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-group__label">Workspace</label>
+          <p-select
+            [options]="workspaces"
+            [(ngModel)]="selectedWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="true"
+            (onChange)="workspaceChanged($event)"
+            placeholder="All Workspaces"
+          ></p-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Key Card -->
+    @if (getAPIKeys(selectedOrg)?.length > 0) {
+      <div class="api-key-card">
+        <div class="api-key-card__icon">
+          <i class="pi pi-key"></i>
+        </div>
+        <div class="api-key-card__content">
+          <span class="api-key-card__label">API Key</span>
+          @for (key of getAPIKeys(selectedOrg); track key) {
+            <div class="api-key-card__value-wrapper">
+              <code class="api-key-card__value">{{ key.value }}</code>
+              <button
+                class="api-key-card__copy"
+                (click)="copyToClipboard($event, key.value)"
+                pTooltip="Copy API key to clipboard"
+              >
+                <i class="pi pi-copy"></i>
+              </button>
+            </div>
+          }
+        </div>
+        <div class="api-key-card__hint">
+          <i class="pi pi-info-circle"></i>
+          Set as <code>FLOWX_OBSERVATORY_API_KEY</code> environment variable
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- Quick Stats Overview -->
+  @if (apps?.length > 0) {
+    <section class="quick-stats">
+      <div class="quick-stats__grid grid-cols-12">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--projects">
+            <i class="pi pi-folder"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ apps?.length || 0 }}</span>
+            <span class="stat-card__label">Active Projects</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--runs">
+            <i class="pi pi-play"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ getTotalRuns() }}</span>
+            <span class="stat-card__label">Total Runs (7D)</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--datasets">
+            <i class="pi pi-database"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ datasets?.length || 0 }}</span>
+            <span class="stat-card__label">Datasets</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--latency">
+            <i class="pi pi-clock"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ getAvgLatency() }}s</span>
+            <span class="stat-card__label">Avg P50 Latency</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Getting Started / Documentation -->
+  <section class="getting-started">
+    <div class="getting-started__card">
+      <div class="getting-started__content">
+        <div class="getting-started__icon">
+          <i class="pi pi-book"></i>
+        </div>
+        <div class="getting-started__text">
+          <h3>Documentation</h3>
+          <p>Learn how to integrate Observatory into your AI applications</p>
+        </div>
+      </div>
+      <a
+        href="https://observatory-docs.theta.flowxai.dev"
+        target="_blank"
+        class="getting-started__btn"
+      >
+        View Docs
+        <i class="pi pi-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="section-projects">
+    <div class="section-header">
+      <div class="section-header__left">
+        <h2 class="section-header__title">
+          <i class="pi pi-folder"></i>
+          Projects
+        </h2>
+        <span class="section-header__count">{{ apps?.length || 0 }} projects</span>
+      </div>
+      @if (!isSaaSMode) {
+        <button class="btn-add" (click)="showDialogProject()">
+          <i class="pi pi-plus"></i>
+          Add Project
+        </button>
+      }
+    </div>
+
+    <div class="projects-grid">
+      @for (app of apps; track app) {
+        <app-details-widget
+          [app]="app"
+          (appChanged)="reloadAll($event)"
+        ></app-details-widget>
+      }
+      @if (!apps || apps.length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <i class="pi pi-folder-open"></i>
+          </div>
+          <h3 class="empty-state__title">No projects yet</h3>
+          <p class="empty-state__description">
+            @if (!isSaaSMode) {
+              Create your first project to start monitoring your AI applications
+            }
+            @if (isSaaSMode) {
+              Contact your administrator to create a project
+            }
+          </p>
+          @if (!isSaaSMode) {
+            <button class="btn-add btn-add--primary" (click)="showDialogProject()">
+              <i class="pi pi-plus"></i>
+              Create Project
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Datasets Section -->
+  <section class="section-datasets">
+    <div class="section-header">
+      <div class="section-header__left">
+        <h2 class="section-header__title">
+          <i class="pi pi-database"></i>
+          Datasets & Testing
+        </h2>
+        <span class="section-header__count">{{ datasets?.length || 0 }} datasets</span>
+      </div>
+      <button class="btn-add" (click)="showDialogDataset()">
+        <i class="pi pi-plus"></i>
+        Add Dataset
+      </button>
+    </div>
+
+    <div class="datasets-grid">
+      @for (dataset of datasets; track dataset) {
+        <dataset-details-widget
+          [dataset]="dataset"
+          (datasetChanged)="reloadAll($event)"
+        ></dataset-details-widget>
+      }
+      @if (!datasets || datasets.length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <i class="pi pi-database"></i>
+          </div>
+          <h3 class="empty-state__title">No datasets yet</h3>
+          <p class="empty-state__description">
+            Create datasets from production data to test and evaluate your LLM applications
+          </p>
+          <button class="btn-add btn-add--primary" (click)="showDialogDataset()">
+            <i class="pi pi-plus"></i>
+            Create Dataset
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+</div>
+
+<!-- Create Project Dialog -->
+<p-dialog
+  [(visible)]="visibleProject"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-folder-plus"></i>
+      <span>Create New Project</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="projectName">Project Name</label>
+        <input
+          pInputText
+          id="projectName"
+          [(ngModel)]="newProjectName"
+          placeholder="Enter project name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogProject()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Project"
+        (click)="saveProject()"
+        [disabled]="!newProjectName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Create Dataset Dialog -->
+<p-dialog
+  [(visible)]="visibleDataset"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-database"></i>
+      <span>Create New Dataset</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="datasetName">Dataset Name</label>
+        <input
+          pInputText
+          id="datasetName"
+          [(ngModel)]="newDatasetName"
+          placeholder="Enter dataset name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogDataset()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Dataset"
+        (click)="saveDataset()"
+        [disabled]="!newDatasetName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Create Organization Dialog -->
+<p-dialog
+  [(visible)]="visibleOrganization"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-building"></i>
+      <span>Create New Organization</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="organizationName">Organization Name</label>
+        <input
+          pInputText
+          id="organizationName"
+          [(ngModel)]="newOrganizationName"
+          placeholder="Enter organization name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogOrganization()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Organization"
+        (click)="saveOrganization()"
+        [disabled]="!newOrganizationName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

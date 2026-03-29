@@ -1,0 +1,61 @@
+// Empty State Component
+// Matching landing page card design language
+
+$gold: #fdb913;
+$gold-light: rgba(253, 185, 19, 0.1);
+
+// Dark mode tokens
+$card-border-dark: rgba(255, 255, 255, 0.06);
+$card-border-hover-dark: rgba(253, 185, 19, 0.3);
+$card-bg-dark: rgba(255, 255, 255, 0.02);
+
+// Light mode tokens
+$card-border-light: rgba(0, 0, 0, 0.08);
+$card-border-hover-light: rgba(253, 185, 19, 0.4);
+$card-bg-light: #ffffff;
+$card-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+
+.empty-container {
+  margin: 0;
+  padding: 2rem 1.5rem;
+  border-radius: 1rem;
+  color: var(--text-color-secondary);
+  gap: 0.75rem;
+  transition: all 300ms ease;
+
+  // Dark mode (default)
+  border: 1px dashed $card-border-dark;
+  background: $card-bg-dark;
+
+  &:hover {
+    border-color: $card-border-hover-dark;
+  }
+
+  // Light mode
+  .flowx-light &, .layout-theme-light & {
+    border: 1px dashed $card-border-light;
+    background: $card-bg-light;
+    box-shadow: $card-shadow-light;
+
+    &:hover {
+      border-color: $card-border-hover-light;
+    }
+  }
+
+  ng-icon {
+    font-size: 2rem;
+    color: var(--text-color-secondary);
+    opacity: 0.6;
+  }
+
+  h3, .title {
+    color: var(--text-color);
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+
+  p, .description {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+}

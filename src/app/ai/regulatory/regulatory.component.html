@@ -1,0 +1,844 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Regulatory Compliance</h1>
+      <p class="page-header__subtitle">Track compliance against EU AI Act, NIST AI RMF, ISO 42001 and custom frameworks</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="New Framework" icon="pi pi-plus" (onClick)="openNewFrameworkForm()"></p-button>
+      <p-button label="Auto-Map" icon="pi pi-sync" [outlined]="true" (onClick)="autoMap()" [loading]="loading"></p-button>
+      <p-button label="Generate Report" icon="pi pi-file" [outlined]="true" (onClick)="generateReport()"></p-button>
+      <p-button label="Export PDF" icon="pi pi-file-pdf" [outlined]="true" (onClick)="exportPDF()" [disabled]="!report"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" placeholder="Select Org"
+          (onChange)="onOrgChange()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" placeholder="Select Project"
+          (onChange)="onAppChange()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Framework</label>
+        <p-select [options]="frameworkOptions" [(ngModel)]="selectedFramework" optionLabel="label" optionValue="value"
+          placeholder="Select Framework" (onChange)="onFrameworkChange()"></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="stat-cards-grid mb-4">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-book"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Total Frameworks</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ totalFrameworks }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-shield"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Compliance %</span>
+        <span class="stat-card__value stat-card__value--lg" [style.color]="getComplianceColor(avgCompliance)">{{ avgCompliance | number:'1.1-1' }}%</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--amber">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Gaps</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ gapCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--purple">
+        <i class="pi pi-sitemap"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Projects Tracked</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ projectsTracked }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div>
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        <p-tab value="0">Frameworks</p-tab>
+        <p-tab value="1">Requirements</p-tab>
+        <p-tab value="2">Compliance Report</p-tab>
+        <p-tab value="3">Org Overview</p-tab>
+        <p-tab value="4">Gap Analysis</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+
+        <!-- Tab 0: Frameworks -->
+        <p-tabpanel value="0">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <i class="pi pi-book"></i>
+            </div>
+            <span class="stat-card__title">Frameworks</span>
+          </div>
+          <p-table [value]="frameworks" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Short Name</th>
+                <th>Version</th>
+                <th>Jurisdiction</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th style="width: 100px">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-fw>
+              <tr class="cursor-pointer" (click)="openFrameworkDetail(fw)">
+                <td>{{ fw.name }}</td>
+                <td><strong>{{ fw.short_name }}</strong></td>
+                <td>{{ fw.version }}</td>
+                <td>{{ fw.jurisdiction }}</td>
+                <td>
+                  <p-tag [value]="fw.is_system ? 'System' : 'Custom'" [severity]="fw.is_system ? 'info' : 'secondary'"></p-tag>
+                </td>
+                <td>
+                  <p-tag [value]="fw.is_active ? 'Active' : 'Inactive'" [severity]="fw.is_active ? 'success' : 'danger'"></p-tag>
+                </td>
+                <td>
+                  @if (!fw.is_system) {
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditFrameworkForm(fw); $event.stopPropagation()" pTooltip="Edit"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteFramework(fw, $event)" pTooltip="Delete"></p-button>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="7" class="text-center p-6">No frameworks found. Click "New Framework" to create one or seed system frameworks via the API.</td></tr>
+            </ng-template>
+          </p-table>
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 1: Requirements -->
+        <p-tabpanel value="1">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <i class="pi pi-list"></i>
+            </div>
+            <span class="stat-card__title">Requirements</span>
+          </div>
+          @if (!selectedFramework) {
+            <div class="text-center p-6" style="color: var(--text-color-secondary)">Select a framework to view requirements.</div>
+          } @else {
+            <p-table [value]="requirements" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 100px">Code</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th style="width: 120px">Status</th>
+                  <th style="width: 80px">Evidence</th>
+                  <th style="width: 80px">Evals</th>
+                  <th style="width: 100px">Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-req>
+                <tr>
+                  <td><strong>{{ req.requirement_code }}</strong></td>
+                  <td class="cursor-pointer" (click)="openRequirementDetail(req)">{{ req.title }}</td>
+                  <td>{{ req.category }}</td>
+                  <td>
+                    <p-tag [value]="getStatusLabel(req.status)" [severity]="getStatusSeverity(req.status)"></p-tag>
+                  </td>
+                  <td class="text-center">{{ req.evidence_count }}</td>
+                  <td class="text-center">{{ req.evaluation_count }}</td>
+                  <td>
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openNotesEditor(req)" pTooltip="Edit mapping"></p-button>
+                    <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small" (onClick)="openRequirementDetail(req)" pTooltip="View details"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="7" class="text-center p-6">No requirements found. Run Auto-Map first.</td></tr>
+              </ng-template>
+            </p-table>
+          }
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 2: Compliance Report -->
+        <p-tabpanel value="2">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--green">
+              <i class="pi pi-chart-pie"></i>
+            </div>
+            <span class="stat-card__title">Compliance Report</span>
+          </div>
+          @if (!report) {
+            <div class="text-center p-6" style="color: var(--text-color-secondary)">Click "Generate Report" to create a compliance report.</div>
+          } @else {
+            <div class="mb-3">
+              <h3 class="mt-0 mb-2">{{ report.framework?.name }} - {{ report.project?.name }}</h3>
+              <div class="flex gap-3 mb-3">
+                <p-tag value="Compliant: {{ report.summary?.compliant }}" severity="success"></p-tag>
+                <p-tag value="In Progress: {{ report.summary?.in_progress }}" severity="warn"></p-tag>
+                <p-tag value="Not Started: {{ report.summary?.not_started }}" severity="info"></p-tag>
+                <p-tag value="Non-Compliant: {{ report.summary?.non_compliant }}" severity="danger"></p-tag>
+              </div>
+              <div class="flex items-center gap-3">
+                <p-progressBar [value]="report.summary?.compliance_percent || 0" [showValue]="false" [style]="{height: '1.25rem', flex: '1'}"></p-progressBar>
+                <span class="font-semibold text-lg" [style.color]="getComplianceColor(report.summary?.compliance_percent || 0)">{{ (report.summary?.compliance_percent || 0) | number:'1.1-1' }}%</span>
+              </div>
+            </div>
+
+            @for (group of reportGrouped; track group.category) {
+              <div class="mb-4 bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border)">
+                <!-- Category header with progress -->
+                <div class="flex items-center gap-3 mb-3">
+                  <h4 class="m-0 font-semibold">{{ group.category }}</h4>
+                  <p-badge [value]="'' + group.total" severity="secondary"></p-badge>
+                  <div class="flex items-center gap-2 ml-auto" style="min-width: 200px">
+                    <p-progressBar [value]="group.percent" [showValue]="false" [style]="{height: '0.6rem', flex: '1'}"></p-progressBar>
+                    <span class="font-semibold text-sm" style="min-width: 45px; text-align: right" [style.color]="getComplianceColor(group.percent)">{{ group.percent | number:'1.1-1' }}%</span>
+                  </div>
+                  <span class="text-xs" style="color: var(--text-color-secondary)">{{ group.compliant }}/{{ group.total }}</span>
+                </div>
+
+                <!-- Requirements accordion inside category -->
+                <p-accordion [value]="[]" [multiple]="true">
+                  @for (req of group.requirements; track req.requirement_id) {
+                    <p-accordion-panel [value]="req.requirement_id">
+                      <p-accordion-header>
+                        <div class="flex align-items-center gap-2 w-full">
+                          <strong>{{ req.requirement_code }}</strong>
+                          <span>{{ req.title }}</span>
+                          <span class="ml-auto mr-2">
+                            <p-tag [value]="getStatusLabel(req.status)" [severity]="getStatusSeverity(req.status)"></p-tag>
+                          </span>
+                        </div>
+                      </p-accordion-header>
+                      <p-accordion-content>
+                        <p class="text-color-secondary">{{ req.description }}</p>
+                        <div class="flex gap-4 mt-2">
+                          <div><strong>Evidence:</strong> {{ req.evidence_count }}</div>
+                          <div><strong>Evaluations:</strong> {{ req.evaluation_count }}</div>
+                          <div><strong>Assessments:</strong> {{ req.assessment_count }}</div>
+                        </div>
+                        @if (req.notes) {
+                          <div class="mt-2"><strong>Notes:</strong> {{ req.notes }}</div>
+                        }
+                        @if (req.assigned_to) {
+                          <div class="mt-1"><strong>Assigned to:</strong> {{ req.assigned_to }}</div>
+                        }
+                      </p-accordion-content>
+                    </p-accordion-panel>
+                  }
+                </p-accordion>
+              </div>
+            }
+          }
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 3: Org Overview -->
+        <p-tabpanel value="3">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--amber">
+              <i class="pi pi-sitemap"></i>
+            </div>
+            <span class="stat-card__title">Organization Overview</span>
+          </div>
+          @if (!overview || !overview.projects?.length) {
+            <div class="text-center p-6" style="color: var(--text-color-secondary)">No overview data. Run Auto-Map on projects first.</div>
+          } @else {
+            <p-table [value]="getOverviewProjects()" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Project</th>
+                  @for (fw of getOverviewFrameworks(); track fw.id) {
+                    <th class="text-center">{{ fw.name }}</th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-project>
+                <tr>
+                  <td><strong>{{ project.project_name }}</strong></td>
+                  @for (fw of getOverviewFrameworks(); track fw.id) {
+                    <td class="text-center">
+                      <span class="font-bold"
+                        [style.color]="getComplianceColor(getProjectFrameworkPercent(project, fw.id))">
+                        {{ getProjectFrameworkPercent(project, fw.id) | number:'1.0-0' }}%
+                      </span>
+                    </td>
+                  }
+                </tr>
+              </ng-template>
+            </p-table>
+          }
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 4: Gap Analysis -->
+        <p-tabpanel value="4">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+              <i class="pi pi-search"></i>
+            </div>
+            <span class="stat-card__title">Gap Analysis</span>
+          </div>
+          @if (!report) {
+            <div class="text-center p-6" style="color: var(--text-color-secondary)">Generate a report first to see gap analysis.</div>
+          } @else {
+            <!-- Summary bar -->
+            <div class="flex gap-4 mb-4">
+              @for (tier of gapTiers; track tier.label) {
+                <div class="flex-1 rounded p-3 text-center" [style.background]="tier.bgColor" [style.border]="'1px solid ' + tier.color + '33'">
+                  <div class="text-2xl font-bold" [style.color]="tier.color">{{ tier.items.length }}</div>
+                  <div class="flex items-center justify-center gap-1 mt-1">
+                    <i [class]="tier.icon" [style.color]="tier.color" style="font-size: 0.75rem"></i>
+                    <span class="text-xs font-semibold" [style.color]="tier.color">{{ tier.label }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Tier sections -->
+            @for (tier of gapTiers; track tier.label) {
+              @if (tier.items.length) {
+                <div class="mb-4">
+                  <div class="flex items-center gap-2 mb-2">
+                    <i [class]="tier.icon" [style.color]="tier.color"></i>
+                    <h4 class="m-0 font-semibold">{{ tier.label }}</h4>
+                    <p-badge [value]="'' + tier.items.length" [style]="{'background': tier.color}"></p-badge>
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    @for (req of tier.items; track req.requirement_id) {
+                      <div class="flex items-center gap-3 rounded p-3" [style.background]="tier.bgColor" [style.border-left]="'4px solid ' + tier.color">
+                        <!-- Code -->
+                        <div style="min-width: 100px">
+                          <strong>{{ req.requirement_code }}</strong>
+                        </div>
+
+                        <!-- Title + Category -->
+                        <div class="flex-1">
+                          <div class="font-medium">{{ req.title }}</div>
+                          <div class="text-xs" style="color: var(--text-color-secondary)">{{ req.category }}</div>
+                        </div>
+
+                        <!-- Evidence counts -->
+                        <div class="flex items-center gap-3 text-sm" style="min-width: 200px">
+                          <span pTooltip="Evidence collected" tooltipPosition="top">
+                            <i class="pi pi-file text-xs mr-1" style="color: var(--text-color-secondary)"></i>{{ req.evidence_count || 0 }}
+                          </span>
+                          <span pTooltip="Policy evaluations" tooltipPosition="top">
+                            <i class="pi pi-shield text-xs mr-1" style="color: var(--text-color-secondary)"></i>{{ req.evaluation_count || 0 }}
+                          </span>
+                          <span pTooltip="Assessments" tooltipPosition="top">
+                            <i class="pi pi-check-square text-xs mr-1" style="color: var(--text-color-secondary)"></i>{{ req.assessment_count || 0 }}
+                          </span>
+                        </div>
+
+                        <!-- Status tag -->
+                        <p-tag [value]="getStatusLabel(req.status)" [severity]="getStatusSeverity(req.status)"></p-tag>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            }
+          }
+          </div>
+        </p-tabpanel>
+
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+
+<!-- Requirement Detail / Edit Mapping Drawer (Headless) -->
+<p-drawer
+  #regulatoryDrawerRef
+  [(visible)]="drawerVisible"
+  position="right"
+  [style]="{width: (drawerType === 'framework' || drawerType === 'requirementForm') ? '65vw' : '50vw'}"
+  [modal]="true"
+  [dismissible]="false"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 shrink-0" style="border-bottom: 1px solid var(--surface-border)">
+        <span class="inline-flex items-center gap-2">
+          <p-button type="button" (click)="closeDrawer($event)" icon="pi pi-times" [rounded]="true" [outlined]="false" severity="primary" styleClass="h-2rem w-2rem"></p-button>
+        </span>
+        <h3 class="m-0 font-semibold text-lg">{{ getDrawerTitle() }}</h3>
+        <span></span>
+      </div>
+
+      <!-- Body -->
+      <div class="overflow-y-auto flex-1 p-6">
+
+        <!-- ═══ Requirement Detail View ═══ -->
+        @if (drawerType === 'requirement' && selectedRequirement) {
+          <!-- Status + Category row -->
+          <div class="flex items-center gap-3 mb-6">
+            <p-tag [value]="getStatusLabel(selectedRequirement.status)" [severity]="getStatusSeverity(selectedRequirement.status)"></p-tag>
+            <p-tag [value]="selectedRequirement.category" severity="secondary"></p-tag>
+          </div>
+
+          <!-- Description -->
+          @if (selectedRequirement.description) {
+            <div class="mb-6">
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Description</h4>
+              <p class="m-0 leading-relaxed">{{ selectedRequirement.description }}</p>
+            </div>
+          }
+
+          <!-- Info Grid -->
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <!-- Risk Levels -->
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Risk Level Applicability</h4>
+              <div class="flex gap-1 flex-wrap">
+                @for (rl of selectedRequirement.risk_level_applicability; track rl) {
+                  <p-tag [value]="rl" severity="secondary"></p-tag>
+                }
+                @if (!selectedRequirement.risk_level_applicability?.length) {
+                  <span class="text-sm" style="color: var(--text-color-secondary)">None specified</span>
+                }
+              </div>
+            </div>
+            <!-- Evidence Types -->
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Evidence Types</h4>
+              <div class="flex gap-1 flex-wrap">
+                @for (et of selectedRequirement.evidence_types; track et) {
+                  <p-tag [value]="et" severity="info"></p-tag>
+                }
+                @if (!selectedRequirement.evidence_types?.length) {
+                  <span class="text-sm" style="color: var(--text-color-secondary)">None specified</span>
+                }
+              </div>
+            </div>
+            <!-- Mapping Stats -->
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Evidence Collected</h4>
+              <span class="text-2xl font-bold">{{ selectedRequirement.evidence_count || 0 }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Policy Evaluations</h4>
+              <span class="text-2xl font-bold">{{ selectedRequirement.evaluation_count || 0 }}</span>
+            </div>
+          </div>
+
+          <!-- Suggested Policy Rules -->
+          @if (selectedRequirement.suggested_policy_rules?.length) {
+            <div class="mb-6">
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Suggested Policy Rules</h4>
+              <div class="flex flex-col gap-2">
+                @for (rule of selectedRequirement.suggested_policy_rules; track rule.metric) {
+                  <div class="flex items-center gap-2 bg-surface-card rounded p-3">
+                    <i class="pi pi-shield" style="color: var(--text-color-secondary)"></i>
+                    <code class="text-sm font-semibold">{{ rule.metric }}</code>
+                    <span class="text-sm" style="color: var(--text-color-secondary)">{{ rule.operator }}</span>
+                    <code class="text-sm font-semibold">{{ rule.threshold }}</code>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Suggested Assessment Questions -->
+          @if (selectedRequirement.suggested_questions?.length) {
+            <div class="mb-6">
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Suggested Assessment Questions</h4>
+              <div class="flex flex-col gap-2">
+                @for (q of selectedRequirement.suggested_questions; track q.text) {
+                  <div class="bg-surface-card rounded p-3">
+                    <div class="font-medium mb-1">{{ q.text }}</div>
+                    <div class="flex gap-2">
+                      <p-tag [value]="q.type" severity="secondary"></p-tag>
+                      <span class="text-sm" style="color: var(--text-color-secondary)">weight: {{ q.weight }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Mapping notes if any -->
+          @if (selectedRequirement.mapping?.notes) {
+            <div class="mb-6">
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Notes</h4>
+              <p class="m-0">{{ selectedRequirement.mapping.notes }}</p>
+            </div>
+          }
+          @if (selectedRequirement.mapping?.assigned_to) {
+            <div class="mb-6">
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Assigned To</h4>
+              <p class="m-0">{{ selectedRequirement.mapping.assigned_to }}</p>
+            </div>
+          }
+
+          <!-- Footer action -->
+          <div class="flex justify-end pt-4" style="border-top: 1px solid var(--surface-border)">
+            <p-button label="Edit Mapping" icon="pi pi-pencil" [outlined]="true" (click)="openNotesEditor(selectedRequirement)"></p-button>
+          </div>
+        }
+
+        <!-- ═══ Edit Mapping View ═══ -->
+        @if (drawerType === 'notes' && selectedRequirement) {
+          <div class="flex flex-col gap-4">
+            <div>
+              <label class="font-semibold block mb-1">Status</label>
+              <p-select [options]="statusOptions" [(ngModel)]="notesForm.status" optionLabel="label" optionValue="value" class="w-full"></p-select>
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Assigned To</label>
+              <input type="text" pInputText [(ngModel)]="notesForm.assigned_to" class="w-full" placeholder="e.g. john@company.com" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Notes</label>
+              <textarea pInputTextarea [(ngModel)]="notesForm.notes" rows="5" class="w-full" placeholder="Add compliance notes..."></textarea>
+            </div>
+            <div class="flex justify-end gap-2 mt-4">
+              <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="closeDrawer($event)"></p-button>
+              <p-button label="Save" icon="pi pi-check" (click)="saveNotes()"></p-button>
+            </div>
+          </div>
+        }
+
+        <!-- ═══ Framework Detail View ═══ -->
+        @if (drawerType === 'framework' && frameworkDetail) {
+          @if (frameworkLoading) {
+            <div class="flex justify-center p-6"><i class="pi pi-spin pi-spinner text-2xl"></i></div>
+          } @else {
+            <!-- Tags -->
+            <div class="flex items-center gap-2 mb-4 flex-wrap">
+              <p-tag [value]="frameworkDetail.is_system ? 'System' : 'Custom'" [severity]="frameworkDetail.is_system ? 'info' : 'secondary'"></p-tag>
+              <p-tag [value]="frameworkDetail.is_active ? 'Active' : 'Inactive'" [severity]="frameworkDetail.is_active ? 'success' : 'danger'"></p-tag>
+              @if (frameworkDetail.jurisdiction) {
+                <p-tag [value]="frameworkDetail.jurisdiction" severity="secondary"></p-tag>
+              }
+            </div>
+
+            <!-- Description -->
+            @if (frameworkDetail.description) {
+              <p class="m-0 mb-4 leading-relaxed" style="color: var(--text-color-secondary)">{{ frameworkDetail.description }}</p>
+            }
+
+            <!-- Metadata grid -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+              <div class="bg-surface-card rounded p-3 text-center">
+                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Version</div>
+                <div class="text-lg font-bold">{{ frameworkDetail.version || 'N/A' }}</div>
+              </div>
+              <div class="bg-surface-card rounded p-3 text-center">
+                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Effective Date</div>
+                <div class="text-lg font-bold">{{ frameworkDetail.effective_date ? (frameworkDetail.effective_date | date:'mediumDate') : 'N/A' }}</div>
+              </div>
+              <div class="bg-surface-card rounded p-3 text-center">
+                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Requirements</div>
+                <div class="text-lg font-bold">{{ frameworkRequirements.length }}</div>
+              </div>
+              <div class="bg-surface-card rounded p-3 text-center">
+                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Categories</div>
+                <div class="text-lg font-bold">{{ groupedRequirements.length }}</div>
+              </div>
+            </div>
+
+            @if (frameworkDetail.source_url) {
+              <div class="mb-6">
+                <a [href]="frameworkDetail.source_url" target="_blank" class="flex items-center gap-1 text-primary no-underline">
+                  <i class="pi pi-external-link text-sm"></i> View Official Documentation
+                </a>
+              </div>
+            }
+
+            <!-- Requirements grouped by category -->
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="m-0 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Requirements by Category</h4>
+              @if (!frameworkDetail.is_system) {
+                <p-button label="Add Requirement" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="openNewRequirementForm()"></p-button>
+              }
+            </div>
+            @if (groupedRequirements.length) {
+              <p-accordion [value]="[]" [multiple]="true">
+                @for (group of groupedRequirements; track group.category) {
+                  <p-accordion-panel [value]="group.category">
+                    <p-accordion-header>
+                      <div class="flex items-center gap-2 w-full">
+                        <span class="font-semibold">{{ group.category }}</span>
+                        <p-badge [value]="'' + group.requirements.length" severity="secondary"></p-badge>
+                      </div>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="flex flex-col gap-3">
+                        @for (req of group.requirements; track req.id) {
+                          <div class="bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border)">
+                            <!-- Code + Title + Actions -->
+                            <div class="flex items-start gap-2 mb-2">
+                              <p-tag [value]="req.requirement_code" severity="info"></p-tag>
+                              <span class="font-semibold flex-1">{{ req.title }}</span>
+                              @if (!frameworkDetail.is_system) {
+                                <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditRequirementForm(req, $event)" pTooltip="Edit"></p-button>
+                                <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteRequirement(req, $event)" pTooltip="Delete"></p-button>
+                              }
+                            </div>
+
+                            <!-- Description -->
+                            @if (req.description) {
+                              <p class="m-0 mb-3 text-sm leading-relaxed" style="color: var(--text-color-secondary)">{{ req.description }}</p>
+                            }
+
+                            <!-- Risk levels -->
+                            @if (req.risk_level_applicability?.length) {
+                              <div class="flex items-center gap-1 flex-wrap mb-2">
+                                <span class="text-xs font-semibold mr-1" style="color: var(--text-color-secondary)">Risk:</span>
+                                @for (rl of req.risk_level_applicability; track rl) {
+                                  <p-tag [value]="rl" [severity]="getRiskLevelSeverity(rl)" styleClass="text-xs"></p-tag>
+                                }
+                              </div>
+                            }
+
+                            <!-- Evidence types -->
+                            @if (req.evidence_types?.length) {
+                              <div class="mb-2">
+                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Evidence to Collect</div>
+                                <div class="flex gap-1 flex-wrap">
+                                  @for (et of req.evidence_types; track et) {
+                                    <p-tag [value]="et" severity="secondary" styleClass="text-xs"></p-tag>
+                                  }
+                                </div>
+                              </div>
+                            }
+
+                            <!-- Suggested policy rules -->
+                            @if (req.suggested_policy_rules?.length) {
+                              <div class="mb-2">
+                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Policy Rules to Configure</div>
+                                <div class="flex flex-col gap-1">
+                                  @for (rule of req.suggested_policy_rules; track rule.metric) {
+                                    <div class="flex items-center gap-2 text-xs">
+                                      <i class="pi pi-shield text-xs" style="color: var(--text-color-secondary)"></i>
+                                      <code class="font-semibold">{{ rule.metric }}</code>
+                                      <span style="color: var(--text-color-secondary)">{{ rule.operator }}</span>
+                                      <code class="font-semibold">{{ rule.threshold }}</code>
+                                    </div>
+                                  }
+                                </div>
+                              </div>
+                            }
+
+                            <!-- Suggested questions -->
+                            @if (req.suggested_questions?.length) {
+                              <div>
+                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Assessment Questions</div>
+                                <div class="flex flex-col gap-1">
+                                  @for (q of req.suggested_questions; track q.text) {
+                                    <div class="text-xs flex items-start gap-1">
+                                      <i class="pi pi-question-circle" style="color: var(--text-color-secondary); margin-top: 2px"></i>
+                                      <span>{{ q.text }}</span>
+                                      <span class="ml-auto" style="color: var(--text-color-secondary)">{{ q.type }} (w:{{ q.weight }})</span>
+                                    </div>
+                                  }
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                }
+              </p-accordion>
+            } @else {
+              <div class="text-center p-4" style="color: var(--text-color-secondary)">
+                No requirements defined for this framework.
+                @if (!frameworkDetail.is_system) {
+                  Click "Add Requirement" to start building your framework.
+                }
+              </div>
+            }
+          }
+        }
+
+        <!-- ═══ Framework Form (Create / Edit) ═══ -->
+        @if (drawerType === 'frameworkForm') {
+          <div class="flex flex-col gap-4">
+            <div>
+              <label class="font-semibold block mb-1">Name *</label>
+              <input type="text" pInputText [(ngModel)]="frameworkForm.name" class="w-full" placeholder="e.g. Internal AI Governance Policy" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Short Name *</label>
+              <input type="text" pInputText [(ngModel)]="frameworkForm.short_name" class="w-full" placeholder="e.g. IAGP" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="font-semibold block mb-1">Version</label>
+                <input type="text" pInputText [(ngModel)]="frameworkForm.version" class="w-full" placeholder="e.g. 1.0" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Jurisdiction</label>
+                <input type="text" pInputText [(ngModel)]="frameworkForm.jurisdiction" class="w-full" placeholder="e.g. Internal, EU, US" />
+              </div>
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Description</label>
+              <textarea pInputTextarea [(ngModel)]="frameworkForm.description" rows="4" class="w-full" placeholder="Describe what this framework covers..."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="font-semibold block mb-1">Effective Date</label>
+                <input type="text" pInputText [(ngModel)]="frameworkForm.effective_date" class="w-full" placeholder="YYYY-MM-DD" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Reference URL</label>
+                <input type="text" pInputText [(ngModel)]="frameworkForm.url" class="w-full" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-4 pt-4" style="border-top: 1px solid var(--surface-border)">
+              <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="closeDrawer($event)"></p-button>
+              <p-button label="Save" icon="pi pi-check" (onClick)="saveFramework()"></p-button>
+            </div>
+          </div>
+        }
+
+        <!-- ═══ Requirement Form (Create / Edit) ═══ -->
+        @if (drawerType === 'requirementForm') {
+          <div class="flex flex-col gap-4">
+            <!-- Basic fields -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="font-semibold block mb-1">Requirement Code *</label>
+                <input type="text" pInputText [(ngModel)]="requirementForm.requirement_code" class="w-full" placeholder="e.g. INT-SEC-01" />
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Category</label>
+                <input type="text" pInputText [(ngModel)]="requirementForm.category" class="w-full" placeholder="e.g. Security, Privacy" />
+              </div>
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Title *</label>
+              <input type="text" pInputText [(ngModel)]="requirementForm.title" class="w-full" placeholder="Requirement title" />
+            </div>
+            <div>
+              <label class="font-semibold block mb-1">Description</label>
+              <textarea pInputTextarea [(ngModel)]="requirementForm.description" rows="3" class="w-full" placeholder="Describe the requirement in detail..."></textarea>
+            </div>
+
+            <!-- Risk levels & Evidence types -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="font-semibold block mb-1">Risk Levels</label>
+                <p-multiselect [options]="riskLevelOptions" [(ngModel)]="requirementForm.risk_level_applicability" optionLabel="label" optionValue="value" placeholder="Select risk levels" class="w-full"></p-multiselect>
+              </div>
+              <div>
+                <label class="font-semibold block mb-1">Evidence Types</label>
+                <p-multiselect [options]="evidenceTypeOptions" [(ngModel)]="requirementForm.evidence_types" optionLabel="label" optionValue="value" placeholder="Select evidence types" class="w-full"></p-multiselect>
+              </div>
+            </div>
+
+            <div>
+              <label class="font-semibold block mb-1">Order Index</label>
+              <p-inputNumber [(ngModel)]="requirementForm.order_index" [min]="0" [showButtons]="true" class="w-full"></p-inputNumber>
+            </div>
+
+            <!-- Suggested Policy Rules -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="font-semibold">Suggested Policy Rules</label>
+                <p-button label="Add Rule" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="addPolicyRule()"></p-button>
+              </div>
+              @for (rule of requirementForm.suggested_policy_rules; track $index) {
+                <div class="flex items-center gap-2 mb-2 bg-surface-card rounded p-3" style="border: 1px solid var(--surface-border)">
+                  <span class="text-xs font-semibold" style="color: var(--text-color-secondary); min-width: 20px">R{{ $index + 1 }}</span>
+                  <p-select [options]="metricOptions" [(ngModel)]="rule.metric" optionLabel="label" optionValue="value" placeholder="Metric" [style]="{flex: '1'}"></p-select>
+                  <p-select [options]="operatorOptions" [(ngModel)]="rule.operator" optionLabel="label" optionValue="value" placeholder="Op" [style]="{width: '80px'}"></p-select>
+                  <p-inputNumber [(ngModel)]="rule.threshold" [minFractionDigits]="0" [maxFractionDigits]="4" [style]="{width: '120px'}"></p-inputNumber>
+                  <p-button icon="pi pi-times" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="removePolicyRule($index)"></p-button>
+                </div>
+              }
+              @if (!requirementForm.suggested_policy_rules.length) {
+                <div class="text-sm p-2" style="color: var(--text-color-secondary)">No policy rules defined. Click "Add Rule" to add one.</div>
+              }
+            </div>
+
+            <!-- Suggested Assessment Questions -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="font-semibold">Suggested Assessment Questions</label>
+                <p-button label="Add Question" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="addQuestion()"></p-button>
+              </div>
+              @for (q of requirementForm.suggested_questions; track $index) {
+                <div class="mb-2 bg-surface-card rounded p-3" style="border: 1px solid var(--surface-border)">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs font-semibold" style="color: var(--text-color-secondary)">Q{{ $index + 1 }}</span>
+                    <input type="text" pInputText [(ngModel)]="q.text" class="flex-1" placeholder="Question text" />
+                    <p-button icon="pi pi-times" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="removeQuestion($index)"></p-button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <p-select [options]="questionTypeOptions" [(ngModel)]="q.type" optionLabel="label" optionValue="value" placeholder="Type" [style]="{width: '140px'}"></p-select>
+                    <label class="text-sm" style="color: var(--text-color-secondary)">Weight:</label>
+                    <p-inputNumber [(ngModel)]="q.weight" [min]="0" [max]="2" [minFractionDigits]="1" [maxFractionDigits]="1" [style]="{width: '80px'}"></p-inputNumber>
+                    @if (q.type === 'select') {
+                      <input type="text" pInputText [(ngModel)]="q.options_str" class="flex-1" placeholder="Options (comma-separated)" />
+                    }
+                  </div>
+                </div>
+              }
+              @if (!requirementForm.suggested_questions.length) {
+                <div class="text-sm p-2" style="color: var(--text-color-secondary)">No questions defined. Click "Add Question" to add one.</div>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-2 mt-4 pt-4" style="border-top: 1px solid var(--surface-border)">
+              <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="drawerType = 'framework'"></p-button>
+              <p-button label="Save" icon="pi pi-check" (onClick)="saveRequirement()"></p-button>
+            </div>
+          </div>
+        }
+
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>

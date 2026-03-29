@@ -1,0 +1,9 @@
+// LLM Calls Page Styles
+
+// Period Selector Override
+::ng-deep .period-selector {
+  .p-button {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+}

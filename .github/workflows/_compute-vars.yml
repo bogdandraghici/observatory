@@ -1,0 +1,175 @@
+name: Compute Vars
+
+on:
+  workflow_call:
+    outputs:
+      app_version:
+        description: "App Version"
+        value: ${{ jobs.vars.outputs.app_version }}
+      hc_version:
+        description: "Health Check Version"
+        value: ${{ jobs.vars.outputs.hc_version }}
+      short_sha:
+        description: "Short SHA"
+        value: ${{ jobs.vars.outputs.short_sha }}
+      app_name:
+        description: "App Name"
+        value: ${{ jobs.vars.outputs.app_name }}
+      repo_name:
+        description: "Repo Name"
+        value: ${{ jobs.vars.outputs.repo_name }}
+      make_latest:
+        description: "Set Release to Latest"
+        value: ${{ jobs.vars.outputs.make_latest }}
+      artifact_registry:
+        description: "Image Registry URL"
+        value: ${{ jobs.vars.outputs.artifact_registry }}
+      harbor_chart_registry:
+        description: "Registry URL"
+        value: ${{ jobs.vars.outputs.harbor_chart_registry }}
+      gcp_workload_identity_provider:
+        description: "GCP Workload Identity Provider"
+        value: ${{ jobs.vars.outputs.gcp_workload_identity_provider}}
+      gcp_service_account:
+        description: "GCP Service Account"
+        value: ${{ jobs.vars.outputs.gcp_service_account}}
+
+env:
+  ARTIFACT_REGISTRY: 'europe-docker.pkg.dev/flowxai'
+  HARBOR_CHART_REGISTRY: 'https://harbor-jx.dev.rd.flowx.ai/chartrepo'
+  GCP_WORKLOAD_IDENTITY_PROVIDER: 'projects/143095095586/locations/global/workloadIdentityPools/gh-actions-pool/providers/gh-actions-provider'
+  GCP_SERVICE_ACCOUNT: 'github-actions@flowxai.iam.gserviceaccount.com'
+
+jobs:
+  vars:
+    name: compute-vars
+    runs-on: ubuntu-24.04
+    outputs:
+      app_version: ${{ steps.version.outputs.app_version }}
+      hc_version: ${{ steps.version.outputs.hc_version }}
+      short_sha: ${{ steps.version.outputs.short_sha }}
+      app_name: ${{ steps.app_name.outputs.app_name }}
+      repo_name: ${{ steps.app_name.outputs.repo_name }}
+      make_latest: ${{ steps.branch_filter.outputs.make_latest }}
+      harbor_chart_registry: ${{ env.HARBOR_CHART_REGISTRY }}
+      artifact_registry: ${{ env.ARTIFACT_REGISTRY }}
+      gcp_workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      gcp_service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+        with:
+          fetch-depth: '0'
+
+      - name: Determine version filter based on branch
+        id: branch_filter
+        if: >-
+          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master' ||
+          startsWith(github.ref, 'refs/heads/release/')
+        run: |
+          branch="${GITHUB_REF#refs/heads/}"
+          if [[ "$branch" == "main" || "$branch" == "master" ]]; then
+            tag_filter="v.*"
+            make_latest="true"
+            maxTagsToFetch=100
+          elif [[ "$branch" =~ release/([0-9]+).x ]]; then
+            tag_filter="v${BASH_REMATCH[1]}.*"
+            make_latest="false"
+            maxTagsToFetch=20
+          else
+            echo "Unsupported branch format. Exiting."
+            exit 1
+          fi
+          echo "tag_filter=$tag_filter" >> $GITHUB_ENV
+          echo "make_latest=$make_latest" | tee -a $GITHUB_OUTPUT $GITHUB_ENV
+          echo "maxTagsToFetch=$maxTagsToFetch" >> $GITHUB_ENV
+
+      - name: Compute version
+        id: semver
+        uses: ietf-tools/semver-action@d93d5fbbab3c2e2ec76b0d22abac50e8e853fcd2 #v1.10.0
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        with:
+          token: ${{ github.token }}
+          branch: ${{ env.BRANCH_NAME }}
+          tagFilter: "${{ env.tag_filter }}"
+          maxTagsToFetch: ${{ env.maxTagsToFetch }}
+          patchList: 'fix, bugfix, perf, refactor, test, tests, chore, build, cicd'
+          noVersionBumpBehavior: 'patch'
+          fallbackTag: 'v0.0.0'
+
+      - name: 'If on PR: set current app version'
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "VERSION=$(echo ${current:1})" >> $GITHUB_ENV
+          echo "HC_VERSION=$(echo ${current:1}-pr${{ github.event.number }}-${{github.run_number}}-$(git rev-parse --short ${{ github.sha }}))" >> $GITHUB_ENV
+
+      - name: Set next minor as release version for breaking change
+        if: >-
+          (github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master' ||
+          startsWith(github.ref, 'refs/heads/release/')) &&
+          steps.semver.outputs.bump == 'major'
+        run: |
+          VERSION_NEXT_MINOR="$(echo "${{ steps.semver.outputs.current }}" | awk -F. '{$2++; $3=0; print $1"."$2"."$3}')"
+
+          echo "VERSION=$VERSION_NEXT_MINOR" >> $GITHUB_ENV
+          echo "HC_VERSION=$VERSION_NEXT_MINOR" >> $GITHUB_ENV
+
+      - name: Set semver as release version
+        if: >-
+          (github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master' ||
+          startsWith(github.ref, 'refs/heads/release/')) &&
+          steps.semver.outputs.bump != 'major'
+        run: |
+          echo "VERSION=$(echo $nextStrict)" >> $GITHUB_ENV
+          echo "HC_VERSION=$(echo $nextStrict)" >> $GITHUB_ENV
+
+      - name: Info for debugging releases
+        if: >-
+          github.ref == 'refs/heads/main' ||
+          github.ref == 'refs/heads/master' ||
+          startsWith(github.ref, 'refs/heads/release/')
+        run: |
+          echo "bump: ${{ steps.semver.outputs.bump }}"
+          echo "current: ${{ steps.semver.outputs.current }}"
+          echo "semvernext: ${{ steps.semver.outputs.next }}"
+          echo "final VERSION: ${VERSION}"
+          echo "final HC_VERSION: ${HC_VERSION}"
+
+          git log -n 3 --oneline
+
+      - name: Set outputs for next job
+        id: version
+        run: |
+          echo "app_version: ${VERSION}"
+          echo "app_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "hc_version: ${HC_VERSION}"
+          echo "hc_version=$HC_VERSION" >> $GITHUB_OUTPUT
+          echo "short_sha=$(git rev-parse --short ${{ github.sha }})" | tee -a $GITHUB_OUTPUT $GITHUB_ENV
+
+      - name: Install Poetry
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a #v1.4.1
+
+      - name: Get app name
+        id: app_name
+        run: |
+          echo "repo_name: ${GITHUB_REPOSITORY#*/}"
+          echo "repo_name=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
+
+          if [ -f ./pyproject.toml ]; then
+            app_name=$(poetry version | cut -d' ' -f1)
+            echo "app_name: ${app_name}"
+            echo "app_name=${app_name}" >> $GITHUB_OUTPUT
+          elif [ -f ./package.json ]; then
+            app_name=$(node -p "require('./package.json').name")
+            echo "app_name: ${app_name}"
+            echo "app_name=${app_name}" >> $GITHUB_OUTPUT
+          else
+            echo "::error ::Cannot compute var for app_name"
+            exit 1
+          fi

@@ -1,0 +1,38 @@
+<div class="stat-card" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2">
+      <div class="stat-card__icon stat-card__icon--amber">
+        <i class="pi pi-chart-pie"></i>
+      </div>
+      <span class="stat-card__title">{{ title }}</span>
+    </div>
+    <p-selectButton
+      [options]="chartTypes"
+      [(ngModel)]="chartType"
+      optionLabel="label"
+      (onChange)="onTypeChange($event)"
+      optionValue="value"
+    />
+  </div>
+  @if (chartType === 'pie') {
+    <p-chart
+      type="pie"
+      [data]="chartData"
+      [options]="chartOptionsPie"
+    ></p-chart>
+  }
+  @if (chartType === 'bar') {
+    <p-chart
+      type="bar"
+      [data]="chartData"
+      [options]="chartOptionsBar"
+    ></p-chart>
+  }
+  <div class="flex justify-between mt-4">
+    @for (item of chartData?.labels; track item) {
+      <div class="flex flex-row items-center">
+        <span class="block text">{{ item }}</span>
+      </div>
+    }
+  </div>
+</div>

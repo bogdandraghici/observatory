@@ -1,0 +1,50 @@
+<div class="stat-card agent-usage" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--green">
+      <i class="pi pi-prime"></i>
+    </div>
+    <span class="stat-card__title">Agents</span>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ totalRuns | shortNumber }}</span>
+      <span class="stat-card__label ml-2">runs</span>
+    </div>
+    <div>
+      <span class="stat-card__value--lg">{{ totalErrors | shortNumber }}</span>
+      <span class="stat-card__label ml-2">errors</span>
+    </div>
+  </div>
+  <p-table [value]="models" [rows]="4" [scrollable]="true" scrollHeight="240px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Agents</th>
+        <th>Runs</th>
+        <th>Errors</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-model>
+      <tr>
+        <td>
+          <p-chart
+            type="bar"
+            [height]="'50px'"
+            [width]="'160px'"
+            [responsive]="true"
+            [data]="model.chartData"
+            [options]="model.chartOptions"
+          ></p-chart>
+        </td>
+        <td class="text-lg font-bold">{{ model.runs | shortNumber }}</td>
+        <td class="text-lg font-bold">{{ model.errors | shortNumber }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3">
+          <empty-state-widget message="No data found."></empty-state-widget>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -1,0 +1,534 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Deployment Overview</h1>
+      <p class="page-header__subtitle">Real-time cluster observability — pods, nodes, deployments, events and logs</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="loadInitialData()" [loading]="loading"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Namespace</label>
+        <p-select [options]="namespaceOptions" [(ngModel)]="selectedNamespace" optionLabel="label" optionValue="value"
+          placeholder="Select Namespace" (onChange)="onNamespaceChange()"></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection Banner -->
+  @if (health && !health.k8s_connected) {
+    <div class="mb-4 rounded p-4" style="background: rgba(239,68,68,0.08); border: 1px solid #ef444433">
+      <div class="flex items-center gap-2">
+        <i class="pi pi-exclamation-triangle" style="color: #ef4444"></i>
+        <span class="font-semibold" style="color: #ef4444">Cluster not connected</span>
+        <span class="text-sm" style="color: var(--text-color-secondary)">— Check observatory-platform configuration and cluster credentials.</span>
+      </div>
+    </div>
+  }
+
+  <!-- KPI Cards -->
+  @if (cluster) {
+    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(6, 1fr);">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-server"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Cluster</span>
+          <span class="stat-card__value" style="color:#3b82f6">{{ cluster.cluster_name }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <i class="pi pi-box"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Pods</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ cluster.pods_running }}<span class="text-sm font-normal" style="color: var(--text-color-secondary)"> / {{ cluster.pods_total }}</span></span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <i class="pi pi-microchip"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Nodes</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ cluster.nodes_ready }}<span class="text-sm font-normal" style="color: var(--text-color-secondary)"> / {{ cluster.nodes_total }}</span></span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-th-large"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Namespaces</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ cluster.namespaces_total }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Pending</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ cluster.pods_pending }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon" [style.background]="cluster.healthy ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="cluster.healthy ? '#22c55e' : '#ef4444'">
+          <i [class]="cluster.healthy ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Health</span>
+          <span class="stat-card__value stat-card__value--lg" [style.color]="cluster.healthy ? '#22c55e' : '#ef4444'">
+            {{ cluster.healthy ? 'Healthy' : 'Unhealthy' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tabs -->
+  <div>
+    <p-tabs [(value)]="activeTab" (valueChange)="onTabChange()">
+      <p-tablist>
+        <p-tab value="0">Overview</p-tab>
+        <p-tab value="1">Pods</p-tab>
+        <p-tab value="2">Nodes</p-tab>
+        <p-tab value="3">Deployments</p-tab>
+        <p-tab value="4">Events</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+
+        <!-- Tab 0: Overview (Namespaces) -->
+        <p-tabpanel value="0">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-th-large"></i>
+              </div>
+              <span class="stat-card__title">Namespaces</span>
+            </div>
+            <p-table [value]="namespaces" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Namespace</th>
+                  <th>Total Pods</th>
+                  <th>Running</th>
+                  <th>Status</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-ns>
+                <tr class="cursor-pointer" (click)="selectedNamespace = ns.name; onNamespaceChange(); activeTab = '1'">
+                  <td><strong>{{ ns.name }}</strong></td>
+                  <td>{{ ns.pod_count }}</td>
+                  <td>
+                    <span class="font-bold" [style.color]="ns.running_pods === ns.pod_count ? '#22c55e' : '#f59e0b'">
+                      {{ ns.running_pods }}
+                    </span>
+                  </td>
+                  <td>
+                    <p-tag [value]="ns.status" [severity]="ns.status === 'Active' ? 'success' : 'secondary'"></p-tag>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="4" class="text-center p-6">No namespaces found.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 1: Pods -->
+        <p-tabpanel value="1">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center justify-between mb-3 w-full">
+              <div class="flex items-center gap-2">
+                <div class="stat-card__icon stat-card__icon--green">
+                  <i class="pi pi-box"></i>
+                </div>
+                <span class="stat-card__title">Pods</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="filter-group">
+                  <label class="filter-group__label">Status</label>
+                  <p-select [options]="podStatusOptions" [(ngModel)]="podStatusFilter" optionLabel="label" optionValue="value"
+                    placeholder="All" (onChange)="onPodStatusChange()"></p-select>
+                </div>
+              </div>
+            </div>
+            <p-table [value]="pods" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [scrollable]="true">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Containers</th>
+                  <th>Restarts</th>
+                  <th>CPU</th>
+                  <th>Memory</th>
+                  <th>Node</th>
+                  <th>IP</th>
+                  <th style="width: 100px">Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-pod>
+                <tr>
+                  <td class="cursor-pointer" (click)="openPodDetail(pod)"><strong>{{ pod.name }}</strong></td>
+                  <td>
+                    <p-tag [value]="pod.status" [severity]="getPodStatusSeverity(pod.status)"></p-tag>
+                  </td>
+                  <td>{{ getContainerSummary(pod) }}</td>
+                  <td>
+                    <span [style.color]="getTotalRestarts(pod) > 5 ? '#ef4444' : getTotalRestarts(pod) > 0 ? '#f59e0b' : 'inherit'">
+                      {{ getTotalRestarts(pod) }}
+                    </span>
+                  </td>
+                  <td>{{ pod.cpu_usage || '—' }}</td>
+                  <td>{{ pod.memory_usage || '—' }}</td>
+                  <td class="text-sm">{{ pod.node_name || '—' }}</td>
+                  <td class="text-sm">{{ pod.ip || '—' }}</td>
+                  <td>
+                    <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small" (onClick)="openPodDetail(pod)" pTooltip="Details"></p-button>
+                    <p-button icon="pi pi-file" [text]="true" [rounded]="true" size="small" (onClick)="openPodLogs(pod)" pTooltip="Logs"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="9" class="text-center p-6">No pods found in this namespace.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 2: Nodes -->
+        <p-tabpanel value="2">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="stat-card__icon stat-card__icon--purple">
+                <i class="pi pi-microchip"></i>
+              </div>
+              <span class="stat-card__title">Nodes</span>
+            </div>
+            <p-table [value]="nodes" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Roles</th>
+                  <th>CPU (cap)</th>
+                  <th>Memory (cap)</th>
+                  <th>CPU (usage)</th>
+                  <th>Memory (usage)</th>
+                  <th>Pods</th>
+                  <th>Version</th>
+                  <th style="width: 60px"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-node>
+                <tr>
+                  <td class="cursor-pointer" (click)="openNodeDetail(node)"><strong>{{ node.name }}</strong></td>
+                  <td>
+                    <p-tag [value]="node.status" [severity]="getNodeStatusSeverity(node.status)"></p-tag>
+                  </td>
+                  <td>
+                    @for (role of node.roles; track role) {
+                      <p-tag [value]="role" severity="secondary" styleClass="mr-1"></p-tag>
+                    }
+                  </td>
+                  <td>{{ node.cpu_capacity }}</td>
+                  <td>{{ node.memory_capacity }}</td>
+                  <td>{{ node.cpu_usage || '—' }}</td>
+                  <td>{{ node.memory_usage || '—' }}</td>
+                  <td>{{ node.pod_count }}</td>
+                  <td class="text-sm">{{ node.kubelet_version }}</td>
+                  <td>
+                    <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small" (onClick)="openNodeDetail(node)" pTooltip="Details"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="10" class="text-center p-6">No nodes found. Connect to a cluster first.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 3: Deployments -->
+        <p-tabpanel value="3">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="stat-card__icon stat-card__icon--amber">
+                <i class="pi pi-objects-column"></i>
+              </div>
+              <span class="stat-card__title">Deployments</span>
+            </div>
+            <p-table [value]="deployments" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Name</th>
+                  <th>Health</th>
+                  <th>Replicas</th>
+                  <th>Available</th>
+                  <th>Strategy</th>
+                  <th>Images</th>
+                  <th>Created</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-dep>
+                <tr>
+                  <td><strong>{{ dep.name }}</strong></td>
+                  <td>
+                    <p-tag [value]="getDeploymentHealthLabel(dep)" [severity]="getDeploymentHealth(dep)"></p-tag>
+                  </td>
+                  <td>
+                    <span class="font-bold">{{ dep.replicas_ready }}</span>
+                    <span style="color: var(--text-color-secondary)"> / {{ dep.replicas_desired }}</span>
+                  </td>
+                  <td>{{ dep.replicas_available }}</td>
+                  <td>
+                    <p-tag [value]="dep.strategy" severity="secondary"></p-tag>
+                  </td>
+                  <td class="text-sm">
+                    @for (img of dep.images; track img) {
+                      <div>{{ img }}</div>
+                    }
+                  </td>
+                  <td class="text-sm">{{ formatDate(dep.created_at) }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="7" class="text-center p-6">No deployments found in this namespace.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+        <!-- Tab 4: Events -->
+        <p-tabpanel value="4">
+          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center justify-between mb-3 w-full">
+              <div class="flex items-center gap-2">
+                <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                  <i class="pi pi-bolt"></i>
+                </div>
+                <span class="stat-card__title">Events</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="filter-group">
+                  <label class="filter-group__label">Type</label>
+                  <p-select [options]="eventTypeOptions" [(ngModel)]="eventTypeFilter" optionLabel="label" optionValue="value"
+                    placeholder="All" (onChange)="onEventTypeChange()"></p-select>
+                </div>
+                <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="loadEvents()"></p-button>
+              </div>
+            </div>
+            <p-table [value]="events" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 80px">Type</th>
+                  <th style="width: 120px">Reason</th>
+                  <th>Message</th>
+                  <th>Object</th>
+                  <th>Namespace</th>
+                  <th style="width: 50px">Count</th>
+                  <th>Last Seen</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-ev>
+                <tr>
+                  <td>
+                    <p-tag [value]="ev.type" [severity]="getEventSeverity(ev.type)"></p-tag>
+                  </td>
+                  <td><strong>{{ ev.reason }}</strong></td>
+                  <td class="text-sm">{{ ev.message }}</td>
+                  <td class="text-sm">{{ ev.involved_object }}</td>
+                  <td class="text-sm">{{ ev.namespace || '—' }}</td>
+                  <td class="text-center">{{ ev.count }}</td>
+                  <td class="text-sm">{{ formatDate(ev.last_seen) }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="7" class="text-center p-6">No events found.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<!-- Drawer for Pod Detail / Node Detail / Logs -->
+<p-drawer
+  #platformDrawerRef
+  [(visible)]="drawerVisible"
+  position="right"
+  [style]="{width: drawerType === 'logs' ? '65vw' : '50vw'}"
+  [modal]="true"
+  [dismissible]="false"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 shrink-0" style="border-bottom: 1px solid var(--surface-border)">
+        <span class="inline-flex items-center gap-2">
+          <p-button type="button" (click)="closeDrawer($event)" icon="pi pi-times" [rounded]="true" [outlined]="false" severity="primary" styleClass="h-2rem w-2rem"></p-button>
+        </span>
+        <h3 class="m-0 font-semibold text-lg">{{ getDrawerTitle() }}</h3>
+        <span></span>
+      </div>
+
+      <!-- Body -->
+      <div class="overflow-y-auto flex-1 p-6">
+
+        <!-- Pod Detail -->
+        @if (drawerType === 'pod-detail' && selectedPod) {
+          <div class="flex items-center gap-3 mb-6">
+            <p-tag [value]="selectedPod.status" [severity]="getPodStatusSeverity(selectedPod.status)"></p-tag>
+            <p-tag [value]="selectedPod.namespace" severity="secondary"></p-tag>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Node</h4>
+              <span class="font-bold">{{ selectedPod.node_name || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Pod IP</h4>
+              <span class="font-bold">{{ selectedPod.ip || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">CPU Usage</h4>
+              <span class="font-bold">{{ selectedPod.cpu_usage || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Memory Usage</h4>
+              <span class="font-bold">{{ selectedPod.memory_usage || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Start Time</h4>
+              <span class="font-bold">{{ formatDate(selectedPod.start_time) }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Total Restarts</h4>
+              <span class="font-bold" [style.color]="getTotalRestarts(selectedPod) > 5 ? '#ef4444' : 'inherit'">{{ getTotalRestarts(selectedPod) }}</span>
+            </div>
+          </div>
+
+          <!-- Containers -->
+          <h4 class="mt-0 mb-3 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Containers</h4>
+          @for (c of selectedPod.containers; track c.name) {
+            <div class="bg-surface-card rounded p-4 mb-3" style="border: 1px solid var(--surface-border)">
+              <div class="flex items-center gap-3 mb-2">
+                <strong>{{ c.name }}</strong>
+                <p-tag [value]="c.ready ? 'Ready' : 'Not Ready'" [severity]="c.ready ? 'success' : 'danger'"></p-tag>
+                <p-tag [value]="c.state" severity="secondary"></p-tag>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div><span style="color: var(--text-color-secondary)">Image:</span> {{ c.image }}</div>
+                <div><span style="color: var(--text-color-secondary)">Restarts:</span> {{ c.restart_count }}</div>
+              </div>
+            </div>
+          }
+
+          <!-- Footer action -->
+          <div class="flex justify-end pt-4" style="border-top: 1px solid var(--surface-border)">
+            <p-button label="View Logs" icon="pi pi-file" [outlined]="true" (click)="openPodLogs(selectedPod)"></p-button>
+          </div>
+        }
+
+        <!-- Node Detail -->
+        @if (drawerType === 'node-detail' && selectedNode) {
+          <div class="flex items-center gap-3 mb-6">
+            <p-tag [value]="selectedNode.status" [severity]="getNodeStatusSeverity(selectedNode.status)"></p-tag>
+            @for (role of selectedNode.roles; track role) {
+              <p-tag [value]="role" severity="secondary"></p-tag>
+            }
+          </div>
+
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">CPU Capacity</h4>
+              <span class="text-2xl font-bold">{{ selectedNode.cpu_capacity }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Memory Capacity</h4>
+              <span class="text-2xl font-bold">{{ selectedNode.memory_capacity }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">CPU Allocatable</h4>
+              <span class="font-bold">{{ selectedNode.cpu_allocatable }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Memory Allocatable</h4>
+              <span class="font-bold">{{ selectedNode.memory_allocatable }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">CPU Usage</h4>
+              <span class="font-bold">{{ selectedNode.cpu_usage || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Memory Usage</h4>
+              <span class="font-bold">{{ selectedNode.memory_usage || '—' }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Pod Count</h4>
+              <span class="text-2xl font-bold">{{ selectedNode.pod_count }}</span>
+            </div>
+            <div>
+              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Kubelet Version</h4>
+              <span class="font-bold">{{ selectedNode.kubelet_version }}</span>
+            </div>
+          </div>
+
+          <div class="bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border)">
+            <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">OS Image</h4>
+            <span>{{ selectedNode.os_image }}</span>
+          </div>
+        }
+
+        <!-- Logs View -->
+        @if (drawerType === 'logs' && selectedPod) {
+          <div class="flex items-center gap-3 mb-4">
+            <div class="filter-group">
+              <label class="filter-group__label">Container</label>
+              <p-select [options]="selectedPod.containers" [(ngModel)]="logContainer" optionLabel="name" optionValue="name"
+                placeholder="All containers" (onChange)="fetchLogs()"></p-select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-group__label">Tail Lines</label>
+              <p-inputNumber [(ngModel)]="logTailLines" [min]="10" [max]="5000" [showButtons]="true" [step]="100"
+                [style]="{width: '140px'}" (onInput)="fetchLogs()"></p-inputNumber>
+            </div>
+            <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="fetchLogs()" [loading]="logLoading"></p-button>
+          </div>
+
+          @if (logLoading) {
+            <div class="flex justify-center p-6"><i class="pi pi-spin pi-spinner text-2xl"></i></div>
+          } @else {
+            <div class="bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border); font-family: monospace; font-size: 0.8rem; max-height: calc(100vh - 240px); overflow-y: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.5">
+              @if (logLines.length === 0) {
+                <span style="color: var(--text-color-secondary)">No log output.</span>
+              } @else {
+                @for (line of logLines; track $index) {
+                  <div [style.color]="line.includes('ERROR') || line.includes('error') ? '#ef4444' : line.includes('WARN') || line.includes('warn') ? '#f59e0b' : 'inherit'">{{ line }}</div>
+                }
+              }
+            </div>
+          }
+        }
+
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>

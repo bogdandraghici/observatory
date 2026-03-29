@@ -1,0 +1,59 @@
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Datasets</h1>
+      <p class="page-header__subtitle">Test data for evaluations</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <dataset-list-widget
+    [orgId]="selectedOrg"
+    (addDataset)="showDialogDataset()"
+  ></dataset-list-widget>
+</div>
+
+<!-- Add Dataset Dialog -->
+<p-dialog [(visible)]="visibleDataset" header="New Dataset" [modal]="true" [style]="{width: '28rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div>
+      <label class="font-semibold block mb-1">Dataset Name</label>
+      <input pInputText [(ngModel)]="newDatasetName" class="w-full" placeholder="Enter dataset name" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="closeDialogDataset()"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveDataset()"></p-button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,393 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Prompts</h1>
+      <p class="page-header__subtitle">Manage and track system prompts across your agents</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Organization"
+          (onChange)="orgChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Project"
+          [showClear]="true"
+          (onChange)="appChanged()"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <p-tabs [(value)]="activeTab">
+    <p-tablist>
+      <p-tab value="0">Detected Prompts</p-tab>
+      <p-tab value="1">Managed Prompts</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Tab 1: Detected Prompts -->
+      <p-tabpanel value="0">
+        <div class="stat-card mt-3" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <i class="pi pi-eye"></i>
+            </div>
+            <span class="stat-card__title">Auto-Detected System Prompts</span>
+          </div>
+          <p-table [value]="detectedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Agent</th>
+                <th>Model</th>
+                <th>Version</th>
+                <th>Content</th>
+                <th>Tokens</th>
+                <th>Run Count</th>
+                <th>First Seen</th>
+                <th>Last Seen</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-prompt>
+              <tr>
+                <td class="font-semibold">{{ prompt.agent }}</td>
+                <td>{{ prompt.model_name }}</td>
+                <td>
+                  <p-tag [value]="'v' + prompt.version" severity="info"></p-tag>
+                </td>
+                <td>{{ truncate(prompt.content) }}</td>
+                <td>~{{ estimateTokens(prompt.content) | number }}</td>
+                <td>{{ prompt.run_count }}</td>
+                <td>{{ prompt.first_seen_at | date:'short' }}</td>
+                <td>{{ prompt.last_seen_at | date:'short' }}</td>
+                <td>
+                  <p-button icon="pi pi-history" [text]="true" severity="info" pTooltip="View version history" (click)="viewHistory(prompt)"></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="9" class="text-center p-6">No detected prompts yet. System prompts will appear here automatically when LLM runs contain system messages.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Tab 2: Managed Prompts -->
+      <p-tabpanel value="1">
+        <div class="stat-card mt-3" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--green">
+                <i class="pi pi-file-edit"></i>
+              </div>
+              <span class="stat-card__title">Managed Prompts</span>
+            </div>
+            <p-button label="Create Prompt" icon="pi pi-plus" (click)="createPrompt()"></p-button>
+          </div>
+          <p-table [value]="managedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Agent</th>
+                <th>Version</th>
+                <th>LLM Provider</th>
+                <th>LLM Name</th>
+                <th>Tokens</th>
+                <th>Tags</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Active</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-prompt>
+              <tr>
+                <td class="font-semibold">{{ prompt.name }}</td>
+                <td>{{ prompt.agent || '-' }}</td>
+                <td>
+                  <p-tag [value]="'v' + prompt.version" severity="info"></p-tag>
+                </td>
+                <td>{{ prompt.llm_provider || '-' }}</td>
+                <td>{{ prompt.llm_name || '-' }}</td>
+                <td>~{{ estimateTokens(prompt.content) | number }}</td>
+                <td>
+                  @if (prompt.tags && prompt.tags.length > 0) {
+                    @for (tag of prompt.tags; track tag) {
+                      <p-tag [value]="tag" severity="secondary" class="mr-1"></p-tag>
+                    }
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+                <td>{{ prompt.created_by || '-' }}</td>
+                <td>{{ prompt.created_at | date:'short' }}</td>
+                <td>
+                  <p-tag
+                    [value]="prompt.is_active ? 'Active' : 'Inactive'"
+                    [severity]="getActiveSeverity(prompt.is_active)"
+                  ></p-tag>
+                </td>
+                <td>
+                  <div class="flex gap-1">
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPrompt(prompt)"></p-button>
+                    <p-button icon="pi pi-history" [text]="true" [rounded]="true" severity="info" pTooltip="Version history" tooltipPosition="top" (click)="viewManagedHistory(prompt)"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deletePrompt(prompt)"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="11" class="text-center p-6">No managed prompts. Click "Create Prompt" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Create / Edit Prompt Dialog -->
+<p-dialog [(visible)]="promptDialogVisible" [header]="promptEditMode ? 'Edit Prompt' : 'Create Prompt'" [modal]="true" [style]="{width: '48rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="promptForm.name" class="w-full" placeholder="e.g. Extract Property Insurance" />
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Agent</label>
+        <input type="text" pInputText [(ngModel)]="promptForm.agent" class="w-full" placeholder="e.g. extract-agent" />
+      </div>
+      <div class="col-4">
+        <label class="font-semibold block mb-1">LLM Provider</label>
+        <input type="text" pInputText [(ngModel)]="promptForm.llm_provider" class="w-full" placeholder="e.g. openai" />
+      </div>
+      <div class="col-4">
+        <label class="font-semibold block mb-1">LLM Name</label>
+        <input type="text" pInputText [(ngModel)]="promptForm.llm_name" class="w-full" placeholder="e.g. gpt-4o" />
+      </div>
+      <div class="col-4">
+        <label class="font-semibold block mb-1">Tags (comma-separated)</label>
+        <input type="text" pInputText [(ngModel)]="promptForm.tags" class="w-full" placeholder="e.g. extraction, insurance" />
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Prompt Content</label>
+        <textarea pInputTextarea [(ngModel)]="promptForm.content" class="w-full" rows="10" placeholder="Enter system prompt content..."></textarea>
+      </div>
+      <div class="col-12">
+        <div class="flex items-center gap-2">
+          <p-toggleSwitch [(ngModel)]="promptForm.is_active"></p-toggleSwitch>
+          <label class="font-semibold">Active</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="promptDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="savePrompt()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Version History Drawer -->
+<p-drawer
+  [(visible)]="showHistory"
+  position="right"
+  [style]="{width: '70vw'}"
+  [modal]="true"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--surface-border)">
+        <div class="flex items-center gap-4">
+          <p-button
+            type="button"
+            (click)="showHistory = false"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="false"
+            severity="primary"
+            styleClass="h-2rem w-2rem"
+          ></p-button>
+          <span class="font-semibold text-xl">Version History</span>
+        </div>
+        <span class="text-sm" style="color: var(--text-color-secondary)">{{ selectedPromptName }}</span>
+      </div>
+
+      <!-- Split Layout: Version List (left) + Content Detail (right) -->
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left: Version List -->
+        <div style="min-width: 300px; width: 300px; border-right: 1px solid var(--surface-border); overflow-y: auto;">
+          @if (historyPrompts.length > 0) {
+            @for (prompt of historyPrompts; track prompt.id; let i = $index) {
+              <div
+                class="version-item"
+                [class.version-item--selected]="selectedHistoryVersion?.id === prompt.id"
+                (click)="selectedHistoryVersion = prompt"
+                style="padding: 0.875rem 1rem; cursor: pointer; border-bottom: 1px solid var(--surface-border); transition: background 0.15s;"
+                [style.background]="selectedHistoryVersion?.id === prompt.id ? 'var(--highlight-bg)' : 'transparent'"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <p-tag [value]="'v' + prompt.version" severity="info"></p-tag>
+                    <p-tag
+                      [value]="prompt.is_active ? 'Active' : 'Inactive'"
+                      [severity]="getActiveSeverity(prompt.is_active)"
+                    ></p-tag>
+                  </div>
+                  @if (i < historyPrompts.length - 1) {
+                    <p-button
+                      icon="pi pi-arrows-h"
+                      [text]="true"
+                      [rounded]="true"
+                      severity="warn"
+                      pTooltip="Compare with previous"
+                      tooltipPosition="left"
+                      (click)="viewDiff(prompt, historyPrompts[i + 1]); $event.stopPropagation()"
+                      styleClass="h-2rem w-2rem"
+                    ></p-button>
+                  }
+                </div>
+                <div class="text-sm" style="color: var(--text-color-secondary)">
+                  <span>{{ prompt.created_by || 'system' }}</span>
+                  <span class="mx-1">&middot;</span>
+                  <span>{{ prompt.created_at | date:'MMM d, y, h:mm a' }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm mt-1" style="color: var(--text-color-secondary);">
+                  <span style="white-space: nowrap;">~{{ estimateTokens(prompt.content) | number }} tokens</span>
+                  <span class="mx-1">&middot;</span>
+                  <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ truncate(prompt.content, 40) }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="p-6 text-center" style="color: var(--text-color-secondary)">No version history available.</div>
+          }
+        </div>
+
+        <!-- Right: Full Content -->
+        <div class="flex-1 overflow-auto" style="padding: 1.5rem;">
+          @if (selectedHistoryVersion) {
+            <div class="flex items-center gap-3 mb-4">
+              <p-tag [value]="'v' + selectedHistoryVersion.version" severity="info"></p-tag>
+              <p-tag
+                [value]="selectedHistoryVersion.is_active ? 'Active' : 'Inactive'"
+                [severity]="getActiveSeverity(selectedHistoryVersion.is_active)"
+              ></p-tag>
+              <span class="text-sm" style="color: var(--text-color-secondary)">
+                by {{ selectedHistoryVersion.created_by || 'system' }} &middot;
+                {{ selectedHistoryVersion.created_at | date:'medium' }}
+              </span>
+              <span class="text-sm" style="color: var(--text-color-secondary)">
+                &middot; ~{{ estimateTokens(selectedHistoryVersion.content) | number }} tokens
+              </span>
+              @if (selectedHistoryVersion.run_count) {
+                <span class="text-sm" style="color: var(--text-color-secondary)">
+                  &middot; {{ selectedHistoryVersion.run_count }} run(s)
+                </span>
+              }
+            </div>
+            <div style="background: var(--surface-ground); padding: 1.25rem; border-radius: 8px; white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; line-height: 1.6; overflow-y: auto; max-height: calc(100vh - 200px);">{{ selectedHistoryVersion.content }}</div>
+          } @else {
+            <div class="flex items-center justify-center h-full" style="color: var(--text-color-secondary)">
+              <div class="text-center">
+                <i class="pi pi-arrow-left text-2xl mb-2" style="display: block;"></i>
+                <span>Select a version to view its content</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>
+
+<!-- Diff Drawer -->
+<p-drawer
+  [(visible)]="showDiff"
+  position="right"
+  [style]="{width: '85vw'}"
+  [modal]="true"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--surface-border)">
+        <div class="flex items-center gap-4">
+          <p-button
+            type="button"
+            (click)="showDiff = false"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="false"
+            severity="primary"
+            styleClass="h-2rem w-2rem"
+          ></p-button>
+          <span class="font-semibold text-xl">Compare Versions</span>
+        </div>
+        <div class="flex items-center gap-3">
+          @if (diffB) {
+            <div class="flex items-center gap-2">
+              <p-tag [value]="'v' + diffB.version" severity="secondary"></p-tag>
+              <span class="text-sm" style="color: var(--text-color-secondary)">{{ diffB.created_by || 'system' }} &middot; {{ diffB.created_at | date:'medium' }}</span>
+            </div>
+          }
+          <i class="pi pi-arrow-right" style="color: var(--text-color-secondary)"></i>
+          @if (diffA) {
+            <div class="flex items-center gap-2">
+              <p-tag [value]="'v' + diffA.version" severity="info"></p-tag>
+              <span class="text-sm" style="color: var(--text-color-secondary)">{{ diffA.created_by || 'system' }} &middot; {{ diffA.created_at | date:'medium' }}</span>
+            </div>
+          }
+          <p-button
+            [icon]="diffSideBySide ? 'pi pi-align-justify' : 'pi pi-columns'"
+            [text]="true"
+            [rounded]="true"
+            [pTooltip]="diffSideBySide ? 'Switch to inline diff' : 'Switch to side-by-side diff'"
+            tooltipPosition="left"
+            (click)="toggleDiffLayout()"
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- Monaco Diff Editor -->
+      <div class="flex-1" style="overflow: hidden;">
+        <div #diffContainer style="width: 100%; height: 100%;"></div>
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>

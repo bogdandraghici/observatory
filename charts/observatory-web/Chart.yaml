@@ -1,0 +1,23 @@
+annotations:
+  category: FlowXBackend
+apiVersion: v2
+description: FlowX Backend Observatory Web
+name: observatory-web
+home: https://flowx.ai
+icon: https://www.flowx.ai/hubfs/homepage-logo.svg
+keywords:
+  - flowx
+  - backend
+  - ai-services
+  - observatory-web
+maintainers:
+  - email: office@flowx.ai
+    name: FlowX
+version: 1.0.12
+appVersion: 1.0.12
+dependencies:
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.6.0

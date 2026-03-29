@@ -1,0 +1,241 @@
+// Project Card Styles
+// Matching landing page card design language
+
+// Host element
+:host {
+  display: block;
+  width: 100%;
+}
+
+// PrimeNG overrides
+::ng-deep {
+  .p-inplace {
+    display: block;
+    width: 100%;
+  }
+
+  .p-inplace .p-inplace-display {
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    padding: 0;
+  }
+}
+
+// Project Card
+.project-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: all 300ms ease;
+  height: 100%;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--surface-400);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  // Header
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  &__title-section {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      .project-card__edit-icon {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__edit-icon {
+    font-size: 0.75rem;
+    color: var(--p-primary-color);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  &__edit-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__edit-input {
+    flex: 1;
+    font-size: 0.875rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  // ID Row
+  &__id-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--surface-border);
+  }
+
+  &__id {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: all 150ms ease;
+    flex-shrink: 0;
+
+    &:hover {
+      background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+      color: var(--p-primary-color);
+    }
+
+    i {
+      font-size: 0.75rem;
+    }
+  }
+
+  // Stats Grid
+  &__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    flex: 1;
+  }
+
+  // Empty State
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+    flex: 1;
+
+    i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.5;
+    }
+
+    span {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Stats Row
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+// Stat Item
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+
+  &--right {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+  }
+
+  &__value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+
+    &--small {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Action buttons
+::ng-deep {
+  .project-card__actions {
+    .p-button-icon-only {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-color-secondary);
+
+      &:hover {
+        background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+        color: var(--p-primary-color);
+      }
+
+      &.p-button-danger:hover {
+        background: rgba(248, 113, 113, 0.1);
+        color: #f87171;
+      }
+    }
+  }
+}

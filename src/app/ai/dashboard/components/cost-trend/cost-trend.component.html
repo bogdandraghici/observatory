@@ -1,0 +1,28 @@
+<div class="stat-card cost-trend" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--green">
+      <i class="pi pi-dollar"></i>
+    </div>
+    <span class="stat-card__title">Cost Trend</span>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ totalCost | currency }}</span>
+      <span class="stat-card__label ml-2">total</span>
+    </div>
+  </div>
+  @if (hasData) {
+    <div style="height: 240px;">
+      <p-chart
+        type="bar"
+        [data]="chartData"
+        [options]="chartOptions"
+        [style]="{ width: '100%', height: '100%' }"
+      ></p-chart>
+    </div>
+  } @else {
+    <div style="height: 240px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No data found."></empty-state-widget>
+    </div>
+  }
+</div>

@@ -1,0 +1,590 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- A. Header + Filters -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Agent Evaluations</h1>
+      <p class="page-header__subtitle">Performance metrics and quality insights</p>
+    </div>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="appChanged()"
+          placeholder="Select Project"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Agent</label>
+        <p-select
+          [options]="agents"
+          [(ngModel)]="selectedAgent"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select Agent"
+          (onChange)="agentChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Period</label>
+        <p-select
+          [options]="periodOptions"
+          [(ngModel)]="hours"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="periodChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Environment</label>
+        <p-selectButton
+          [options]="environmentOptions"
+          [(ngModel)]="selectedEnvironment"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="environmentChanged()"
+        ></p-selectButton>
+      </div>
+    </div>
+    <div style="margin-left:auto;">
+      <button pButton label="Run Evaluation" icon="pi pi-play" class="p-button-sm" (click)="runEvaluation()" [loading]="loading"></button>
+    </div>
+  </div>
+
+  @if (unavailable) {
+    <div class="stat-card" style="justify-content: center;">
+      <i class="pi pi-info-circle mr-2"></i>
+      Insights service is not available. Ensure the insights service is running and configured.
+    </div>
+  } @else {
+
+    <!-- B. Score Overview Row -->
+    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(2, 1fr);">
+      <!-- Gauges + KPIs Card -->
+      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="stat-card__icon stat-card__icon--blue">
+            <i class="pi pi-chart-pie"></i>
+          </div>
+          <span class="stat-card__title">Score Overview</span>
+        </div>
+        <div style="display:flex; gap:2rem; align-items:center; flex-wrap:wrap;">
+          <!-- Overall Quality Gauge -->
+          <div style="text-align:center;">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
+              <circle cx="60" cy="60" r="54"
+                fill="none"
+                [attr.stroke]="getScoreColor(summary.overall_quality)"
+                stroke-width="8"
+                stroke-linecap="round"
+                [attr.stroke-dasharray]="getGaugeCircumference()"
+                [attr.stroke-dashoffset]="getGaugeOffset(summary.overall_quality)"
+                transform="rotate(-90 60 60)"
+                style="transition: stroke-dashoffset 0.6s ease;"/>
+              <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
+                {{ getScorePercent(summary.overall_quality) }}
+              </text>
+              <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
+                Overall Quality
+              </text>
+            </svg>
+          </div>
+          <!-- Safety Compliance Gauge -->
+          <div style="text-align:center;">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
+              <circle cx="60" cy="60" r="54"
+                fill="none"
+                [attr.stroke]="getScoreColor(summary.safety_compliance)"
+                stroke-width="8"
+                stroke-linecap="round"
+                [attr.stroke-dasharray]="getGaugeCircumference()"
+                [attr.stroke-dashoffset]="getGaugeOffset(summary.safety_compliance)"
+                transform="rotate(-90 60 60)"
+                style="transition: stroke-dashoffset 0.6s ease;"/>
+              <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
+                {{ getScorePercent(summary.safety_compliance) }}
+              </text>
+              <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
+                Safety Compliance
+              </text>
+            </svg>
+          </div>
+          <!-- KPIs -->
+          <div style="display:flex; flex-direction:column; gap:0.75rem; flex:1; min-width:180px;">
+            <div class="stat-card__row" style="padding:0.5rem 0; border-bottom:1px solid var(--surface-border);">
+              <span class="stat-card__label"><i class="pi pi-clock mr-2"></i>Avg Latency</span>
+              <span class="stat-card__value">{{ formatLatency(summary.avg_latency_ms) }}</span>
+            </div>
+            <div class="stat-card__row" style="padding:0.5rem 0; border-bottom:1px solid var(--surface-border);">
+              <span class="stat-card__label"><i class="pi pi-hashtag mr-2"></i>Avg Tokens</span>
+              <span class="stat-card__value">{{ formatTokens(summary.avg_tokens) }}</span>
+            </div>
+            <div class="stat-card__row" style="padding:0.5rem 0;">
+              <span class="stat-card__label"><i class="pi pi-list mr-2"></i>Agent Executions</span>
+              <span class="stat-card__value">{{ summary.executions || 0 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Status Card -->
+      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="stat-card__icon stat-card__icon--green">
+            <i class="pi pi-heart"></i>
+          </div>
+          <span class="stat-card__title">Health Status</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          @for (h of healthIndicators; track h.label) {
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <span style="width:10px; height:10px; border-radius:50%; flex-shrink:0;" [style.background]="h.color"></span>
+              <i [class]="h.icon" style="color:var(--text-color-secondary); font-size:1rem;"></i>
+              <span style="flex:1; font-weight:500;">{{ h.label }}</span>
+              <span style="font-size:0.85rem; padding:0.15rem 0.5rem; border-radius:4px;"
+                    [style.background]="h.color + '1a'" [style.color]="h.color">
+                {{ h.status }}{{ h.detail ? ' (' + h.detail + ')' : '' }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- C. Trends Over Time -->
+    <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <span class="stat-card__title">Trends Over Time</span>
+      </div>
+      <p-tabs [value]="activeTrendTab" (valueChange)="trendTabChanged($event)">
+        <p-tablist>
+          <p-tab value="0">Quality</p-tab>
+          <p-tab value="1">Safety</p-tab>
+          <p-tab value="2">Performance</p-tab>
+          <p-tab value="3">Cost</p-tab>
+        </p-tablist>
+      </p-tabs>
+      <div style="position:relative; height:280px; margin-top:1rem;">
+        <canvas id="trendCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- D. Metrics + Alerts Row -->
+    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(2, 1fr);">
+      <!-- Quality Metrics Card -->
+      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="stat-card__icon stat-card__icon--amber">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <span class="stat-card__title">Quality Metrics</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          @for (dim of metricDims; track dim) {
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                <span class="stat-card__label" style="text-transform:capitalize;">{{ formatMetricLabel(dim) }}</span>
+                <span style="font-size:0.85rem; font-weight:600;" [style.color]="getMetricBarColor(dim)">
+                  {{ metrics[dim] != null ? (metrics[dim] * 100).toFixed(0) + '%' : '-' }}
+                </span>
+              </div>
+              <div style="width:100%; height:8px; background:var(--surface-ground); border-radius:4px; overflow:hidden;">
+                <div style="height:100%; border-radius:4px; transition:width 0.4s ease;"
+                     [style.width.%]="getMetricBarWidth(dim)"
+                     [style.background]="getMetricBarColor(dim)">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Alerts Card -->
+      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="flex items-center justify-between mb-3 w-full">
+          <div class="flex items-center gap-2">
+            <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+              <i class="pi pi-bell"></i>
+            </div>
+            <span class="stat-card__title">Recent Alerts</span>
+          </div>
+          @if (alerts.length > 5) {
+            <span style="font-size:0.8rem; color:var(--p-primary-color); cursor:pointer;">View All ({{ alerts.length }})</span>
+          }
+        </div>
+        @if (displayedAlerts.length === 0) {
+          <div class="text-center p-4" style="color:var(--text-color-secondary);">No alerts in this period.</div>
+        }
+        <div style="display:flex; flex-direction:column; gap:0.75rem; max-height:380px; overflow-y:auto;">
+          @for (alert of displayedAlerts; track $index) {
+            <div style="border-left:4px solid; border-radius:6px; padding:0.75rem 1rem; background:var(--surface-ground);"
+                 [style.border-left-color]="getAlertBorderColor(alert.severity)">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+                <p-tag [value]="alert.severity" [severity]="getAlertSeverity(alert.severity)" styleClass="text-xs"></p-tag>
+                <span style="font-size:0.75rem; color:var(--text-color-secondary);">{{ alert.created_at | date:'short' }}</span>
+              </div>
+              <div style="font-size:0.85rem; font-weight:500;">{{ alert.metric }}</div>
+              <div style="font-size:0.8rem; color:var(--text-color-secondary); margin-top:0.25rem;">{{ alert.details || alert.message || '-' }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- E. Cost Forecast Row -->
+    <div class="stat-cards-grid mb-4">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-dollar"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Window Cost</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ costForecast.window_cost != null ? '$' + costForecast.window_cost.toFixed(2) : '-' }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <i class="pi pi-bolt"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Avg / Run</span>
+          <span class="stat-card__value stat-card__value--lg">{{ costForecast.avg_cost_per_run != null ? '$' + costForecast.avg_cost_per_run.toFixed(4) : '-' }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">1K Forecast</span>
+          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_1k != null ? '$' + costForecast.forecast_1k.toFixed(2) : '-' }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">10K Forecast</span>
+          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_10k != null ? '$' + costForecast.forecast_10k.toFixed(2) : '-' }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">100K Forecast</span>
+          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_100k != null ? '$' + costForecast.forecast_100k.toFixed(2) : '-' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- F. Execution History Table -->
+    <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-history"></i>
+        </div>
+        <span class="stat-card__title">Execution History</span>
+      </div>
+      <p-table [value]="executions" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Correctness</th>
+            <th>Helpfulness</th>
+            <th>Hallucination</th>
+            <th>Latency</th>
+            <th>Tokens</th>
+            <th>Cost</th>
+            <th>Date</th>
+            <th style="width:6rem;"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-exec>
+          <tr style="cursor:pointer;" (click)="openRunDetail(exec)">
+            <td>
+              <span style="padding:0.2rem 0.5rem; border-radius:4px; font-size:0.8rem; font-weight:600;"
+                    [class]="getScoreBadgeClass(exec.overall_score)">
+                {{ exec.overall_score != null ? (exec.overall_score * 100).toFixed(0) + '%' : '-' }}
+              </span>
+            </td>
+            <td>
+              <p-tag [value]="getStatusLabel(exec.overall_score)" [severity]="getStatusSeverity(exec.overall_score)"></p-tag>
+            </td>
+            <td>{{ exec.correctness_score != null ? (exec.correctness_score * 100).toFixed(0) + '%' : '-' }}</td>
+            <td>{{ exec.helpfulness_score != null ? (exec.helpfulness_score * 100).toFixed(0) + '%' : '-' }}</td>
+            <td>{{ exec.hallucination_score != null ? (exec.hallucination_score * 100).toFixed(0) + '%' : '-' }}</td>
+            <td>{{ formatLatency(exec.latency_ms) }}</td>
+            <td>{{ formatTokens(exec.total_tokens) }}</td>
+            <td>{{ formatCost(exec.total_cost) }}</td>
+            <td>{{ exec.created_at | date:'short' }}</td>
+            <td>
+              <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-rounded"
+                      pTooltip="Evaluate" tooltipPosition="top"
+                      [loading]="exec._evaluating"
+                      (click)="triggerEval(exec); $event.stopPropagation()"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="10" class="text-center p-6" style="color:var(--text-color-secondary);">No execution data.</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+  }
+</div>
+
+<!-- ── Execution Detail Drawer ────────────────────────────── -->
+<p-drawer
+  #evalDrawerRef
+  [(visible)]="drawerVisible"
+  position="right"
+  [style]="{width: '50vw'}"
+  [dismissible]="false"
+  [blockScroll]="true"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Custom Header -->
+      <div class="flex items-center justify-between px-6 py-4 shrink-0" style="border-bottom: 1px solid var(--surface-border)">
+        <span class="inline-flex items-center gap-2">
+          <p-button
+            type="button"
+            (click)="closeDrawer($event)"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="false"
+            severity="primary"
+            styleClass="h-2rem w-2rem"
+          ></p-button>
+        </span>
+        <h3 class="m-0 font-semibold text-lg">Evaluation Detail</h3>
+        <span></span>
+      </div>
+      <!-- Scrollable Content -->
+      <div class="overflow-y-auto flex-1 p-6">
+        @if (drawerLoading) {
+          <div class="text-center p-6">
+            <i class="pi pi-spinner pi-spin" style="font-size:2rem;"></i>
+            <p class="mt-3" style="color:var(--text-color-secondary);">Loading evaluation details...</p>
+          </div>
+        } @else if (!selectedRunDetail) {
+          <div class="text-center p-6" style="color:var(--text-color-secondary);">
+            <i class="pi pi-info-circle mr-2"></i> No evaluation data available for this run.
+          </div>
+        } @else {
+          <!-- Top: Score gauge + Metric bars -->
+          <div style="display:flex; gap:2rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <!-- Gauge -->
+            <div style="text-align:center; flex-shrink:0;">
+              <svg width="130" height="130" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="54"
+                  fill="none"
+                  [attr.stroke]="getScoreColor(selectedRunDetail.overall_score)"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                  [attr.stroke-dasharray]="getGaugeCircumference()"
+                  [attr.stroke-dashoffset]="getGaugeOffset(selectedRunDetail.overall_score)"
+                  transform="rotate(-90 60 60)"
+                  style="transition: stroke-dashoffset 0.6s ease;"/>
+                <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
+                  {{ getScorePercent(selectedRunDetail.overall_score) }}
+                </text>
+                <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
+                  Overall Score
+                </text>
+              </svg>
+              @if (selectedRunDetail.overall_score != null) {
+                <p-tag [value]="getStatusLabel(selectedRunDetail.overall_score)"
+                       [severity]="getStatusSeverity(selectedRunDetail.overall_score)"
+                       styleClass="mt-2"></p-tag>
+              }
+            </div>
+
+            <!-- Metric bars -->
+            <div style="flex:1; min-width:200px;">
+              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                @for (dim of metricDims; track dim) {
+                  <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.15rem;">
+                      <span style="font-size:0.8rem;">{{ formatMetricLabel(dim) }}</span>
+                      <span style="font-size:0.8rem; font-weight:600;" [style.color]="getRunMetricColor(dim)">
+                        {{ (getRunMetricValue(dim) * 100).toFixed(0) }}%
+                      </span>
+                    </div>
+                    <div style="width:100%; height:6px; background:var(--surface-ground); border-radius:3px; overflow:hidden;">
+                      <div style="height:100%; border-radius:3px; transition:width 0.4s ease;"
+                           [style.width.%]="getRunMetricWidth(dim)"
+                           [style.background]="getRunMetricColor(dim)">
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI row -->
+          <div style="display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <div style="flex:1; min-width:80px; text-align:center; padding:0.5rem; background:var(--surface-ground); border-radius:6px;">
+              <div style="font-size:0.75rem; color:var(--text-color-secondary);"><i class="pi pi-list mr-1"></i>Steps</div>
+              <div style="font-weight:700; font-size:1.1rem;">{{ steps.length }}</div>
+            </div>
+            <div style="flex:1; min-width:80px; text-align:center; padding:0.5rem; background:var(--surface-ground); border-radius:6px;">
+              <div style="font-size:0.75rem; color:var(--text-color-secondary);"><i class="pi pi-wrench mr-1"></i>Tool Calls</div>
+              <div style="font-weight:700; font-size:1.1rem;">{{ selectedRunDetail.tool_calls_count || 0 }}</div>
+            </div>
+            <div style="flex:1; min-width:80px; text-align:center; padding:0.5rem; background:var(--surface-ground); border-radius:6px;">
+              <div style="font-size:0.75rem; color:var(--text-color-secondary);"><i class="pi pi-clock mr-1"></i>Latency</div>
+              <div style="font-weight:700; font-size:1.1rem;">{{ formatLatency(selectedRunDetail.latency_ms) }}</div>
+            </div>
+            <div style="flex:1; min-width:80px; text-align:center; padding:0.5rem; background:var(--surface-ground); border-radius:6px;">
+              <div style="font-size:0.75rem; color:var(--text-color-secondary);"><i class="pi pi-hashtag mr-1"></i>Tokens</div>
+              <div style="font-weight:700; font-size:1.1rem;">{{ formatTokens(selectedRunDetail.total_tokens) }}</div>
+            </div>
+            <div style="flex:1; min-width:80px; text-align:center; padding:0.5rem; background:var(--surface-ground); border-radius:6px;">
+              <div style="font-size:0.75rem; color:var(--text-color-secondary);"><i class="pi pi-dollar mr-1"></i>Cost</div>
+              <div style="font-weight:700; font-size:1.1rem;">{{ formatCost(selectedRunDetail.total_cost) }}</div>
+            </div>
+          </div>
+
+          @if (getTrajectoryScore() != null) {
+            <div style="margin-bottom:1.5rem; padding:0.75rem; background:var(--surface-ground); border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.85rem; font-weight:500;"><i class="pi pi-server mr-2"></i>Trajectory Accuracy</span>
+              <span style="font-weight:700;" [style.color]="getScoreColor(getTrajectoryScore())">
+                {{ getScorePercent(getTrajectoryScore()) }}
+              </span>
+            </div>
+          }
+
+          <!-- Phase Details -->
+          @if (steps.length > 0) {
+            <div style="margin-bottom:1rem;">
+              <button pButton [label]="'Phase Details (' + steps.length + ')'" icon="pi pi-list"
+                      class="p-button-sm p-button-outlined" style="width:100%;"
+                      (click)="phaseDetailsExpanded = !phaseDetailsExpanded"></button>
+            </div>
+            @if (phaseDetailsExpanded) {
+              <p-accordion [multiple]="true">
+                @for (step of steps; track step.id || $index) {
+                  <p-accordionpanel>
+                    <p-accordionheader>
+                      <div  class="flex items-center gap-2 w-full">
+                        <span style="font-weight:500;">{{ step.step_type || 'Step ' + (step.step_index || ($index + 1)) }}</span>
+                        @if (step.model || getStepModel(step.id)) {
+                          <p-tag [value]="step.model || getStepModel(step.id)" severity="info" styleClass="text-xs"></p-tag>
+                        }
+                        <span style="margin-left:auto; font-size:0.8rem; color:var(--text-color-secondary);">
+                          {{ getStepMetrics(step.id).length }} metrics
+                        </span>
+                      </div>
+                    </p-accordionheader>
+                    <p-accordioncontent class="bg-surface-ground p-2 m-0">
+                      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-0 m-0">
+                        @for (metric of getStepMetrics(step.id); track metric.name) {
+                          <div class="bg-surface-card rounded-md p-2 cursor-pointer"
+                               (click)="openMetricDialog(metric)">
+                            <div class="flex justify-between items-center mb-2">
+                              <span style="font-size:0.8rem; font-weight:500;">{{ formatMetricLabel(metric.name) }}</span>
+                              <span style="font-size:0.75rem; font-weight:600; padding:0.1rem 0.4rem; border-radius:3px;"
+                                    [style.background]="getScoreColor(metric.score) + '1a'"
+                                    [style.color]="getScoreColor(metric.score)">
+                                {{ (metric.score * 100).toFixed(0) }}%
+                              </span>
+                            </div>
+                            @if (metric.justification) {
+                              <div style="font-size:0.75rem; color:var(--text-color-secondary); overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+                                {{ metric.justification }}
+                              </div>
+                            }
+                            <div style="margin-top:0.5rem; text-align:right;">
+                              <span class="text-xs text-primary cursor-pointer hover:bg-primary-500 hover:text-black rounded-md p-1">Details</span>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </p-accordioncontent>
+                  </p-accordionpanel>
+                }
+              </p-accordion>
+            }
+          }
+        }
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>
+
+<!-- ── Metric Detail Dialog ───────────────────────────────── -->
+<p-dialog [(visible)]="metricDialogVisible" [modal]="true" [style]="{ width: '32rem' }"
+          [header]="selectedMetricDetail?.name ? (selectedMetricDetail.name | titlecase) : 'Metric Detail'"
+          (onHide)="closeMetricDialog()">
+  @if (selectedMetricDetail) {
+    <div style="margin-bottom:1rem;">
+      <span style="font-size:0.85rem; color:var(--text-color-secondary);">Score</span>
+      <div style="font-size:1.5rem; font-weight:700; margin-top:0.25rem;"
+           [style.color]="getScoreColor(selectedMetricDetail.score)">
+        {{ (selectedMetricDetail.score * 100).toFixed(0) }}%
+      </div>
+    </div>
+    @if (selectedMetricDetail.justification) {
+      <div style="margin-bottom:1rem;">
+        <span style="font-size:0.85rem; font-weight:600;">Justification</span>
+        <p style="margin-top:0.25rem; font-size:0.9rem; line-height:1.5; color:var(--text-color);">
+          {{ selectedMetricDetail.justification }}
+        </p>
+      </div>
+    }
+    @if (selectedMetricDetail.recommendation) {
+      <div>
+        <span style="font-size:0.85rem; font-weight:600;">Recommendation</span>
+        <p style="margin-top:0.25rem; font-size:0.9rem; line-height:1.5; color:var(--text-color);">
+          {{ selectedMetricDetail.recommendation }}
+        </p>
+      </div>
+    }
+  }
+</p-dialog>
