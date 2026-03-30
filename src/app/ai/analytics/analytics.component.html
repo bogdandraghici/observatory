@@ -32,6 +32,30 @@
           placeholder="Select Organization"
         ></p-select>
       </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="appChanged($event)"
+          placeholder="Select Project"
+        ></p-select>
+      </div>
     </div>
   </div>
 
@@ -43,7 +67,7 @@
       >
         <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
           <single-value-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [data]="allMetrics"
             [title]="'Requests'"
             [dataProperty]="'count_requests'"
@@ -53,7 +77,7 @@
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
           <single-value-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [data]="allMetrics"
             [useAvg]="true"
             [title]="'Users'"
@@ -64,7 +88,7 @@
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
           <third-values-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [data]="responseTimeMetrics"
             [title]="'Response Times'"
             [suffix]="'(ms)'"
@@ -73,7 +97,7 @@
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
           <endpoints-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [days]="selectedPeriod"
             [title]="'Endpoints'"
           ></endpoints-widget>
@@ -87,7 +111,7 @@
       >
         <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
           <activity-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [title]="'Activity'"
             [data]="allMetrics"
             [period]="selectedPeriod"
@@ -95,14 +119,14 @@
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
           <usage-time-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [title]="'Usage Time'"
             [days]="selectedPeriod"
           ></usage-time-widget>
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
           <pie-value-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [title]="'By Version'"
             [dataSource]="'version'"
             [days]="selectedPeriod"
@@ -113,7 +137,7 @@
         </div>
         <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
           <pie-value-widget
-            [appId]="selectedApiKey"
+            [appId]="selectedApp"
             [title]="'By Service/Agent'"
             [dataSource]="'agent'"
             [days]="selectedPeriod"

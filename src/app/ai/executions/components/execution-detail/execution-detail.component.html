@@ -132,7 +132,7 @@
 
         <!-- Right Panel: Tabs -->
         <div class="flex-1 overflow-auto" style="padding: 1rem">
-          <p-tabs [value]="activeTab" (valueChange)="activeTab = $event">
+          <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
             <p-tablist>
               <p-tab value="overview">Overview</p-tab>
               <p-tab value="timeline">Timeline</p-tab>
@@ -356,10 +356,10 @@
               <!-- Graph Tab -->
               <p-tabpanel value="graph">
                 <div style="padding: 1rem">
-                  @if (selectedRun?.data?.graph) {
+                  @if (getGraphData()) {
                     <div #mermaidEl style="text-align: center; resize: both; overflow: auto; max-height: 80vh; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem"></div>
                   } @else {
-                    <p-message severity="info" text="No graph available. Select a node with graph data from the tree."></p-message>
+                    <p-message severity="info" text="No graph available for this execution."></p-message>
                   }
                 </div>
               </p-tabpanel>

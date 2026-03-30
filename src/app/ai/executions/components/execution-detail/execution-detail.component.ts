@@ -218,7 +218,7 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
   }
 
   getTotalTokens(): number {
-    return this.dataRuns.reduce((sum, r) => sum + (r.prompt_tokens || 0) + (r.completion_tokens || 0), 0)
+    return this.dataRuns.filter(r => r.type === 'llm').reduce((sum, r) => sum + (r.prompt_tokens || 0) + (r.completion_tokens || 0), 0)
   }
 
   getTypeStats(): { type: string; count: number }[] {
@@ -248,10 +248,23 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
     }
   }
 
+  onTabChange(tab: string): void {
+    this.activeTab = tab
+    if (tab === 'graph') {
+      this.drawMermaid()
+    }
+  }
+
+  getGraphData(): string | null {
+    // Use selected node's graph, or find the first run with graph data
+    return this.selectedRun?.data?.graph || this.dataRuns?.find(r => r.graph)?.graph || null
+  }
+
   drawMermaid(): void {
-    if (isPlatformBrowser(this._platformId) && this.selectedRun?.data?.graph) {
+    const graphData = this.getGraphData()
+    if (isPlatformBrowser(this._platformId) && graphData) {
       setTimeout(async () => {
-        let renderGraph = this.selectedRun?.data?.graph.replace(
+        let renderGraph = graphData.replace(
           "%%{init: {'flowchart': {'curve': 'linear'}}}%%",
           '',
         )
@@ -280,6 +293,15 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
           const element: any = this.mermaidEl?.nativeElement
           if (element) {
             element.innerHTML = result.svg
+            // Fix dark mode: brighten lines and arrows only
+            element.querySelectorAll('.edgePath path, .flowchart-link').forEach((el: SVGElement) => {
+              el.style.stroke = '#aaa'
+              el.style.strokeWidth = '2'
+            })
+            element.querySelectorAll('marker path').forEach((el: SVGElement) => {
+              el.style.fill = '#aaa'
+              el.style.stroke = '#aaa'
+            })
             result.bindFunctions(element)
           }
         } catch (e) {

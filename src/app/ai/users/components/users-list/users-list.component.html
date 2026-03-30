@@ -6,92 +6,90 @@
       </div>
       <span class="stat-card__title">Users</span>
     </div>
-    <p-button
-      icon="pi pi-refresh"
-      [rounded]="true"
-      [text]="true"
-      pTooltip="Refresh"
-      tooltipPosition="top"
-      (click)="populateTable(null, appId, hours)"
-    ></p-button>
+    <div class="flex items-center gap-2">
+      <p-select
+        [options]="agents"
+        [(ngModel)]="selectedAgent"
+        optionLabel="name"
+        [showClear]="true"
+        (onChange)="filterByAgent($event)"
+        placeholder="Filter by agent"
+      ></p-select>
+      <span class="p-input-icon-left">
+        <input
+          pInputText
+          type="text"
+          (input)="dt.filterGlobal($event.target.value, 'contains')"
+          placeholder="Search by user email"
+        />
+      </span>
+      <p-button
+        icon="pi pi-refresh"
+        [rounded]="true"
+        [text]="true"
+        pTooltip="Refresh"
+        tooltipPosition="top"
+        (click)="populateTable(null, appId, hours)"
+      ></p-button>
+    </div>
   </div>
 
-  <p-dataView
-    #dv
-    [value]="users"
-    [rows]="5"
-    [paginator]="true"
-    dataKey="user_id"
-    [totalRecords]="totalRecords"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-  >
-    <ng-template #emptymessage>
-      <empty-state-widget message="No data found."></empty-state-widget>
-    </ng-template>
-    <ng-template #header>
-      <div class="flex">
-        <p-select
-          [options]="agents"
-          [(ngModel)]="selectedAgent"
-          optionLabel="name"
-          [showClear]="true"
-          (onChange)="filterByAgent($event)"
-          placeholder="Filter by agent"
-        ></p-select>
-        <span class="p-input-icon-left ml-auto">
-          <input
-            pInputText
-            type="text"
-            (input)="dv.filterGlobal($event.target.value, 'contains')"
-            placeholder="Search by user email"
-          />
-        </span>
-      </div>
-    </ng-template>
-    <ng-template #list let-users>
-      <div class="grid grid-cols-12 gap-0">
-        @for (item of users; track item; let first = $first) {
-          <div class="col-span-12">
-            <div
-              class="flex flex-col xl:flex-row xl:items-start p-6 gap-6"
-              [ngClass]="{ 'border-t border-surface': !first }"
-            >
-              <div class="flex flex-col sm:flex-row justify-stretch items-start xl:items-start flex-1 gap-6">
-                <p-avatar
-                  icon="pi pi-user"
-                  size="large"
-                  styleClass="mr-2"
-                  [style]="{ 'background-color': 'var(--surface-100)', 'color': 'var(--text-color)', 'width': '3rem', 'height': '3rem' }"
-                ></p-avatar>
-                <div class="flex flex-col items-center sm:items-start gap-4 w-full">
-                  <div class="text-2xl font-bold" style="color: var(--text-color)">
-                    {{ item.user_email }}
-                  </div>
-                  <div>
-                    <span style="color: var(--text-color-secondary)">Completion Tokens: </span>
-                    <span class="text-l font-semibold">{{ item.completion_tokens }}</span>
-                  </div>
-                  <div>
-                    <span style="color: var(--text-color-secondary)">Prompt Tokens: </span>
-                    <span class="text-l font-semibold">{{ item.prompt_tokens }}</span>
-                  </div>
-                  <div>
-                    <span style="color: var(--text-color-secondary)">Latest Run: </span>
-                    <span class="text-l font-semibold">{{ formatTime(item.latest_run) }}</span>
-                  </div>
-                </div>
-                <div class="w-full"></div>
-                <div class="flex sm:flex-col items-center sm:items-end gap-4 sm:gap-2 w-full">
-                  <span style="color: var(--text-color-secondary)">Total Runs:</span>
-                  <span class="text-2xl font-semibold">{{ item.cnt_runs }}</span>
-                  <span style="color: var(--text-color-secondary)">Total Feedbacks:</span>
-                  <span class="text-2xl font-semibold">{{ item.cnt_feedbacks }}</span>
-                </div>
-              </div>
+  @if (appId && hours) {
+    <p-table
+      #dt
+      [value]="users"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [lazy]="true"
+      (onLazyLoad)="populateTable($event, appId, hours)"
+      dataKey="user_id"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      styleClass="p-datatable-sm"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [globalFilterFields]="['user_email']"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>User</th>
+          <th>Total Runs</th>
+          <th>Prompt Tokens</th>
+          <th>Completion Tokens</th>
+          <th>Feedbacks</th>
+          <th>Latest Run</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-avatar
+                [label]="user.user_email ? user.user_email[0].toUpperCase() : '?'"
+                size="normal"
+                shape="circle"
+              ></p-avatar>
+              <span class="font-semibold">{{ user.user_email }}</span>
             </div>
-          </div>
-        }
-      </div>
-    </ng-template>
-  </p-dataView>
+          </td>
+          <td>
+            <span class="font-bold">{{ user.cnt_runs }}</span>
+          </td>
+          <td>{{ user.prompt_tokens || 0 }}</td>
+          <td>{{ user.completion_tokens || 0 }}</td>
+          <td>{{ user.cnt_feedbacks || 0 }}</td>
+          <td>{{ formatTime(user.latest_run) }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <empty-state-widget message="No users found."></empty-state-widget>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
 </div>

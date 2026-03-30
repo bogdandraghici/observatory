@@ -4,7 +4,9 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core'
+import { Table } from 'primeng/table'
 import { extendWithCosts } from '../../../utils/calcCosts'
 import { DashboardService } from '../../../services/dashboard.service'
 
@@ -18,6 +20,8 @@ import { defaultAgents } from 'src/app/ai/utils/dataEnums'
     standalone: false
 })
 export class UsersListComponent implements OnChanges {
+  @ViewChild('dt') dt!: Table
+
   @Input() hours = 1
   @Input() appId: string = null
 
