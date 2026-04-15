@@ -1,5 +1,14 @@
 <p-toast></p-toast>
 
+<!-- Loading indicator -->
+@if (loading) {
+  <div class="loading-overlay">
+    <div class="loading-bar">
+      <p-progressBar [style]="{ height: '4px' }" mode="indeterminate"></p-progressBar>
+    </div>
+  </div>
+}
+
 <div class="ai-page">
   <!-- A. Header + Filters -->
   <header class="page-header">
@@ -85,294 +94,385 @@
   </div>
 
   @if (unavailable) {
-    <div class="stat-card" style="justify-content: center;">
-      <i class="pi pi-info-circle mr-2"></i>
-      Insights service is not available. Ensure the insights service is running and configured.
+    <div class="eval-card">
+      <div class="eval-empty">
+        <div class="eval-empty__icon">
+          <i class="pi pi-info-circle"></i>
+        </div>
+        <p class="eval-empty__title">Service Unavailable</p>
+        <p class="eval-empty__description">
+          Insights service is not available. Ensure the insights service is running and configured.
+        </p>
+      </div>
+    </div>
+  } @else if (!selectedAgent) {
+    <div class="eval-card">
+      <div class="eval-empty">
+        <div class="eval-empty__icon">
+          <i class="pi pi-chart-pie"></i>
+        </div>
+        <p class="eval-empty__title">No data available</p>
+        <p class="eval-empty__description">
+          Select a project and agent to view evaluation metrics.
+        </p>
+      </div>
     </div>
   } @else {
+    <div class="dashboard-content" [class.loading]="loading">
 
-    <!-- B. Score Overview Row -->
-    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(2, 1fr);">
-      <!-- Gauges + KPIs Card -->
-      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="stat-card__icon stat-card__icon--blue">
+      <!-- B. Score Overview + Health Status Row -->
+      <div class="overview-row">
+        <!-- Score Overview Card -->
+        <div class="score-overview eval-card">
+          <div class="card-title">
             <i class="pi pi-chart-pie"></i>
+            Score Overview
           </div>
-          <span class="stat-card__title">Score Overview</span>
-        </div>
-        <div style="display:flex; gap:2rem; align-items:center; flex-wrap:wrap;">
-          <!-- Overall Quality Gauge -->
-          <div style="text-align:center;">
-            <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
-              <circle cx="60" cy="60" r="54"
-                fill="none"
-                [attr.stroke]="getScoreColor(summary.overall_quality)"
-                stroke-width="8"
-                stroke-linecap="round"
-                [attr.stroke-dasharray]="getGaugeCircumference()"
-                [attr.stroke-dashoffset]="getGaugeOffset(summary.overall_quality)"
-                transform="rotate(-90 60 60)"
-                style="transition: stroke-dashoffset 0.6s ease;"/>
-              <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
-                {{ getScorePercent(summary.overall_quality) }}
-              </text>
-              <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
-                Overall Quality
-              </text>
-            </svg>
-          </div>
-          <!-- Safety Compliance Gauge -->
-          <div style="text-align:center;">
-            <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
-              <circle cx="60" cy="60" r="54"
-                fill="none"
-                [attr.stroke]="getScoreColor(summary.safety_compliance)"
-                stroke-width="8"
-                stroke-linecap="round"
-                [attr.stroke-dasharray]="getGaugeCircumference()"
-                [attr.stroke-dashoffset]="getGaugeOffset(summary.safety_compliance)"
-                transform="rotate(-90 60 60)"
-                style="transition: stroke-dashoffset 0.6s ease;"/>
-              <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
-                {{ getScorePercent(summary.safety_compliance) }}
-              </text>
-              <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
-                Safety Compliance
-              </text>
-            </svg>
-          </div>
-          <!-- KPIs -->
-          <div style="display:flex; flex-direction:column; gap:0.75rem; flex:1; min-width:180px;">
-            <div class="stat-card__row" style="padding:0.5rem 0; border-bottom:1px solid var(--surface-border);">
-              <span class="stat-card__label"><i class="pi pi-clock mr-2"></i>Avg Latency</span>
-              <span class="stat-card__value">{{ formatLatency(summary.avg_latency_ms) }}</span>
-            </div>
-            <div class="stat-card__row" style="padding:0.5rem 0; border-bottom:1px solid var(--surface-border);">
-              <span class="stat-card__label"><i class="pi pi-hashtag mr-2"></i>Avg Tokens</span>
-              <span class="stat-card__value">{{ formatTokens(summary.avg_tokens) }}</span>
-            </div>
-            <div class="stat-card__row" style="padding:0.5rem 0;">
-              <span class="stat-card__label"><i class="pi pi-list mr-2"></i>Agent Executions</span>
-              <span class="stat-card__value">{{ summary.executions || 0 }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Health Status Card -->
-      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="stat-card__icon stat-card__icon--green">
-            <i class="pi pi-heart"></i>
-          </div>
-          <span class="stat-card__title">Health Status</span>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:1rem;">
-          @for (h of healthIndicators; track h.label) {
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-              <span style="width:10px; height:10px; border-radius:50%; flex-shrink:0;" [style.background]="h.color"></span>
-              <i [class]="h.icon" style="color:var(--text-color-secondary); font-size:1rem;"></i>
-              <span style="flex:1; font-weight:500;">{{ h.label }}</span>
-              <span style="font-size:0.85rem; padding:0.15rem 0.5rem; border-radius:4px;"
-                    [style.background]="h.color + '1a'" [style.color]="h.color">
-                {{ h.status }}{{ h.detail ? ' (' + h.detail + ')' : '' }}
-              </span>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- C. Trends Over Time -->
-    <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-      <div class="flex items-center gap-2 mb-3">
-        <div class="stat-card__icon stat-card__icon--purple">
-          <i class="pi pi-chart-line"></i>
-        </div>
-        <span class="stat-card__title">Trends Over Time</span>
-      </div>
-      <p-tabs [value]="activeTrendTab" (valueChange)="trendTabChanged($event)">
-        <p-tablist>
-          <p-tab value="0">Quality</p-tab>
-          <p-tab value="1">Safety</p-tab>
-          <p-tab value="2">Performance</p-tab>
-          <p-tab value="3">Cost</p-tab>
-        </p-tablist>
-      </p-tabs>
-      <div style="position:relative; height:280px; margin-top:1rem;">
-        <canvas id="trendCanvas"></canvas>
-      </div>
-    </div>
-
-    <!-- D. Metrics + Alerts Row -->
-    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(2, 1fr);">
-      <!-- Quality Metrics Card -->
-      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="stat-card__icon stat-card__icon--amber">
-            <i class="pi pi-chart-bar"></i>
-          </div>
-          <span class="stat-card__title">Quality Metrics</span>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:0.75rem;">
-          @for (dim of metricDims; track dim) {
-            <div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
-                <span class="stat-card__label" style="text-transform:capitalize;">{{ formatMetricLabel(dim) }}</span>
-                <span style="font-size:0.85rem; font-weight:600;" [style.color]="getMetricBarColor(dim)">
-                  {{ metrics[dim] != null ? (metrics[dim] * 100).toFixed(0) + '%' : '-' }}
-                </span>
-              </div>
-              <div style="width:100%; height:8px; background:var(--surface-ground); border-radius:4px; overflow:hidden;">
-                <div style="height:100%; border-radius:4px; transition:width 0.4s ease;"
-                     [style.width.%]="getMetricBarWidth(dim)"
-                     [style.background]="getMetricBarColor(dim)">
+          <div class="score-gauges">
+            <!-- Overall Quality Gauge -->
+            <div class="score-gauge-wrapper">
+              <div class="eval-gauge eval-gauge--md">
+                <svg class="eval-gauge__svg" viewBox="0 0 120 120">
+                  <circle class="eval-gauge__bg" cx="60" cy="60" r="54"/>
+                  <circle class="eval-gauge__fill" cx="60" cy="60" r="54"
+                    [style.stroke-dasharray]="getGaugeDasharray(summary.overall_quality)"
+                    [style.stroke]="getScoreColor(summary.overall_quality)"/>
+                </svg>
+                <div class="eval-gauge__center">
+                  <span class="eval-gauge__value">{{ getScorePercent(summary.overall_quality) }}</span>
+                  <span class="eval-gauge__label">Overall Quality</span>
                 </div>
               </div>
             </div>
-          }
-        </div>
-      </div>
-
-      <!-- Recent Alerts Card -->
-      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
-        <div class="flex items-center justify-between mb-3 w-full">
-          <div class="flex items-center gap-2">
-            <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-              <i class="pi pi-bell"></i>
-            </div>
-            <span class="stat-card__title">Recent Alerts</span>
-          </div>
-          @if (alerts.length > 5) {
-            <span style="font-size:0.8rem; color:var(--p-primary-color); cursor:pointer;">View All ({{ alerts.length }})</span>
-          }
-        </div>
-        @if (displayedAlerts.length === 0) {
-          <div class="text-center p-4" style="color:var(--text-color-secondary);">No alerts in this period.</div>
-        }
-        <div style="display:flex; flex-direction:column; gap:0.75rem; max-height:380px; overflow-y:auto;">
-          @for (alert of displayedAlerts; track $index) {
-            <div style="border-left:4px solid; border-radius:6px; padding:0.75rem 1rem; background:var(--surface-ground);"
-                 [style.border-left-color]="getAlertBorderColor(alert.severity)">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-                <p-tag [value]="alert.severity" [severity]="getAlertSeverity(alert.severity)" styleClass="text-xs"></p-tag>
-                <span style="font-size:0.75rem; color:var(--text-color-secondary);">{{ alert.created_at | date:'short' }}</span>
+            <!-- Safety Compliance Gauge -->
+            <div class="score-gauge-wrapper">
+              <div class="eval-gauge eval-gauge--md">
+                <svg class="eval-gauge__svg" viewBox="0 0 120 120">
+                  <circle class="eval-gauge__bg" cx="60" cy="60" r="54"/>
+                  <circle class="eval-gauge__fill" cx="60" cy="60" r="54"
+                    [style.stroke-dasharray]="getGaugeDasharray(summary.safety_compliance)"
+                    [style.stroke]="getScoreColor(summary.safety_compliance)"/>
+                </svg>
+                <div class="eval-gauge__center">
+                  <span class="eval-gauge__value">{{ getScorePercent(summary.safety_compliance) }}</span>
+                  <span class="eval-gauge__label">Safety Compliance</span>
+                </div>
               </div>
-              <div style="font-size:0.85rem; font-weight:500;">{{ alert.metric }}</div>
-              <div style="font-size:0.8rem; color:var(--text-color-secondary); margin-top:0.25rem;">{{ alert.details || alert.message || '-' }}</div>
+            </div>
+          </div>
+          <!-- KPI Stats -->
+          <div class="kpi-row">
+            <div class="eval-kpi">
+              <i class="eval-kpi__icon pi pi-clock"></i>
+              <span class="eval-kpi__value">{{ formatLatency(summary.avg_latency_ms) }}</span>
+              <span class="eval-kpi__label">Avg Latency</span>
+            </div>
+            <div class="eval-kpi">
+              <i class="eval-kpi__icon pi pi-hashtag"></i>
+              <span class="eval-kpi__value">{{ formatTokens(summary.avg_tokens) }}</span>
+              <span class="eval-kpi__label">Avg Tokens</span>
+            </div>
+            <div class="eval-kpi">
+              <i class="eval-kpi__icon pi pi-list"></i>
+              <span class="eval-kpi__value">{{ summary.executions || 0 }}</span>
+              <span class="eval-kpi__label">Agent Executions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Status Card -->
+        <div class="health-panel eval-card">
+          <div class="card-title">
+            <i class="pi pi-heart"></i>
+            Health Status
+          </div>
+          <div class="eval-health">
+            @for (h of healthIndicators; track h.label) {
+              <div class="eval-health__item">
+                <span class="eval-health__dot"
+                  [class.eval-health__dot--good]="h.status === 'Healthy' || h.status === 'Fast' || h.status === 'Low'"
+                  [class.eval-health__dot--warning]="h.status === 'Needs Attention' || h.status === 'Normal' || h.status === 'Moderate'"
+                  [class.eval-health__dot--danger]="h.status === 'Slow' || h.status === 'High'"
+                ></span>
+                <i [class]="h.icon" class="eval-health__icon"></i>
+                <span class="eval-health__label">{{ h.label }}</span>
+                <span class="eval-health__value"
+                      [style.background]="h.color + '1a'" [style.color]="h.color">
+                  {{ h.status }}{{ h.detail ? ' (' + h.detail + ')' : '' }}
+                </span>
+              </div>
+            }
+          </div>
+          <div class="health-summary">
+            <div class="health-summary__stat">
+              <i class="pi pi-chart-line"></i>
+              <span>{{ summary.executions || 0 }} executions</span>
+            </div>
+            <div class="health-summary__stat">
+              <i class="pi pi-calendar"></i>
+              <span>{{ getSelectedPeriodLabel() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C. Trends Over Time -->
+      <div class="trends-section eval-card">
+        <div class="trends-header">
+          <div class="card-title">
+            <i class="pi pi-chart-line"></i>
+            Trends Over Time
+          </div>
+          <p-selectButton
+            [options]="granularityOptions"
+            [(ngModel)]="granularity"
+            optionLabel="label"
+            optionValue="value"
+            (onChange)="granularityChanged()"
+            [allowEmpty]="false"
+            size="small"
+          />
+        </div>
+        <p-tabs [value]="activeTrendTab" (valueChange)="trendTabChanged($event)">
+          <p-tablist>
+            <p-tab value="0">Quality</p-tab>
+            <p-tab value="1">Safety</p-tab>
+            <p-tab value="2">Performance</p-tab>
+            <p-tab value="3">Cost</p-tab>
+          </p-tablist>
+        </p-tabs>
+        <div class="chart-container">
+          <canvas id="trendCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- D. Metrics + Alerts Row -->
+      <div class="metrics-alerts-row">
+        <!-- Quality Metrics Card -->
+        <div class="metrics-breakdown eval-card">
+          <div class="card-title">
+            <i class="pi pi-chart-bar"></i>
+            Quality Metrics
+          </div>
+          <div class="metrics-list">
+            @for (dim of metricDims; track dim) {
+              <div class="metric-item">
+                <div class="metric-item__header">
+                  <span class="metric-item__label">{{ formatMetricLabel(dim) }}</span>
+                  <span class="metric-item__value" [style.color]="getMetricBarColor(dim)">
+                    {{ metrics[dim] != null ? (metrics[dim] * 100).toFixed(0) + '%' : '-' }}
+                  </span>
+                </div>
+                <div class="metric-item__bar">
+                  <div class="metric-item__fill"
+                       [style.width.%]="getMetricBarWidth(dim)"
+                       [style.background]="getMetricBarColor(dim)">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Recent Alerts Card -->
+        <div class="alerts-panel eval-card">
+          <div class="alerts-header">
+            <div class="card-title">
+              <i class="pi pi-bell"></i>
+              Recent Alerts
+            </div>
+            @if (alerts.length > 5) {
+              <span style="font-size:0.8rem; color:var(--p-primary-color); cursor:pointer;" (click)="showAllAlerts = true">View All ({{ alerts.length }})</span>
+            }
+          </div>
+          <div class="eval-alerts">
+            @if (displayedAlerts.length === 0) {
+              <div class="alerts-empty">
+                <i class="pi pi-check-circle"></i>
+                <span>No alerts in this period</span>
+              </div>
+            } @else {
+              @for (alert of displayedAlerts; track $index) {
+                <div class="eval-alerts__item" [class]="getAlertItemClass(alert.severity)">
+                  <div class="eval-alerts__icon-wrap" [class]="getAlertIconWrapClass(alert.severity)">
+                    <i [class]="'pi ' + getAlertIcon(alert.severity)"></i>
+                  </div>
+                  <div class="eval-alerts__content">
+                    <span class="eval-alerts__title">
+                      {{ formatAlertType(alert.alert_type || alert.metric || alert.severity) }}
+                    </span>
+                    <span class="eval-alerts__meta">
+                      @if (alert.details?.run_count) {
+                        {{ alert.details.run_count }} runs affected &bull;
+                      }
+                      {{ formatTimeAgo(alert.created_at) }}
+                    </span>
+                    @if (getAlertTopDrop(alert); as topDrop) {
+                      <div class="eval-alerts__details">
+                        {{ topDrop.label }}: {{ topDrop.prev }}% → {{ topDrop.curr }}%
+                      </div>
+                    }
+                    @if (alert.details?.hallucination_rate) {
+                      <div class="eval-alerts__details">
+                        Hallucination rate: {{ (alert.details.hallucination_rate * 100).toFixed(0) }}%
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <!-- All Alerts Dialog -->
+        <p-dialog
+          header="All Alerts & Incidents"
+          [(visible)]="showAllAlerts"
+          [modal]="true"
+          [draggable]="false"
+          [style]="{ width: '600px', maxHeight: '80vh' }"
+          [contentStyle]="{ overflow: 'auto' }"
+        >
+          @for (group of groupedAlerts; track group.type) {
+            <div class="alerts-dialog-group">
+              <h4 class="alerts-dialog-group__title">
+                {{ formatAlertType(group.type) }}
+                <span class="alerts-dialog-group__count">{{ group.items.length }}</span>
+              </h4>
+              @for (alert of group.items; track $index) {
+                <div class="eval-alerts__item" [class]="getAlertItemClass(alert.severity)">
+                  <div class="eval-alerts__icon-wrap" [class]="getAlertIconWrapClass(alert.severity)">
+                    <i [class]="'pi ' + getAlertIcon(alert.severity)"></i>
+                  </div>
+                  <div class="eval-alerts__content">
+                    <span class="eval-alerts__title">
+                      {{ formatAlertType(alert.alert_type || alert.metric || alert.severity) }}
+                    </span>
+                    <span class="eval-alerts__meta">
+                      @if (alert.details?.run_count) {
+                        {{ alert.details.run_count }} runs affected &bull;
+                      }
+                      {{ formatTimeAgo(alert.created_at) }}
+                    </span>
+                    @if (getAlertSummary(alert); as summary) {
+                      <div class="eval-alerts__details">{{ summary }}</div>
+                    }
+                    @if (alert.details?.hallucination_rate) {
+                      <div class="eval-alerts__details">
+                        Hallucination rate: {{ (alert.details.hallucination_rate * 100).toFixed(0) }}%
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          } @empty {
+            <div class="alerts-empty">
+              <i class="pi pi-check-circle"></i>
+              <span>No alerts in this period</span>
             </div>
           }
-        </div>
+        </p-dialog>
       </div>
-    </div>
 
-    <!-- E. Cost Forecast Row -->
-    <div class="stat-cards-grid mb-4">
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue">
+      <!-- E. Cost Forecast -->
+      <div class="cost-section eval-card">
+        <div class="card-title">
           <i class="pi pi-dollar"></i>
+          Cost & Consumption Forecast
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Window Cost</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ costForecast.window_cost != null ? '$' + costForecast.window_cost.toFixed(2) : '-' }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--green">
-          <i class="pi pi-bolt"></i>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Avg / Run</span>
-          <span class="stat-card__value stat-card__value--lg">{{ costForecast.avg_cost_per_run != null ? '$' + costForecast.avg_cost_per_run.toFixed(4) : '-' }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--amber">
-          <i class="pi pi-chart-line"></i>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">1K Forecast</span>
-          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_1k != null ? '$' + costForecast.forecast_1k.toFixed(2) : '-' }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--purple">
-          <i class="pi pi-chart-line"></i>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">10K Forecast</span>
-          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_10k != null ? '$' + costForecast.forecast_10k.toFixed(2) : '-' }}</span>
+        <div class="cost-cards">
+          <div class="cost-card cost-card--highlight">
+            <span class="cost-card__label">Window Cost</span>
+            <span class="cost-card__value">{{ costForecast.window_cost != null ? '$' + costForecast.window_cost.toFixed(2) : '—' }}</span>
+            <span class="cost-card__desc">Total in selected window</span>
+          </div>
+          <div class="cost-card">
+            <span class="cost-card__label">Avg / Run</span>
+            <span class="cost-card__value">{{ costForecast.avg_cost_per_run != null ? '$' + costForecast.avg_cost_per_run.toFixed(4) : '—' }}</span>
+            <span class="cost-card__desc">Per execution</span>
+          </div>
+          <div class="cost-card">
+            <span class="cost-card__label">1K Runs</span>
+            <span class="cost-card__value">{{ costForecast.forecast_1k != null ? '$' + costForecast.forecast_1k.toFixed(2) : '—' }}</span>
+            <span class="cost-card__desc">Projected</span>
+          </div>
+          <div class="cost-card">
+            <span class="cost-card__label">10K Runs</span>
+            <span class="cost-card__value">{{ costForecast.forecast_10k != null ? '$' + costForecast.forecast_10k.toFixed(2) : '—' }}</span>
+            <span class="cost-card__desc">Projected</span>
+          </div>
+          <div class="cost-card">
+            <span class="cost-card__label">100K Runs</span>
+            <span class="cost-card__value">{{ costForecast.forecast_100k != null ? '$' + costForecast.forecast_100k.toFixed(2) : '—' }}</span>
+            <span class="cost-card__desc">Projected</span>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-          <i class="pi pi-chart-line"></i>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">100K Forecast</span>
-          <span class="stat-card__value stat-card__value--lg">{{ costForecast.forecast_100k != null ? '$' + costForecast.forecast_100k.toFixed(2) : '-' }}</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- F. Execution History Table -->
-    <div class="stat-card" style="flex-direction: column; align-items: stretch;">
-      <div class="flex items-center gap-2 mb-3">
-        <div class="stat-card__icon stat-card__icon--blue">
+      <!-- F. Execution History Table -->
+      <div class="executions-section eval-card">
+        <div class="card-title">
           <i class="pi pi-history"></i>
+          Execution History
         </div>
-        <span class="stat-card__title">Execution History</span>
+        <p-table [value]="executions" styleClass="p-datatable-sm" [paginator]="true" [rows]="10"
+                 [rowsPerPageOptions]="[5,10,20]"
+                 [showCurrentPageReport]="true"
+                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} executions">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width:10%">Score</th>
+              <th style="width:10%">Status</th>
+              <th style="width:12%">Correctness</th>
+              <th style="width:12%">Helpfulness</th>
+              <th style="width:12%">Hallucination</th>
+              <th style="width:10%">Latency</th>
+              <th style="width:10%">Tokens</th>
+              <th style="width:10%">Cost</th>
+              <th style="width:14%">Date</th>
+              <th style="width:5rem"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-exec>
+            <tr style="cursor:pointer;" (click)="openRunDetail(exec)">
+              <td>
+                <span class="eval-score-badge" [class]="'eval-score-badge eval-score-badge--' + getScoreClass(exec.overall_score)">
+                  {{ exec.overall_score != null ? (exec.overall_score * 100).toFixed(0) + '%' : 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <p-tag [value]="getStatusLabel(exec.overall_score)" [severity]="getStatusSeverity(exec.overall_score)"></p-tag>
+              </td>
+              <td>{{ exec.correctness_score != null ? (exec.correctness_score * 100).toFixed(0) + '%' : '-' }}</td>
+              <td>{{ exec.helpfulness_score != null ? (exec.helpfulness_score * 100).toFixed(0) + '%' : '-' }}</td>
+              <td>{{ exec.hallucination_score != null ? (exec.hallucination_score * 100).toFixed(0) + '%' : '-' }}</td>
+              <td>{{ formatLatency(exec.latency_ms) }}</td>
+              <td>{{ formatTokens(exec.total_tokens) }}</td>
+              <td>{{ formatCost(exec.total_cost) }}</td>
+              <td>{{ exec.created_at | date:'MMM d, h:mm a' }}</td>
+              <td>
+                <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-rounded"
+                        pTooltip="Evaluate" tooltipPosition="top"
+                        [loading]="exec._evaluating"
+                        (click)="triggerEval(exec); $event.stopPropagation()"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10">
+                <div class="table-empty">
+                  <i class="pi pi-database"></i>
+                  <span>No executions found in this period</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
-      <p-table [value]="executions" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Score</th>
-            <th>Status</th>
-            <th>Correctness</th>
-            <th>Helpfulness</th>
-            <th>Hallucination</th>
-            <th>Latency</th>
-            <th>Tokens</th>
-            <th>Cost</th>
-            <th>Date</th>
-            <th style="width:6rem;"></th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-exec>
-          <tr style="cursor:pointer;" (click)="openRunDetail(exec)">
-            <td>
-              <span style="padding:0.2rem 0.5rem; border-radius:4px; font-size:0.8rem; font-weight:600;"
-                    [class]="getScoreBadgeClass(exec.overall_score)">
-                {{ exec.overall_score != null ? (exec.overall_score * 100).toFixed(0) + '%' : '-' }}
-              </span>
-            </td>
-            <td>
-              <p-tag [value]="getStatusLabel(exec.overall_score)" [severity]="getStatusSeverity(exec.overall_score)"></p-tag>
-            </td>
-            <td>{{ exec.correctness_score != null ? (exec.correctness_score * 100).toFixed(0) + '%' : '-' }}</td>
-            <td>{{ exec.helpfulness_score != null ? (exec.helpfulness_score * 100).toFixed(0) + '%' : '-' }}</td>
-            <td>{{ exec.hallucination_score != null ? (exec.hallucination_score * 100).toFixed(0) + '%' : '-' }}</td>
-            <td>{{ formatLatency(exec.latency_ms) }}</td>
-            <td>{{ formatTokens(exec.total_tokens) }}</td>
-            <td>{{ formatCost(exec.total_cost) }}</td>
-            <td>{{ exec.created_at | date:'short' }}</td>
-            <td>
-              <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-rounded"
-                      pTooltip="Evaluate" tooltipPosition="top"
-                      [loading]="exec._evaluating"
-                      (click)="triggerEval(exec); $event.stopPropagation()"></button>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr><td colspan="10" class="text-center p-6" style="color:var(--text-color-secondary);">No execution data.</td></tr>
-        </ng-template>
-      </p-table>
-    </div>
 
+    </div>
   }
 </div>
 
@@ -419,24 +519,18 @@
           <div style="display:flex; gap:2rem; margin-bottom:1.5rem; flex-wrap:wrap;">
             <!-- Gauge -->
             <div style="text-align:center; flex-shrink:0;">
-              <svg width="130" height="130" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--surface-border)" stroke-width="8"/>
-                <circle cx="60" cy="60" r="54"
-                  fill="none"
-                  [attr.stroke]="getScoreColor(selectedRunDetail.overall_score)"
-                  stroke-width="8"
-                  stroke-linecap="round"
-                  [attr.stroke-dasharray]="getGaugeCircumference()"
-                  [attr.stroke-dashoffset]="getGaugeOffset(selectedRunDetail.overall_score)"
-                  transform="rotate(-90 60 60)"
-                  style="transition: stroke-dashoffset 0.6s ease;"/>
-                <text x="60" y="55" text-anchor="middle" style="font-size:22px; font-weight:700; fill:var(--text-color);">
-                  {{ getScorePercent(selectedRunDetail.overall_score) }}
-                </text>
-                <text x="60" y="72" text-anchor="middle" style="font-size:10px; fill:var(--text-color-secondary);">
-                  Overall Score
-                </text>
-              </svg>
+              <div class="eval-gauge eval-gauge--md">
+                <svg class="eval-gauge__svg" viewBox="0 0 120 120">
+                  <circle class="eval-gauge__bg" cx="60" cy="60" r="54"/>
+                  <circle class="eval-gauge__fill" cx="60" cy="60" r="54"
+                    [style.stroke-dasharray]="getGaugeDasharray(selectedRunDetail.overall_score)"
+                    [style.stroke]="getScoreColor(selectedRunDetail.overall_score)"/>
+                </svg>
+                <div class="eval-gauge__center">
+                  <span class="eval-gauge__value">{{ getScorePercent(selectedRunDetail.overall_score) }}</span>
+                  <span class="eval-gauge__label">Overall Score</span>
+                </div>
+              </div>
               @if (selectedRunDetail.overall_score != null) {
                 <p-tag [value]="getStatusLabel(selectedRunDetail.overall_score)"
                        [severity]="getStatusSeverity(selectedRunDetail.overall_score)"
@@ -446,17 +540,17 @@
 
             <!-- Metric bars -->
             <div style="flex:1; min-width:200px;">
-              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+              <div class="metrics-list">
                 @for (dim of metricDims; track dim) {
-                  <div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.15rem;">
-                      <span style="font-size:0.8rem;">{{ formatMetricLabel(dim) }}</span>
-                      <span style="font-size:0.8rem; font-weight:600;" [style.color]="getRunMetricColor(dim)">
+                  <div class="metric-item">
+                    <div class="metric-item__header">
+                      <span class="metric-item__label" style="font-size:0.8rem;">{{ formatMetricLabel(dim) }}</span>
+                      <span class="metric-item__value" style="font-size:0.8rem;" [style.color]="getRunMetricColor(dim)">
                         {{ (getRunMetricValue(dim) * 100).toFixed(0) }}%
                       </span>
                     </div>
-                    <div style="width:100%; height:6px; background:var(--surface-ground); border-radius:3px; overflow:hidden;">
-                      <div style="height:100%; border-radius:3px; transition:width 0.4s ease;"
+                    <div class="metric-item__bar" style="height:6px;">
+                      <div class="metric-item__fill"
                            [style.width.%]="getRunMetricWidth(dim)"
                            [style.background]="getRunMetricColor(dim)">
                       </div>
@@ -512,7 +606,7 @@
                 @for (step of steps; track step.id || $index) {
                   <p-accordionpanel>
                     <p-accordionheader>
-                      <div  class="flex items-center gap-2 w-full">
+                      <div class="flex items-center gap-2 w-full">
                         <span style="font-weight:500;">{{ step.step_type || 'Step ' + (step.step_index || ($index + 1)) }}</span>
                         @if (step.model || getStepModel(step.id)) {
                           <p-tag [value]="step.model || getStepModel(step.id)" severity="info" styleClass="text-xs"></p-tag>

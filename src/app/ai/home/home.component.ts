@@ -455,6 +455,13 @@ export class HomeComponent implements OnInit {
     this.visibleIntegrate = true
   }
 
+  showIntegrateForProject(app: any): void {
+    this.selectedIntegration = 'openai'
+    this.integrateWorkspace = app.workspace_id || this.selectedWorkspace || null
+    this.integrateProject = app.id
+    this.visibleIntegrate = true
+  }
+
   closeIntegrateDialog(): void {
     this.visibleIntegrate = false
   }

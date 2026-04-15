@@ -978,6 +978,7 @@ export class DashboardService {
     if (params?.hours) {qp.set('hours', params.hours)}
     if (params?.environment) {qp.set('environment', params.environment)}
     if (params?.project_id) {qp.set('project_id', params.project_id)}
+    if (params?.granularity) {qp.set('granularity', params.granularity)}
     const qs = qp.toString()
     return qs ? `?${qs}` : ''
   }
@@ -1102,6 +1103,60 @@ export class DashboardService {
   async getInsightsAgentOverallScore(agent_id: string, params?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/insights/agents/${agent_id}/overall-score${this._insightsQs(params)}`
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    const options = { method: 'GET', headers }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  // ── Eval Model Config ────────────────────────────────
+
+  async getEvalModels(): Promise<any> {
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/insights/config/eval-models`
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    const options = { method: 'GET', headers }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  async updateEvalModels(data: { default?: string; overrides?: Record<string, string | null> }): Promise<any> {
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/insights/config/eval-models`
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    const options = { method: 'PUT', headers, body: JSON.stringify(data) }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  async deleteEvalModelOverride(metricName: string): Promise<any> {
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/insights/config/eval-models/${metricName}`
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    const options = { method: 'DELETE', headers }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  async getResolvedEvalModels(): Promise<any> {
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/insights/config/eval-models/resolved`
     const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
     const options = { method: 'GET', headers }
     try {

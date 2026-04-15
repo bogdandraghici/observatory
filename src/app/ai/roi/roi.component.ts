@@ -199,7 +199,13 @@ export class RoiComponent implements OnInit {
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
     if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    for (const org of this.orgs) {
+    // Prefer non-default orgs (auto-provisioned from platform)
+    const sortedOrgs = [...this.orgs].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
+    for (const org of sortedOrgs) {
       if (org.workspaces?.length) {
         for (const ws of org.workspaces) {
           const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)

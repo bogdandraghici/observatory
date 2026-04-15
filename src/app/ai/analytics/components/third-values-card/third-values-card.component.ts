@@ -22,7 +22,6 @@ export class ThirdValuesCardComponent implements OnInit, OnDestroy, OnChanges {
     { label: 'Median', num: 100.0 },
     { label: 'UQ', num: 120.0 },
   ]
-  @Input() appId: string = null
   @Input() title = 'Response times'
   @Input() suffix = '(ms)'
   @Input() data: any[] = []

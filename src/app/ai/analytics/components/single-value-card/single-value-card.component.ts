@@ -18,7 +18,6 @@ import { calculateAverage, calculateTotal, calculateTrend } from '../../../utils
 })
 export class SingleValueCardComponent implements OnInit, OnDestroy, OnChanges {
   @Input() value: number = 7 * 24
-  @Input() appId: string = null
   @Input() title = 'Requests'
   @Input() dataProperty = 'couny'
   @Input() data: any[] = []

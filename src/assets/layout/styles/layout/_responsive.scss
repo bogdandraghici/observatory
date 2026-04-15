@@ -5,7 +5,7 @@
 
     .layout-topbar-inner,
     .layout-footer {
-        width: 100%;
+        width: calc(100% - 280px);
     }
 
 }

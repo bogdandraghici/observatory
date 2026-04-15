@@ -69,7 +69,13 @@ export class DriftComponent implements OnInit {
   }
 
   getDefaultAppOrg(): { org: any, workspace: any, app: any } {
-    for (const org of this.orgs) {
+    // Prefer non-default orgs (auto-provisioned from platform)
+    const sortedOrgs = [...this.orgs].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
+    for (const org of sortedOrgs) {
       if (org.workspaces?.length > 0) {
         for (const ws of org.workspaces) {
           const activeProjects = (ws.projects || []).filter((a: any) => a.is_active)
@@ -84,7 +90,7 @@ export class DriftComponent implements OnInit {
       }
     }
     if (this.orgs.length > 0) {
-      const firstOrg = this.orgs[0]
+      const firstOrg = sortedOrgs[0]
       const firstWs = firstOrg.workspaces?.length > 0 ? firstOrg.workspaces[0] : null
       return { org: firstOrg, workspace: firstWs, app: null }
     }
@@ -174,9 +180,18 @@ export class DriftComponent implements OnInit {
   }
 
   computeKPIs(): void {
-    this.metricsMonitored = this.driftResults.length
-    this.driftsDetected = this.driftResults.filter((r: any) => r.drift_detected).length
-    this.significantDrifts = this.driftResults.filter((r: any) => r.severity === 'significant').length
+    // Deduplicate: keep only the latest result per metric
+    const latestPerMetric = new Map<string, any>()
+    for (const r of this.driftResults) {
+      if (!latestPerMetric.has(r.metric)) {
+        latestPerMetric.set(r.metric, r)
+      }
+    }
+    const latest = Array.from(latestPerMetric.values())
+
+    this.metricsMonitored = latest.length
+    this.driftsDetected = latest.filter((r: any) => r.drift_detected).length
+    this.significantDrifts = latest.filter((r: any) => r.severity === 'significant').length
     if (this.driftResults.length > 0 && this.driftResults[0].detected_at) {
       this.lastComputed = new Date(this.driftResults[0].detected_at).toLocaleDateString()
     } else {

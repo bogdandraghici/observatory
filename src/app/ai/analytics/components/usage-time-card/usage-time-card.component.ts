@@ -18,7 +18,7 @@ import { MetricsService } from 'src/app/ai/services/metrics.service'
     standalone: false
 })
 export class UsageTimeCardComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() appId: string = null
+  @Input() agent: any = null
   @Input() title = 'Usage Time'
   @Input() days = 30
   data: any[] = []
@@ -36,7 +36,7 @@ export class UsageTimeCardComponent implements OnInit, OnDestroy, OnChanges {
 
   populateData(): void {
     const values = []
-    this.metricsService.getHoursAll(this.appId, this.days).then((data) => {
+    this.metricsService.getHoursAll(this.days, this.agent).then((data) => {
       for (let i = 0; i <= 23; i++) {
         let found = false
         data.forEach((item) => {

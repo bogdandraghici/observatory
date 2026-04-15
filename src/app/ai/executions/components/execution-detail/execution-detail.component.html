@@ -117,7 +117,14 @@
                       </span>
                     }
                     @if (node.data?.cost > 0) {
-                      <span class="text-xs" style="color: var(--text-color-secondary)">
+                      <span
+                        class="text-xs"
+                        style="color: var(--text-color-secondary)"
+                        [style.cursor]="node.data.type === 'llm' ? 'help' : 'default'"
+                        [pTooltip]="node.data.type === 'llm' ? getCostBreakdownTooltip(node.data) : ''"
+                        tooltipPosition="right"
+                        [escape]="false"
+                      >
                         {{ formatCost(node.data.cost) }}
                       </span>
                     }
@@ -138,6 +145,7 @@
               <p-tab value="timeline">Timeline</p-tab>
               <p-tab value="detail">Node Detail</p-tab>
               <p-tab value="graph">Graph</p-tab>
+              <p-tab value="evaluations">Evaluations</p-tab>
               <p-tab value="metadata">Metadata</p-tab>
             </p-tablist>
             <p-tabpanels>
@@ -203,7 +211,15 @@
                           </td>
                           <td>{{ run.prompt_tokens || 0 }}</td>
                           <td>{{ run.completion_tokens || 0 }}</td>
-                          <td>{{ formatCost(run.cost) }}</td>
+                          <td>
+                            <span
+                              [pTooltip]="run.type === 'llm' && run.cost ? getCostBreakdownTooltip(run) : null"
+                              tooltipPosition="top"
+                              [escape]="false"
+                              [style.cursor]="run.type === 'llm' && run.cost ? 'help' : 'default'"
+                              [style.border-bottom]="run.type === 'llm' && run.cost ? '1px dashed var(--primary-color)' : 'none'"
+                            >{{ formatCost(run.cost) }}</span>
+                          </td>
                           <td>
                             @if (!run.parent_run) {
                               <p-tag value="root" severity="contrast" [style]="{ 'font-size': '0.7rem' }"></p-tag>
@@ -312,7 +328,13 @@
                         <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Duration</div>
                         <div class="text-xl font-bold">{{ selectedRun.data.duration ?? '-' }}s</div>
                       </div>
-                      <div style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px">
+                      <div
+                        style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px"
+                        [style.cursor]="selectedRun.data.type === 'llm' ? 'help' : 'default'"
+                        [pTooltip]="selectedRun.data.type === 'llm' ? getCostBreakdownTooltip(selectedRun.data) : ''"
+                        tooltipPosition="bottom"
+                        [escape]="false"
+                      >
                         <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Cost</div>
                         <div class="text-xl font-bold">{{ formatCost(selectedRun.data.cost) }}</div>
                       </div>
@@ -360,6 +382,50 @@
                     <div #mermaidEl style="text-align: center; resize: both; overflow: auto; max-height: 80vh; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem"></div>
                   } @else {
                     <p-message severity="info" text="No graph available for this execution."></p-message>
+                  }
+                </div>
+              </p-tabpanel>
+
+              <!-- Evaluations Tab -->
+              <p-tabpanel value="evaluations">
+                <div style="padding: 1rem">
+                  @if (selectedRun?.data?.type === 'llm' && evaluationResults.length > 0) {
+                    <p-table [value]="evaluationResults" styleClass="p-datatable-sm">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th style="width: 3rem">Pass</th>
+                          <th>Evaluator</th>
+                          <th>Score</th>
+                          <th>Comment</th>
+                          <th>Evaluated At</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-result>
+                        <tr>
+                          <td>
+                            @if (result.passed === true) {
+                              <i class="pi pi-check-circle" style="color: #4ade80"></i>
+                            } @else if (result.passed === false) {
+                              <i class="pi pi-times-circle" style="color: #f87171"></i>
+                            } @else {
+                              -
+                            }
+                          </td>
+                          <td>
+                            <p-tag [value]="result.evaluator_name || 'Unknown'" severity="info" [rounded]="true"></p-tag>
+                          </td>
+                          <td class="font-bold">{{ result.score !== null && result.score !== undefined ? (result.score | number:'1.2-2') : '-' }}</td>
+                          <td>
+                            <span class="text-sm" style="max-width: 400px; display: inline-block; white-space: pre-wrap; word-break: break-word">{{ result.comment || '-' }}</span>
+                          </td>
+                          <td>{{ formatTime(result.created_at) }}</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  } @else if (selectedRun?.data?.type === 'llm') {
+                    <p-message severity="info" text="No evaluation results for this LLM call. Configure evaluators in the project settings."></p-message>
+                  } @else {
+                    <p-message severity="info" text="Select an LLM node to view its evaluation results."></p-message>
                   }
                 </div>
               </p-tabpanel>

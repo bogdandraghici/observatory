@@ -172,8 +172,9 @@ html {
 }
 
 
-/* Make all p-drawer close buttons primary color */
-.p-drawer .p-drawer-close-button {
+/* Make all p-drawer and p-dialog close buttons primary color */
+.p-drawer .p-drawer-close-button,
+.p-dialog .p-dialog-close-button {
   color: var(--p-primary-color) !important;
 }
 

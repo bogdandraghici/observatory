@@ -137,7 +137,13 @@ export class RegulatoryComponent implements OnInit {
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
     if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    for (const org of this.orgs) {
+    // Prefer non-default orgs (auto-provisioned from platform)
+    const sortedOrgs = [...this.orgs].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
+    for (const org of sortedOrgs) {
       if (org.workspaces?.length) {
         for (const ws of org.workspaces) {
           const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)
@@ -151,7 +157,7 @@ export class RegulatoryComponent implements OnInit {
         return { org, workspace: null, app: orgProjects[0] }
       }
     }
-    const firstOrg = this.orgs[0]
+    const firstOrg = sortedOrgs[0]
     const firstWs = firstOrg.workspaces?.length ? firstOrg.workspaces[0] : null
     return { org: firstOrg, workspace: firstWs, app: null }
   }

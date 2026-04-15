@@ -10,6 +10,11 @@ import { RouterModule } from '@angular/router'
           import('./home/home.module').then((m) => m.HomeModule),
       },
       {
+        path: 'projects',
+        loadChildren: () =>
+          import('./projects/projects.module').then((m) => m.ProjectsModule),
+      },
+      {
         path: 'dashboard',
         loadChildren: () =>
           import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
@@ -95,6 +100,16 @@ import { RouterModule } from '@angular/router'
         path: 'drift',
         loadChildren: () =>
           import('./drift/drift.module').then((m) => m.DriftModule),
+      },
+      {
+        path: 'rsi',
+        loadChildren: () =>
+          import('./rsi/rsi.module').then((m) => m.RsiModule),
+      },
+      {
+        path: 'tests',
+        loadChildren: () =>
+          import('./tests/tests.module').then((m) => m.TestsModule),
       },
       {
         path: 'policies',

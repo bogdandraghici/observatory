@@ -20,7 +20,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
     standalone: false
 })
 export class PieValueCardComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() appId: string = null
+  @Input() agent: any = null
   @Input() title = 'Requests'
   @Input() days = 30
   @Input() dataSource = 'agent'
@@ -49,18 +49,18 @@ export class PieValueCardComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   populateData(): void {
-    if (!this.appId || !this.days) {
+    if (!this.days) {
       return
     }
     if (this.dataSource === 'agent') {
-      this.metricsService.getAgents(this.appId, this.days).then((data) => {
+      this.metricsService.getAgents(this.days).then((data) => {
         this.data = data
         this.chartOptionsPie = this.getOptionsPie()
         this.chartOptionsBar = this.getOptionsBar()
         this.chartData = this.getData()
       })
     } else {
-      this.metricsService.getVersions(this.appId, this.days).then((data) => {
+      this.metricsService.getVersions(this.days, this.agent).then((data) => {
         this.data = data
         this.chartOptionsPie = this.getOptionsPie()
         this.chartOptionsBar = this.getOptionsBar()

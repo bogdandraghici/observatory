@@ -26,6 +26,7 @@ export class RegistryComponent implements OnInit {
 
   lifecycleOptions = [
     { label: 'All', value: '' },
+    { label: 'Research', value: 'research' },
     { label: 'Development', value: 'development' },
     { label: 'Staging', value: 'staging' },
     { label: 'Production', value: 'production' },
@@ -71,6 +72,15 @@ export class RegistryComponent implements OnInit {
     { label: 'Mistral', value: 'mistral' },
     { label: 'xAI', value: 'xai' },
     { label: 'Azure', value: 'azure' },
+  ]
+
+  dataResidencyOptions = [
+    { label: 'US', value: 'US' },
+    { label: 'EU', value: 'EU' },
+    { label: 'UK', value: 'UK' },
+    { label: 'APAC', value: 'APAC' },
+    { label: 'Global', value: 'Global' },
+    { label: 'On-Premise', value: 'On-Premise' },
   ]
 
   // Agent Baselines
@@ -126,7 +136,13 @@ export class RegistryComponent implements OnInit {
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
     if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    for (const org of this.orgs) {
+    // Prefer non-default orgs (auto-provisioned from platform) over the built-in Default org
+    const sortedOrgs = [...this.orgs].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
+    for (const org of sortedOrgs) {
       if (org.workspaces?.length) {
         for (const ws of org.workspaces) {
           const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)
@@ -161,12 +177,14 @@ export class RegistryComponent implements OnInit {
   orgChanged(_____event: any): void {
     this.workspaces = this.getWorkspaces(this.selectedOrg)
     this.selectedWorkspace = this.workspaces?.length > 0 ? this.workspaces[0].id : null
+    this.agentsFilterApp = ''
     this.loadAll()
   }
 
   workspaceChanged(event: any): void {
     const org = this.orgs?.find((item) => item.id === this.selectedOrg)
     this.apps = this.getAppsFromWorkspace(org, this.selectedWorkspace)
+    this.agentsFilterApp = ''
     this.loadAll()
   }
 
@@ -175,6 +193,13 @@ export class RegistryComponent implements OnInit {
     this.loadVendors()
     this.loadVendorSummary()
     this.loadModels()
+    // Preselect first project for Agents tab
+    const org = this.orgs?.find((item) => item.id === this.selectedOrg)
+    const projects = this.getAppsFromWorkspace(org, this.selectedWorkspace)
+    if (projects?.length > 0 && !this.agentsFilterApp) {
+      this.agentsFilterApp = projects[0].id
+      this.loadProjectAgents(this.agentsFilterApp)
+    }
   }
 
   // ── Projects ────────────────────────────────────────
@@ -229,6 +254,7 @@ export class RegistryComponent implements OnInit {
     switch (status) {
       case 'production': return 'success'
       case 'staging': return 'info'
+      case 'research': return 'contrast'
       case 'development': return 'warn'
       case 'deprecated': return 'danger'
       case 'retired': return 'secondary'

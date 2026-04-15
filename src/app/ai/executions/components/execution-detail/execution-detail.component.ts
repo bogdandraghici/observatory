@@ -15,6 +15,7 @@ import {
 import { Drawer } from 'primeng/drawer'
 import { TreeNode } from 'primeng/api'
 import { DashboardService } from 'src/app/ai/services/dashboard.service'
+import { EvaluatorService } from 'src/app/ai/services/evaluator.service'
 import { getDuration, formatTime } from 'src/app/ai/utils/time'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import mermaid from 'mermaid'
@@ -60,11 +61,13 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
   dataRuns: any[] = []
   executionTrace: any = null
   waterfallData: any[] = []
+  evaluationResults: any[] = []
   formatTime = formatTime
   activeTab = 'overview'
 
   constructor(
     private dashboardService: DashboardService,
+    private evaluatorService: EvaluatorService,
     private cd: ChangeDetectorRef,
     public layoutService: LayoutService,
     @Inject(PLATFORM_ID) private _platformId: any,
@@ -182,6 +185,16 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
     this.selectedRun = event.node
     this.activeTab = 'detail'
     this.drawMermaid()
+    this.loadEvaluationResults(event.node?.data?.id)
+  }
+
+  async loadEvaluationResults(runId: string): Promise<void> {
+    if (!runId) { this.evaluationResults = []; return }
+    try {
+      this.evaluationResults = await this.evaluatorService.getRunResults(runId) || []
+    } catch {
+      this.evaluationResults = []
+    }
   }
 
   onTableRowSelect(event: any): void {
@@ -369,6 +382,31 @@ export class ExecutionDetailComponent implements OnInit, OnChanges {
     if (cost == null || cost === 0) {return '-'}
     if (cost < 0.0001) {return '< $0.0001'}
     return '$' + cost.toFixed(4)
+  }
+
+  getCostBreakdownTooltip(data: any): string {
+    const prompt = data.prompt_tokens || 0
+    const completion = data.completion_tokens || 0
+    const total = prompt + completion
+    const cost = data.cost ? '$' + data.cost.toFixed(4) : '-'
+    const promptPct = total > 0 ? Math.round((prompt / total) * 100) : 0
+    const completionPct = total > 0 ? Math.round((completion / total) * 100) : 0
+    return `<div style="text-align:left; min-width:180px">
+      <div style="font-weight:600; margin-bottom:6px">Cost Breakdown</div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+        <span>Input (${promptPct}%)</span><span>${prompt.toLocaleString()} tokens</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+        <span>Output (${completionPct}%)</span><span>${completion.toLocaleString()} tokens</span>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.2); margin:6px 0"></div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+        <span>Total</span><span>${total.toLocaleString()} tokens</span>
+      </div>
+      <div style="display:flex; justify-content:space-between">
+        <span>Cost</span><span style="font-weight:600; color:var(--primary-color)">${cost}</span>
+      </div>
+    </div>`
   }
 
   getTotalCost(): number {

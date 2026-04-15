@@ -9,6 +9,7 @@ import { Drawer } from 'primeng/drawer'
 
 @Component({
     templateUrl: './insights.component.html',
+    styleUrl: './insights.component.scss',
     standalone: false,
     providers: [MessageService],
 })
@@ -40,6 +41,14 @@ export class InsightsComponent implements OnInit {
     { label: 'Prod', value: 'prod' },
   ]
   selectedEnvironment = ''
+
+  granularity: 'hour' | 'day' | 'week' | 'run' = 'day'
+  granularityOptions = [
+    { label: 'Per Run', value: 'run' },
+    { label: 'Hourly', value: 'hour' },
+    { label: 'Daily', value: 'day' },
+    { label: 'Weekly', value: 'week' },
+  ]
 
   // Summary
   summary: any = {}
@@ -79,7 +88,8 @@ export class InsightsComponent implements OnInit {
   // Metric dimension keys
   metricDims = [
     'helpfulness', 'correctness', 'conciseness', 'hallucination',
-    'groundedness', 'rag_coverage', 'tool_use', 'toxicity', 'refusal'
+    'groundedness', 'rag_coverage', 'tool_use', 'toxicity', 'refusal',
+    'pii_leakage', 'prompt_injection', 'jailbreak', 'answer_relevance'
   ]
 
   constructor(
@@ -131,10 +141,16 @@ export class InsightsComponent implements OnInit {
     let default_app = null
     let parent_org = null
     let parent_workspace = null
-    orgs.forEach((org) => {
+    // Prefer non-default orgs (auto-provisioned from platform)
+    const sortedOrgs = [...orgs].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
+    sortedOrgs.forEach((org) => {
       (org.workspaces || []).forEach((ws) => {
         (ws.projects || []).forEach((app) => {
-          if (app.is_default) {
+          if (!default_app) {
             default_app = app
             parent_org = org
             parent_workspace = ws
@@ -143,7 +159,7 @@ export class InsightsComponent implements OnInit {
       })
       if (!default_app) {
         (org.projects || []).forEach((app) => {
-          if (app.is_default) {
+          if (!default_app) {
             default_app = app
             parent_org = org
           }
@@ -151,7 +167,7 @@ export class InsightsComponent implements OnInit {
       }
     })
     if (!parent_org && orgs.length > 0) {
-      parent_org = orgs[0]
+      parent_org = sortedOrgs[0]
       parent_workspace = parent_org?.workspaces?.[0] || null
       default_app = parent_workspace?.projects?.[0] || parent_org?.projects?.[0]
     }
@@ -211,11 +227,13 @@ export class InsightsComponent implements OnInit {
   agentChanged(): void { this.loadAll() }
   periodChanged(): void { this.loadAll() }
   environmentChanged(): void { this.loadAll() }
+  granularityChanged(): void { this.loadTimeseries(this.queryParams) }
 
   private get queryParams(): any {
     const p: any = { hours: this.hours }
     if (this.selectedEnvironment) {p.environment = this.selectedEnvironment}
     if (this.selectedApp) {p.project_id = this.selectedApp}
+    if (this.granularity) {p.granularity = this.granularity}
     return p
   }
 
@@ -368,6 +386,13 @@ export class InsightsComponent implements OnInit {
     return 2 * Math.PI * 54
   }
 
+  getGaugeDasharray(value: number | null | undefined): string {
+    const pct = value != null ? Math.min(Math.max(value, 0), 1) : 0
+    const circumference = 2 * Math.PI * 54
+    const filled = pct * circumference
+    return `${filled} ${circumference}`
+  }
+
   getScoreColor(value: number | null | undefined): string {
     if (value == null) {return '#94a3b8'}
     if (value >= 0.8) {return '#22c55e'}
@@ -394,6 +419,11 @@ export class InsightsComponent implements OnInit {
   }
 
   formatMetricLabel(key: string): string {
+    const overrides: Record<string, string> = {
+      pii_leakage: 'PII Leakage',
+      rag_coverage: 'RAG Coverage',
+    }
+    if (overrides[key]) return overrides[key]
     return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
   }
 
@@ -404,6 +434,14 @@ export class InsightsComponent implements OnInit {
     setTimeout(() => this.renderTrendChart(), 50)
   }
 
+  private movingAverage(values: number[], window = 5): (number | null)[] {
+    return values.map((_, i) => {
+      const start = Math.max(0, i - window + 1)
+      const slice = values.slice(start, i + 1).filter(v => v != null)
+      return slice.length ? slice.reduce((a, b) => a + b, 0) / slice.length : null
+    })
+  }
+
   renderTrendChart(): void {
     if (this.trendChart) {this.trendChart.destroy()}
     const canvas = document.getElementById('trendCanvas') as HTMLCanvasElement
@@ -412,11 +450,10 @@ export class InsightsComponent implements OnInit {
     const isDark = this.layoutService.config().colorScheme === 'dark'
     const textSecondary = isDark ? '#94a3b8' : '#64748b'
     const surfaceBorder = isDark ? 'rgba(148,163,184,0.15)' : '#e2e8f0'
+    const isRunMode = this.granularity === 'run'
 
     const tabIndex = parseInt(this.activeTrendTab, 10)
 
-    // The API returns { quality: [...], incidents: [...] }
-    // Map tabs: 0=quality, 1=incidents (safety), 2=quality (for performance we show quality too), 3=quality (for cost)
     let series: any[] = []
     let label = 'Quality Score'
     let color = '#22c55e'
@@ -431,65 +468,98 @@ export class InsightsComponent implements OnInit {
       label = 'Safety Score'
       color = '#3b82f6'
     } else if (tabIndex === 2) {
-      // Performance — show quality count as proxy (no dedicated perf timeseries)
       series = this.timeseriesData.quality || []
       label = 'Executions'
       color = '#f59e0b'
       isPercent = false
     } else if (tabIndex === 3) {
-      // Cost — show quality count as proxy (no dedicated cost timeseries)
       series = this.timeseriesData.quality || []
       label = 'Executions'
       color = '#8b5cf6'
       isPercent = false
     }
 
-    const labels = series.map((p: any) => {
-      const d = p.bucket_start || p.timestamp || p.date || ''
-      if (!d) {return ''}
-      // Format: "Feb 15"
-      try {
-        const dt = new Date(d)
-        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      } catch {
-        return d.length > 10 ? d.substring(5, 10) : d
-      }
-    })
+    let labels: (string | number)[]
+    if (isRunMode) {
+      labels = series.map((_: any, i: number) => i + 1)
+    } else {
+      labels = series.map((p: any) => {
+        const d = p.bucket_start || p.timestamp || p.date || ''
+        if (!d) {return ''}
+        try {
+          const dt = new Date(d)
+          return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        } catch {
+          return d.length > 10 ? d.substring(5, 10) : d
+        }
+      })
+    }
 
     let values: number[]
-    if (tabIndex === 2) {
-      // Performance tab: show count
+    if (tabIndex === 2 || tabIndex === 3) {
       values = series.map((p: any) => p.count ?? 0)
-    } else if (tabIndex === 3) {
-      // Cost tab: show count
-      values = series.map((p: any) => p.count ?? 0)
+    } else if (tabIndex === 1) {
+      values = series.map((p: any) => 1 - (p.value ?? 0))
     } else {
       values = series.map((p: any) => p.value ?? 0)
     }
+
+    const trendValues = this.movingAverage(values)
 
     const yCallback = isPercent
       ? (v: any) => (v * 100).toFixed(0) + '%'
       : undefined
 
+    const xScale: any = isRunMode
+      ? {
+          type: 'linear',
+          title: { display: true, text: 'Run #', color: textSecondary },
+          min: 1,
+          max: Math.max(series.length, 1),
+          ticks: {
+            stepSize: 1,
+            color: textSecondary,
+            callback: (value: any) => Number.isInteger(value) ? `#${value}` : '',
+          },
+          grid: { color: surfaceBorder },
+        }
+      : {
+          ticks: { color: textSecondary, maxRotation: 45 },
+          grid: { color: surfaceBorder },
+        }
+
     this.trendChart = new Chart(canvas, {
       type: 'line',
       data: {
         labels,
-        datasets: [{
-          label,
-          data: values,
-          borderColor: color,
-          backgroundColor: color + '1a',
-          fill: true,
-          tension: 0.3,
-          pointRadius: 3,
-        }],
+        datasets: [
+          {
+            label,
+            data: values,
+            borderColor: color,
+            backgroundColor: color + '1a',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+          },
+          {
+            label: 'Trend',
+            data: trendValues,
+            borderColor: color + '80',
+            borderDash: [6, 3],
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { ticks: { color: textSecondary, maxRotation: 45 }, grid: { color: surfaceBorder } },
+          x: xScale,
           y: {
             beginAtZero: true,
             max: isPercent ? 1 : undefined,
@@ -504,6 +574,12 @@ export class InsightsComponent implements OnInit {
           legend: { display: false },
           tooltip: {
             callbacks: {
+              title: (items: any[]) => {
+                if (isRunMode && items.length) {
+                  return `Run #${items[0].label}`
+                }
+                return undefined
+              },
               label: (ctx: any) => isPercent
                 ? `${label}: ${(ctx.parsed.y * 100).toFixed(0)}%`
                 : `${label}: ${ctx.parsed.y}`,
@@ -512,6 +588,13 @@ export class InsightsComponent implements OnInit {
         },
       },
     })
+  }
+
+  // ── Period label ────────────────────────────────────────
+
+  getSelectedPeriodLabel(): string {
+    const opt = this.periodOptions.find(o => o.value === this.hours)
+    return opt ? opt.label : `Last ${this.hours}h`
   }
 
   // ── Alerts ───────────────────────────────────────────────
@@ -534,11 +617,124 @@ export class InsightsComponent implements OnInit {
     }
   }
 
+  getAlertItemClass(severity: string): string {
+    switch (severity?.toLowerCase()) {
+      case 'critical': return 'eval-alerts__item eval-alerts__item--critical'
+      case 'warning': case 'high': return 'eval-alerts__item eval-alerts__item--warning'
+      default: return 'eval-alerts__item eval-alerts__item--info'
+    }
+  }
+
+  getAlertIconWrapClass(severity: string): string {
+    switch (severity?.toLowerCase()) {
+      case 'critical': return 'eval-alerts__icon-wrap eval-alerts__icon-wrap--critical'
+      case 'warning': case 'high': return 'eval-alerts__icon-wrap eval-alerts__icon-wrap--warning'
+      default: return 'eval-alerts__icon-wrap eval-alerts__icon-wrap--info'
+    }
+  }
+
+  getAlertIcon(severity: string): string {
+    switch (severity?.toLowerCase()) {
+      case 'critical': return 'pi-exclamation-circle'
+      case 'warning': case 'high': return 'pi-exclamation-triangle'
+      default: return 'pi-info-circle'
+    }
+  }
+
+  formatAlertType(type: string): string {
+    if (!type) return 'Alert'
+    return type.split('_').join(' ').replace(/\b\w/g, c => c.toUpperCase())
+  }
+
+  getAlertMessage(alert: any): string {
+    if (!alert) return ''
+    if (typeof alert.message === 'string') return alert.message
+    if (typeof alert.details === 'string') return alert.details
+    // Handle object details - extract meaningful text, avoid [object Object]
+    if (alert.details && typeof alert.details === 'object') {
+      if (alert.details.run_count) return `${alert.details.run_count} runs affected`
+      if (alert.details.hallucination_rate) return `Hallucination rate: ${(alert.details.hallucination_rate * 100).toFixed(0)}%`
+      try {
+        const keys = Object.keys(alert.details)
+        if (keys.length > 0) {
+          return keys.map(k => {
+            const v = alert.details[k]
+            if (v == null) return `${k}: -`
+            if (typeof v === 'object') return `${k}: ${JSON.stringify(v)}`
+            return `${k}: ${v}`
+          }).join(', ')
+        }
+      } catch { /* ignore */ }
+    }
+    return ''
+  }
+
+  formatTimeAgo(dateString: string): string {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffDays > 0) return `${diffDays}d ago`
+    if (diffHours > 0) return `${diffHours}h ago`
+    if (diffMins > 0) return `${diffMins}m ago`
+    return 'Just now'
+  }
+
+  // All alerts dialog
+  showAllAlerts = false
+  get groupedAlerts(): { type: string, items: any[] }[] {
+    const alerts = this.alerts || []
+    const groups: Record<string, any[]> = {}
+    for (const alert of alerts) {
+      const type = (alert.alert_type || 'Other').split('_').join(' ')
+      ;(groups[type] ??= []).push(alert)
+    }
+    return Object.entries(groups).map(([type, items]) => ({ type, items }))
+  }
+
+  getAlertSummary(alert: any): string {
+    const drops = alert.details?.drops
+    if (!drops || typeof drops !== 'object') return ''
+    const entries = Object.entries(drops) as [string, any][]
+    return entries
+      .map(([key, val]) => {
+        const label = key.replace(/_score$/, '').replace(/_/g, ' ')
+        const prev = Math.round((val.previous ?? 0) * 100)
+        const curr = Math.round((val.current ?? 0) * 100)
+        return `${label}: ${prev}% → ${curr}%`
+      })
+      .join(', ')
+  }
+
+  getAlertTopDrop(alert: any): { label: string; prev: number; curr: number } | null {
+    const drops = alert.details?.drops
+    if (!drops || typeof drops !== 'object') return null
+    const entries = Object.entries(drops) as [string, any][]
+    if (!entries.length) return null
+    const biggest = entries.reduce((a, b) => ((b[1].drop ?? 0) > (a[1].drop ?? 0) ? b : a))
+    return {
+      label: biggest[0].replace(/_score$/, '').replace(/_/g, ' '),
+      prev: Math.round((biggest[1].previous ?? 0) * 100),
+      curr: Math.round((biggest[1].current ?? 0) * 100),
+    }
+  }
+
   get displayedAlerts(): any[] {
     return this.alerts.slice(0, 5)
   }
 
   // ── Execution table helpers ──────────────────────────────
+
+  getScoreClass(value: number | null | undefined): string {
+    if (value == null) {return 'low'}
+    if (value >= 0.8) {return 'high'}
+    if (value >= 0.5) {return 'medium'}
+    return 'low'
+  }
 
   getScoreBadgeClass(score: number | null | undefined): string {
     if (score == null) {return 'bg-gray-100 text-gray-600'}

@@ -1,0 +1,689 @@
+<div class="ai-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <div class="flex items-center gap-3">
+        <p-button icon="pi pi-arrow-left" [rounded]="true" [text]="true" severity="secondary" (click)="goBack()" pTooltip="Back to projects"></p-button>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="page-header__title">{{ project?.name || 'Project' }}</h1>
+            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" size="small" (click)="showEditDialog()" pTooltip="Edit project"></p-button>
+          </div>
+          <p class="page-header__subtitle">
+            <code class="text-xs" style="color: var(--text-color-secondary)">{{ projectId }}</code>
+            @if (project?.org_name) {
+              <span class="text-xs" style="color: var(--text-color-secondary); margin-left: 0.5rem">
+                {{ project.org_name }} @if (project.workspace_name) { / {{ project.workspace_name }} }
+              </span>
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="page-header__right">
+      <p-selectButton
+        [options]="periods"
+        [(ngModel)]="hours"
+        [multiple]="false"
+        optionLabel="name"
+        optionValue="value"
+        (onChange)="periodChanged()"
+      ></p-selectButton>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  @if (project?.stats) {
+    <div class="grid grid-cols-12 gap-4 mb-4">
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--primary-color); font-weight: 600">Run Count (7D)</span>
+          <span class="text-2xl font-bold">{{ project.stats.run_cnt || 0 }}</span>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--text-color-secondary)">Agents</span>
+          <span class="text-2xl font-bold">{{ project.stats.agent_cnt || 0 }}</span>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--text-color-secondary)">Error Rate</span>
+          <span class="text-2xl font-bold">{{ project.stats.error_rate || 0 }}</span>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--text-color-secondary)">Median Tokens</span>
+          <span class="text-2xl font-bold">{{ project.stats.median_tokens || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--text-color-secondary)">P50 Latency</span>
+          <p-tag icon="pi pi-clock" [value]="processDuration(project.stats.p50_latency) + 's'" [severity]="getLatency(processDuration(project.stats.p50_latency))"></p-tag>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <div class="stat-card" style="flex-direction: column; align-items: center; padding: 1rem">
+          <span class="text-xs" style="color: var(--text-color-secondary)">P90 Latency</span>
+          <p-tag icon="pi pi-clock" [value]="processDuration(project.stats.p90_latency) + 's'" [severity]="getLatency(processDuration(project.stats.p90_latency))"></p-tag>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tabs -->
+  <p-tabs [value]="activeTab" (valueChange)="activeTab = $event">
+    <p-tablist>
+      <p-tab value="overview">Overview</p-tab>
+      <p-tab value="executions">Executions</p-tab>
+      <p-tab value="agents">Agents</p-tab>
+      <p-tab value="evaluators">Evaluators</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Overview -->
+      <p-tabpanel value="overview">
+        <div style="padding: 1rem">
+          @if (project) {
+            <div class="stat-card" style="flex-direction: column; align-items: stretch">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-info-circle" style="color: var(--primary-color)"></i>
+                  <span class="font-semibold">Project Info</span>
+                </div>
+                <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" size="small" (click)="showEditDialog()" pTooltip="Edit"></p-button>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Name</span>
+                  <div class="font-semibold">{{ project.name }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Owner</span>
+                  <div class="font-semibold">{{ project.owner || '-' }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Lifecycle</span>
+                  <div>
+                    @if (project.lifecycle_status) {
+                      <p-tag [value]="project.lifecycle_status" severity="info"></p-tag>
+                    } @else {
+                      <span class="font-semibold">-</span>
+                    }
+                  </div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Risk Level</span>
+                  <div>
+                    @if (project.risk_level) {
+                      <p-tag [value]="project.risk_level" [severity]="project.risk_level === 'critical' || project.risk_level === 'high' ? 'danger' : 'info'"></p-tag>
+                    } @else {
+                      <span class="font-semibold">-</span>
+                    }
+                  </div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Business Owner</span>
+                  <div class="font-semibold">{{ project.business_owner || '-' }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Technical Owner</span>
+                  <div class="font-semibold">{{ project.technical_owner || '-' }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Organization</span>
+                  <div class="font-semibold">{{ project.org_name || '-' }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Workspace</span>
+                  <div class="font-semibold">{{ project.workspace_name || '-' }}</div>
+                </div>
+                <div>
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Created</span>
+                  <div class="font-semibold">{{ formatTime(project.created_at) }}</div>
+                </div>
+              </div>
+              @if (project.description) {
+                <div class="mt-3">
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Description</span>
+                  <div class="font-semibold">{{ project.description }}</div>
+                </div>
+              }
+              @if (project.tags?.length) {
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="text-sm" style="color: var(--text-color-secondary)">Tags</span>
+                  @for (tag of project.tags; track tag) {
+                    <p-chip [label]="tag"></p-chip>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <p-message severity="info" text="No data collected yet for this project."></p-message>
+          }
+        </div>
+      </p-tabpanel>
+
+      <!-- Executions (matches Agent Executions design) -->
+      <p-tabpanel value="executions">
+        <div style="padding: 1rem">
+          <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center justify-between mb-3 w-full">
+              <div class="flex items-center gap-2">
+                <div class="stat-card__icon stat-card__icon--green">
+                  <i class="pi pi-play"></i>
+                </div>
+                <span class="stat-card__title">Agent Executions</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [text]="true"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (click)="loadExecutions()"
+                ></p-button>
+              </div>
+            </div>
+          <p-table [value]="executions" styleClass="p-datatable-sm" [paginator]="true" [rows]="10"
+            [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem"></th>
+                <th>Start Time</th>
+                <th>Agent</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Tokens</th>
+                <th>Cost</th>
+                <th>Nodes</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-exec>
+              <tr>
+                <td>
+                  @if (exec.status === 'success') {
+                    <i class="pi pi-check-circle" style="color: #4ade80"></i>
+                  }
+                  @if (exec.status === 'error') {
+                    <i class="pi pi-times-circle" style="color: #f87171"></i>
+                  }
+                  @if (exec.status === 'started') {
+                    <i class="pi pi-clock" style="color: #fb923c"></i>
+                  }
+                </td>
+                <td>{{ formatTime(exec.time) }}</td>
+                <td>
+                  @if (exec.agent) {
+                    <p-tag [value]="exec.agent" severity="info" [rounded]="true"></p-tag>
+                  }
+                </td>
+                <td>
+                  @if (exec.duration != null) {
+                    <p-tag icon="pi pi-clock" [value]="exec.duration + 's'" [severity]="getLatency(exec.duration)"></p-tag>
+                  }
+                </td>
+                <td>
+                  @if (exec.status) {
+                    <p-tag [value]="exec.status" [severity]="exec.status === 'success' ? 'success' : exec.status === 'error' ? 'danger' : 'warn'"></p-tag>
+                  }
+                </td>
+                <td class="font-bold">{{ exec.tokens || 0 }}</td>
+                <td>{{ formatCost(exec.cost) }}</td>
+                <td class="font-bold">{{ exec.no_req || 0 }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="8">
+                <empty-state-widget message="No executions found."></empty-state-widget>
+              </td></tr>
+            </ng-template>
+          </p-table>
+          </div>
+        </div>
+      </p-tabpanel>
+
+      <!-- Agents -->
+      <p-tabpanel value="agents">
+        <div style="padding: 1rem">
+          <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center justify-between mb-3 w-full">
+              <div class="flex items-center gap-2">
+                <div class="stat-card__icon stat-card__icon--blue">
+                  <i class="pi pi-users"></i>
+                </div>
+                <span class="stat-card__title">Agents</span>
+              </div>
+              <p-button icon="pi pi-refresh" [rounded]="true" [text]="true" pTooltip="Refresh" (click)="loadAgents()"></p-button>
+            </div>
+            <p-table [value]="agents" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Agent Name</th>
+                  <th>Value Outcome Unit</th>
+                  <th>Baseline Status</th>
+                  <th>Task Description</th>
+                  <th>Hours/Exec</th>
+                  <th>Rate</th>
+                  <th>Avg Exec/Period</th>
+                  <th style="width: 3rem"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-agent>
+                <tr>
+                  <td>{{ agent }}</td>
+                  <td>{{ getBaselineForAgent(agent)?.value_outcome_unit || '-' }}</td>
+                  <td>
+                    @if (getBaselineForAgent(agent)) {
+                      <p-tag value="Configured" severity="success"></p-tag>
+                    } @else {
+                      <p-tag value="Not Set" severity="warn"></p-tag>
+                    }
+                  </td>
+                  <td>{{ getBaselineForAgent(agent)?.task_description || '-' }}</td>
+                  <td>{{ getBaselineForAgent(agent)?.manual_effort_hours_per_execution || 0 }} hrs</td>
+                  <td>{{ getBaselineForAgent(agent)?.manual_effort_hourly_rate ? '$' + getBaselineForAgent(agent).manual_effort_hourly_rate : '-' }}</td>
+                  <td>{{ getBaselineForAgent(agent)?.avg_executions_per_period || '-' }}</td>
+                  <td>
+                    <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" pTooltip="Configure baseline" (click)="openBaselineDialog(agent)"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="8">
+                  <empty-state-widget message="No agents found for this project."></empty-state-widget>
+                </td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </p-tabpanel>
+
+      <!-- Evaluators -->
+      <p-tabpanel value="evaluators">
+        <div style="padding: 1rem">
+          <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+            <div class="flex items-center justify-between mb-3 w-full">
+              <div class="flex items-center gap-2">
+                <div class="stat-card__icon stat-card__icon--purple">
+                  <i class="pi pi-verified"></i>
+                </div>
+                <span class="stat-card__title">Evaluators</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <p-select
+                  [options]="agents"
+                  [(ngModel)]="selectedAgentForEval"
+                  [showClear]="true"
+                  placeholder="All Agents"
+                  [style]="{'min-width': '160px'}"
+                ></p-select>
+                <p-button
+                  label="Suggest Evaluators"
+                  icon="pi pi-sparkles"
+                  severity="primary"
+                  size="small"
+                  [loading]="suggestLoading"
+                  (click)="suggestEvaluators()"
+                  pTooltip="AI analyzes your LLM calls and suggests evaluation criteria"
+                ></p-button>
+                <p-button
+                  label="Create Evaluator"
+                  icon="pi pi-plus"
+                  severity="secondary"
+                  size="small"
+                  (click)="openCreateEvaluator()"
+                ></p-button>
+                <p-button
+                  icon="pi pi-refresh"
+                  [rounded]="true"
+                  [text]="true"
+                  pTooltip="Refresh"
+                  tooltipPosition="top"
+                  (click)="loadEvaluators()"
+                ></p-button>
+              </div>
+            </div>
+
+            @if (evaluators.length === 0) {
+              <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 1.5rem; text-align: left;">
+                <div class="text-sm font-semibold mb-2" style="color: var(--primary-color)">LLM-as-Judge Evaluators</div>
+                <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.6">
+                  Define evaluators that automatically assess your LLM call quality. Use <strong>Suggest Evaluators</strong> to let an AI agent analyze your recent calls and recommend evaluation criteria, or <strong>Create Evaluator</strong> to write your own prompt.
+                </div>
+              </div>
+            }
+
+            @if (evaluators.length > 0) {
+              <p-table [value]="evaluators" styleClass="p-datatable-sm">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Agent</th>
+                    <th>Type</th>
+                    <th>Judge Model</th>
+                    <th>Scoring</th>
+                    <th>Status</th>
+                    <th>Avg Score</th>
+                    <th>Evaluated</th>
+                    <th>Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-ev>
+                  <tr>
+                    <td class="font-semibold">{{ ev.name }}</td>
+                    <td>
+                      @if (ev.agent_name) {
+                        <p-tag [value]="ev.agent_name" severity="info" [rounded]="true"></p-tag>
+                      } @else {
+                        <span style="color: var(--text-color-secondary)">All</span>
+                      }
+                    </td>
+                    <td>
+                      <p-tag [value]="ev.is_recommended ? 'Recommended' : 'Custom'" [severity]="ev.is_recommended ? 'info' : 'secondary'"></p-tag>
+                    </td>
+                    <td><code class="text-xs">{{ ev.judge_model }}</code></td>
+                    <td>{{ ev.scoring_type }}</td>
+                    <td>
+                      <p-tag [value]="ev.is_active ? 'Active' : 'Disabled'" [severity]="ev.is_active ? 'success' : 'secondary'"></p-tag>
+                    </td>
+                    <td>
+                      @if (getEvalSummary(ev.id)?.avg_score != null) {
+                        {{ getEvalSummary(ev.id).avg_score | number:'1.2-2' }}
+                        @if (ev.scoring_type === 'binary' && getEvalSummary(ev.id)?.pass_rate != null) {
+                          ({{ (getEvalSummary(ev.id).pass_rate * 100) | number:'1.0-0' }}% pass)
+                        }
+                      } @else {
+                        -
+                      }
+                    </td>
+                    <td>{{ getEvalSummary(ev.id)?.total_evaluated || 0 }}</td>
+                    <td>
+                      <div class="flex gap-1">
+                        <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="info" size="small" pTooltip="View results" (click)="viewResults(ev)"></p-button>
+                        <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" size="small" pTooltip="Run now" (click)="runEvaluator(ev)"></p-button>
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" size="small" pTooltip="Edit" (click)="openEditEvaluator(ev)"></p-button>
+                        <p-button [icon]="ev.is_active ? 'pi pi-pause' : 'pi pi-play'" [rounded]="true" [text]="true" severity="secondary" size="small" [pTooltip]="ev.is_active ? 'Disable' : 'Enable'" (click)="toggleEvaluator(ev)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" size="small" pTooltip="Delete" (click)="deleteEvaluator(ev)"></p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            }
+          </div>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Edit Project Dialog -->
+<p-dialog
+  [(visible)]="editDialogVisible"
+  header="Edit Project"
+  [modal]="true"
+  [style]="{width: '36rem'}"
+>
+  @if (project) {
+    <div class="flex flex-col gap-4 pt-2">
+      <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+        <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">Project Governance</div>
+        <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+          Configure governance metadata for this auto-discovered project. Set lifecycle status, risk level,
+          and ownership to track compliance posture. Tags help categorize projects for policy assignments and reporting.
+        </div>
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [ngModel]="project.name" class="w-full" [disabled]="true" />
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Description</label>
+        <textarea pTextarea [(ngModel)]="project.description" [rows]="3" class="w-full" placeholder="Project description"></textarea>
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Owner</label>
+        <input type="text" pInputText [(ngModel)]="project.owner" class="w-full" placeholder="Project owner" />
+      </div>
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label class="font-semibold block mb-1">Lifecycle Status</label>
+          <p-select [options]="lifecycleOptions" [(ngModel)]="project.lifecycle_status" optionLabel="label" optionValue="value" placeholder="Select lifecycle" appendTo="body" class="w-full"></p-select>
+        </div>
+        <div class="flex-1">
+          <label class="font-semibold block mb-1">Risk Level</label>
+          <p-select [options]="riskOptions" [(ngModel)]="project.risk_level" optionLabel="label" optionValue="value" placeholder="Select risk level" appendTo="body" class="w-full"></p-select>
+        </div>
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Business Owner</label>
+        <input type="text" pInputText [(ngModel)]="project.business_owner" class="w-full" placeholder="Business owner name" />
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Technical Owner</label>
+        <input type="text" pInputText [(ngModel)]="project.technical_owner" class="w-full" placeholder="Technical owner name" />
+      </div>
+      <div>
+        <label class="font-semibold block mb-1">Tags</label>
+        <input type="text" pInputText [(ngModel)]="project.tags_str" class="w-full" placeholder="Comma-separated tags (e.g. production, ml, nlp)" />
+      </div>
+      <div class="text-sm" style="color: var(--text-color-secondary)">
+        Created: {{ project.created_at | date:'medium' }}
+      </div>
+    </div>
+  }
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="editDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveProject()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Evaluation Results Dialog -->
+<p-dialog [(visible)]="resultsDialogVisible" [header]="'Results: ' + (selectedEvaluator?.name || '')" [modal]="true" [style]="{width: '60rem'}">
+  <div style="padding: 0.5rem">
+    @if (evaluationResults.length > 0) {
+      <p-table [value]="evaluationResults" styleClass="p-datatable-sm" [paginator]="true" [rows]="10"
+        [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">Pass</th>
+            <th>Score</th>
+            <th>Comment</th>
+            <th>Judge Tokens</th>
+            <th>Judge Cost</th>
+            <th>Evaluated At</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-result>
+          <tr>
+            <td>
+              @if (result.passed === true) {
+                <i class="pi pi-check-circle" style="color: #4ade80"></i>
+              } @else if (result.passed === false) {
+                <i class="pi pi-times-circle" style="color: #f87171"></i>
+              } @else {
+                <span>-</span>
+              }
+            </td>
+            <td class="font-bold">
+              @if (result.score !== null && result.score !== undefined) {
+                {{ result.score | number:'1.2-2' }}
+              } @else {
+                -
+              }
+            </td>
+            <td>
+              <span class="text-sm" style="max-width: 400px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+                [pTooltip]="result.comment" tooltipPosition="top">
+                {{ result.comment || '-' }}
+              </span>
+            </td>
+            <td>{{ result.judge_tokens_used || '-' }}</td>
+            <td>{{ result.judge_cost ? '$' + result.judge_cost.toFixed(6) : '-' }}</td>
+            <td>{{ formatTime(result.created_at) }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="6">
+            <empty-state-widget message="No evaluation results yet."></empty-state-widget>
+          </td></tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <empty-state-widget message="No evaluation results yet. Run the evaluator to generate results."></empty-state-widget>
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="resultsDialogVisible = false"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Create/Edit Evaluator Dialog -->
+<p-dialog [(visible)]="evaluatorDialogVisible" [header]="editingEvaluator ? 'Edit Evaluator' : 'Create Evaluator'" [modal]="true" [style]="{width: '40rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+      <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">LLM-as-Judge Evaluator</div>
+      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+        Write a prompt that instructs a judge model to evaluate LLM call quality. Use <code>{{'{'}}input{{'}'}}</code> and <code>{{'{'}}output{{'}'}}</code> placeholders.
+        The judge should respond with JSON containing <code>score</code>, <code>passed</code>, and <code>comment</code>.
+      </div>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="evaluatorForm.name" class="w-full" placeholder="e.g. Response Helpfulness" />
+      </div>
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Agent</label>
+        <p-select [options]="agents" [(ngModel)]="evaluatorForm.agent_name" [showClear]="true" placeholder="All Agents" appendTo="body" class="w-full"></p-select>
+      </div>
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Description</label>
+      <input type="text" pInputText [(ngModel)]="evaluatorForm.description" class="w-full" placeholder="What this evaluator checks" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Evaluation Prompt</label>
+      <textarea pTextarea [(ngModel)]="evaluatorForm.prompt_template" [rows]="8" class="w-full" style="font-family: monospace; font-size: 0.85rem"></textarea>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Scoring Type</label>
+        <p-select [options]="scoringOptions" [(ngModel)]="evaluatorForm.scoring_type" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
+      </div>
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Run Mode</label>
+        <p-select [options]="runModeOptions" [(ngModel)]="evaluatorForm.run_mode" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
+      </div>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Judge Provider</label>
+        <p-select [options]="providerOptions" [(ngModel)]="evaluatorForm.judge_provider" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
+      </div>
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Judge Model</label>
+        <input type="text" pInputText [(ngModel)]="evaluatorForm.judge_model" class="w-full" placeholder="gpt-5.4-nano" />
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="evaluatorDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveEvaluator()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Suggestion Review Dialog -->
+<p-dialog [(visible)]="suggestDialogVisible" header="Suggested Evaluators" [modal]="true" [style]="{width: '50rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+      <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">AI-Suggested Evaluators</div>
+      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+        An AI agent analyzed your recent LLM calls and suggested these evaluation criteria. Review each suggestion and click <strong>Accept</strong> to activate it.
+      </div>
+    </div>
+    @for (suggestion of suggestedEvaluators; track suggestion.name) {
+      <div class="stat-card" style="flex-direction: column; align-items: stretch; padding: 1rem;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold">{{ suggestion.name }}</span>
+          <p-button label="Accept" icon="pi pi-check" severity="success" size="small" (click)="acceptSuggested(suggestion)"></p-button>
+        </div>
+        <div class="text-sm mb-2" style="color: var(--text-color-secondary)">{{ suggestion.description }}</div>
+        <div>
+          <label class="text-xs font-semibold" style="color: var(--text-color-secondary)">Prompt Preview:</label>
+          <pre class="text-xs mt-1" style="background: var(--surface-ground); padding: 0.5rem; border-radius: 4px; max-height: 120px; overflow: auto; white-space: pre-wrap">{{ suggestion.prompt_template }}</pre>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <p-tag [value]="suggestion.scoring_type" severity="info"></p-tag>
+        </div>
+      </div>
+    }
+    @if (suggestedEvaluators.length === 0) {
+      <p-message severity="info" text="No suggestions available. Try running more agent executions first."></p-message>
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="suggestDialogVisible = false"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Agent Baseline Dialog -->
+<p-dialog [(visible)]="baselineDialogVisible" header="Configure Agent Baseline" [modal]="true" [style]="{width: '32rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+      <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">Agent ROI Baseline</div>
+      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+        Define the manual effort this agent replaces. This baseline is used to calculate ROI by comparing
+        the cost of manual work against the agent's LLM costs.
+      </div>
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Agent Name</label>
+      <input type="text" pInputText [(ngModel)]="baselineForm.agent_name" class="w-full" [disabled]="true" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Value Outcome Unit</label>
+      <input type="text" pInputText [(ngModel)]="baselineForm.value_outcome_unit" class="w-full" placeholder="e.g. Insurance Claims Processing" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Task Description</label>
+      <textarea pTextarea [(ngModel)]="baselineForm.task_description" [rows]="2" class="w-full" placeholder="e.g. Document validation for insurance claims"></textarea>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Manual Hours/Execution</label>
+        <input type="number" pInputText [(ngModel)]="baselineForm.manual_effort_hours_per_execution" class="w-full" placeholder="0 hrs" />
+      </div>
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Hourly Rate</label>
+        <input type="number" pInputText [(ngModel)]="baselineForm.manual_effort_hourly_rate" class="w-full" placeholder="$50.00" />
+      </div>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Execution Frequency</label>
+        <p-select [options]="frequencyOptions" [(ngModel)]="baselineForm.execution_frequency" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
+      </div>
+      <div class="flex-1">
+        <label class="font-semibold block mb-1">Avg Executions/Period</label>
+        <input type="number" pInputText [(ngModel)]="baselineForm.avg_executions_per_period" class="w-full" placeholder="0" />
+      </div>
+    </div>
+    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem;">
+      <div class="text-sm font-semibold" style="color: var(--primary-color)">How ROI is calculated</div>
+      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+        <strong>Labor Saved</strong> = Manual Hours x Hourly Rate x Avg Agent Executions<br>
+        <strong>Net ROI</strong> = Labor Saved - Actual Agent LLM Cost (from runs)<br><br>
+        Example: 1h manual work at $50/h, done 10 times = $500 manual cost. If the agent spent $5 in LLM calls, net savings = <strong>$495</strong>.
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="baselineDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveBaseline()"></p-button>
+  </ng-template>
+</p-dialog>

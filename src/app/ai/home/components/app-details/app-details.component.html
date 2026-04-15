@@ -37,6 +37,15 @@
 
     <div class="project-card__actions">
       <p-button
+        icon="pi pi-code"
+        [rounded]="true"
+        [text]="true"
+        severity="primary"
+        (click)="integrate.emit(app)"
+        pTooltip="Integrate"
+        size="small"
+      ></p-button>
+      <p-button
         [icon]="app.is_default ? 'pi pi-star-fill' : 'pi pi-star'"
         [rounded]="true"
         [text]="true"

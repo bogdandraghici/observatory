@@ -146,10 +146,6 @@
         <span class="section-header__count">{{ apps?.length || 0 }} projects</span>
       </div>
       <div class="section-header__actions">
-        <button class="btn-integrate" (click)="showIntegrateDialog()">
-          <i class="pi pi-code"></i>
-          Integrate
-        </button>
         @if (isDefaultOrg()) {
           <button class="btn-add" (click)="showDialogProject()">
             <i class="pi pi-plus"></i>
@@ -164,6 +160,7 @@
         <app-details-widget
           [app]="app"
           (appChanged)="reloadAll($event)"
+          (integrate)="showIntegrateForProject($event)"
         ></app-details-widget>
       }
       @if (!apps || apps.length === 0) {

@@ -7,16 +7,16 @@ const API_URL = environment.baseUrl
 
 @Injectable({ providedIn: 'root' })
 export class MetricsService {
-  async getMetricsAll(app_id: any, days: any): Promise<any> {
+  async getMetricsAll(days: any, agent?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/metrics/usage/all`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
-      projectId: app_id,
-      days
+    const body: any = { days }
+    if (agent !== undefined && agent !== null) {
+      body.agent = agent
     }
 
     const options = {
@@ -32,18 +32,20 @@ export class MetricsService {
     }
   }
 
-  async getEndpointsAll(app_id: any, days: any, start: any, end: any): Promise<any> {
+  async getEndpointsAll(days: any, start: any, end: any, agent?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/metrics/usage/endpoints`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
-      projectId: app_id,
+    const body: any = {
       days,
       status_start: start,
       status_end: end
+    }
+    if (agent !== undefined && agent !== null) {
+      body.agent = agent
     }
 
     const options = {
@@ -60,16 +62,16 @@ export class MetricsService {
   }
 
 
-  async getHoursAll(app_id: any, days: any): Promise<any> {
+  async getHoursAll(days: any, agent?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/metrics/usage/hours`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
-      projectId: app_id,
-      days
+    const body: any = { days }
+    if (agent !== undefined && agent !== null) {
+      body.agent = agent
     }
 
     const options = {
@@ -86,16 +88,16 @@ export class MetricsService {
   }
 
 
-  async getVersions(app_id: any, days: any): Promise<any> {
+  async getVersions(days: any, agent?: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/metrics/usage/version`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
-      projectId: app_id,
-      days
+    const body: any = { days }
+    if (agent !== undefined && agent !== null) {
+      body.agent = agent
     }
 
     const options = {
@@ -111,17 +113,14 @@ export class MetricsService {
     }
   }
 
-  async getAgents(app_id: any, days: any): Promise<any> {
+  async getAgents(days: any): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/metrics/usage/agents`
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     }
-    const body = {
-      projectId: app_id,
-      days
-    }
+    const body: any = { days }
 
     const options = {
       method: 'POST',

@@ -19,7 +19,7 @@ import { MetricsService } from 'src/app/ai/services/metrics.service'
     standalone: false
 })
 export class EndpointsCardComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() appId: string = null
+  @Input() agent: any = null
   @Input() title = 'Activity'
   @Input() days = 30
 
@@ -45,7 +45,7 @@ export class EndpointsCardComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   populateData(): void {
-    if (!this.appId || !this.days) {
+    if (!this.days) {
       return
     }
     let start,
@@ -64,7 +64,7 @@ export class EndpointsCardComponent implements OnInit, OnDestroy, OnChanges {
       end = 599
     }
     this.metricsService
-      .getEndpointsAll(this.appId, this.days, start, end)
+      .getEndpointsAll(this.days, start, end, this.agent)
       .then((data) => {
         this.data = data
         this.chartOptionsEndNo = this.getOptionsEndpointsNo()

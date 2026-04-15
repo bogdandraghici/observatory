@@ -66,7 +66,13 @@ export class RiskDashboardComponent implements OnInit {
     this.orgService.getOrgsWithApps().then((data) => {
       this.orgs = data
       if (this.orgs?.length > 0) {
-        this.selectedOrg = this.orgs[0].id
+        // Prefer non-default org (auto-provisioned from platform)
+        const sorted = [...this.orgs].sort((a, b) => {
+          if (a.name === 'Default') return 1
+          if (b.name === 'Default') return -1
+          return 0
+        })
+        this.selectedOrg = sorted[0].id
         this.loadAll()
       }
     })

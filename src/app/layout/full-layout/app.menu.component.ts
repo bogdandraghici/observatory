@@ -33,6 +33,11 @@ export class AppMenuComponent implements OnInit {
           items: [
             { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/ai'] },
             {
+              label: 'Projects',
+              icon: 'pi pi-fw pi-folder',
+              routerLink: ['/ai/projects'],
+            },
+            {
               label: 'Dashboard',
               icon: 'pi pi-fw pi-chart-bar',
               routerLink: ['/ai/dashboard'],
@@ -93,6 +98,16 @@ export class AppMenuComponent implements OnInit {
               label: 'Insights Dashboard',
               icon: 'pi pi-fw pi-chart-line',
               routerLink: ['/ai/insights'],
+            },
+            {
+              label: 'AutoTune',
+              icon: 'pi pi-fw pi-sync',
+              routerLink: ['/ai/rsi'],
+            },
+            {
+              label: 'Test Cases',
+              icon: 'pi pi-fw pi-check-square',
+              routerLink: ['/ai/tests'],
             },
             {
               label: 'Alerts',

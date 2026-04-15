@@ -139,11 +139,17 @@ export class SettingsComponent implements OnInit {
   }
 
   getDefaultAppOrg(orgs: any): any {
+    // Prefer non-default orgs (auto-provisioned from platform)
+    const sortedOrgs = [...(orgs || [])].sort((a, b) => {
+      if (a.name === 'Default') return 1
+      if (b.name === 'Default') return -1
+      return 0
+    })
     let default_app = null
     let parent_org = null
     let parent_workspace = null
     // Search in workspaces first
-    orgs?.forEach((org) => {
+    sortedOrgs?.forEach((org) => {
       org?.workspaces?.forEach((ws) => {
         ws?.projects?.forEach((app) => {
           if (app.is_default) {
@@ -156,7 +162,7 @@ export class SettingsComponent implements OnInit {
     })
     // Fallback to org.projects
     if (!default_app) {
-      orgs?.forEach((org) => {
+      sortedOrgs?.forEach((org) => {
         org?.projects?.forEach((app) => {
           if (app.is_default) {
             default_app = app
@@ -166,8 +172,8 @@ export class SettingsComponent implements OnInit {
       })
     }
     // Fallback to first available
-    if (!default_app && orgs?.length > 0) {
-      parent_org = orgs[0]
+    if (!default_app && sortedOrgs?.length > 0) {
+      parent_org = sortedOrgs[0]
       if (parent_org?.workspaces?.length > 0) {
         parent_workspace = parent_org.workspaces[0]
         default_app = parent_workspace?.projects?.[0]

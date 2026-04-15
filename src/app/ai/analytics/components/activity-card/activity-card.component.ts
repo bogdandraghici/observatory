@@ -17,7 +17,6 @@ import {
     standalone: false
 })
 export class ActivityCardComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() appId: string = null
   @Input() title = 'Activity'
   @Input() data: any[] = []
 

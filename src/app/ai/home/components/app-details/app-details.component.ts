@@ -19,6 +19,7 @@ import { Clipboard } from '@angular/cdk/clipboard'
 export class AppDetailsComponent {
   @Input() app: any
   @Output() appChanged: EventEmitter<any> = new EventEmitter()
+  @Output() integrate: EventEmitter<any> = new EventEmitter()
 
   activeProjectEdit = false
 
