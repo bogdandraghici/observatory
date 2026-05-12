@@ -24,6 +24,7 @@ import { ErrorRateComponent } from './components/error-rate/error-rate.component
 import { ModelPerformanceComponent } from './components/model-performance/model-performance.component'
 import { CostTrendComponent } from './components/cost-trend/cost-trend.component'
 import { CorrectnessOverviewComponent } from './components/correctness-overview/correctness-overview.component'
+import { RegulatoryVerdictsComponent } from './components/regulatory-verdicts/regulatory-verdicts.component'
 
 import { ShortNumberPipe } from '../utils/short-number.pipe'
 import { EmptyStateModule } from '../common/empty-state/empty-state.module'
@@ -51,7 +52,8 @@ const CUSTOM = [
   ErrorRateComponent,
   ModelPerformanceComponent,
   CostTrendComponent,
-  CorrectnessOverviewComponent
+  CorrectnessOverviewComponent,
+  RegulatoryVerdictsComponent,
 ]
 
 @NgModule({

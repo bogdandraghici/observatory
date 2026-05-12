@@ -47,6 +47,32 @@ describe('DashboardService', () => {
       expect(url).toContain('/api/analytics/usage/models')
     })
 
+    it('should call getRegulatoryVerdicts with correct URL and body', async () => {
+      const mockData = {
+        total_count: 3,
+        by_severity: [
+          { severity: 'caution', count: 2 },
+          { severity: 'compliant', count: 1 },
+        ],
+        by_framework: [{ framework: 'EU AI Act', count: 3 }],
+        trend: [],
+        top_cited_articles: [{ article_number: 14, count: 2 }],
+        llm_assisted_count: 1,
+      }
+      spyOn(window, 'fetch').and.resolveTo(new Response(JSON.stringify(mockData)))
+
+      const result = await service.getRegulatoryVerdicts('app-7', 24 * 7)
+
+      const [url, options] = (window.fetch as jasmine.Spy).calls.first().args
+      expect(url).toContain('/api/analytics/regulatory-verdicts')
+      expect(options.method).toBe('POST')
+      const body = JSON.parse(options.body)
+      expect(body.projectId).toBe('app-7')
+      expect(body.hours).toBe(24 * 7)
+      expect(options.headers.Authorization).toBe('Bearer test-token')
+      expect(result).toEqual(mockData)
+    })
+
     it('should include auth headers in all requests', async () => {
       spyOn(window, 'fetch').and.resolveTo(new Response('{}'))
 
