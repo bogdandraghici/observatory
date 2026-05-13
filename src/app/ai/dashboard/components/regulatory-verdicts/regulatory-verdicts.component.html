@@ -1,0 +1,86 @@
+<div class="stat-card regulatory-verdicts" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--blue">
+      <i class="pi pi-shield"></i>
+    </div>
+    <span class="stat-card__title">Regulatory Verdicts</span>
+    @if (llmAssistedCount > 0) {
+      <span
+        class="ml-auto px-2 py-0.5 rounded text-[10px] font-medium"
+        style="background: var(--surface-100); color: var(--text-color-secondary);"
+        [title]="llmAssistedCount + ' of ' + totalCount + ' verdicts used LLM-enhanced rules'"
+      >
+        <i class="pi pi-bolt"></i> {{ llmAssistedCount }} LLM
+      </span>
+    }
+  </div>
+
+  <!-- Top line: total + severity tags -->
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+    <div>
+      <span class="stat-card__value--lg">{{ totalCount }}</span>
+      <span class="stat-card__label ml-2">verdicts</span>
+    </div>
+    @if (hasData) {
+      <div class="flex items-center gap-1.5">
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--compliant"
+          [title]="compliantCount + ' compliant'"
+        >
+          <i class="pi pi-check-circle"></i> {{ compliantCount }}
+        </span>
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--caution"
+          [title]="cautionCount + ' caution'"
+        >
+          <i class="pi pi-exclamation-triangle"></i> {{ cautionCount }}
+        </span>
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--violation"
+          [title]="violationCount + ' likely violations'"
+        >
+          <i class="pi pi-times-circle"></i> {{ violationCount }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Top frameworks chart -->
+  @if (hasData && topFrameworks.length > 0) {
+    <div style="height: 140px;">
+      <p-chart
+        type="bar"
+        [data]="chartData"
+        [options]="chartOptions"
+        [style]="{ width: '100%', height: '100%' }"
+      ></p-chart>
+    </div>
+  }
+
+  <!-- Cited articles row — small chips so the regulator's "which articles
+       are getting touched most" question has a one-glance answer. -->
+  @if (hasData && topCitedArticles.length > 0) {
+    <div class="mt-3 pt-3" style="border-top: 1px solid var(--surface-border);">
+      <div class="text-xs uppercase tracking-wide mb-2" style="color: var(--text-color-secondary);">
+        Most-cited articles
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        @for (a of topCitedArticles; track a.article_number) {
+          <span
+            class="px-2 py-0.5 rounded text-[11px] font-medium"
+            style="background: var(--surface-100); color: var(--text-color);"
+          >
+            Art. {{ a.article_number }} · {{ a.count }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!hasData) {
+    <div style="height: 140px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No verdicts yet."></empty-state-widget>
+    </div>
+  }
+</div>

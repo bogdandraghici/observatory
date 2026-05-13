@@ -115,6 +115,55 @@ export class DashboardService {
     }
   }
 
+  async getRegulatoryDrift(app_id: any, hours: any): Promise<any> {
+    // Surfaces drift-detection runs emitted by ai-agents whenever the
+    // regulatory ontology is re-imported / changed. Aggregates per-kind
+    // and per-day counts so the dashboard widget can show whether the
+    // corpus update made verdicts worse or better.
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/analytics/regulatory-drift`
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    const body = { projectId: app_id, hours }
+    const options = {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  async getRegulatoryVerdicts(app_id: any, hours: any): Promise<any> {
+    // Surfaces FlowX Regulatory Twin verdicts emitted by ai-agents.
+    // Backend aggregates runs with `type='regulatory_verdict'` over the
+    // configured window and returns severity / framework / trend rollup.
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/analytics/regulatory-verdicts`
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    const body = { projectId: app_id, hours }
+    const options = {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
   async getCostAnalytics(app_id: any, hours: any, group_by = 'model'): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/analytics/usage/costs`

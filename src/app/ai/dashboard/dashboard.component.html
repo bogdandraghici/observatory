@@ -103,5 +103,17 @@
         [appId]="selectedApp"
       ></correctness-overview-widget>
     </div>
+    <div class="col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+      <regulatory-verdicts-widget
+        [hours]="selectedPeriod"
+        [appId]="selectedApp"
+      ></regulatory-verdicts-widget>
+    </div>
+    <div class="col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+      <regulatory-drift-widget
+        [hours]="selectedPeriod"
+        [appId]="selectedApp"
+      ></regulatory-drift-widget>
+    </div>
   </div>
 </div>

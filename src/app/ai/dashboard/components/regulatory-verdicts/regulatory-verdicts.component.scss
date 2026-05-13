@@ -1,0 +1,24 @@
+.regulatory-verdicts {
+  // Severity pills — three-tier palette matching the Designer regulatory-twin
+  // colours so the same verdict renders consistently across products.
+  .severity-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &--compliant {
+      background: rgba(16, 185, 129, 0.12); // emerald-500 @ 12%
+      color: rgb(4, 120, 87); // emerald-700
+    }
+
+    &--caution {
+      background: rgba(245, 158, 11, 0.15); // amber-500 @ 15%
+      color: rgb(146, 64, 14); // amber-800
+    }
+
+    &--violation {
+      background: rgba(239, 68, 68, 0.12); // red-500 @ 12%
+      color: rgb(185, 28, 28); // red-700
+    }
+  }
+}

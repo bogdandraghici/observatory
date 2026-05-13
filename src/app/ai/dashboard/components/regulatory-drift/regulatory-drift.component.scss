@@ -1,0 +1,17 @@
+.regulatory-drift {
+  .drift-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &--worsened {
+      background: rgba(239, 68, 68, 0.12); // red @ 12%
+      color: rgb(185, 28, 28); // red-700
+    }
+
+    &--improved {
+      background: rgba(16, 185, 129, 0.12); // emerald @ 12%
+      color: rgb(4, 120, 87); // emerald-700
+    }
+  }
+}
