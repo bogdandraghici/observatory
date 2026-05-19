@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: observatory-web
-          image: europe-docker.pkg.dev/flowxai-sandbox/ai/observatory-web:2.0.20
+          image: europe-docker.pkg.dev/flowxai-sandbox/ai/observatory-web:2.0.21
           ports:
             - containerPort: 8080
           env:
