@@ -620,40 +620,68 @@
     }
   }
 
-  // ── DataTable (per values-table.json influence) ──────────
+  // ── DataTable — tight, denser list table inspired by the Runtime
+  // exploration prototype: 10px uppercase header tags, 12px body rows,
+  // light hairline dividers, fast row hovers. .p-highlight selects a
+  // row in blue, .is-anchor (consumer-applied) spotlights an erroring
+  // or current row in yellow.
   .p-datatable {
     font-family: var(--flowx-font-primary);
+    font-size: 12px;
+    border-collapse: collapse;
 
     .p-datatable-thead > tr > th {
       background: var(--flowx-neutrals-50);
       color: var(--flowx-text-secondary);
-      font-size: 12px;
-      line-height: 16px;
-      font-weight: 600;
+      font-size: 10px;
+      line-height: 12px;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      padding: var(--flowx-space-12) var(--flowx-space-16);
+      padding: var(--flowx-space-12) 14px;
       border: none;
-      border-bottom: 1px solid var(--flowx-border-default);
+      border-bottom: 1px solid var(--flowx-neutrals-100);
+      text-align: left;
+      white-space: nowrap;
     }
 
     .p-datatable-tbody > tr {
       background: transparent;
-      transition: background-color 150ms ease;
+      transition: background-color 60ms ease;
+      cursor: pointer;
 
       &:hover { background: var(--flowx-neutrals-50); }
       &.p-highlight { background: var(--flowx-blue-50); }
+      &.is-anchor,
+      &.is-anchor:hover { background: var(--flowx-yellow-50, #fff8e7); }
 
       > td {
         color: var(--flowx-text-primary);
-        font-size: 14px;
-        line-height: 24px;
-        padding: var(--flowx-space-12) var(--flowx-space-16);
+        font-size: 12px;
+        line-height: 18px;
+        padding: 11px 14px;
         border: none;
-        border-bottom: 1px solid var(--flowx-border-default);
+        border-bottom: 1px solid var(--flowx-neutrals-100);
         vertical-align: middle;
+
+        // Inline monospace tokens (IDs, codes, schedules) — match the
+        // prototype's .mono treatment: smaller, muted, JetBrains Mono.
+        code,
+        .mono {
+          font-family: var(--flowx-font-monospace);
+          font-size: 11px;
+          color: var(--flowx-text-secondary);
+        }
       }
+
+      // Static / non-clickable lists can opt-out of the row pointer
+      // by tagging the host datatable with .p-datatable--static.
+      .p-datatable--static & { cursor: default; }
     }
+
+    // Last row drops its divider so it doesn't double-up with the
+    // surrounding card border or paginator top-border.
+    .p-datatable-tbody > tr:last-child > td { border-bottom: none; }
   }
 
   .p-paginator {
@@ -924,9 +952,14 @@
     .p-datatable-tbody > tr {
       &:hover { background: rgba(255, 255, 255, 0.03); }
       &.p-highlight { background: rgba(51, 137, 224, 0.15); }
+      &.is-anchor,
+      &.is-anchor:hover { background: rgba(254, 185, 19, 0.12); }
       > td {
         color: var(--flowx-text-primary);
         border-bottom-color: var(--flowx-border-default);
+
+        code,
+        .mono { color: var(--flowx-text-secondary); }
       }
     }
   }

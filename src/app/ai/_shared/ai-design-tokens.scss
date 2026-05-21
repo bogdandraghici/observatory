@@ -148,53 +148,75 @@ $code-font:         $font-monospace;
 
 @mixin table-modern {
   .p-datatable {
+    font-family: var(--flowx-font-primary, #{$font-primary});
+    font-size: 12px;
+    border-collapse: collapse;
+
     .p-datatable-thead > tr > th {
-      background: var(--flowx-surface-secondary, #{$table-header-bg});
+      background: var(--flowx-neutrals-50, #{$table-header-bg});
       color: var(--flowx-text-secondary, #{$text-secondary});
       font-family: var(--flowx-font-primary, #{$font-primary});
-      font-weight: 600;
-      font-size: 12px;
-      line-height: 16px;
+      font-weight: 700;
+      font-size: 10px;
+      line-height: 12px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
+      padding: var(--flowx-space-12, #{$space-12}) 14px;
       border: none;
-      border-bottom: 1px solid var(--flowx-border-default, #{$border-default});
+      border-bottom: 1px solid var(--flowx-neutrals-100, #{$flowx-neutrals-100});
+      text-align: left;
+      white-space: nowrap;
     }
 
     .p-datatable-tbody > tr {
       background: transparent;
-      transition: background-color 150ms ease;
+      transition: background-color 60ms ease;
+      cursor: pointer;
 
       &:hover {
         background: var(--flowx-neutrals-50, #{$table-row-hover});
       }
 
       &.p-highlight {
-        background: rgba(0, 107, 216, 0.10);
+        background: var(--flowx-blue-50, #{$flowx-blue-50});
+      }
+
+      &.is-anchor,
+      &.is-anchor:hover {
+        background: var(--flowx-yellow-50, #fff8e7);
       }
 
       > td {
         color: var(--flowx-text-primary, #{$text-primary});
         font-family: var(--flowx-font-primary, #{$font-primary});
-        font-size: 14px;
-        line-height: 24px;
-        padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
+        font-size: 12px;
+        line-height: 18px;
+        padding: 11px 14px;
         border: none;
-        border-bottom: 1px solid var(--flowx-border-default, #{$border-default});
+        border-bottom: 1px solid var(--flowx-neutrals-100, #{$flowx-neutrals-100});
         vertical-align: middle;
+
+        code,
+        .mono {
+          font-family: var(--flowx-font-monospace, #{$font-monospace});
+          font-size: 11px;
+          color: var(--flowx-text-secondary, #{$text-secondary});
+        }
       }
     }
+
+    .p-datatable-tbody > tr:last-child > td { border-bottom: none; }
   }
 
   .p-paginator {
     background: transparent;
     border: none;
-    border-top: 1px solid var(--flowx-border-default, #{$border-default});
+    border-top: 1px solid var(--flowx-neutrals-100, #{$flowx-neutrals-100});
     padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
 
     .p-paginator-current {
       color: var(--flowx-text-secondary, #{$text-secondary});
+      font-size: 12px;
     }
   }
 }
