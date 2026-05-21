@@ -24,6 +24,7 @@
           [showClear]="false"
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
+          size="small"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -37,6 +38,7 @@
             [showClear]="true"
             (onChange)="workspaceChanged($event)"
             placeholder="All Workspaces"
+            size="small"
           ></p-select>
           @if (isDefaultOrg()) {
             <button class="btn-icon" (click)="showDialogWorkspace()" pTooltip="Create Workspace">
