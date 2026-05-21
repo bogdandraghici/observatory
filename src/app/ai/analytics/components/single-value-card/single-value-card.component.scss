@@ -17,6 +17,27 @@ $danger-color: var(--flowx-red-400, #ee6b54);
 // Card wrapper (if needed)
 :host {
   display: block;
+  height: 100%;
+
+  ::ng-deep .stat-card {
+    overflow: hidden;
+    height: 100%;
+  }
+  ::ng-deep p-chart {
+    display: block;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    margin: 0 -24px -24px;
+  }
+
+  // Match the Response Times card's value sizing (32/40, 700) so the
+  // Requests / Users headline numbers read at the same weight.
+  ::ng-deep .stat-card__value--lg {
+    font-size: 32px !important;
+    line-height: 40px !important;
+    font-weight: 700 !important;
+  }
 }
 
 ::ng-deep {

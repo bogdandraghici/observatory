@@ -66,77 +66,61 @@ export class UsageTimeCardComponent implements OnInit, OnDestroy, OnChanges {
   }
   ngOnDestroy(): void {}
 
-  getOptionsUsageTime(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color').trim()
-    const textSecondary = documentStyle.getPropertyValue('--text-color-secondary').trim()
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border').trim()
+  // FlowX uses blue-500 on light and blue-400 on dark so the stroke
+  // and the translucent fill both read against the surface.
+  private bluePrimary(): { hex: string; rgb: string } {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    return isDark
+      ? { hex: '#3389e0', rgb: '51, 137, 224' }
+      : { hex: '#006bd8', rgb: '0, 107, 216' }
+  }
 
+  getOptionsUsageTime(): any {
     return {
       indexAxis: 'y',
       maintainAspectRatio: true,
       aspectRatio: 1,
+      responsive: true,
       plugins: {
-        legend: {
-          display: false,
-          labels: {
-            display: true,
-            color: textColor,
-          },
-          datalabels: {
-            display: false,
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: {
+          enabled: true,
+          backgroundColor: '#1d232c',
+          titleColor: '#f7f8f9',
+          bodyColor: '#e3e8ed',
+          borderWidth: 0,
+          cornerRadius: 6,
+          padding: { x: 10, y: 6 },
+          displayColors: false,
+          titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+          bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
+          callbacks: {
+            title: (items: any[]) => items.length ? `${items[0].label}:00` : '',
           },
         },
       },
-      layout: {
-        padding: 0,
-      },
+      layout: { padding: 8 },
       scales: {
-        x: {
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
-        },
         r: {
+          beginAtZero: true,
           pointLabels: {
             display: true,
-            color: textColor,
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
           },
           ticks: {
-            display: true,
-            color: textSecondary,
+            display: false,
             backdropColor: 'transparent',
           },
-          grid: {
-            color: surfaceBorder,
-          },
-          angleLines: {
-            color: surfaceBorder,
-          },
-        },
-        y: {
-          title: {
-            display: false,
-            text: 'Requests',
-          },
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
+          grid: { color: 'rgba(99, 116, 139, 0.10)' },
+          angleLines: { color: 'rgba(99, 116, 139, 0.15)' },
         },
       },
     }
   }
 
   getDataUsageTime(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
     return {
       labels: this.data.map((item) => item.hour),
       datasets: [
@@ -144,13 +128,15 @@ export class UsageTimeCardComponent implements OnInit, OnDestroy, OnChanges {
           label: 'Requests',
           data: this.data.map((item) => item.value),
           fill: true,
-          borderColor: documentStyle.getPropertyValue('--primary-500') + 'cc',
-          borderWidth: 3,
-          tension: 0.4,
-          radius: 0,
-          textColor: documentStyle.getPropertyValue('--text-color'),
-          backgroundColor:
-            documentStyle.getPropertyValue('--primary-200') + 'cc',
+          borderColor: this.bluePrimary().hex,
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: this.bluePrimary().hex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: `rgba(${this.bluePrimary().rgb}, 0.25)`,
         },
       ],
     }

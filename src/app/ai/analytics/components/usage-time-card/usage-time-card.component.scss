@@ -34,6 +34,23 @@ $card-shadow-hover-light: 0 10px 40px rgba(0, 0, 0, 0.08);
 
 :host {
   display: block;
+  height: 100%;
+
+  ::ng-deep .stat-card {
+    height: 100%;
+  }
+
+  // The radar is a square (aspectRatio: 1) so once the card stretches
+  // to match its row sibling it usually leaves vertical space below
+  // the canvas. Make the chart absorb the remaining height and center
+  // the canvas inside both axes.
+  ::ng-deep p-chart {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 ::ng-deep {

@@ -34,6 +34,8 @@
   --flowx-blue-900: #002d5b;
 
   --flowx-yellow-50:  #fff8e7;
+  --flowx-yellow-100: #ffe9b6;
+  --flowx-yellow-200: #ffdf92;
   --flowx-yellow-300: #b4830d;
   --flowx-yellow-400: #e7a811;
   --flowx-yellow-500: #feb913;
@@ -1321,6 +1323,41 @@
     &--blue   { background: rgba(51, 137, 224, 0.18); color: var(--flowx-blue-300); }
     &--green  { background: rgba(0, 128, 96, 0.20);  color: #8ac5b6; }
     &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
+  }
+
+  // ── Segmented button (per segmented-button.json — dark) ─────
+  // Light mode = neutrals-100 track + blue-500 active. Dark spec:
+  // rgba(255,255,255,0.1) track, blue-400 active, neutrals-300 idle.
+  .p-selectbutton {
+    background: rgba(255, 255, 255, 0.10);
+
+    .p-button,
+    .p-togglebutton,
+    .p-selectbutton-button {
+      color: var(--flowx-neutrals-300) !important;
+
+      &:hover:not(.p-highlight):not(.p-togglebutton-checked):not(.p-disabled):not([disabled]) {
+        background: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+      }
+
+      &.p-highlight,
+      &[aria-pressed="true"],
+      &.p-togglebutton-checked {
+        background: var(--flowx-blue-400) !important;
+        color: #ffffff !important;
+      }
+
+      &.p-disabled,
+      &[disabled] {
+        color: var(--flowx-neutrals-500) !important;
+
+        &.p-highlight {
+          background: var(--flowx-neutrals-500) !important;
+          color: #ffffff !important;
+        }
+      }
+    }
   }
 }
 
