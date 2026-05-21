@@ -34,20 +34,28 @@
   --flowx-blue-900: #002d5b;
 
   --flowx-yellow-50:  #fff8e7;
+  --flowx-yellow-300: #b4830d;
+  --flowx-yellow-400: #e7a811;
   --flowx-yellow-500: #feb913;
   --flowx-yellow-600: #e7a811;
   --flowx-yellow-700: #b4830d;
 
   --flowx-green-50:  #e6f2ef;
+  --flowx-green-300: #007457;
+  --flowx-green-400: #008060;
   --flowx-green-500: #008060;
   --flowx-green-600: #007457;
   --flowx-green-700: #005b44;
 
   --flowx-orange-50:  #fff0e8;
+  --flowx-orange-300: #e66119;
+  --flowx-orange-400: #e66119;
   --flowx-orange-500: #fd6b1c;
   --flowx-orange-600: #e66119;
 
   --flowx-red-50:  #fde9e6;
+  --flowx-red-300: #d11f00;
+  --flowx-red-400: #e62200;
   --flowx-red-500: #e62200;
   --flowx-red-600: #d11f00;
   --flowx-red-700: #a31800;
@@ -1200,6 +1208,17 @@
   --flowx-border-strong:     #5b6a7e; // neutrals-600
   --flowx-interactive:       #3389e0; // blue-400 (lifted for dark bg)
   --flowx-interactive-hover: #549ce5; // blue-300
+
+  // Status palette 300/400 — lifted for dark backgrounds.
+  // (Light mode keeps these saturated/dark so text reads on white.)
+  --flowx-red-300:    #f8867a;
+  --flowx-red-400:    #ee6b54;
+  --flowx-green-300:  #54aa94;
+  --flowx-green-400:  #4a9985;
+  --flowx-yellow-300: #fed968;
+  --flowx-yellow-400: #fec742;
+  --flowx-orange-300: #fe8a47;
+  --flowx-orange-400: #fd6b1c;
 
   // NOTE: Palette tokens (--flowx-blue-*, --flowx-neutrals-*) keep their
   // foundation values in BOTH modes. We only flip the semantic tokens

@@ -355,8 +355,8 @@
                     <!-- Error -->
                     @if (selectedRun.data.error) {
                       <div style="margin-top: 1rem">
-                        <h5 style="color: var(--red-400)">Error</h5>
-                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 200px; overflow: auto; white-space: pre-wrap; color: var(--red-400)">{{ selectedRun.data.error | json }}</pre>
+                        <h5 style="color: var(--flowx-error, #e62200)">Error</h5>
+                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 200px; overflow: auto; white-space: pre-wrap; color: var(--flowx-error, #e62200)">{{ selectedRun.data.error | json }}</pre>
                       </div>
                     }
 
