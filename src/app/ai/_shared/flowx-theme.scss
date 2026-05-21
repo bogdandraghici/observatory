@@ -153,6 +153,10 @@
 .layout-main-container:has(.ai-page),
 .layout-main-container:has(.home-page) {
   background: var(--flowx-surface-secondary, #f7f8f9);
+  // 48px gap on all sides between content and the chrome edges.
+  // Top adds the 4rem fixed-topbar height so the visual gap below
+  // the topbar is also 48px.
+  padding: calc(4rem + 48px) 48px 48px 48px;
 }
 
 // ============================================================
