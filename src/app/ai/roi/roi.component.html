@@ -104,10 +104,10 @@
             <div class="grid mt-2" style="row-gap: 1rem;">
               <!-- Controls -->
               <div class="col-12">
-                <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                <div class="stat-card stat-card--stacked">
                   <div class="flex align-items-center justify-between mb-3 w-full">
                     <div class="flex align-items-center gap-2 items-center">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon">
                         <i class="pi pi-bookmark"></i>
                       </div>
                       <span class="stat-card__title">Value Outcome Units</span>
@@ -125,9 +125,9 @@
                 <div class="col-12">
                   <div class="stat-cards-grid">
                     @for (group of vouGroups; track group.group) {
-                      <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                      <div class="stat-card stat-card--stacked">
                         <div class="flex items-center gap-2 mb-2">
-                          <div class="stat-card__icon stat-card__icon--purple" style="width:2rem; height:2rem; font-size:0.85rem;">
+                          <div class="stat-card__icon stat-card__icon--blue" style="width:2rem; height:2rem; font-size:0.85rem;">
                             <i class="pi pi-bookmark"></i>
                           </div>
                           <span class="font-semibold text-sm">{{ group.group }}</span>
@@ -157,9 +157,9 @@
 
                 <!-- VOU Chart -->
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-bar"></i>
                       </div>
                       <span class="stat-card__title">Value Outcome Comparison</span>
@@ -175,9 +175,9 @@
                 <!-- VOU Detailed Table -->
                 @for (group of vouGroups; track group.group) {
                   <div class="col-12">
-                    <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                    <div class="stat-card stat-card--stacked">
                       <div class="flex align-items-center gap-2 mb-3 items-center">
-                        <div class="stat-card__icon stat-card__icon--purple" style="width:2rem; height:2rem; font-size:0.85rem;">
+                        <div class="stat-card__icon">
                           <i class="pi pi-bookmark"></i>
                         </div>
                         <span class="stat-card__title">{{ group.group }}</span>
@@ -220,9 +220,9 @@
 
                 <!-- Grand Total -->
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--green">
+                      <div class="stat-card__icon">
                         <i class="pi pi-calculator"></i>
                       </div>
                       <span class="stat-card__title">Grand Total</span>
@@ -277,7 +277,7 @@
                 <div class="stat-cards-grid">
                   <!-- Card 1: Agent Baselines -->
                   <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--blue">
+                    <div class="stat-card__icon">
                       <i class="pi pi-users"></i>
                     </div>
                     <div class="stat-card__content">
@@ -300,7 +300,7 @@
 
                   <!-- Card 2: Project Baseline -->
                   <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'baseline'">
-                    <div class="stat-card__icon stat-card__icon--purple">
+                    <div class="stat-card__icon">
                       <i class="pi pi-sliders-h"></i>
                     </div>
                     <div class="stat-card__content">
@@ -329,7 +329,7 @@
 
                   <!-- Card 3: Compliance Risk -->
                   <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'compliance'">
-                    <div class="stat-card__icon stat-card__icon--amber">
+                    <div class="stat-card__icon">
                       <i class="pi pi-shield"></i>
                     </div>
                     <div class="stat-card__content">
@@ -358,7 +358,7 @@
 
                   <!-- Card 4: Cost & Benefits -->
                   <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'costs'">
-                    <div class="stat-card__icon stat-card__icon--green">
+                    <div class="stat-card__icon">
                       <i class="pi pi-dollar"></i>
                     </div>
                     <div class="stat-card__content">
@@ -442,7 +442,7 @@
                     </div>
                     <!-- ROI % -->
                     <div class="stat-card">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon stat-card__icon--blue">
                         <i class="pi pi-percentage"></i>
                       </div>
                       <div class="stat-card__content">
@@ -467,9 +467,9 @@
               <!-- Waterfall Chart -->
               @if (waterfallChart) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-bar"></i>
                       </div>
                       <span class="stat-card__title">ROI Waterfall</span>
@@ -484,9 +484,9 @@
               <!-- Per-Agent Breakdown (Grouped by Value Outcome Unit) -->
               @if (agentBreakdown.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon">
                         <i class="pi pi-users"></i>
                       </div>
                       <span class="stat-card__title">Per-Agent Breakdown</span>
@@ -547,9 +547,9 @@
               <!-- Projected Impact -->
               @if (projectionResult) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--green">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-line"></i>
                       </div>
                       <span class="stat-card__title">Projected Impact</span>
@@ -599,9 +599,9 @@
               <!-- ROI Trend Chart -->
               @if (trendChart) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3">
-                      <div class="stat-card__icon stat-card__icon--green">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-line"></i>
                       </div>
                       <span class="stat-card__title">ROI Trend</span>
@@ -615,10 +615,10 @@
 
               <!-- Per-Execution ROI -->
               <div class="col-12">
-                <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                <div class="stat-card stat-card--stacked">
                   <div class="flex align-items-center justify-between mb-3 w-full">
                     <div class="flex align-items-center gap-2 items-center">
-                      <div class="stat-card__icon stat-card__icon--amber">
+                      <div class="stat-card__icon">
                         <i class="pi pi-list"></i>
                       </div>
                       <span class="stat-card__title">Per-Execution ROI</span>
@@ -660,9 +660,9 @@
               <!-- Saved Financial History -->
               @if (savedFinancials.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-history"></i>
                       </div>
                       <span class="stat-card__title">Saved Financial Metrics</span>
@@ -704,7 +704,7 @@
               <div class="col-12">
                 <div class="stat-cards-grid">
                   <div class="stat-card stat-card--clickable" (click)="auditDialogVisible = true">
-                    <div class="stat-card__icon stat-card__icon--purple">
+                    <div class="stat-card__icon">
                       <i class="pi pi-sliders-h"></i>
                     </div>
                     <div class="stat-card__content">
@@ -727,7 +727,7 @@
                     </div>
                   </div>
                   <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--blue">
+                    <div class="stat-card__icon">
                       <i class="pi pi-stopwatch"></i>
                     </div>
                     <div class="stat-card__content">
@@ -773,7 +773,7 @@
                       </div>
                     </div>
                     <div class="stat-card">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon stat-card__icon--blue">
                         <i class="pi pi-check-circle"></i>
                       </div>
                       <div class="stat-card__content">
@@ -863,9 +863,9 @@
               <!-- Saved Compliance History -->
               @if (savedCompliance.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-history"></i>
                       </div>
                       <span class="stat-card__title">Saved Compliance ROI</span>
@@ -901,10 +901,10 @@
             <div class="grid mt-2" style="row-gap: 1rem;">
               <!-- Benchmarks Card -->
               <div class="col-12">
-                <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                <div class="stat-card stat-card--stacked">
                   <div class="flex items-center justify-between mb-3 w-full">
                     <div class="flex items-center gap-2">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-th-large"></i>
                       </div>
                       <span class="stat-card__title">Alternative Benchmarks</span>
@@ -955,10 +955,10 @@
               <!-- Comparison results -->
               @if (benchmarkComparison?.comparisons?.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center justify-content-between mb-3">
                       <div class="flex align-items-center gap-2">
-                        <div class="stat-card__icon stat-card__icon--green">
+                        <div class="stat-card__icon">
                           <i class="pi pi-chart-bar"></i>
                         </div>
                         <span class="stat-card__title">AI vs Alternatives — Annual Cost Comparison</span>
@@ -999,9 +999,9 @@
               <!-- 5-Year TCO -->
               @if (tcoComparison?.comparisons?.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon">
                         <i class="pi pi-calendar"></i>
                       </div>
                       <span class="stat-card__title">5-Year Total Cost of Ownership</span>
@@ -1074,7 +1074,7 @@
               <div class="col-12">
                 <div class="grid grid-cols-2 gap-2">
                   <div class="stat-card stat-card--clickable" (click)="sensitivityDialogVisible = true">
-                    <div class="stat-card__icon stat-card__icon--purple">
+                    <div class="stat-card__icon">
                       <i class="pi pi-sliders-h"></i>
                     </div>
                     <div class="stat-card__content">
@@ -1093,7 +1093,7 @@
                     </div>
                   </div>
                   <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--blue">
+                    <div class="stat-card__icon">
                       <i class="pi pi-cog"></i>
                     </div>
                     <div class="stat-card__content">
@@ -1127,9 +1127,9 @@
               <!-- Results Card -->
               <div class="col-12 lg:col-6">
                 @if (sensitivityResult) {
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-pie"></i>
                       </div>
                       <span class="stat-card__title">Results ({{ sensitivityResult.num_simulations | number }} simulations)</span>
@@ -1218,9 +1218,9 @@
               <!-- Tornado Chart -->
               @if (tornadoChart) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+                      <div class="stat-card__icon">
                         <i class="pi pi-sort-alt"></i>
                       </div>
                       <span class="stat-card__title">Tornado Chart — Parameter Impact on ROI</span>
@@ -1235,9 +1235,9 @@
               <!-- Histogram chart -->
               @if (histogramChart) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-bar"></i>
                       </div>
                       <span class="stat-card__title">ROI Distribution</span>
@@ -1256,10 +1256,10 @@
             <div class="grid mt-2" style="row-gap: 1rem;">
               <!-- Controls Card -->
               <div class="col-12">
-                <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                <div class="stat-card stat-card--stacked">
                   <div class="flex align-items-center justify-between mb-3 w-full">
                     <div class="flex align-items-center gap-2 items-center">
-                      <div class="stat-card__icon stat-card__icon--blue">
+                      <div class="stat-card__icon">
                         <i class="pi pi-users"></i>
                       </div>
                       <span class="stat-card__title">Multi-Project ROI Comparison</span>
@@ -1277,9 +1277,9 @@
 
               @if (agentComparisonChart) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--green">
+                      <div class="stat-card__icon">
                         <i class="pi pi-chart-bar"></i>
                       </div>
                       <span class="stat-card__title">Comparison Chart</span>
@@ -1293,9 +1293,9 @@
 
               @if (agentComparison.length > 0) {
                 <div class="col-12">
-                  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+                  <div class="stat-card stat-card--stacked">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon stat-card__icon--purple">
+                      <div class="stat-card__icon">
                         <i class="pi pi-table"></i>
                       </div>
                       <span class="stat-card__title">Comparison Details</span>

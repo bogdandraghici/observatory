@@ -53,9 +53,9 @@
 
   <!-- Content -->
   @if (currentApp) {
-    <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+    <div class="stat-card stat-card--stacked">
       <div class="flex items-center gap-2 mb-4">
-        <div class="stat-card__icon stat-card__icon--blue">
+        <div class="stat-card__icon">
           <i class="pi pi-cog"></i>
         </div>
         <span class="stat-card__title">Project Settings</span>
@@ -107,7 +107,7 @@
         @if (currentApp?.settings.model) {
           <div class="stat-card" style="flex-direction: column; align-items: stretch; margin-top: 0.5rem;">
             <div class="flex items-center gap-2 mb-3">
-              <div class="stat-card__icon stat-card__icon--purple">
+              <div class="stat-card__icon">
                 <i class="pi pi-sliders-h"></i>
               </div>
               <span class="stat-card__title">Model Configuration</span>
