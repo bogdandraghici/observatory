@@ -938,6 +938,16 @@
       border-bottom-color: var(--flowx-interactive);
       background: transparent;
     }
+
+    // The tab CONTENT area below the strip. Aura preset paints
+    // .p-tabpanels / .p-tabpanel with {content.background} (white) by
+    // default — null it out so the gray page canvas shows through.
+    .p-tabpanels,
+    .p-tabpanel,
+    .p-tabview-panels,
+    .p-tabview-panel {
+      background: transparent;
+    }
   }
 
   // ── DataTable — tight, denser list table inspired by the Runtime

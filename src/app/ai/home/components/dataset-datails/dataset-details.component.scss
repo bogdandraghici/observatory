@@ -67,11 +67,10 @@ $card-padding: 1.5rem;
   // Light mode
   .flowx-light &, .layout-theme-light & {
     background: $card-bg-light;
-    border: 1px solid $card-border-light;
+    border: none;
     box-shadow: $card-shadow-light;
 
     &:hover {
-      border-color: $card-border-hover-light;
       box-shadow: $card-shadow-hover-light;
     }
   }
