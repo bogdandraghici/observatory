@@ -54,11 +54,10 @@ $card-shadow-hover-light: 0 10px 40px rgba(0, 0, 0, 0.08);
     // Light mode
     .flowx-light &, .layout-theme-light & {
       background: $card-bg-light;
-      border: 1px solid $card-border-light;
+      border: none;
       box-shadow: $card-shadow-light;
 
       &:hover {
-        border-color: $card-border-hover-light;
         box-shadow: $card-shadow-hover-light;
       }
     }

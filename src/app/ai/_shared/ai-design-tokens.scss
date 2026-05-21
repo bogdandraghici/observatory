@@ -131,11 +131,11 @@ $code-font:         $font-monospace;
 // being frozen to compile-time hex values.
 @mixin card-base {
   background: var(--flowx-surface-primary, #{$card-bg});
-  border: 1px solid var(--flowx-border-default, #{$card-border});
+  border: none;
   border-radius: var(--flowx-radius-12, #{$card-radius});
   box-shadow: var(--flowx-shadow-xs, #{$shadow-xs});
   color: var(--flowx-text-primary, #{$text-primary});
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: box-shadow 200ms ease, transform 200ms ease;
 }
 
 @mixin card-hover {

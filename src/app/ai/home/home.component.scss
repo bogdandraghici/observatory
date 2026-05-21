@@ -12,7 +12,7 @@
   margin-bottom: var(--flowx-space-24, 24px);
   border-radius: var(--flowx-radius-12, 12px);
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-border-default);
+  border: none;
   box-shadow: var(--flowx-shadow-xs);
 
   &__icon {
@@ -130,12 +130,11 @@
   padding: var(--flowx-space-24, 24px);
   border-radius: var(--flowx-radius-12, 12px);
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-border-default);
+  border: none;
   box-shadow: var(--flowx-shadow-xs);
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: box-shadow 200ms ease, transform 200ms ease;
 
   &:hover {
-    border-color: var(--flowx-blue-300);
     box-shadow: var(--flowx-shadow-m);
     transform: translateY(-2px);
   }
@@ -186,7 +185,7 @@
     padding: var(--flowx-space-24, 24px);
     border-radius: var(--flowx-radius-12, 12px);
     background: var(--flowx-surface-primary);
-    border: 1px solid var(--flowx-border-default);
+    border: none;
     box-shadow: var(--flowx-shadow-xs);
 
     @media (min-width: 640px) {

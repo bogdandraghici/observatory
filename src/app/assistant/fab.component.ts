@@ -9,7 +9,14 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
       (click)="fabToggle.emit()"
       [attr.aria-label]="isOpen ? 'Close assistant' : 'Open assistant'"
     >
-      <i [class]="isOpen ? 'pi pi-times' : 'pi pi-sparkles'"></i>
+      <i *ngIf="isOpen" class="pi pi-times"></i>
+      <img
+        *ngIf="!isOpen"
+        src="assets/fab-sparkles.svg"
+        alt=""
+        class="assistant-fab__icon"
+        aria-hidden="true"
+      />
     </button>
   `,
   styles: [`
@@ -20,11 +27,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #006bd8;
+      background: #2A313A;
       color: #ffffff;
       border: none;
       cursor: pointer;
-      box-shadow: 0 3px 12px rgba(0, 107, 216, 0.35);
+      box-shadow: 0 3px 12px rgba(22, 52, 98, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -34,7 +41,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
     }
     .assistant-fab:hover {
       transform: scale(1.08);
-      box-shadow: 0 4px 16px rgba(0, 107, 216, 0.5);
+      box-shadow: 0 4px 16px rgba(22, 52, 98, 0.5);
+    }
+    .assistant-fab__icon {
+      width: 16px;
+      height: 19.2px;
+      display: block;
+      pointer-events: none;
     }
   `],
 })
