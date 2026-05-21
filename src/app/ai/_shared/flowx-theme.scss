@@ -153,10 +153,10 @@
 .layout-main-container:has(.ai-page),
 .layout-main-container:has(.home-page) {
   background: var(--flowx-surface-secondary, #f7f8f9);
-  // 48px gap on all sides between content and the chrome edges.
+  // 40px gap on all sides between content and the chrome edges.
   // Top adds the 4rem fixed-topbar height so the visual gap below
-  // the topbar is also 48px.
-  padding: calc(4rem + 48px) 48px 48px 48px;
+  // the topbar is also 40px.
+  padding: calc(4rem + 40px) 40px 40px 40px;
 }
 
 // ============================================================
@@ -803,7 +803,7 @@
     &.p-inputsmall { height: 28px; font-size: 12px; line-height: 16px; padding: 0 var(--flowx-space-8); }
   }
 
-  // ── Selects (per select-field.json — medium: 36h, pad 6 12, radius 8) ──
+  // ── Selects (per select-field.json — medium: 36h, pad 6 12, radius 8, gap 6, caret 24) ──
   .p-select,
   .p-dropdown,
   .p-multiselect {
@@ -819,6 +819,7 @@
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
+    gap: var(--flowx-space-6);
 
     &:hover:not(.p-disabled) { border-color: var(--flowx-neutrals-200); }
     &:focus,
@@ -832,6 +833,18 @@
     &.p-invalid {
       border-color: var(--flowx-error);
       box-shadow: 0 0 0 3px rgba(230, 34, 0, 0.15);
+    }
+    &.p-disabled {
+      background: var(--flowx-neutrals-100);
+      border-color: var(--flowx-neutrals-100);
+      cursor: not-allowed;
+
+      .p-select-label,
+      .p-dropdown-label,
+      .p-multiselect-label {
+        color: var(--flowx-neutrals-600);
+        &.p-placeholder { color: var(--flowx-neutrals-400); }
+      }
     }
 
     // Inner content cells (PrimeNG renders trigger inside the host)
@@ -867,7 +880,7 @@
       right: var(--flowx-space-32);
     }
 
-    // Small size (per spec: 28h, mono 12/16)
+    // Small size (per spec: 28h, caret 16, mono 12/16)
     &.p-select-sm,
     &.p-dropdown-sm,
     &.p-inputsmall {
@@ -882,44 +895,19 @@
         font-size: 12px;
         line-height: 16px;
       }
+
+      .p-select-dropdown,
+      .p-dropdown-trigger,
+      .p-multiselect-trigger {
+        width: 16px;
+        padding: 0 var(--flowx-space-6);
+      }
     }
   }
 
-  // Dropdown panel surface (the floating list)
-  .p-select-overlay,
-  .p-dropdown-panel,
-  .p-multiselect-panel,
-  .p-select-overlay .p-select-list,
-  .p-dropdown-items-wrapper {
-    background: var(--flowx-surface-primary);
-    border: 1px solid var(--flowx-neutrals-100);
-    border-radius: var(--flowx-radius-8);
-    box-shadow: var(--flowx-shadow-m);
-    color: var(--flowx-text-primary);
-    margin-top: var(--flowx-space-4);
-  }
-
-  .p-select-option,
-  .p-dropdown-item,
-  .p-multiselect-item {
-    font-family: var(--flowx-font-primary);
-    font-size: 14px;
-    line-height: 24px;
-    font-weight: 400;
-    color: var(--flowx-text-primary);
-    padding: var(--flowx-space-8) var(--flowx-space-12);
-    border-radius: 0;
-    transition: background-color 120ms ease, color 120ms ease;
-
-    &:hover,
-    &.p-focus { background: var(--flowx-neutrals-50); color: var(--flowx-text-primary); }
-    &.p-select-option-selected,
-    &.p-highlight {
-      background: var(--flowx-blue-50);
-      color: var(--flowx-blue-700);
-      font-weight: 600;
-    }
-  }
+  // Dropdown panel + option styling lives at file root (below) — the
+  // panel is portalled to <body> by PrimeNG, so it isn't a descendant
+  // of `.ai-page` / `.home-page` and scoped rules wouldn't apply.
 
   // ── Tabs (per tabs.json) ─────────────────────────────────
   .p-tabs, .p-tabview {
@@ -1334,4 +1322,63 @@
     &--green  { background: rgba(0, 128, 96, 0.20);  color: #8ac5b6; }
     &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
   }
+}
+
+// ============================================================
+// Dropdown panel surface (.p-select / .p-dropdown / .p-multiselect)
+// PrimeNG portals these to <body>, so they live outside the
+// `.ai-page` / `.home-page` scope and must be styled at root.
+// Per dropdown-panel.json: panel radius 8, row height 32, shadow m.
+// ============================================================
+.p-select-overlay,
+.p-dropdown-panel,
+.p-multiselect-panel {
+  background: var(--flowx-surface-primary, #ffffff);
+  border: 1px solid var(--flowx-neutrals-100, #e3e8ed);
+  border-radius: var(--flowx-radius-8, 8px);
+  box-shadow: var(--flowx-shadow-m, 0 8px 16px #1634621a);
+  color: var(--flowx-text-primary, #1d232c);
+  margin-top: var(--flowx-space-4, 4px);
+  overflow: hidden;
+}
+.p-select-overlay .p-select-list,
+.p-dropdown-items-wrapper,
+.p-multiselect-items-wrapper {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: var(--flowx-space-4, 4px);
+}
+.p-select-option,
+.p-dropdown-item,
+.p-multiselect-item {
+  font-family: var(--flowx-font-primary, "Open Sans", system-ui, sans-serif);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--flowx-text-primary, #1d232c);
+  padding: var(--flowx-space-4, 4px) var(--flowx-space-12, 12px);
+  border-radius: var(--flowx-radius-6, 6px);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.p-select-option:hover,
+.p-select-option.p-focus,
+.p-dropdown-item:hover,
+.p-dropdown-item.p-focus,
+.p-multiselect-item:hover,
+.p-multiselect-item.p-focus {
+  background: var(--flowx-neutrals-50, #f7f8f9) !important;
+  color: var(--flowx-text-primary, #1d232c) !important;
+}
+.p-select-option.p-select-option-selected,
+.p-select-option.p-highlight,
+.p-dropdown-item.p-select-option-selected,
+.p-dropdown-item.p-highlight,
+.p-multiselect-item.p-select-option-selected,
+.p-multiselect-item.p-highlight {
+  background: var(--flowx-blue-50, #e6f0fb) !important;
+  color: var(--flowx-blue-700, #004c99) !important;
+  font-weight: 600;
 }
