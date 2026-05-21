@@ -5,6 +5,7 @@ import { OrgService } from '../services/orgs.service'
 import { AppService } from '../services/apps.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { formatTime, processDuration } from '../utils/time'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   templateUrl: './projects.component.html',
@@ -62,20 +63,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   getDefaultAppOrg(orgs: any): any {
-    const sortedOrgs = [...orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    for (const org of sortedOrgs) {
-      if (org.workspaces?.length) {
-        for (const ws of org.workspaces) {
-          const active = (ws.projects || []).filter((p: any) => p.is_active)
-          if (active.length > 0) return { org, workspace: ws, app: active[0] }
-        }
-      }
-    }
-    return { org: sortedOrgs[0], workspace: sortedOrgs[0]?.workspaces?.[0] || null, app: null }
+    return resolveDefaultAppOrg(orgs)
   }
 
   async loadApps(): Promise<void> {

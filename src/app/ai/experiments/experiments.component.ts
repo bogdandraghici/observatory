@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api'
 import { EvalService } from '../services/evals.service'
 import { DatasetService } from '../services/datasets.service'
 import { OrgService } from '../services/orgs.service'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   selector: 'app-experiments',
@@ -65,15 +66,10 @@ export class ExperimentsComponent implements OnInit {
     this.orgService.getOrgsWithApps().then((data: any) => {
       this.orgs = data || []
       if (this.orgs.length > 0) {
-        // Prefer non-default orgs (auto-provisioned from platform)
-        const sortedOrgs = [...this.orgs].sort((a, b) => {
-          if (a.name === 'Default') return 1
-          if (b.name === 'Default') return -1
-          return 0
-        })
-        this.selectedOrg = sortedOrgs[0].id
+        const { org, workspace } = resolveDefaultAppOrg(this.orgs)
+        this.selectedOrg = org?.id
         this.workspaces = this.getWorkspaces(this.selectedOrg)
-        this.selectedWorkspace = this.workspaces?.[0]?.id || null
+        this.selectedWorkspace = workspace?.id || (this.workspaces?.[0]?.id ?? null)
         this.loadAll()
       }
     })

@@ -3,6 +3,7 @@ import { ConfirmationService, MessageService } from 'primeng/api'
 import { Drawer } from 'primeng/drawer'
 import { DashboardService } from '../services/dashboard.service'
 import { OrgService } from '../services/orgs.service'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   selector: 'app-regulatory',
@@ -136,30 +137,7 @@ export class RegulatoryComponent implements OnInit {
   }
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
-    if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    // Prefer non-default orgs (auto-provisioned from platform)
-    const sortedOrgs = [...this.orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    for (const org of sortedOrgs) {
-      if (org.workspaces?.length) {
-        for (const ws of org.workspaces) {
-          const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)
-          if (activeProjects.length > 0) {
-            return { org, workspace: ws, app: activeProjects[0] }
-          }
-        }
-      }
-      const orgProjects = (org.projects || []).filter((p: any) => p.is_active)
-      if (orgProjects.length > 0) {
-        return { org, workspace: null, app: orgProjects[0] }
-      }
-    }
-    const firstOrg = sortedOrgs[0]
-    const firstWs = firstOrg.workspaces?.length ? firstOrg.workspaces[0] : null
-    return { org: firstOrg, workspace: firstWs, app: null }
+    return resolveDefaultAppOrg(this.orgs)
   }
 
   async loadOrgs(): Promise<any> {

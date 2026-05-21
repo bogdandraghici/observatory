@@ -6,6 +6,7 @@ import { RsiService } from './rsi.service'
 import { OrgService } from '../services/orgs.service'
 import { DashboardService } from '../services/dashboard.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   templateUrl: './rsi.component.html',
@@ -86,14 +87,14 @@ export class RsiComponent implements OnInit {
     this.orgService.getOrgsWithApps().then((data: any) => {
       this.orgs = data || []
       if (this.orgs.length > 0) {
-        // Prefer non-Default orgs (auto-provisioned from platform)
-        const sortedOrgs = [...this.orgs].sort((a, b) => {
-          if (a.name === 'Default') return 1
-          if (b.name === 'Default') return -1
-          return 0
-        })
-        this.selectedOrg = sortedOrgs[0].id
-        this.orgChanged()
+        const { org, workspace, app } = resolveDefaultAppOrg(this.orgs)
+        this.selectedOrg = org?.id
+        this.workspaces = org?.workspaces || []
+        this.selectedWorkspace = workspace?.id || (this.workspaces[0]?.id ?? null)
+        const ws = this.workspaces.find((w: any) => w.id === this.selectedWorkspace)
+        this.apps = (ws?.projects || []).filter((a: any) => a.is_active)
+        this.selectedApp = app?.id || this.apps[0]?.id || null
+        if (this.selectedApp) {this.loadAgents()}
       }
     })
   }

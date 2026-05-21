@@ -6,6 +6,7 @@ import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
 import Chart from 'chart.js/auto'
 import { Drawer } from 'primeng/drawer'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './insights.component.html',
@@ -138,40 +139,7 @@ export class InsightsComponent implements OnInit {
   }
 
   getDefaultAppOrg(orgs: any): any {
-    let default_app = null
-    let parent_org = null
-    let parent_workspace = null
-    // Prefer non-default orgs (auto-provisioned from platform)
-    const sortedOrgs = [...orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    sortedOrgs.forEach((org) => {
-      (org.workspaces || []).forEach((ws) => {
-        (ws.projects || []).forEach((app) => {
-          if (!default_app) {
-            default_app = app
-            parent_org = org
-            parent_workspace = ws
-          }
-        })
-      })
-      if (!default_app) {
-        (org.projects || []).forEach((app) => {
-          if (!default_app) {
-            default_app = app
-            parent_org = org
-          }
-        })
-      }
-    })
-    if (!parent_org && orgs.length > 0) {
-      parent_org = sortedOrgs[0]
-      parent_workspace = parent_org?.workspaces?.[0] || null
-      default_app = parent_workspace?.projects?.[0] || parent_org?.projects?.[0]
-    }
-    return { org: parent_org, workspace: parent_workspace, app: default_app }
+    return resolveDefaultAppOrg(orgs)
   }
 
   orgChanged(event: any): void {
