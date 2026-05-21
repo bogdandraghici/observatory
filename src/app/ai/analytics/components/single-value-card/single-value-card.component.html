@@ -1,29 +1,27 @@
 <div class="stat-card stat-card--stacked">
-  <div class="p-4">
-    <div class="flex justify-between mb-3">
-      <div class="flex items-center gap-2">
-        <div class="stat-card__icon stat-card__icon--blue">
-          <i class="pi pi-chart-line"></i>
-        </div>
-        <span class="stat-card__title">{{ title }}</span>
+  <div class="flex justify-between mb-3">
+    <div class="flex items-center gap-3">
+      <div class="stat-card__icon">
+        <i class="pi pi-chart-line"></i>
       </div>
-      @if (showTrend) {
-        <div
-          class="flex flex-row items-center"
-          [ngClass]="trendValue < 0 ? 'danger-label' : 'success-label'"
-        >
-          <i
-            class="pi mr-2"
-            [ngClass]="trendValue < 0 ? 'pi-arrow-down' : 'pi-arrow-up'"
-          ></i>
-          <span class="block font-bold">{{ trendValue }}<span class="ml-2">%</span></span>
-        </div>
-      }
+      <span class="stat-card__title">{{ title }}</span>
     </div>
-    <div class="flex justify-between mb-4">
-      <div>
-        <span class="stat-card__value--lg">{{ value }}</span>
+    @if (showTrend) {
+      <div
+        class="flex flex-row items-center"
+        [ngClass]="trendValue < 0 ? 'danger-label' : 'success-label'"
+      >
+        <i
+          class="pi mr-2"
+          [ngClass]="trendValue < 0 ? 'pi-arrow-down' : 'pi-arrow-up'"
+        ></i>
+        <span class="block font-bold">{{ trendValue }}<span class="ml-2">%</span></span>
       </div>
+    }
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ value }}</span>
     </div>
   </div>
   <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>

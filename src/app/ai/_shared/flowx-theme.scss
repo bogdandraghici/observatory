@@ -263,22 +263,37 @@
       align-items: stretch;
     }
 
+    // Card section-header icon swatch — matches the prototype's
+    // .axis-header pattern (neutral 32x32 swatch, muted glyph).
+    // Color modifiers (--blue/--green/--amber) are kept for callers
+    // that legitimately want a semantic accent (status indicators
+    // on KPI tiles, etc.), but default to neutral so the common
+    // "icon + title" header row is calm and not noisy.
     &__icon {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: var(--flowx-radius-8);
       font-size: 18px;
+      background: var(--flowx-neutrals-50);
+      color: var(--flowx-neutrals-500);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
 
       &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-600); }
       &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600); }
       &--amber  { background: rgba(254, 185, 19, 0.12); color: var(--flowx-yellow-600); }
+      &--neutral { background: var(--flowx-neutrals-50); color: var(--flowx-neutrals-500); }
     }
 
+    // Section-header title — prototype's .axis-header h3 (18/28/700)
     &__title {
-      font-size: 14px;
-      line-height: 24px;
-      font-weight: 600;
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 700;
       color: var(--flowx-text-primary);
+      letter-spacing: -0.01em;
     }
 
     &__label {
@@ -312,6 +327,13 @@
       &--success { background: var(--flowx-green-50); color: var(--flowx-green-600); }
       &--warn    { background: rgba(254, 185, 19, 0.12); color: var(--flowx-yellow-600); }
     }
+  }
+
+  // Force 12px gap on any flex row that pairs the icon swatch with the
+  // section title — matches the prototype's .axis-header rhythm and
+  // overrides Tailwind gap utilities (gap-2 / gap-1) used in templates.
+  :is(.stat-card, .card, .surface-card) .flex:has(> .stat-card__icon):has(> .stat-card__title) {
+    gap: var(--flowx-space-12) !important;
   }
 
   // ── Generic .card / .surface-card ────────────────────────
@@ -599,6 +621,100 @@
 
   .p-button.p-button-sm  { padding: var(--flowx-space-6) var(--flowx-space-12); font-size: 12px; line-height: 16px; }
   .p-button.p-button-lg  { padding: var(--flowx-space-12) var(--flowx-space-24); font-size: 14px; line-height: 24px; }
+
+  // ── Segmented button (per segmented-button.json) ─────────
+  // PrimeNG renders <p-selectButton> as .p-selectbutton wrapping inner
+  // .p-button toggles. We restyle it as a FlowX segmented control:
+  // neutrals-100 pill track, segments collapse into transparent 28h
+  // chips, the active segment fills blue-500 + white.
+  .p-selectbutton {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: var(--flowx-space-4);
+    gap: var(--flowx-space-4);
+    background: var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    border: none;
+    box-shadow: none;
+
+    .p-button,
+    .p-togglebutton,
+    .p-selectbutton-button {
+      height: 28px;
+      min-width: 0;
+      padding: 0 var(--flowx-space-12);
+      background: transparent !important;
+      border: none !important;
+      border-radius: var(--flowx-radius-6) !important;
+      color: var(--flowx-neutrals-700) !important;
+      font-family: var(--flowx-font-primary);
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 400;
+      box-shadow: none !important;
+      transition: background-color 100ms ease, color 100ms ease;
+
+      .p-button-label,
+      .p-togglebutton-label { color: inherit; font-weight: inherit; }
+
+      &:hover:not(.p-highlight):not(.p-togglebutton-checked):not(.p-disabled):not([disabled]) {
+        background: rgba(255, 255, 255, 0.6) !important;
+        color: var(--flowx-text-primary) !important;
+      }
+
+      &.p-highlight,
+      &[aria-pressed="true"],
+      &.p-togglebutton-checked {
+        background: var(--flowx-interactive) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+
+        // PrimeNG paints a second "content" layer inside .p-togglebutton —
+        // null its background + shadow out so the host blue shows through.
+        .p-togglebutton-content {
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .p-button-label,
+        .p-togglebutton-label,
+        .p-togglebutton-icon { color: #ffffff !important; }
+      }
+
+      &.p-disabled,
+      &[disabled] {
+        opacity: 1;
+        color: var(--flowx-text-disabled) !important;
+
+        &.p-highlight {
+          background: var(--flowx-neutrals-400) !important;
+          color: #ffffff !important;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--flowx-blue-300);
+        outline-offset: 2px;
+      }
+    }
+
+    // Small size — segments collapse to 20h, label drops to 12/16
+    &.p-selectbutton-sm,
+    &.p-inputsmall {
+      height: 28px;
+      gap: var(--flowx-space-2);
+
+      .p-button,
+      .p-togglebutton,
+      .p-selectbutton-button {
+        height: 20px;
+        padding: 0 var(--flowx-space-8);
+        font-size: 12px;
+        line-height: 16px;
+      }
+    }
+  }
 
   // ── Raw HTML inputs — match .p-inputtext for unwrapped controls ──
   // Scoped narrowly so we don't restyle PrimeNG-host wrapped inputs twice.

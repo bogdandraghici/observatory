@@ -1,20 +1,18 @@
 <div class="stat-card stat-card--stacked">
-  <div class="p-4">
-    <div class="flex items-center gap-2 mb-3">
-      <div class="stat-card__icon stat-card__icon--amber">
-        <i class="pi pi-clock"></i>
+  <div class="flex items-center gap-3 mb-3">
+    <div class="stat-card__icon">
+      <i class="pi pi-clock"></i>
+    </div>
+    <span class="stat-card__title">{{ title }}</span>
+    <span class="stat-card__label">{{ suffix }}</span>
+  </div>
+  <div class="flex w-full justify-between mb-4">
+    @for (item of values; track item) {
+      <div class="flex items-center flex-col">
+        <span class="stat-card__value--lg">{{ item.num }}</span>
+        <span class="stat-card__label">{{ item.label }}</span>
       </div>
-      <span class="stat-card__title">{{ title }}</span>
-      <span class="stat-card__label">{{ suffix }}</span>
-    </div>
-    <div class="flex w-full justify-between mb-4">
-      @for (item of values; track item) {
-        <div class="flex items-center flex-col">
-          <span class="stat-card__value--lg">{{ item.num }}</span>
-          <span class="stat-card__label">{{ item.label }}</span>
-        </div>
-      }
-    </div>
+    }
   </div>
   <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
 </div>
