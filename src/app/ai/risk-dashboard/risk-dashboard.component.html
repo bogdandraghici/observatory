@@ -66,7 +66,7 @@
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--purple">
+      <div class="stat-card__icon stat-card__icon--blue">
         <i class="pi pi-file-check"></i>
       </div>
       <div class="stat-card__content">
@@ -91,7 +91,7 @@
   } @else {
     <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(1, 1fr);">
       @for (app of heatmapData; track app.project_id) {
-        <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+        <div class="stat-card stat-card--stacked">
           <!-- Card Header -->
           <div class="flex align-items-center justify-between mb-3 w-full">
             <div class="flex align-items-center gap-2 items-center">
@@ -123,7 +123,7 @@
   }
 
   <!-- Risk Ranking -->
-  <div class="stat-card" style="flex-direction: column; align-items: stretch;">
+  <div class="stat-card stat-card--stacked">
     <div class="flex align-items-center gap-2 mb-3 items-center">
       <div class="stat-card__icon">
         <i class="pi pi-sort-amount-down"></i>

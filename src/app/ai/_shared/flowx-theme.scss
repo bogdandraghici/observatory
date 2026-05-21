@@ -33,19 +33,24 @@
   --flowx-blue-800: #003b77;
   --flowx-blue-900: #002d5b;
 
+  --flowx-yellow-50:  #fff8e7;
   --flowx-yellow-500: #feb913;
   --flowx-yellow-600: #e7a811;
+  --flowx-yellow-700: #b4830d;
 
   --flowx-green-50:  #e6f2ef;
   --flowx-green-500: #008060;
   --flowx-green-600: #007457;
+  --flowx-green-700: #005b44;
 
+  --flowx-orange-50:  #fff0e8;
   --flowx-orange-500: #fd6b1c;
   --flowx-orange-600: #e66119;
 
   --flowx-red-50:  #fde9e6;
   --flowx-red-500: #e62200;
   --flowx-red-600: #d11f00;
+  --flowx-red-700: #a31800;
 
   --flowx-neutrals-50:  #f7f8f9;
   --flowx-neutrals-100: #e3e8ed;
@@ -96,6 +101,7 @@
   --flowx-radius-12: 12px;
   --flowx-radius-16: 16px;
   --flowx-radius-24: 24px;
+  --flowx-radius-pill: 9999px;
 
   // Elevation
   --flowx-shadow-xs: 0 2px 8px #1634621a;
@@ -209,7 +215,7 @@
   // ── Filters bar (compose: foundation surface + radius) ───
   .filters-bar {
     background: var(--flowx-surface-primary) !important;
-    border: 1px solid var(--flowx-border-default) !important;
+    border: none !important;
     border-radius: var(--flowx-radius-12);
     box-shadow: var(--flowx-shadow-xs) !important;
     padding: var(--flowx-space-16) var(--flowx-space-24);
@@ -230,7 +236,7 @@
   .content-card,
   .table-container {
     background: var(--flowx-surface-primary) !important;
-    border: 1px solid var(--flowx-border-default) !important;
+    border: none !important;
     border-radius: var(--flowx-radius-12);
     box-shadow: var(--flowx-shadow-xs) !important;
     overflow: hidden;
@@ -239,36 +245,55 @@
   // ── Stat cards (overrides for /ai pages) ─────────────────
   .stat-card {
     background: var(--flowx-surface-primary);
-    border: 1px solid var(--flowx-border-default);
+    border: none;
     border-radius: var(--flowx-radius-12);
     box-shadow: var(--flowx-shadow-xs);
     padding: var(--flowx-space-24);
     gap: var(--flowx-space-16);
-    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+    transition: box-shadow 200ms ease, transform 200ms ease;
 
     &:hover {
-      border-color: var(--flowx-blue-300);
       box-shadow: var(--flowx-shadow-m);
       transform: translateY(-2px);
     }
 
+    // Stacked layout modifier — replaces inline style="flex-direction:column"
+    &--stacked {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    // Card section-header icon swatch — matches the prototype's
+    // .axis-header pattern (neutral 32x32 swatch, muted glyph).
+    // Color modifiers (--blue/--green/--amber) are kept for callers
+    // that legitimately want a semantic accent (status indicators
+    // on KPI tiles, etc.), but default to neutral so the common
+    // "icon + title" header row is calm and not noisy.
     &__icon {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: var(--flowx-radius-8);
       font-size: 18px;
+      background: var(--flowx-neutrals-50);
+      color: var(--flowx-neutrals-500);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
 
       &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-600); }
       &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600); }
-      &--purple { background: rgba(168, 85, 247, 0.10); color: #7e22ce; }
       &--amber  { background: rgba(254, 185, 19, 0.12); color: var(--flowx-yellow-600); }
+      &--neutral { background: var(--flowx-neutrals-50); color: var(--flowx-neutrals-500); }
     }
 
+    // Section-header title — prototype's .axis-header h3 (18/28/700)
     &__title {
-      font-size: 14px;
-      line-height: 24px;
-      font-weight: 600;
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 700;
       color: var(--flowx-text-primary);
+      letter-spacing: -0.01em;
     }
 
     &__label {
@@ -304,14 +329,176 @@
     }
   }
 
+  // Force 12px gap on any flex row that pairs the icon swatch with the
+  // section title — matches the prototype's .axis-header rhythm and
+  // overrides Tailwind gap utilities (gap-2 / gap-1) used in templates.
+  :is(.stat-card, .card, .surface-card) .flex:has(> .stat-card__icon):has(> .stat-card__title) {
+    gap: var(--flowx-space-12) !important;
+  }
+
   // ── Generic .card / .surface-card ────────────────────────
   .card,
   .surface-card {
     background: var(--flowx-surface-primary);
-    border: 1px solid var(--flowx-border-default);
+    border: none;
     border-radius: var(--flowx-radius-12);
     box-shadow: var(--flowx-shadow-xs);
     padding: var(--flowx-space-24);
+  }
+
+  // ── Card head (in-card header bar — composes from card primitive) ──
+  .card-head {
+    padding: var(--flowx-space-24);
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--flowx-space-12);
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 700;
+      color: var(--flowx-text-primary);
+    }
+
+    .meta {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--flowx-text-secondary);
+    }
+  }
+  .card-body { padding: 0; }
+
+  // ── KPI card — borderless, eyebrow + big tabular value ──
+  .kpi-card {
+    background: var(--flowx-surface-primary);
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+
+    &__eyebrow {
+      margin: 0 0 var(--flowx-space-8);
+      font-size: 11px;
+      line-height: 12px;
+      color: var(--flowx-neutrals-600);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+    &__value {
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+      color: var(--flowx-text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    &__sub {
+      font-size: 11px;
+      line-height: 16px;
+      color: var(--flowx-neutrals-600);
+    }
+    &__trend--up   { color: var(--flowx-green-600); }
+    &__trend--down { color: var(--flowx-red-600); }
+  }
+
+  // ── State pill — colored dot + tinted bg for run/queue/error/etc. ─
+  .state-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flowx-space-6);
+    padding: var(--flowx-space-2) var(--flowx-space-8);
+    border-radius: var(--flowx-radius-pill, 9999px);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    &--running   { background: var(--flowx-green-50);  color: var(--flowx-green-700, #005b44); }
+    &--running .state-pill__dot { background: var(--flowx-green-500); box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.15); }
+    &--waiting   { background: var(--flowx-yellow-50, #fff8e7); color: var(--flowx-yellow-700, #b4830d); }
+    &--waiting .state-pill__dot { background: var(--flowx-yellow-500); }
+    &--failed    { background: var(--flowx-red-50);   color: var(--flowx-red-700, #a31800); }
+    &--failed .state-pill__dot { background: var(--flowx-red-500); }
+    &--completed,
+    &--terminated { background: var(--flowx-neutrals-100); color: var(--flowx-neutrals-600); }
+    &--completed .state-pill__dot { background: var(--flowx-neutrals-400); }
+    &--terminated .state-pill__dot { background: var(--flowx-neutrals-600); }
+  }
+
+  // ── Chip — pill toggle for filter bars ─────────────────────
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 var(--flowx-space-12);
+    border-radius: var(--flowx-radius-pill, 9999px);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--flowx-text-secondary);
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    cursor: pointer;
+    transition: background 100ms ease, color 100ms ease, border-color 100ms ease;
+
+    &:hover {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-primary);
+    }
+    &.active,
+    &--active {
+      background: var(--flowx-blue-500);
+      color: #ffffff;
+      border-color: var(--flowx-blue-500);
+      font-weight: 600;
+    }
+  }
+
+  // ── Banner — surfacing operational state, floats on gray canvas ──
+  .banner {
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+    display: flex;
+    align-items: center;
+    gap: var(--flowx-space-12);
+    background: var(--flowx-surface-primary);
+
+    &--alert {
+      background: linear-gradient(90deg, var(--flowx-red-50) 0%, #fff0e8 100%);
+      border-left: 4px solid var(--flowx-red-500);
+
+      .banner__dot {
+        background: var(--flowx-red-500);
+        box-shadow: 0 0 0 4px rgba(230, 34, 0, 0.15);
+      }
+    }
+    &--info {
+      background: var(--flowx-blue-50);
+      border-left: 4px solid var(--flowx-blue-500);
+
+      .banner__dot {
+        background: var(--flowx-blue-500);
+        box-shadow: 0 0 0 4px rgba(0, 107, 216, 0.15);
+      }
+    }
+
+    &__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
   }
 
   // ============================================================
@@ -434,6 +621,139 @@
 
   .p-button.p-button-sm  { padding: var(--flowx-space-6) var(--flowx-space-12); font-size: 12px; line-height: 16px; }
   .p-button.p-button-lg  { padding: var(--flowx-space-12) var(--flowx-space-24); font-size: 14px; line-height: 24px; }
+
+  // ── Segmented button (per segmented-button.json) ─────────
+  // PrimeNG renders <p-selectButton> as .p-selectbutton wrapping inner
+  // .p-button toggles. We restyle it as a FlowX segmented control:
+  // neutrals-100 pill track, segments collapse into transparent 28h
+  // chips, the active segment fills blue-500 + white.
+  .p-selectbutton {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: var(--flowx-space-4);
+    gap: var(--flowx-space-4);
+    background: var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    border: none;
+    box-shadow: none;
+
+    .p-button,
+    .p-togglebutton,
+    .p-selectbutton-button {
+      height: 28px;
+      min-width: 0;
+      padding: 0 var(--flowx-space-12);
+      background: transparent !important;
+      border: none !important;
+      border-radius: var(--flowx-radius-6) !important;
+      color: var(--flowx-neutrals-700) !important;
+      font-family: var(--flowx-font-primary);
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 400;
+      box-shadow: none !important;
+      transition: background-color 100ms ease, color 100ms ease;
+
+      .p-button-label,
+      .p-togglebutton-label { color: inherit; font-weight: inherit; }
+
+      &:hover:not(.p-highlight):not(.p-togglebutton-checked):not(.p-disabled):not([disabled]) {
+        background: rgba(255, 255, 255, 0.6) !important;
+        color: var(--flowx-text-primary) !important;
+      }
+
+      &.p-highlight,
+      &[aria-pressed="true"],
+      &.p-togglebutton-checked {
+        background: var(--flowx-interactive) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+
+        // PrimeNG paints a second "content" layer inside .p-togglebutton —
+        // null its background + shadow out so the host blue shows through.
+        .p-togglebutton-content {
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+
+        .p-button-label,
+        .p-togglebutton-label,
+        .p-togglebutton-icon { color: #ffffff !important; }
+      }
+
+      &.p-disabled,
+      &[disabled] {
+        opacity: 1;
+        color: var(--flowx-text-disabled) !important;
+
+        &.p-highlight {
+          background: var(--flowx-neutrals-400) !important;
+          color: #ffffff !important;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--flowx-blue-300);
+        outline-offset: 2px;
+      }
+    }
+
+    // Small size — segments collapse to 20h, label drops to 12/16
+    &.p-selectbutton-sm,
+    &.p-inputsmall {
+      height: 28px;
+      gap: var(--flowx-space-2);
+
+      .p-button,
+      .p-togglebutton,
+      .p-selectbutton-button {
+        height: 20px;
+        padding: 0 var(--flowx-space-8);
+        font-size: 12px;
+        line-height: 16px;
+      }
+    }
+  }
+
+  // ── Raw HTML inputs — match .p-inputtext for unwrapped controls ──
+  // Scoped narrowly so we don't restyle PrimeNG-host wrapped inputs twice.
+  input[type="text"]:not([class*="p-"]),
+  input[type="number"]:not([class*="p-"]),
+  input[type="date"]:not([class*="p-"]),
+  input[type="search"]:not([class*="p-"]),
+  input[type="email"]:not([class*="p-"]),
+  input[type="url"]:not([class*="p-"]),
+  textarea:not([class*="p-"]) {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    height: 36px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    color: var(--flowx-text-primary);
+    padding: 0 var(--flowx-space-8);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    box-sizing: border-box;
+
+    &::placeholder { color: var(--flowx-text-secondary); font-weight: 400; }
+
+    &:hover:not(:disabled) { border-color: var(--flowx-neutrals-200); }
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: var(--flowx-interactive);
+      box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.15);
+    }
+  }
+  textarea:not([class*="p-"]) {
+    height: auto;
+    min-height: 96px;
+    padding: var(--flowx-space-8);
+    line-height: 20px;
+  }
 
   // ── Inputs (per input-field.json — medium: 36h, pad 0 8, radius 8) ──
   .p-inputtext,
@@ -982,16 +1302,13 @@
   .table-container,
   .filters-bar {
     background: var(--flowx-surface-primary);
-    border-color: var(--flowx-border-default);
-
-    &:hover { border-color: var(--flowx-blue-400); }
+    border: none;
   }
 
   // Tag/chip success/info icons on dark
   .stat-card__icon {
     &--blue   { background: rgba(51, 137, 224, 0.18); color: var(--flowx-blue-300); }
     &--green  { background: rgba(0, 128, 96, 0.20);  color: #8ac5b6; }
-    &--purple { background: rgba(168, 85, 247, 0.18); color: #c4a3f5; }
     &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
   }
 }

@@ -151,7 +151,7 @@
 
     &--projects { background: var(--flowx-blue-50);          color: var(--flowx-blue-600); }
     &--runs     { background: var(--flowx-green-50);         color: var(--flowx-green-600); }
-    &--datasets { background: rgba(168, 85, 247, 0.12);      color: #7e22ce; }
+    &--datasets { background: var(--flowx-blue-50);          color: var(--flowx-blue-600); }
     &--agents   { background: rgba(254, 185, 19, 0.15);      color: var(--flowx-yellow-600); }
   }
 
@@ -333,8 +333,8 @@
   }
 }
 
-// ── Text accent (legacy wordmark accent) ─────────────────────
-.text-gold { color: var(--flowx-interactive); }
+// ── Text accent (wordmark accent on the welcome banner) ──────
+.text-accent { color: var(--flowx-interactive); }
 
 // ── Grids ────────────────────────────────────────────────────
 .projects-grid {
