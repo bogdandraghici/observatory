@@ -4,6 +4,7 @@ import { OrgService } from '../services/orgs.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './alerts.component.html',
@@ -102,32 +103,7 @@ export class AlertsComponent implements OnInit {
   }
 
   getDefaultAppOrg(): { org: any, workspace: any, app: any } {
-    // Prefer non-default orgs (auto-provisioned from platform)
-    const sortedOrgs = [...this.orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    for (const org of sortedOrgs) {
-      if (org.workspaces?.length > 0) {
-        for (const ws of org.workspaces) {
-          const activeProjects = (ws.projects || []).filter((a: any) => a.is_active)
-          if (activeProjects.length > 0) {
-            return { org, workspace: ws, app: activeProjects[0] }
-          }
-        }
-      }
-      const orgProjects = (org.projects || []).filter((a: any) => a.is_active)
-      if (orgProjects.length > 0) {
-        return { org, workspace: null, app: orgProjects[0] }
-      }
-    }
-    if (this.orgs.length > 0) {
-      const firstOrg = sortedOrgs[0]
-      const firstWs = firstOrg.workspaces?.length > 0 ? firstOrg.workspaces[0] : null
-      return { org: firstOrg, workspace: firstWs, app: null }
-    }
-    return { org: null, workspace: null, app: null }
+    return resolveDefaultAppOrg(this.orgs)
   }
 
   populateOrgs(): void {

@@ -6,6 +6,7 @@ import { RoiService } from '../services/roi.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './registry.component.html',
@@ -135,30 +136,7 @@ export class RegistryComponent implements OnInit {
   }
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
-    if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    // Prefer non-default orgs (auto-provisioned from platform) over the built-in Default org
-    const sortedOrgs = [...this.orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    for (const org of sortedOrgs) {
-      if (org.workspaces?.length) {
-        for (const ws of org.workspaces) {
-          const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)
-          if (activeProjects.length > 0) {
-            return { org, workspace: ws, app: activeProjects[0] }
-          }
-        }
-      }
-      const orgProjects = (org.projects || []).filter((p: any) => p.is_active)
-      if (orgProjects.length > 0) {
-        return { org, workspace: null, app: orgProjects[0] }
-      }
-    }
-    const firstOrg = this.orgs[0]
-    const firstWs = firstOrg.workspaces?.length ? firstOrg.workspaces[0] : null
-    return { org: firstOrg, workspace: firstWs, app: null }
+    return resolveDefaultAppOrg(this.orgs)
   }
 
   populateOrgs(): void {

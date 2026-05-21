@@ -4,6 +4,7 @@ import { OrgService } from '../services/orgs.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { MessageService } from 'primeng/api'
 import { Meta, Title } from '@angular/platform-browser'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './access-control.component.html',
@@ -60,13 +61,8 @@ export class AccessControlComponent implements OnInit {
     this.orgService.getOrgsWithApps().then((data) => {
       this.orgs = data
       if (this.orgs?.length > 0) {
-        // Prefer non-default orgs (auto-provisioned from platform)
-        const sortedOrgs = [...this.orgs].sort((a, b) => {
-          if (a.name === 'Default') return 1
-          if (b.name === 'Default') return -1
-          return 0
-        })
-        this.selectedOrg = sortedOrgs[0].id
+        const { org } = resolveDefaultAppOrg(this.orgs)
+        this.selectedOrg = org?.id || this.orgs[0]?.id
         this.loadData()
       }
     })

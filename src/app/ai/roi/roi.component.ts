@@ -3,6 +3,7 @@ import { ConfirmationService, MessageService } from 'primeng/api'
 import { RoiService } from '../services/roi.service'
 import { OrgService } from '../services/orgs.service'
 import { DashboardService } from '../services/dashboard.service'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   selector: 'app-roi',
@@ -198,30 +199,7 @@ export class RoiComponent implements OnInit {
   }
 
   getDefaultAppOrg(): { org: any; workspace: any; app: any } {
-    if (!this.orgs?.length) { return { org: null, workspace: null, app: null } }
-    // Prefer non-default orgs (auto-provisioned from platform)
-    const sortedOrgs = [...this.orgs].sort((a, b) => {
-      if (a.name === 'Default') return 1
-      if (b.name === 'Default') return -1
-      return 0
-    })
-    for (const org of sortedOrgs) {
-      if (org.workspaces?.length) {
-        for (const ws of org.workspaces) {
-          const activeProjects = (ws.projects || []).filter((p: any) => p.is_active)
-          if (activeProjects.length > 0) {
-            return { org, workspace: ws, app: activeProjects[0] }
-          }
-        }
-      }
-      const orgProjects = (org.projects || []).filter((p: any) => p.is_active)
-      if (orgProjects.length > 0) {
-        return { org, workspace: null, app: orgProjects[0] }
-      }
-    }
-    const firstOrg = this.orgs[0]
-    const firstWs = firstOrg.workspaces?.length ? firstOrg.workspaces[0] : null
-    return { org: firstOrg, workspace: firstWs, app: null }
+    return resolveDefaultAppOrg(this.orgs)
   }
 
   async loadOrgs(): Promise<any> {
@@ -429,8 +407,35 @@ export class RoiComponent implements OnInit {
     } catch {
       this.agentBaselines = []
     }
-    // Auto-compute financial ROI to populate KPI cards on load
-    this.autoComputeFinancial()
+
+    // Hydrate the project-level form from the configured agent baseline(s) so
+    // the "Compute" button (which reads form values) produces a realistic ROI
+    // instead of always returning negative because hours/rate default to 0/$50.
+    // Aggregate across baselines: sum executions, weighted-avg hours/rate.
+    if (this.agentBaselines.length > 0) {
+      const totalExec = this.agentBaselines.reduce(
+        (acc: number, b: any) => acc + Number(b.avg_executions_per_period || 0), 0)
+      if (totalExec > 0) {
+        const weightedHours = this.agentBaselines.reduce(
+          (acc: number, b: any) => acc + Number(b.manual_effort_hours_per_execution || 0)
+                                       * Number(b.avg_executions_per_period || 0), 0) / totalExec
+        const weightedRate = this.agentBaselines.reduce(
+          (acc: number, b: any) => acc + Number(b.manual_effort_hourly_rate || 0)
+                                       * Number(b.avg_executions_per_period || 0), 0) / totalExec
+        this.financialForm.manual_effort_hours_per_execution = Number(weightedHours.toFixed(2))
+        this.financialForm.manual_effort_hourly_rate = Number(weightedRate.toFixed(2))
+        this.financialForm.avg_executions_per_period = totalExec
+      }
+    }
+
+    // Auto-compute financial ROI to populate KPI cards on load.
+    // Prefer per-agent compute when baselines exist; otherwise fall back to
+    // the project-form path (now hydrated above).
+    if (this.agentBaselines.length > 0) {
+      this.computeFinancialByAgents(true)
+    } else {
+      this.autoComputeFinancial()
+    }
   }
 
   private async autoComputeFinancial(): Promise<any> {
@@ -450,7 +455,7 @@ export class RoiComponent implements OnInit {
     }
   }
 
-  async computeFinancialByAgents(): Promise<any> {
+  async computeFinancialByAgents(silent: boolean = false): Promise<any> {
     if (!this.selectedOrg || !this.selectedApp || this.agentBaselines.length === 0) {return}
     this.loading = true
     try {
@@ -474,9 +479,13 @@ export class RoiComponent implements OnInit {
       this.financialResult = result
       this.agentBreakdown = Array.isArray(result?.agents) ? result.agents : []
       this.buildWaterfallChart()
-      this.messageService.add({ severity: 'success', summary: 'Per-agent financial ROI computed' })
+      if (!silent) {
+        this.messageService.add({ severity: 'success', summary: 'Per-agent financial ROI computed' })
+      }
     } catch (e) {
-      this.messageService.add({ severity: 'error', summary: 'Per-agent computation failed' })
+      if (!silent) {
+        this.messageService.add({ severity: 'error', summary: 'Per-agent computation failed' })
+      }
     }
     this.loading = false
   }

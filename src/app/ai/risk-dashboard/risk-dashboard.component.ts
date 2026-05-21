@@ -6,6 +6,7 @@ import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.ser
 import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
 import Chart from 'chart.js/auto'
+import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './risk-dashboard.component.html',
@@ -66,13 +67,8 @@ export class RiskDashboardComponent implements OnInit {
     this.orgService.getOrgsWithApps().then((data) => {
       this.orgs = data
       if (this.orgs?.length > 0) {
-        // Prefer non-default org (auto-provisioned from platform)
-        const sorted = [...this.orgs].sort((a, b) => {
-          if (a.name === 'Default') return 1
-          if (b.name === 'Default') return -1
-          return 0
-        })
-        this.selectedOrg = sorted[0].id
+        const { org } = resolveDefaultAppOrg(this.orgs)
+        this.selectedOrg = org?.id || this.orgs[0]?.id
         this.loadAll()
       }
     })
