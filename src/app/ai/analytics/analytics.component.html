@@ -1,0 +1,123 @@
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">API Calls</h1>
+      <p class="page-header__subtitle">Platform-wide API usage and performance</p>
+    </div>
+    <div class="page-header__right">
+      <p-selectButton
+        [options]="periods"
+        [(ngModel)]="selectedPeriod"
+        [multiple]="false"
+        (onChange)="periodChanged($event)"
+        optionLabel="name"
+        optionValue="value"
+      ></p-selectButton>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Service</label>
+        <p-select
+          [options]="agents"
+          [(ngModel)]="selectedAgent"
+          optionLabel="name"
+          optionValue="value"
+          [showClear]="true"
+          (onChange)="agentChanged($event)"
+          placeholder="All Services"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widgets -->
+  <div class="grid grid-cols-12 items-stretch gap-4">
+    @if (allMetrics?.length > 0) {
+      <div
+        class="col-span-12 lg:col-span-5 xl:col-span-5 grid grid-cols-12 self-start gap-4"
+      >
+        <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+          <single-value-widget
+            [data]="allMetrics"
+            [title]="'Requests'"
+            [dataProperty]="'count_requests'"
+            [value]="0"
+            [trendValue]="0"
+          ></single-value-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+          <single-value-widget
+            [data]="allMetrics"
+            [useAvg]="true"
+            [title]="'Users'"
+            [dataProperty]="'count_users'"
+            [value]="0"
+            [trendValue]="0"
+          ></single-value-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
+          <third-values-widget
+            [data]="responseTimeMetrics"
+            [title]="'Response Times'"
+            [suffix]="'(ms)'"
+            [values]="triple_values"
+          ></third-values-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
+          <endpoints-widget
+            [days]="selectedPeriod"
+            [agent]="selectedAgent"
+            [title]="'Endpoints'"
+          ></endpoints-widget>
+        </div>
+      </div>
+    }
+
+    @if (allMetrics?.length > 0) {
+      <div
+        class="col-span-12 lg:col-span-7 xl:col-span-7 grid grid-cols-12 self-start gap-4"
+      >
+        <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
+          <activity-widget
+            [title]="'Activity'"
+            [data]="allMetrics"
+            [period]="selectedPeriod"
+          ></activity-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+          <usage-time-widget
+            [title]="'Usage Time'"
+            [days]="selectedPeriod"
+            [agent]="selectedAgent"
+          ></usage-time-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
+          <pie-value-widget
+            [title]="'By Version'"
+            [dataSource]="'version'"
+            [days]="selectedPeriod"
+            [agent]="selectedAgent"
+            [position]="'top'"
+            [chartType]="'pie'"
+            [ratio]="1"
+          ></pie-value-widget>
+        </div>
+        <div class="col-span-12 md:col-span-12 lg:col-span-12 xl:col-span-12 self-stretch">
+          <pie-value-widget
+            [title]="'By Service/Agent'"
+            [dataSource]="'agent'"
+            [days]="selectedPeriod"
+            [position]="'left'"
+            [chartType]="'bar'"
+            [ratio]="3"
+          ></pie-value-widget>
+        </div>
+      </div>
+    }
+  </div>
+</div>

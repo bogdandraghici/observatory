@@ -1,0 +1,139 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Settings</h1>
+      <p class="page-header__subtitle">Configure application settings</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="appChanged($event)"
+          placeholder="Select Project"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  @if (currentApp) {
+    <div class="stat-card stat-card--stacked">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-cog"></i>
+        </div>
+        <span class="stat-card__title">Project Settings</span>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-row items-center gap-2">
+          <span class="font-bold" style="min-width: 12rem; white-space: nowrap;">Application Id:</span>
+          <div class="flex flex-row items-center">
+            <span class="font-bold" style="font-family: monospace; white-space: nowrap;">{{ currentApp?.id }}</span>
+            <p-button
+              icon="pi pi-copy"
+              [rounded]="true"
+              [text]="true"
+              pTooltip="Copy value and use this in environment variable for your APP by setting FLOWX_OBSERVATORY_APP_ID"
+              (click)="copyToClipboard($event)"
+            ></p-button>
+          </div>
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+          <p class="font-bold" style="min-width: 12rem;">Name of the application:</p>
+          <input
+            pInputText
+            type="text"
+            [(ngModel)]="currentApp.name"
+            placeholder="Name of the app"
+          />
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+          <p class="font-bold" style="min-width: 12rem;">Owner of the application:</p>
+          <input
+            pInputText
+            type="text"
+            [(ngModel)]="currentApp.owner"
+            placeholder="Owner of the app"
+          />
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+          <p class="font-bold" style="min-width: 12rem;">Default filter:</p>
+          <p-selectButton
+            [options]="periods"
+            [(ngModel)]="currentApp.settings.period"
+            [multiple]="false"
+            optionLabel="name"
+            optionValue="value"
+          ></p-selectButton>
+        </div>
+
+        @if (currentApp?.settings.model) {
+          <div class="stat-card" style="flex-direction: column; align-items: stretch; margin-top: 0.5rem;">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-sliders-h"></i>
+              </div>
+              <span class="stat-card__title">Model Configuration</span>
+            </div>
+            <p-accordion class="w-full">
+              @for (item of currentApp?.settings.model | keyvalue; track item) {
+                <p-accordionTab header="{{ item.key }}">
+                  @for (param of item.value | keyvalue; track param) {
+                    <p>
+                      <span class="font-bold mr-2">{{ param.key + ' :' }}</span>{{ param.value }}
+                    </p>
+                  }
+                </p-accordionTab>
+              }
+            </p-accordion>
+          </div>
+        }
+
+        <div class="flex items-center justify-end mt-2">
+          <p-button
+            label="Update Settings"
+            icon="pi pi-check"
+            (click)="updateAppSettings()"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

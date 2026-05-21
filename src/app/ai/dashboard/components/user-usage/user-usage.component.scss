@@ -1,0 +1,25 @@
+// User Usage Widget — FlowX Design System
+// Table styling inherits from the global FlowX theme (.ai-page .p-datatable).
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.user-usage {
+  height: 100%;
+
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
+    }
+
+    .p-datatable-tbody > tr:last-child > td {
+      border-bottom: none !important;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<div class="layout-topbar">
+  <a class="layout-topbar-logo" routerLink="">
+    <img
+      src="assets/layout/images/{{
+        layoutService.config().colorScheme === 'light'
+          ? 'observatory-dark'
+          : 'observatory-light'
+      }}.svg"
+      alt="logo"
+    />
+  </a>
+
+  <div
+    #topbarmenu
+    class="layout-topbar-menu"
+    [ngClass]="{
+      'layout-topbar-menu-mobile-active':
+        layoutService.state.profileSidebarVisible
+    }"
+  >
+    <button class="p-link layout-topbar-button" (click)="changeTheme($event)">
+      <i [class]="darkMode ? 'pi pi-sun' : 'pi pi-moon'"></i>
+      <span>Change Theme</span>
+    </button>
+  </div>
+</div>

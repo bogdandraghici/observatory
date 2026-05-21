@@ -1,0 +1,220 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Evidence Collection</h1>
+      <p class="page-header__subtitle">Collect and manage compliance evidence</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Collect" icon="pi pi-download" severity="info" (click)="collectEvidence()"></p-button>
+      <p-button label="Add Manual" icon="pi pi-plus" (click)="createEvidence()"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" optionValue="id" placeholder="All Projects" [showClear]="true" (onChange)="filterChanged()" class="w-[12rem]"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Status</label>
+        <p-select [options]="statusOptions" [(ngModel)]="selectedStatus" (onChange)="filterChanged()" placeholder="Status"></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="stat-cards-grid mb-4">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-folder"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Total Evidence</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalEvidence }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-check-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Approved</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ approvedCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--amber">
+        <i class="pi pi-clock"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Pending Review</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ pendingCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+        <i class="pi pi-calendar-times"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Expired</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ expiredCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evidence Table -->
+  <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-table"></i>
+      </div>
+      <span class="stat-card__title">Evidence Records</span>
+    </div>
+    <p-table [value]="evidence" styleClass="p-datatable-sm" [paginator]="true" [rows]="15">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Type</th>
+          <th>Source</th>
+          <th>Requirement</th>
+          <th>Status</th>
+          <th>Collected</th>
+          <th>Expires</th>
+          <th>Reviewed By</th>
+          <th style="width: 9rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ev>
+        <tr>
+          <td><p-tag [value]="ev.type" [severity]="getTypeSeverity(ev.type)"></p-tag></td>
+          <td>{{ ev.source }}</td>
+          <td>{{ ev.requirement_id || '-' }}</td>
+          <td><p-tag [value]="ev.status" [severity]="getStatusSeverity(ev.status)"></p-tag></td>
+          <td>{{ ev.collected_at | date:'short' }}</td>
+          <td>{{ ev.expires_at ? (ev.expires_at | date:'shortDate') : '-' }}</td>
+          <td>{{ ev.reviewed_by || '-' }}</td>
+          <td>
+            <div class="flex gap-1">
+              @if (ev.status === 'collected') {
+                <p-button icon="pi pi-eye" [rounded]="true" [text]="true" pTooltip="Review" (click)="reviewItem(ev)"></p-button>
+              }
+              @if (ev.status === 'collected' || ev.status === 'reviewed') {
+                <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" severity="success" pTooltip="Approve" (click)="approveItem(ev)"></p-button>
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center p-6">No evidence found. Click "Collect" to gather evidence automatically.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Gap Analysis Section -->
+  @if (selectedApp) {
+    <div class="stat-card stat-card--stacked">
+      <div class="flex items-center justify-between mb-3 w-full">
+        <div class="flex items-center gap-2">
+          <div class="stat-card__icon stat-card__icon--blue">
+            <i class="pi pi-search"></i>
+          </div>
+          <span class="stat-card__title">Evidence Gap Analysis</span>
+        </div>
+        <p-button label="Analyze Gaps" icon="pi pi-search" severity="secondary" (click)="loadGaps()"></p-button>
+      </div>
+
+      @if (gaps.length > 0) {
+        <p-table [value]="gaps" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Policy</th>
+              <th>Rule</th>
+              <th>Metric</th>
+              <th>Type</th>
+              <th>Has Evidence</th>
+              <th>Status</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-g>
+            <tr>
+              <td>{{ g.policy_name }}</td>
+              <td>{{ g.rule_name || g.rule_id }}</td>
+              <td>{{ g.metric }}</td>
+              <td>{{ g.evidence_type }}</td>
+              <td>
+                @if (g.has_evidence) {
+                  <i class="pi pi-check-circle text-green-500"></i>
+                } @else {
+                  <i class="pi pi-times-circle text-red-500"></i>
+                }
+              </td>
+              <td>
+                @if (g.expired) {
+                  <p-tag value="Expired" severity="danger"></p-tag>
+                } @else if (g.evidence_status) {
+                  <p-tag [value]="g.evidence_status" [severity]="getStatusSeverity(g.evidence_status)"></p-tag>
+                } @else {
+                  <p-tag value="Missing" severity="danger"></p-tag>
+                }
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr><td colspan="6" class="text-center p-6">No gaps found</td></tr>
+          </ng-template>
+        </p-table>
+      } @else {
+        <div class="text-center p-4" style="color: var(--text-color-secondary)">Click "Analyze Gaps" to check for missing evidence.</div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Manual Evidence Dialog -->
+<p-dialog [(visible)]="evidenceDialogVisible" header="Add Manual Evidence" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Project</label>
+        <p-select [options]="apps" [(ngModel)]="evidenceForm.project_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Source</label>
+        <p-select [options]="sourceOptions" [(ngModel)]="evidenceForm.source" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Requirement ID</label>
+        <input type="text" pInputText [(ngModel)]="evidenceForm.requirement_id" class="w-full" />
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Artifact Data (JSON)</label>
+        <textarea pInputTextarea [(ngModel)]="evidenceForm.artifact_data" class="w-full font-mono text-sm" rows="6"></textarea>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="evidenceDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (onClick)="saveEvidence()"></p-button>
+  </ng-template>
+</p-dialog>

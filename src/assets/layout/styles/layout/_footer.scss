@@ -1,0 +1,63 @@
+// Footer — FlowX Design System
+// Tokens: --flowx-* (declared in src/app/ai/_shared/flowx-theme.scss)
+
+$sidebar-width: 264px;
+
+.layout-footer {
+    position: fixed;
+    bottom: 0;
+    left: $sidebar-width;
+    right: 0;
+    z-index: 996;
+    padding: var(--flowx-space-8, 8px) var(--flowx-space-24, 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--flowx-text-secondary, #64748b);
+    background: var(--flowx-surface-primary, #ffffff);
+    border-top: 1px solid var(--flowx-border-default, #cbd1db);
+    transition: left $transitionDuration;
+
+    a {
+        color: var(--flowx-interactive, #006bd8);
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: var(--flowx-radius-4, 4px);
+        transition: color 150ms ease;
+
+        &:hover {
+            color: var(--flowx-interactive-hover, #005fc0);
+            text-decoration: underline;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--flowx-blue-300, #549ce5);
+            outline-offset: 2px;
+        }
+    }
+
+    img {
+        max-height: 16px;
+        margin-right: var(--flowx-space-6, 6px);
+    }
+}
+
+// Collapsed sidebar — footer fills the row
+.layout-static-inactive .layout-footer {
+    left: 0;
+}
+
+@media (max-width: 1199px) {
+    .layout-footer { left: 0; }
+}
+
+// Dark theme
+.flowx-dark .layout-footer {
+    background: var(--flowx-neutrals-900, #1d232c);
+    border-top-color: var(--flowx-neutrals-700, #475263);
+}

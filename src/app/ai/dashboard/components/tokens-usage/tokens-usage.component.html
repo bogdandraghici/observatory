@@ -1,0 +1,24 @@
+<div class="stat-card tokens-usage" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--blue">
+      <i class="pi pi-hashtag"></i>
+    </div>
+    <span class="stat-card__title">Model Usage</span>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ totalTokens | shortNumber }}</span>
+      <span class="stat-card__label ml-2">Token count</span>
+    </div>
+  </div>
+  @if (!models || totalTokens === 0) {
+    <empty-state-widget message="No data found."></empty-state-widget>
+  }
+  @if (models && totalTokens > 0) {
+    <p-chart
+      type="line"
+      [data]="chartData"
+      [options]="chartOptions"
+    ></p-chart>
+  }
+</div>

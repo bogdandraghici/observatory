@@ -1,0 +1,278 @@
+// AI Module Design Tokens — FlowX Design System
+// All values map to FlowX foundations (references/foundations/*.json)
+
+// ─── FlowX palettes (raw) ──────────────────────────────────────────────
+$flowx-blue-50:  #e6f0fb;
+$flowx-blue-100: #b0d1f3;
+$flowx-blue-200: #8abbed;
+$flowx-blue-300: #549ce5;
+$flowx-blue-400: #3389e0;
+$flowx-blue-500: #006bd8;
+$flowx-blue-600: #005fc0;
+$flowx-blue-700: #004c99;
+$flowx-blue-800: #003b77;
+$flowx-blue-900: #002d5b;
+
+$flowx-yellow-50:  #fff8e7;
+$flowx-yellow-100: #ffe9b6;
+$flowx-yellow-200: #ffdf92;
+$flowx-yellow-300: #fed061;
+$flowx-yellow-400: #fec742;
+$flowx-yellow-500: #feb913;
+$flowx-yellow-600: #e7a811;
+$flowx-yellow-700: #b4830d;
+$flowx-yellow-800: #8c660a;
+$flowx-yellow-900: #6b4e08;
+
+$flowx-green-50:  #e6f2ef;
+$flowx-green-500: #008060;
+$flowx-green-600: #007457;
+
+$flowx-orange-50:  #fff0e8;
+$flowx-orange-500: #fd6b1c;
+$flowx-orange-600: #e66119;
+
+$flowx-red-50:  #fde9e6;
+$flowx-red-500: #e62200;
+$flowx-red-600: #d11f00;
+
+$flowx-neutrals-50:  #f7f8f9;
+$flowx-neutrals-100: #e3e8ed;
+$flowx-neutrals-200: #cbd1db;
+$flowx-neutrals-300: #a6b0be;
+$flowx-neutrals-400: #8390a2;
+$flowx-neutrals-500: #64748b;
+$flowx-neutrals-600: #5b6a7e;
+$flowx-neutrals-700: #475263;
+$flowx-neutrals-800: #2a313a;
+$flowx-neutrals-900: #1d232c;
+
+// ─── FlowX semantic (light) ────────────────────────────────────────────
+$surface-primary:     $flowx-neutrals-50;     // page bg
+$surface-secondary:   #ffffff;                // card bg
+$surface-tertiary:    $flowx-neutrals-100;    // muted bg / chips
+$text-primary:        $flowx-neutrals-900;
+$text-secondary:      $flowx-neutrals-500;
+$text-disabled:       $flowx-neutrals-300;
+$border-default:      $flowx-neutrals-200;
+$border-strong:       $flowx-neutrals-400;
+$interactive:         $flowx-blue-500;
+$interactive-hover:   $flowx-blue-600;
+
+// ─── Spacing scale ─────────────────────────────────────────────────────
+$space-2:   2px;
+$space-4:   4px;
+$space-6:   6px;
+$space-8:   8px;
+$space-12:  12px;
+$space-16:  16px;
+$space-24:  24px;
+$space-32:  32px;
+$space-40:  40px;
+$space-48:  48px;
+$space-64:  64px;
+
+// ─── Radius scale ──────────────────────────────────────────────────────
+$radius-2:  2px;
+$radius-4:  4px;
+$radius-6:  6px;
+$radius-8:  8px;
+$radius-12: 12px;
+$radius-16: 16px;
+$radius-24: 24px;
+
+// ─── Elevation ─────────────────────────────────────────────────────────
+$shadow-xs: 0 2px 8px #1634621a;
+$shadow-s:  0 4px 12px #1634621a;
+$shadow-m:  0 8px 16px #1634621a;
+$shadow-l:  0 16px 24px #1634621a;
+$shadow-xl: 0 24px 32px #1634621a;
+
+// ─── Typography ────────────────────────────────────────────────────────
+$font-primary:   "Open Sans", "Inter var", "Inter", system-ui, sans-serif;
+$font-monospace: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+
+// ─── Legacy aliases (kept for existing consumers) ──────────────────────
+// Brand colour kept on FlowX yellow-500 for visual continuity with the
+// previous gold accent (#fdb913 ≈ #feb913). Interactive actions use blue.
+$gold:              $flowx-yellow-500;
+$gold-light:        rgba(254, 185, 19, 0.12);
+$gold-dark:         $flowx-yellow-600;
+$blue:              $flowx-blue-500;
+$blue-light:        rgba(0, 107, 216, 0.10);
+
+$card-bg:           $surface-secondary;
+$card-border:       $border-default;
+$card-border-hover: $flowx-blue-300;
+$card-glow:         $shadow-s;
+$card-radius:       $radius-12;
+$card-padding:      $space-24;
+
+$table-header-bg:   $flowx-neutrals-50;
+$table-row-bg:      transparent;
+$table-row-hover:   $flowx-neutrals-50;
+$table-border:      $border-default;
+
+$success-color:     $flowx-green-500;
+$success-bg:        rgba(0, 128, 96, 0.10);
+$danger-color:      $flowx-red-500;
+$danger-bg:         rgba(230, 34, 0, 0.10);
+$warning-color:     $flowx-yellow-600;
+$warning-bg:        rgba(254, 185, 19, 0.12);
+$info-color:        $flowx-blue-500;
+$info-bg:           rgba(0, 107, 216, 0.10);
+
+$code-bg:           $flowx-neutrals-100;
+$code-font:         $font-monospace;
+
+// ─── Mixins ────────────────────────────────────────────────────────────
+// All mixins emit CSS custom-property references so the rendered surfaces
+// follow `.flowx-dark` / `.flowx-light` token flips at runtime instead of
+// being frozen to compile-time hex values.
+@mixin card-base {
+  background: var(--flowx-surface-primary, #{$card-bg});
+  border: 1px solid var(--flowx-border-default, #{$card-border});
+  border-radius: var(--flowx-radius-12, #{$card-radius});
+  box-shadow: var(--flowx-shadow-xs, #{$shadow-xs});
+  color: var(--flowx-text-primary, #{$text-primary});
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+@mixin card-hover {
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--flowx-blue-300, #{$card-border-hover});
+    box-shadow: var(--flowx-shadow-m, #{$shadow-m});
+  }
+}
+
+@mixin table-modern {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary, #{$table-header-bg});
+      color: var(--flowx-text-secondary, #{$text-secondary});
+      font-family: var(--flowx-font-primary, #{$font-primary});
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
+      border: none;
+      border-bottom: 1px solid var(--flowx-border-default, #{$border-default});
+    }
+
+    .p-datatable-tbody > tr {
+      background: transparent;
+      transition: background-color 150ms ease;
+
+      &:hover {
+        background: var(--flowx-neutrals-50, #{$table-row-hover});
+      }
+
+      &.p-highlight {
+        background: rgba(0, 107, 216, 0.10);
+      }
+
+      > td {
+        color: var(--flowx-text-primary, #{$text-primary});
+        font-family: var(--flowx-font-primary, #{$font-primary});
+        font-size: 14px;
+        line-height: 24px;
+        padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
+        border: none;
+        border-bottom: 1px solid var(--flowx-border-default, #{$border-default});
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .p-paginator {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--flowx-border-default, #{$border-default});
+    padding: var(--flowx-space-12, #{$space-12}) var(--flowx-space-16, #{$space-16});
+
+    .p-paginator-current {
+      color: var(--flowx-text-secondary, #{$text-secondary});
+    }
+  }
+}
+
+@mixin icon-badge($color: $interactive, $bg: $blue-light) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-8;
+  background: $bg;
+  color: $color;
+  font-size: 18px;
+}
+
+@mixin page-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-8;
+  margin-bottom: $space-24;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@mixin section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-8;
+  font-family: $font-primary;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+
+  i {
+    color: $interactive;
+  }
+}
+
+@mixin code-text {
+  font-family: $code-font;
+  font-size: 12px;
+  line-height: 16px;
+  padding: $space-2 $space-6;
+  background: $code-bg;
+  border-radius: $radius-4;
+  color: $text-primary;
+}
+
+@mixin status-badge($color, $bg) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-2 $space-8;
+  border-radius: $radius-24;
+  background: $bg;
+  color: $color;
+  font-family: $font-primary;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+// ─── Utility classes (kept for existing consumers) ─────────────────────
+.text-gold    { color: $flowx-yellow-600; }
+.text-success { color: $success-color; }
+.text-danger  { color: $danger-color; }
+.text-warning { color: $warning-color; }
+.text-info    { color: $info-color; }
+
+.bg-gold    { background: $gold-light; }
+.bg-success { background: $success-bg; }
+.bg-danger  { background: $danger-bg; }
+.bg-warning { background: $warning-bg; }
+.bg-info    { background: $info-bg; }

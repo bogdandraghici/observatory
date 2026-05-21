@@ -1,0 +1,95 @@
+<div class="stat-card stat-card--stacked">
+  <div class="flex items-center justify-between mb-3 w-full">
+    <div class="flex items-center gap-2">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-users"></i>
+      </div>
+      <span class="stat-card__title">Users</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-select
+        [options]="agents"
+        [(ngModel)]="selectedAgent"
+        optionLabel="name"
+        [showClear]="true"
+        (onChange)="filterByAgent($event)"
+        placeholder="Filter by agent"
+      ></p-select>
+      <span class="p-input-icon-left">
+        <input
+          pInputText
+          type="text"
+          (input)="dt.filterGlobal($event.target.value, 'contains')"
+          placeholder="Search by user email"
+        />
+      </span>
+      <p-button
+        icon="pi pi-refresh"
+        [rounded]="true"
+        [text]="true"
+        pTooltip="Refresh"
+        tooltipPosition="top"
+        (click)="populateTable(null, appId, hours)"
+      ></p-button>
+    </div>
+  </div>
+
+  @if (appId && hours) {
+    <p-table
+      #dt
+      [value]="users"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [lazy]="true"
+      (onLazyLoad)="populateTable($event, appId, hours)"
+      dataKey="user_id"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      styleClass="p-datatable-sm"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [globalFilterFields]="['user_email']"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>User</th>
+          <th>Total Runs</th>
+          <th>Prompt Tokens</th>
+          <th>Completion Tokens</th>
+          <th>Feedbacks</th>
+          <th>Latest Run</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>
+            <div class="flex items-center gap-2">
+              <p-avatar
+                [label]="user.user_email ? user.user_email[0].toUpperCase() : '?'"
+                size="normal"
+                shape="circle"
+              ></p-avatar>
+              <span class="font-semibold">{{ user.user_email }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="font-bold">{{ user.cnt_runs }}</span>
+          </td>
+          <td>{{ user.prompt_tokens || 0 }}</td>
+          <td>{{ user.completion_tokens || 0 }}</td>
+          <td>{{ user.cnt_feedbacks || 0 }}</td>
+          <td>{{ formatTime(user.latest_run) }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <empty-state-widget message="No users found."></empty-state-widget>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>

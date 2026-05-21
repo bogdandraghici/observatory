@@ -1,0 +1,36 @@
+<div
+  id="home"
+  class="landing-wrapper landing overflow-hidden"
+  [ngClass]="landingClass"
+>
+  <!-- News Banner
+  <app-news></app-news> -->
+
+  <!-- Navigation -->
+  <app-topbar
+    [showConfigurator]="false"
+    [showMenuButton]="false"
+    (darkModeSwitch)="toggleDarkMode()"
+  ></app-topbar>
+
+  <!-- Hero Section -->
+  <hero-section [isDarkMode]="isDarkMode"></hero-section>
+
+  <!-- Stats / Social Proof -->
+  <stats-section [isDarkMode]="isDarkMode"></stats-section>
+
+  <!-- Features Grid -->
+  <features-section [isDarkMode]="isDarkMode"></features-section>
+
+  <!-- Product Showcase -->
+  <showcase-section [isDarkMode]="isDarkMode"></showcase-section>
+
+  <!-- Architecture / How it Works -->
+  <architecture-section [isDarkMode]="isDarkMode"></architecture-section>
+
+  <!-- CTA Section -->
+  <join-section></join-section>
+
+  <!-- Footer -->
+  <footer-section [isDarkMode]="isDarkMode"></footer-section>
+</div>

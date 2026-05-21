@@ -1,0 +1,72 @@
+// Correctness Overview Component Styles
+
+.correctness-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.correctness-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-ground);
+  transition: background-color 150ms ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &--good {
+    .correctness-card__icon {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--flowx-success, #008060);
+    }
+  }
+
+  &--neutral {
+    .correctness-card__icon {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--flowx-warning, #feb913);
+    }
+  }
+
+  &--bad {
+    .correctness-card__icon {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--flowx-error, #e62200);
+    }
+  }
+}

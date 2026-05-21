@@ -1,0 +1,53 @@
+<div class="stat-card correctness-overview" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--blue">
+      <i class="pi pi-check-circle"></i>
+    </div>
+    <span class="stat-card__title">Correctness</span>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ totalRated | shortNumber }}</span>
+      <span class="stat-card__label ml-2">rated</span>
+    </div>
+    <div>
+      <span class="stat-card__value--lg">{{ goodPercent }}%</span>
+      <span class="stat-card__label ml-2">good</span>
+    </div>
+  </div>
+  @if (totalRated > 0) {
+    <div class="correctness-cards">
+      <div class="correctness-card correctness-card--good">
+        <div class="correctness-card__icon">
+          <i class="pi pi-thumbs-up"></i>
+        </div>
+        <div class="correctness-card__content">
+          <span class="correctness-card__value">{{ goodCount | shortNumber }}</span>
+          <span class="correctness-card__label">Good</span>
+        </div>
+      </div>
+      <div class="correctness-card correctness-card--neutral">
+        <div class="correctness-card__icon">
+          <i class="pi pi-minus"></i>
+        </div>
+        <div class="correctness-card__content">
+          <span class="correctness-card__value">{{ neutralCount | shortNumber }}</span>
+          <span class="correctness-card__label">Neutral</span>
+        </div>
+      </div>
+      <div class="correctness-card correctness-card--bad">
+        <div class="correctness-card__icon">
+          <i class="pi pi-thumbs-down"></i>
+        </div>
+        <div class="correctness-card__content">
+          <span class="correctness-card__value">{{ badCount | shortNumber }}</span>
+          <span class="correctness-card__label">Bad</span>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div style="height: 240px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No data found."></empty-state-widget>
+    </div>
+  }
+</div>

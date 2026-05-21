@@ -1,0 +1,71 @@
+// Table Styles - Use proper surface colors for theme support
+// Note: Using CSS variables instead of 'transparent' for proper contrast
+
+.p-datatable .p-datatable-scrollable-header,
+.p-datatable .p-datatable-scrollable-footer {
+  background: var(--surface-ground);
+}
+
+.p-datatable.p-datatable-scrollable
+  > .p-datatable-wrapper
+  > .p-datatable-table
+  > .p-datatable-thead,
+.p-datatable.p-datatable-scrollable
+  > .p-datatable-wrapper
+  > .p-datatable-table
+  > .p-datatable-tfoot,
+.p-datatable.p-datatable-scrollable
+  > .p-datatable-wrapper
+  > .p-scroller-viewport
+  > .p-scroller
+  > .p-datatable-table
+  > .p-datatable-thead,
+.p-datatable.p-datatable-scrollable
+  > .p-datatable-wrapper
+  > .p-scroller-viewport
+  > .p-scroller
+  > .p-datatable-table
+  > .p-datatable-tfoot {
+  background-color: var(--surface-card);
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background: var(--surface-card);
+}
+
+.p-datatable .p-datatable-header {
+  background: var(--surface-ground);
+}
+
+.p-datatable .p-datatable-footer {
+  background: var(--surface-ground);
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--surface-card);
+  color: var(--text-color);
+}
+
+.p-datatable .p-datatable-tfoot > tr > td {
+  background: var(--surface-card);
+}
+
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+  background: var(--highlight-bg);
+  font-weight: bold;
+  color: var(--highlight-text-color);
+}
+
+.p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
+  background: var(--highlight-bg);
+  font-weight: bold;
+  color: var(--highlight-text-color);
+}
+
+.p-paginator {
+  background: var(--surface-ground);
+}
+
+.p-accordion .p-accordion-tab {
+  box-shadow: none;
+}

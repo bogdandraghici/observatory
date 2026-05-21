@@ -1,0 +1,96 @@
+@if (isOpen) {
+<div class="chat-window">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-header__left">
+      <div class="chat-avatar">
+        <i class="ph ph-sparkle"></i>
+      </div>
+      <div class="chat-header__info">
+        <span class="chat-title">Observatory Assistant</span>
+        <span class="chat-status">
+          @if (isStreaming) {
+            <span class="chat-status__dot chat-status__dot--active"></span> Thinking...
+          } @else {
+            <span class="chat-status__dot chat-status__dot--ready"></span> Ready
+          }
+        </span>
+      </div>
+    </div>
+    <div class="chat-actions">
+      @if (isStreaming) {
+        <button class="chat-action-btn chat-action-btn--stop" (click)="stopStreaming()" title="Stop generating">
+          <i class="ph ph-stop-circle"></i>
+        </button>
+      }
+      <button class="chat-action-btn" (click)="newConversation()" title="New conversation">
+        <i class="ph ph-chat-text"></i>
+      </button>
+      <button class="chat-action-btn" (click)="clearHistory()" title="Clear history" [disabled]="messages.length === 0">
+        <i class="ph ph-trash"></i>
+      </button>
+      <button class="chat-action-btn" (click)="toggleOpen.emit()" title="Minimize">
+        <i class="ph ph-minus"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" #messagesContainer>
+    @if (messages.length === 0 && !isStreaming) {
+      <div class="chat-empty">
+        <i class="pi pi-sparkles chat-empty-icon"></i>
+        <p>How can I help you?</p>
+        <div class="chat-hints">
+          <button class="chat-hint" (click)="sendMessage('What can you help me with?')">
+            What can you help me with?
+          </button>
+          <button class="chat-hint" (click)="sendMessage('Explain this page')">
+            Explain this page
+          </button>
+          <button class="chat-hint" (click)="sendMessage('How do I create an evaluation?')">
+            How do I create an evaluation?
+          </button>
+        </div>
+      </div>
+    }
+
+    @for (msg of messages; track msg.id) {
+      <div class="chat-message" [class.chat-message--user]="msg.role === 'user'" [class.chat-message--assistant]="msg.role === 'assistant'">
+        @if (msg.role === 'assistant') {
+          <div class="chat-bubble chat-bubble--md" [innerHTML]="renderMarkdown(msg.content)"></div>
+        } @else {
+          <div class="chat-bubble">{{ msg.content }}</div>
+        }
+      </div>
+    }
+
+    @if (isStreaming) {
+      <div class="chat-message chat-message--assistant">
+        <div class="chat-bubble">
+          @if (streamingContent) {
+            <div class="chat-bubble--md" [innerHTML]="renderMarkdown(streamingContent)"></div>
+          } @else {
+            <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <textarea
+      class="chat-input"
+      [(ngModel)]="inputText"
+      placeholder="Ask anything..."
+      (keydown.enter)="onEnter($event)"
+      [disabled]="isStreaming"
+      rows="1"
+    ></textarea>
+    <button class="chat-send-btn" (click)="sendMessage()" [disabled]="!inputText.trim() || isStreaming">
+      <i class="pi pi-send"></i>
+    </button>
+  </div>
+</div>
+}

@@ -1,0 +1,66 @@
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Traces</h1>
+      <p class="page-header__subtitle">Track and debug execution traces</p>
+    </div>
+    <div class="page-header__right">
+      <p-selectButton
+        [options]="periods"
+        [(ngModel)]="selectedPeriod"
+        [multiple]="false"
+        optionLabel="name"
+        optionValue="value"
+      ></p-selectButton>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="appChanged($event)"
+          placeholder="Select Project"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <traces-list-widget
+    [appId]="selectedApp"
+    [hours]="selectedPeriod"
+  ></traces-list-widget>
+</div>

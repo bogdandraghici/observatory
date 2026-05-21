@@ -1,0 +1,88 @@
+<div class="stat-card regulatory-drift" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon stat-card__icon--orange">
+      <i class="pi pi-chart-line"></i>
+    </div>
+    <span class="stat-card__title">Regulatory Drift</span>
+    @if (totalDriftRuns > 0) {
+      <span
+        class="ml-auto px-2 py-0.5 rounded text-[10px] font-medium"
+        style="background: var(--surface-100); color: var(--text-color-secondary);"
+        [title]="totalDriftRuns + ' drift check' + (totalDriftRuns === 1 ? '' : 's') + ' in window'"
+      >
+        <i class="pi pi-history"></i> {{ totalDriftRuns }} run{{ totalDriftRuns === 1 ? '' : 's' }}
+      </span>
+    }
+  </div>
+
+  <!-- Latest-run summary: "X of Y verdicts drifted (Z%)" + worsened/improved -->
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+    <div>
+      <span class="stat-card__value--lg">{{ latestDrifted }}</span>
+      <span class="stat-card__label ml-2">of {{ latestExamined }} drifted ({{ latestDriftedPercent }}%)</span>
+    </div>
+    @if (hasData) {
+      <div class="flex items-center gap-1.5">
+        <span
+          class="px-2 py-1 rounded text-xs font-medium drift-pill drift-pill--worsened"
+          [title]="latestWorsened + ' verdicts worsened in the most recent check'"
+        >
+          <i class="pi pi-arrow-down-right"></i> {{ latestWorsened }} worsened
+        </span>
+        <span
+          class="px-2 py-1 rounded text-xs font-medium drift-pill drift-pill--improved"
+          [title]="latestImproved + ' verdicts improved in the most recent check'"
+        >
+          <i class="pi pi-arrow-up-right"></i> {{ latestImproved }} improved
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Per-day stacked trend (drifted vs stable) -->
+  @if (hasData) {
+    <div style="height: 150px;">
+      <p-chart
+        type="bar"
+        [data]="chartData"
+        [options]="chartOptions"
+        [style]="{ width: '100%', height: '100%' }"
+      ></p-chart>
+    </div>
+  } @else {
+    <div style="height: 150px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No drift checks yet."></empty-state-widget>
+    </div>
+  }
+
+  <!-- Per-kind chips. Sum across the window; helps the operator decide whether to
+       schedule more checks or accept the current state. -->
+  @if (hasData) {
+    <div class="mt-3 pt-3 flex flex-wrap items-center gap-2" style="border-top: 1px solid var(--surface-border);">
+      <span class="text-xs uppercase tracking-wide" style="color: var(--text-color-secondary);">
+        Window totals
+      </span>
+      <span
+        class="px-2 py-0.5 rounded text-[11px] font-medium"
+        style="background: rgba(239, 68, 68, 0.12); color: rgb(185, 28, 28);"
+        title="Verdicts whose overall severity changed"
+      >
+        verdict drift: {{ verdictDriftCount }}
+      </span>
+      <span
+        class="px-2 py-0.5 rounded text-[11px] font-medium"
+        style="background: rgba(245, 158, 11, 0.15); color: rgb(146, 64, 14);"
+        title="Verdicts whose cited articles changed"
+      >
+        citation drift: {{ citationDriftCount }}
+      </span>
+      <span
+        class="px-2 py-0.5 rounded text-[11px] font-medium"
+        style="background: var(--surface-100); color: var(--text-color);"
+        title="Verdicts that re-evaluated identically"
+      >
+        no drift: {{ noDriftCount }}
+      </span>
+    </div>
+  }
+</div>

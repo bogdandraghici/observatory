@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observatory-web
+  namespace: dev-pr2127
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: observatory-web
+  template:
+    metadata:
+      labels:
+        app: observatory-web
+    spec:
+      containers:
+        - name: observatory-web
+          image: europe-docker.pkg.dev/flowxai-sandbox/ai/observatory-web:2.0.22
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BASE_API_URL
+              value: "https://services.cloud.pr2127.dev1.flowxai.dev/ai-observatory"
+            - name: PLATFORM_API_URL
+              value: "https://services.cloud.pr2127.dev1.flowxai.dev/ai-platform"
+            - name: PLAYGROUND_URL
+              value: ""
+            - name: DEFAULT_NAMESPACE
+              value: "default"
+            - name: KEYCLOAK_ISSUER
+              value: "https://auth.cloud.pr2127.dev1.flowxai.dev/auth/realms/00000001-0001-4001-8001-000000000001"
+            - name: KEYCLOAK_REDIRECT_URI
+              value: "https://observatory.cloud.pr2127.dev1.flowxai.dev/"
+            - name: KEYCLOAK_CLIENT_ID
+              value: "flowx-platform-authenticate"
+            - name: KEYCLOAK_SCOPES
+              value: "openid profile email offline_access"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: observatory-web
+  namespace: dev-pr2127
+spec:
+  selector:
+    app: observatory-web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: observatory-web-mngt
+  namespace: dev-pr2127
+  annotations:
+    flowx.ai/health: "true"
+    flowx.ai/health-path: /healthcheck.json
+    flowx.ai/health-port: "8081"
+    prometheus.io/scrape: "false"
+    prometheus.io/path: /manage/actuator/prometheus
+    prometheus.io/port: "8081"
+spec:
+  selector:
+    app: observatory-web
+  ports:
+    - name: mngt
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP

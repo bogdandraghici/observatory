@@ -1,0 +1,22 @@
+<div class="stat-card stat-card--stacked">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-link"></i>
+      </div>
+      <span class="stat-card__title">{{ title }}</span>
+    </div>
+    <p-selectButton
+      [options]="stateTypes"
+      [(ngModel)]="valueType"
+      optionLabel="label"
+      (onChange)="onStateChange($event)"
+      optionValue="value"
+    />
+  </div>
+  <p-chart
+    type="bar"
+    [data]="chartDataEndNo"
+    [options]="chartOptionsEndNo"
+  ></p-chart>
+</div>

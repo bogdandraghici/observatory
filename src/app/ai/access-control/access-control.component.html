@@ -1,0 +1,219 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Access Control</h1>
+      <p class="page-header__subtitle">Manage members, roles, and permissions</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Organization"
+          (onChange)="orgChanged($event)"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Members</p-tab>
+      <p-tab value="1">Roles</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Members Tab -->
+      <p-tabpanel value="0">
+        <div class="stat-card stat-card--stacked">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-users"></i>
+              </div>
+              <span class="stat-card__title">Members</span>
+            </div>
+            <p-button label="Add Member" icon="pi pi-plus" (click)="showInviteDialog()"></p-button>
+          </div>
+          <p-table [value]="members" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th style="width: 8rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-member>
+              <tr>
+                <td>{{ member.user_id }}</td>
+                <td>{{ member.user_email || '-' }}</td>
+                <td>
+                  <p-select
+                    [options]="roles"
+                    [ngModel]="member.role_id"
+                    optionLabel="name"
+                    optionValue="id"
+                    (onChange)="changeMemberRole(member, $event.value)"
+                    [style]="{'min-width': '8rem'}"
+                  ></p-select>
+                </td>
+                <td>{{ member.created_at | date:'shortDate' }}</td>
+                <td>
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    pTooltip="Remove"
+                    tooltipPosition="top"
+                    (click)="removeMember(member)"
+                  ></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center p-6">No members found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Roles Tab -->
+      <p-tabpanel value="1">
+        <div class="stat-card stat-card--stacked">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-shield"></i>
+              </div>
+              <span class="stat-card__title">Roles</span>
+            </div>
+            <p-button label="Create Role" icon="pi pi-plus" (click)="showCreateRole()"></p-button>
+          </div>
+          <p-table [value]="roles" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Permissions</th>
+                <th>System</th>
+                <th style="width: 10rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-role>
+              <tr>
+                <td class="font-semibold">{{ role.name }}</td>
+                <td>{{ role.permissions?.length || 0 }} permissions</td>
+                <td>
+                  @if (role.is_system) {
+                    <p-tag value="System" severity="info"></p-tag>
+                  }
+                </td>
+                <td>
+                  <div class="flex gap-1">
+                    <p-button
+                      icon="pi pi-pencil"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="secondary"
+                      pTooltip="Edit"
+                      tooltipPosition="top"
+                      (click)="editRole(role)"
+                      [disabled]="role.is_system"
+                    ></p-button>
+                    <p-button
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      pTooltip="Delete"
+                      tooltipPosition="top"
+                      (click)="deleteRole(role)"
+                      [disabled]="role.is_system"
+                    ></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4" class="text-center p-6">No roles found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Invite Member Dialog -->
+<p-dialog header="Add Member" [(visible)]="inviteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div>
+      <label class="font-semibold block mb-1">User ID</label>
+      <input type="text" pInputText [(ngModel)]="newMember.user_id" class="w-full" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Email</label>
+      <input type="text" pInputText [(ngModel)]="newMember.user_email" class="w-full" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-1">Role</label>
+      <p-select
+        [options]="roles"
+        [(ngModel)]="newMember.role_id"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select Role"
+        appendTo="body"
+        [style]="{'width':'100%'}"
+      ></p-select>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="inviteDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="inviteMember()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Role Edit Dialog -->
+<p-dialog [(visible)]="roleDialogVisible" [header]="editingRole ? 'Edit Role' : 'New Role'" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div>
+      <label class="font-semibold block mb-1">Role Name</label>
+      <input type="text" pInputText [(ngModel)]="newRole.name" class="w-full" [disabled]="editingRole?.is_system" />
+    </div>
+    <div>
+      <label class="font-semibold block mb-2">Permissions</label>
+      <div class="flex flex-col gap-2">
+        @for (perm of allPermissions; track perm) {
+          <div class="flex items-center gap-2">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="hasPermission(perm)"
+              (onChange)="togglePermission(perm)"
+            ></p-checkbox>
+            <span class="text-sm">{{ perm }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="roleDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveRole()"></p-button>
+  </ng-template>
+</p-dialog>

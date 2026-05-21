@@ -1,0 +1,1155 @@
+// ============================================================
+// FlowX Design System — Global theme for /ai routes
+// Scoped to `.ai-page` so the home dashboard (`.home-page`)
+// stays on the previous styling.
+//
+// Token references (read at build time):
+//   references/foundations/colors.json
+//   references/foundations/typography.json
+//   references/foundations/spacing.json
+//   references/foundations/radius.json
+//   references/foundations/elevation.json
+//   references/foundations/opacity.json
+// ============================================================
+
+// Open Sans + JetBrains Mono are loaded via index.html <link>.
+
+// ── Expose FlowX tokens as CSS variables ────────────────────
+// Declared on .layout-wrapper so the sidebar, topbar, and any
+// /ai page can reference --flowx-* tokens. The AppLayoutComponent
+// is mounted only on /ai routes, so this stays isolated from the
+// landing page.
+.layout-wrapper,
+.ai-page {
+  // Palettes
+  --flowx-blue-50:  #e6f0fb;
+  --flowx-blue-100: #b0d1f3;
+  --flowx-blue-200: #8abbed;
+  --flowx-blue-300: #549ce5;
+  --flowx-blue-400: #3389e0;
+  --flowx-blue-500: #006bd8;
+  --flowx-blue-600: #005fc0;
+  --flowx-blue-700: #004c99;
+  --flowx-blue-800: #003b77;
+  --flowx-blue-900: #002d5b;
+
+  --flowx-yellow-50:  #fff8e7;
+  --flowx-yellow-500: #feb913;
+  --flowx-yellow-600: #e7a811;
+  --flowx-yellow-700: #b4830d;
+
+  --flowx-green-50:  #e6f2ef;
+  --flowx-green-500: #008060;
+  --flowx-green-600: #007457;
+  --flowx-green-700: #005b44;
+
+  --flowx-orange-50:  #fff0e8;
+  --flowx-orange-500: #fd6b1c;
+  --flowx-orange-600: #e66119;
+
+  --flowx-red-50:  #fde9e6;
+  --flowx-red-500: #e62200;
+  --flowx-red-600: #d11f00;
+  --flowx-red-700: #a31800;
+
+  --flowx-neutrals-50:  #f7f8f9;
+  --flowx-neutrals-100: #e3e8ed;
+  --flowx-neutrals-200: #cbd1db;
+  --flowx-neutrals-300: #a6b0be;
+  --flowx-neutrals-400: #8390a2;
+  --flowx-neutrals-500: #64748b;
+  --flowx-neutrals-600: #5b6a7e;
+  --flowx-neutrals-700: #475263;
+  --flowx-neutrals-800: #2a313a;
+  --flowx-neutrals-900: #1d232c;
+
+  // Semantic
+  --flowx-surface-primary:   #ffffff;
+  --flowx-surface-secondary: #f7f8f9;
+  --flowx-surface-tertiary:  #e3e8ed;
+  --flowx-text-primary:      #1d232c;
+  --flowx-text-secondary:    #64748b;
+  --flowx-text-disabled:     #a6b0be;
+  --flowx-border-default:    #cbd1db;
+  --flowx-border-strong:     #8390a2;
+  --flowx-interactive:       #006bd8;
+  --flowx-interactive-hover: #005fc0;
+  --flowx-success:           #008060;
+  --flowx-warning:           #feb913;
+  --flowx-error:             #e62200;
+  --flowx-info:              #006bd8;
+
+  // Spacing
+  --flowx-space-2:   2px;
+  --flowx-space-4:   4px;
+  --flowx-space-6:   6px;
+  --flowx-space-8:   8px;
+  --flowx-space-12:  12px;
+  --flowx-space-16:  16px;
+  --flowx-space-24:  24px;
+  --flowx-space-32:  32px;
+  --flowx-space-40:  40px;
+  --flowx-space-48:  48px;
+  --flowx-space-56:  56px;
+  --flowx-space-64:  64px;
+
+  // Radius
+  --flowx-radius-2:  2px;
+  --flowx-radius-4:  4px;
+  --flowx-radius-6:  6px;
+  --flowx-radius-8:  8px;
+  --flowx-radius-12: 12px;
+  --flowx-radius-16: 16px;
+  --flowx-radius-24: 24px;
+  --flowx-radius-pill: 9999px;
+
+  // Elevation
+  --flowx-shadow-xs: 0 2px 8px #1634621a;
+  --flowx-shadow-s:  0 4px 12px #1634621a;
+  --flowx-shadow-m:  0 8px 16px #1634621a;
+  --flowx-shadow-l:  0 16px 24px #1634621a;
+  --flowx-shadow-xl: 0 24px 32px #1634621a;
+
+  // Typography
+  --flowx-font-primary:   "Open Sans", "Inter var", "Inter", system-ui, sans-serif;
+  --flowx-font-monospace: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+
+  // PrimeNG bridge (re-map existing surface/text vars to FlowX)
+  --surface-ground:          var(--flowx-surface-secondary);
+  --surface-section:         var(--flowx-surface-primary);
+  --surface-card:            var(--flowx-surface-primary);
+  --surface-overlay:         var(--flowx-surface-primary);
+  --surface-border:          var(--flowx-border-default);
+  --surface-hover:           var(--flowx-neutrals-50);
+  --text-color:              var(--flowx-text-primary);
+  --text-color-secondary:    var(--flowx-text-secondary);
+  --p-primary-color:         var(--flowx-interactive);
+  --p-primary-color-text:    #ffffff;
+  --p-primary-50:            var(--flowx-blue-50);
+  --p-primary-100:           var(--flowx-blue-100);
+  --p-primary-200:           var(--flowx-blue-200);
+  --p-primary-300:           var(--flowx-blue-300);
+  --p-primary-400:           var(--flowx-blue-400);
+  --p-primary-500:           var(--flowx-blue-500);
+  --p-primary-600:           var(--flowx-blue-600);
+  --p-primary-700:           var(--flowx-blue-700);
+
+  // Base typography
+  font-family: var(--flowx-font-primary);
+  color: var(--flowx-text-primary);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+// ── Layout body when an /ai page is active ──────────────────
+.layout-main-container:has(.ai-page),
+.layout-main-container:has(.home-page) {
+  background: var(--flowx-surface-secondary, #f7f8f9);
+}
+
+// ============================================================
+// .ai-page — page shell (also applied to .home-page)
+// ============================================================
+.ai-page,
+.home-page {
+  // Outer padding/width are provided by .layout-main (2rem padding).
+  // .ai-page just sets typography + lets content fill the column,
+  // matching .home-page's behaviour.
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--flowx-font-primary);
+
+  // ── Headings (typography presets) ────────────────────────
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--flowx-font-primary);
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  h1 { font-size: 40px; line-height: 60px; font-weight: 700; }
+  h2 { font-size: 24px; line-height: 38px; font-weight: 700; }
+  h3 { font-size: 18px; line-height: 28px; font-weight: 700; }
+  h4 { font-size: 14px; line-height: 24px; font-weight: 700; }
+  h5 { font-size: 12px; line-height: 16px; font-weight: 700; }
+
+  // ── Code / mono ──────────────────────────────────────────
+  code, pre, .mono {
+    font-family: var(--flowx-font-monospace);
+  }
+
+  // ── Links ────────────────────────────────────────────────
+  // Style inline text anchors. Skip PrimeNG buttons (.p-…) and any
+  // anchor that's styled as a button by its host component
+  // (class contains "btn" — e.g. .getting-started__btn, .btn-add).
+  a:not(.p-button):not([class*="p-"]):not([class*="btn"]) {
+    color: var(--flowx-interactive);
+    text-decoration: none;
+
+    &:hover { color: var(--flowx-interactive-hover); text-decoration: underline; }
+  }
+
+  // ── Page header (xxl-bold + secondary subtitle) ──────────
+  .page-header {
+    margin-bottom: var(--flowx-space-32);
+    gap: var(--flowx-space-12);
+
+    &__title {
+      font-size: 24px;
+      line-height: 38px;
+      font-weight: 700;
+      color: var(--flowx-text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    &__subtitle {
+      font-size: 14px;
+      line-height: 24px;
+      color: var(--flowx-text-secondary);
+      font-weight: 400;
+    }
+
+    &__right { gap: var(--flowx-space-12); }
+  }
+
+  // ── Filters bar (compose: foundation surface + radius) ───
+  .filters-bar {
+    background: var(--flowx-surface-primary) !important;
+    border: none !important;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs) !important;
+    padding: var(--flowx-space-16) var(--flowx-space-24);
+    gap: var(--flowx-space-24);
+    margin-bottom: var(--flowx-space-24);
+
+    .filter-group__label {
+      font-size: 10px;
+      line-height: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--flowx-text-secondary);
+    }
+  }
+
+  // ── Content card / table container ───────────────────────
+  .content-card,
+  .table-container {
+    background: var(--flowx-surface-primary) !important;
+    border: none !important;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs) !important;
+    overflow: hidden;
+  }
+
+  // ── Stat cards (overrides for /ai pages) ─────────────────
+  .stat-card {
+    background: var(--flowx-surface-primary);
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+    gap: var(--flowx-space-16);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+
+    &:hover {
+      box-shadow: var(--flowx-shadow-m);
+      transform: translateY(-2px);
+    }
+
+    // Stacked layout modifier — replaces inline style="flex-direction:column"
+    &--stacked {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--flowx-radius-8);
+      font-size: 18px;
+
+      &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-600); }
+      &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600); }
+      &--amber  { background: rgba(254, 185, 19, 0.12); color: var(--flowx-yellow-600); }
+    }
+
+    &__title {
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--flowx-text-primary);
+    }
+
+    &__label {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--flowx-text-secondary);
+    }
+
+    &__value {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+      color: var(--flowx-text-primary);
+
+      &--lg {
+        font-size: 24px;
+        line-height: 38px;
+        font-weight: 700;
+      }
+    }
+
+    &__badge {
+      font-size: 10px;
+      line-height: 12px;
+      font-weight: 700;
+      padding: var(--flowx-space-2) var(--flowx-space-8);
+      border-radius: var(--flowx-radius-24);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+
+      &--success { background: var(--flowx-green-50); color: var(--flowx-green-600); }
+      &--warn    { background: rgba(254, 185, 19, 0.12); color: var(--flowx-yellow-600); }
+    }
+  }
+
+  // ── Generic .card / .surface-card ────────────────────────
+  .card,
+  .surface-card {
+    background: var(--flowx-surface-primary);
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+  }
+
+  // ── Card head (in-card header bar — composes from card primitive) ──
+  .card-head {
+    padding: var(--flowx-space-24);
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--flowx-space-12);
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 700;
+      color: var(--flowx-text-primary);
+    }
+
+    .meta {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--flowx-text-secondary);
+    }
+  }
+  .card-body { padding: 0; }
+
+  // ── KPI card — borderless, eyebrow + big tabular value ──
+  .kpi-card {
+    background: var(--flowx-surface-primary);
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+
+    &__eyebrow {
+      margin: 0 0 var(--flowx-space-8);
+      font-size: 11px;
+      line-height: 12px;
+      color: var(--flowx-neutrals-600);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+    &__value {
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+      color: var(--flowx-text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    &__sub {
+      font-size: 11px;
+      line-height: 16px;
+      color: var(--flowx-neutrals-600);
+    }
+    &__trend--up   { color: var(--flowx-green-600); }
+    &__trend--down { color: var(--flowx-red-600); }
+  }
+
+  // ── State pill — colored dot + tinted bg for run/queue/error/etc. ─
+  .state-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flowx-space-6);
+    padding: var(--flowx-space-2) var(--flowx-space-8);
+    border-radius: var(--flowx-radius-pill, 9999px);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    &--running   { background: var(--flowx-green-50);  color: var(--flowx-green-700, #005b44); }
+    &--running .state-pill__dot { background: var(--flowx-green-500); box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.15); }
+    &--waiting   { background: var(--flowx-yellow-50, #fff8e7); color: var(--flowx-yellow-700, #b4830d); }
+    &--waiting .state-pill__dot { background: var(--flowx-yellow-500); }
+    &--failed    { background: var(--flowx-red-50);   color: var(--flowx-red-700, #a31800); }
+    &--failed .state-pill__dot { background: var(--flowx-red-500); }
+    &--completed,
+    &--terminated { background: var(--flowx-neutrals-100); color: var(--flowx-neutrals-600); }
+    &--completed .state-pill__dot { background: var(--flowx-neutrals-400); }
+    &--terminated .state-pill__dot { background: var(--flowx-neutrals-600); }
+  }
+
+  // ── Chip — pill toggle for filter bars ─────────────────────
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 var(--flowx-space-12);
+    border-radius: var(--flowx-radius-pill, 9999px);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--flowx-text-secondary);
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    cursor: pointer;
+    transition: background 100ms ease, color 100ms ease, border-color 100ms ease;
+
+    &:hover {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-primary);
+    }
+    &.active,
+    &--active {
+      background: var(--flowx-blue-500);
+      color: #ffffff;
+      border-color: var(--flowx-blue-500);
+      font-weight: 600;
+    }
+  }
+
+  // ── Banner — surfacing operational state, floats on gray canvas ──
+  .banner {
+    border: none;
+    border-radius: var(--flowx-radius-12);
+    box-shadow: var(--flowx-shadow-xs);
+    padding: var(--flowx-space-24);
+    display: flex;
+    align-items: center;
+    gap: var(--flowx-space-12);
+    background: var(--flowx-surface-primary);
+
+    &--alert {
+      background: linear-gradient(90deg, var(--flowx-red-50) 0%, #fff0e8 100%);
+      border-left: 4px solid var(--flowx-red-500);
+
+      .banner__dot {
+        background: var(--flowx-red-500);
+        box-shadow: 0 0 0 4px rgba(230, 34, 0, 0.15);
+      }
+    }
+    &--info {
+      background: var(--flowx-blue-50);
+      border-left: 4px solid var(--flowx-blue-500);
+
+      .banner__dot {
+        background: var(--flowx-blue-500);
+        box-shadow: 0 0 0 4px rgba(0, 107, 216, 0.15);
+      }
+    }
+
+    &__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  // ============================================================
+  // PrimeNG component overrides — FlowX token bridge
+  // (Only inside .ai-page; home dashboard unaffected.)
+  // ============================================================
+
+  // ── Buttons (per button.json spec) ───────────────────────
+  .p-button {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 600;
+    border-radius: var(--flowx-radius-8);
+    padding: var(--flowx-space-8) var(--flowx-space-16);
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {
+    background: var(--flowx-interactive);
+    border-color: var(--flowx-interactive);
+    color: #ffffff;
+
+    &:hover {
+      background: var(--flowx-interactive-hover);
+      border-color: var(--flowx-interactive-hover);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--flowx-blue-300);
+      outline-offset: 2px;
+    }
+  }
+
+  .p-button.p-button-outlined {
+    background: transparent;
+    border: 1px solid var(--flowx-border-default);
+    color: var(--flowx-text-primary);
+
+    &:hover {
+      background: var(--flowx-neutrals-50);
+      border-color: var(--flowx-border-strong);
+    }
+  }
+
+  .p-button.p-button-text {
+    background: transparent;
+    border-color: transparent;
+    color: var(--flowx-interactive);
+
+    &:hover { background: var(--flowx-blue-50); color: var(--flowx-interactive-hover); }
+  }
+
+  // Danger — filled (default) variant only
+  .p-button.p-button-danger:not(.p-button-text):not(.p-button-outlined) {
+    background: var(--flowx-red-500);
+    border-color: var(--flowx-red-500);
+    color: #ffffff;
+
+    .p-button-icon, .p-button-label { color: #ffffff; }
+
+    &:hover { background: var(--flowx-red-600); border-color: var(--flowx-red-600); }
+  }
+
+  // Danger — text & outlined variants: transparent surface, red glyph
+  .p-button.p-button-danger.p-button-text,
+  .p-button.p-button-danger.p-button-outlined {
+    background: transparent;
+    border-color: transparent;
+    color: var(--flowx-red-500);
+
+    .p-button-icon, .p-button-label { color: var(--flowx-red-500); }
+
+    &:hover {
+      background: var(--flowx-red-50);
+      color: var(--flowx-red-600);
+
+      .p-button-icon, .p-button-label { color: var(--flowx-red-600); }
+    }
+  }
+
+  .p-button.p-button-danger.p-button-outlined {
+    border-color: var(--flowx-red-500);
+
+    &:hover { border-color: var(--flowx-red-600); }
+  }
+
+  // Success — filled (default) variant only
+  .p-button.p-button-success:not(.p-button-text):not(.p-button-outlined) {
+    background: var(--flowx-green-500);
+    border-color: var(--flowx-green-500);
+    color: #ffffff;
+
+    .p-button-icon, .p-button-label { color: #ffffff; }
+
+    &:hover { background: var(--flowx-green-600); border-color: var(--flowx-green-600); }
+  }
+
+  // Success — text & outlined variants
+  .p-button.p-button-success.p-button-text,
+  .p-button.p-button-success.p-button-outlined {
+    background: transparent;
+    border-color: transparent;
+    color: var(--flowx-green-500);
+
+    .p-button-icon, .p-button-label { color: var(--flowx-green-500); }
+
+    &:hover {
+      background: var(--flowx-green-50);
+      color: var(--flowx-green-600);
+
+      .p-button-icon, .p-button-label { color: var(--flowx-green-600); }
+    }
+  }
+
+  .p-button.p-button-success.p-button-outlined {
+    border-color: var(--flowx-green-500);
+
+    &:hover { border-color: var(--flowx-green-600); }
+  }
+
+  .p-button.p-button-sm  { padding: var(--flowx-space-6) var(--flowx-space-12); font-size: 12px; line-height: 16px; }
+  .p-button.p-button-lg  { padding: var(--flowx-space-12) var(--flowx-space-24); font-size: 14px; line-height: 24px; }
+
+  // ── Raw HTML inputs — match .p-inputtext for unwrapped controls ──
+  // Scoped narrowly so we don't restyle PrimeNG-host wrapped inputs twice.
+  input[type="text"]:not([class*="p-"]),
+  input[type="number"]:not([class*="p-"]),
+  input[type="date"]:not([class*="p-"]),
+  input[type="search"]:not([class*="p-"]),
+  input[type="email"]:not([class*="p-"]),
+  input[type="url"]:not([class*="p-"]),
+  textarea:not([class*="p-"]) {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    height: 36px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    color: var(--flowx-text-primary);
+    padding: 0 var(--flowx-space-8);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    box-sizing: border-box;
+
+    &::placeholder { color: var(--flowx-text-secondary); font-weight: 400; }
+
+    &:hover:not(:disabled) { border-color: var(--flowx-neutrals-200); }
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: var(--flowx-interactive);
+      box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.15);
+    }
+  }
+  textarea:not([class*="p-"]) {
+    height: auto;
+    min-height: 96px;
+    padding: var(--flowx-space-8);
+    line-height: 20px;
+  }
+
+  // ── Inputs (per input-field.json — medium: 36h, pad 0 8, radius 8) ──
+  .p-inputtext,
+  .p-password-input,
+  .p-inputnumber-input {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    height: 36px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    color: var(--flowx-text-primary);
+    padding: 0 var(--flowx-space-8);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    box-sizing: border-box;
+
+    &::placeholder { color: var(--flowx-text-secondary); font-weight: 400; }
+
+    &:hover:not(.p-disabled) { border-color: var(--flowx-neutrals-200); }
+    &:focus,
+    &.p-focus,
+    &.p-inputwrapper-focus {
+      outline: none;
+      border-color: var(--flowx-interactive);
+      box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.15);
+    }
+    &.ng-invalid.ng-touched,
+    &.p-invalid {
+      border-color: var(--flowx-error);
+      box-shadow: 0 0 0 3px rgba(230, 34, 0, 0.15);
+    }
+    &.p-inputtext-sm,
+    &.p-inputsmall { height: 28px; font-size: 12px; line-height: 16px; padding: 0 var(--flowx-space-8); }
+  }
+
+  // ── Selects (per select-field.json — medium: 36h, pad 6 12, radius 8) ──
+  .p-select,
+  .p-dropdown,
+  .p-multiselect {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    color: var(--flowx-text-primary);
+    min-height: 36px;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover:not(.p-disabled) { border-color: var(--flowx-neutrals-200); }
+    &:focus,
+    &.p-focus,
+    &.p-inputwrapper-focus {
+      outline: none;
+      border-color: var(--flowx-interactive);
+      box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.15);
+    }
+    &.ng-invalid.ng-touched,
+    &.p-invalid {
+      border-color: var(--flowx-error);
+      box-shadow: 0 0 0 3px rgba(230, 34, 0, 0.15);
+    }
+
+    // Inner content cells (PrimeNG renders trigger inside the host)
+    .p-select-label,
+    .p-dropdown-label,
+    .p-multiselect-label {
+      padding: var(--flowx-space-6) var(--flowx-space-12);
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--flowx-text-primary);
+      background: transparent;
+      border: none;
+      flex: 1;
+      min-width: 0;
+
+      &.p-placeholder { color: var(--flowx-text-secondary); }
+    }
+
+    // Caret / clear icon area
+    .p-select-dropdown,
+    .p-dropdown-trigger,
+    .p-multiselect-trigger {
+      width: 24px;
+      padding: 0 var(--flowx-space-8);
+      color: var(--flowx-text-secondary);
+      background: transparent;
+      border: none;
+    }
+    .p-select-clear-icon,
+    .p-dropdown-clear-icon {
+      color: var(--flowx-text-secondary);
+      right: var(--flowx-space-32);
+    }
+
+    // Small size (per spec: 28h, mono 12/16)
+    &.p-select-sm,
+    &.p-dropdown-sm,
+    &.p-inputsmall {
+      min-height: 28px;
+      font-size: 12px;
+      line-height: 16px;
+
+      .p-select-label,
+      .p-dropdown-label,
+      .p-multiselect-label {
+        padding: var(--flowx-space-4) var(--flowx-space-12);
+        font-size: 12px;
+        line-height: 16px;
+      }
+    }
+  }
+
+  // Dropdown panel surface (the floating list)
+  .p-select-overlay,
+  .p-dropdown-panel,
+  .p-multiselect-panel,
+  .p-select-overlay .p-select-list,
+  .p-dropdown-items-wrapper {
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-8);
+    box-shadow: var(--flowx-shadow-m);
+    color: var(--flowx-text-primary);
+    margin-top: var(--flowx-space-4);
+  }
+
+  .p-select-option,
+  .p-dropdown-item,
+  .p-multiselect-item {
+    font-family: var(--flowx-font-primary);
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--flowx-text-primary);
+    padding: var(--flowx-space-8) var(--flowx-space-12);
+    border-radius: 0;
+    transition: background-color 120ms ease, color 120ms ease;
+
+    &:hover,
+    &.p-focus { background: var(--flowx-neutrals-50); color: var(--flowx-text-primary); }
+    &.p-select-option-selected,
+    &.p-highlight {
+      background: var(--flowx-blue-50);
+      color: var(--flowx-blue-700);
+      font-weight: 600;
+    }
+  }
+
+  // ── Tabs (per tabs.json) ─────────────────────────────────
+  .p-tabs, .p-tabview {
+    .p-tablist, .p-tabview-nav {
+      background: transparent;
+      border-bottom: 1px solid var(--flowx-border-default);
+      gap: var(--flowx-space-4);
+    }
+
+    .p-tab, .p-tabview-nav li .p-tabview-nav-link {
+      font-family: var(--flowx-font-primary);
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--flowx-text-secondary);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: var(--flowx-space-12) var(--flowx-space-16);
+      transition: color 150ms ease, border-color 150ms ease;
+
+      &:hover { color: var(--flowx-text-primary); }
+    }
+
+    .p-tab.p-tab-active,
+    .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+      color: var(--flowx-interactive);
+      border-bottom-color: var(--flowx-interactive);
+      background: transparent;
+    }
+  }
+
+  // ── DataTable (per values-table.json influence) ──────────
+  .p-datatable {
+    font-family: var(--flowx-font-primary);
+
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-neutrals-50);
+      color: var(--flowx-text-secondary);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: var(--flowx-space-12) var(--flowx-space-16);
+      border: none;
+      border-bottom: 1px solid var(--flowx-border-default);
+    }
+
+    .p-datatable-tbody > tr {
+      background: transparent;
+      transition: background-color 150ms ease;
+
+      &:hover { background: var(--flowx-neutrals-50); }
+      &.p-highlight { background: var(--flowx-blue-50); }
+
+      > td {
+        color: var(--flowx-text-primary);
+        font-size: 14px;
+        line-height: 24px;
+        padding: var(--flowx-space-12) var(--flowx-space-16);
+        border: none;
+        border-bottom: 1px solid var(--flowx-border-default);
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .p-paginator {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--flowx-border-default);
+    padding: var(--flowx-space-12) var(--flowx-space-16);
+    color: var(--flowx-text-secondary);
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+      color: var(--flowx-text-secondary);
+      border-radius: var(--flowx-radius-6);
+
+      &:hover { background: var(--flowx-neutrals-50); color: var(--flowx-text-primary); }
+      &.p-highlight {
+        background: var(--flowx-interactive);
+        color: #ffffff;
+      }
+    }
+  }
+
+  // ── Chips / tags ─────────────────────────────────────────
+  .p-tag, .p-chip {
+    font-family: var(--flowx-font-primary);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    border-radius: var(--flowx-radius-24);
+    padding: var(--flowx-space-2) var(--flowx-space-8);
+  }
+  .p-tag.p-tag-success, .p-tag-success { background: var(--flowx-green-50); color: var(--flowx-green-600); }
+  .p-tag.p-tag-danger,  .p-tag-danger  { background: var(--flowx-red-50);   color: var(--flowx-red-600); }
+  .p-tag.p-tag-warning, .p-tag-warning { background: rgba(254, 185, 19, 0.15); color: var(--flowx-yellow-600); }
+  .p-tag.p-tag-info,    .p-tag-info    { background: var(--flowx-blue-50);  color: var(--flowx-blue-600); }
+
+  // ── Checkbox / Radio / Switch ────────────────────────────
+  .p-checkbox .p-checkbox-box,
+  .p-radiobutton .p-radiobutton-box {
+    border: 1px solid var(--flowx-border-strong);
+    background: var(--flowx-surface-primary);
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+  .p-checkbox.p-highlight .p-checkbox-box,
+  .p-radiobutton.p-highlight .p-radiobutton-box,
+  .p-checkbox-checked .p-checkbox-box,
+  .p-radiobutton-checked .p-radiobutton-box {
+    background: var(--flowx-interactive);
+    border-color: var(--flowx-interactive);
+  }
+  .p-checkbox .p-checkbox-box { border-radius: var(--flowx-radius-4); }
+
+  .p-inputswitch.p-highlight .p-inputswitch-slider,
+  .p-toggleswitch.p-highlight .p-toggleswitch-slider {
+    background: var(--flowx-interactive);
+  }
+
+  // ── Dialog / drawer overlays ─────────────────────────────
+  .p-dialog,
+  .p-drawer {
+    background: var(--flowx-surface-primary);
+    color: var(--flowx-text-primary);
+    border-radius: var(--flowx-radius-16);
+    box-shadow: var(--flowx-shadow-xl);
+  }
+  .p-dialog .p-dialog-header,
+  .p-drawer .p-drawer-header {
+    background: var(--flowx-surface-primary);
+    color: var(--flowx-text-primary);
+    border-bottom: 1px solid var(--flowx-border-default);
+    padding: var(--flowx-space-16) var(--flowx-space-24);
+    font-weight: 700;
+  }
+  .p-dialog .p-dialog-content,
+  .p-drawer .p-drawer-content {
+    background: var(--flowx-surface-primary);
+    color: var(--flowx-text-primary);
+    padding: var(--flowx-space-24);
+  }
+
+  // ── Progress bar ─────────────────────────────────────────
+  .p-progressbar {
+    background: var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-24);
+    overflow: hidden;
+    height: 8px;
+
+    .p-progressbar-value {
+      background: var(--flowx-interactive);
+    }
+  }
+
+  // ── Accordion ────────────────────────────────────────────
+  .p-accordionheader,
+  .p-accordion-header-link {
+    background: var(--flowx-surface-primary) !important;
+    color: var(--flowx-text-primary) !important;
+    border: 1px solid var(--flowx-border-default) !important;
+    border-radius: var(--flowx-radius-8);
+    padding: var(--flowx-space-12) var(--flowx-space-16);
+
+    &:hover { color: var(--flowx-interactive) !important; }
+  }
+  .p-accordioncontent-content,
+  .p-accordion-content {
+    background: var(--flowx-surface-primary) !important;
+    color: var(--flowx-text-primary) !important;
+    border: 1px solid var(--flowx-border-default) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--flowx-radius-8) var(--flowx-radius-8);
+  }
+
+  // ── Tooltip ──────────────────────────────────────────────
+  .p-tooltip .p-tooltip-text {
+    background: var(--flowx-neutrals-900);
+    color: var(--flowx-neutrals-50);
+    font-size: 12px;
+    line-height: 16px;
+    border-radius: var(--flowx-radius-6);
+    padding: var(--flowx-space-6) var(--flowx-space-8);
+    box-shadow: var(--flowx-shadow-s);
+  }
+
+  // ── Tree (sidebar / hierarchy) ───────────────────────────
+  .p-tree {
+    background: transparent;
+    border: none;
+    color: var(--flowx-text-primary);
+
+    .p-tree-node-content,
+    .p-treenode-content {
+      border-radius: var(--flowx-radius-6);
+      padding: var(--flowx-space-6) var(--flowx-space-8);
+
+      &:hover { background: var(--flowx-neutrals-50); }
+      &.p-highlight { background: var(--flowx-blue-50); color: var(--flowx-interactive); }
+    }
+  }
+
+  // ── Empty state / messages ───────────────────────────────
+  .p-message {
+    border-radius: var(--flowx-radius-8);
+    border-width: 1px;
+    border-style: solid;
+    padding: var(--flowx-space-12) var(--flowx-space-16);
+    font-size: 14px;
+    line-height: 24px;
+  }
+  .p-message.p-message-info,    .p-message-info    { background: var(--flowx-blue-50);  border-color: var(--flowx-blue-200);   color: var(--flowx-blue-700); }
+  .p-message.p-message-success, .p-message-success { background: var(--flowx-green-50); border-color: #8ac5b6;                  color: var(--flowx-green-600); }
+  .p-message.p-message-warn,    .p-message-warn    { background: rgba(254,185,19,0.12); border-color: var(--flowx-yellow-500); color: var(--flowx-yellow-600); }
+  .p-message.p-message-error,   .p-message-error   { background: var(--flowx-red-50);   border-color: #f7bab0;                  color: var(--flowx-red-600); }
+}
+
+// ============================================================
+// Light-theme refinements
+// ============================================================
+.flowx-light .ai-page,
+.flowx-light .home-page {
+  .filters-bar,
+  .content-card,
+  .table-container { background: var(--flowx-surface-primary); }
+}
+
+// ============================================================
+// Dark theme — flips FlowX tokens to the semantic.dark scheme
+// (references/foundations/colors.json → semantic.dark).
+// Applied to the layout shell so sidebar + topbar + page body
+// all stay consistent in dark mode.
+// ============================================================
+.flowx-dark .layout-wrapper,
+.flowx-dark .ai-page,
+.flowx-dark .home-page,
+.flowx-dark.layout-wrapper {
+  // Semantic surfaces — flipped
+  --flowx-surface-primary:   #2a313a; // neutrals-800 (card)
+  --flowx-surface-secondary: #1d232c; // neutrals-900 (page bg)
+  --flowx-surface-tertiary:  #475263; // neutrals-700
+  --flowx-text-primary:      #f7f8f9; // neutrals-50
+  --flowx-text-secondary:    #a6b0be; // neutrals-300
+  --flowx-text-disabled:     #64748b; // neutrals-500
+  --flowx-border-default:    #475263; // neutrals-700
+  --flowx-border-strong:     #5b6a7e; // neutrals-600
+  --flowx-interactive:       #3389e0; // blue-400 (lifted for dark bg)
+  --flowx-interactive-hover: #549ce5; // blue-300
+
+  // NOTE: Palette tokens (--flowx-blue-*, --flowx-neutrals-*) keep their
+  // foundation values in BOTH modes. We only flip the semantic tokens
+  // above, so consumers that ask for "the lightest neutral" (e.g.
+  // text labels using --flowx-neutrals-50) stay readable in dark mode.
+
+  // PrimeNG bridge
+  --surface-ground:          var(--flowx-surface-secondary);
+  --surface-section:         var(--flowx-surface-primary);
+  --surface-card:            var(--flowx-surface-primary);
+  --surface-overlay:         var(--flowx-surface-primary);
+  --surface-border:          var(--flowx-border-default);
+  --surface-hover:           #364049;
+  --surface-100:             #475263; // home page surface-100 references
+  --text-color:              var(--flowx-text-primary);
+  --text-color-secondary:    var(--flowx-text-secondary);
+  --p-primary-color:         var(--flowx-interactive);
+  --p-primary-color-text:    #ffffff;
+}
+
+.flowx-dark .layout-main-container:has(.ai-page),
+.flowx-dark .layout-main-container {
+  background: #1d232c;
+}
+
+// Inputs & selects on dark — invert chrome
+.flowx-dark .ai-page,
+.flowx-dark .home-page {
+  .p-inputtext,
+  .p-password-input,
+  .p-inputnumber-input,
+  .p-select,
+  .p-dropdown,
+  .p-multiselect {
+    background: var(--flowx-surface-primary);
+    border-color: var(--flowx-border-default);
+    color: var(--flowx-text-primary);
+
+    .p-select-label,
+    .p-dropdown-label,
+    .p-multiselect-label { color: var(--flowx-text-primary); }
+    .p-select-label.p-placeholder,
+    .p-dropdown-label.p-placeholder { color: var(--flowx-text-secondary); }
+
+    &:hover:not(.p-disabled) { border-color: var(--flowx-border-strong); }
+    &:focus,
+    &.p-focus,
+    &.p-inputwrapper-focus {
+      border-color: var(--flowx-interactive);
+      box-shadow: 0 0 0 3px rgba(51, 137, 224, 0.25);
+    }
+  }
+
+  // Dropdown panel
+  .p-select-overlay,
+  .p-dropdown-panel,
+  .p-multiselect-panel {
+    background: var(--flowx-surface-primary);
+    border-color: var(--flowx-border-default);
+  }
+  .p-select-option,
+  .p-dropdown-item,
+  .p-multiselect-item {
+    color: var(--flowx-text-primary);
+    &:hover, &.p-focus { background: #364049; }
+    &.p-select-option-selected,
+    &.p-highlight {
+      background: rgba(51, 137, 224, 0.18);
+      color: #b0d1f3;
+    }
+  }
+
+  // Tables
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-secondary);
+      border-bottom-color: var(--flowx-border-default);
+    }
+    .p-datatable-tbody > tr {
+      &:hover { background: rgba(255, 255, 255, 0.03); }
+      &.p-highlight { background: rgba(51, 137, 224, 0.15); }
+      > td {
+        color: var(--flowx-text-primary);
+        border-bottom-color: var(--flowx-border-default);
+      }
+    }
+  }
+
+  // Cards / stat cards
+  .stat-card,
+  .card,
+  .surface-card,
+  .content-card,
+  .table-container,
+  .filters-bar {
+    background: var(--flowx-surface-primary);
+    border: none;
+  }
+
+  // Tag/chip success/info icons on dark
+  .stat-card__icon {
+    &--blue   { background: rgba(51, 137, 224, 0.18); color: var(--flowx-blue-300); }
+    &--green  { background: rgba(0, 128, 96, 0.20);  color: #8ac5b6; }
+    &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
+  }
+}

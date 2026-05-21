@@ -1,0 +1,449 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">AutoTune Dashboard</h1>
+      <p class="page-header__subtitle">Autonomous agent optimization — continuously tune production agents</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Create Baseline" icon="pi pi-bookmark" severity="primary" [outlined]="true" (click)="createBaseline()" class="mr-2"></p-button>
+      <p-button label="Trigger Cycle" icon="pi pi-play" severity="primary" (click)="openTriggerDialog()"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" placeholder="Select Organization" (onChange)="orgChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select [options]="workspaces" [(ngModel)]="selectedWorkspace" optionLabel="name" optionValue="id" placeholder="Select Workspace" (onChange)="workspaceChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" optionValue="id" placeholder="Select Project" (onChange)="appChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Agent</label>
+        <p-select [options]="agents" [(ngModel)]="selectedAgent" optionLabel="label" optionValue="value" placeholder="Select Agent" (onChange)="agentChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Period</label>
+        <p-select [options]="[{label: '7 days', value: 7}, {label: '30 days', value: 30}, {label: '90 days', value: 90}]" [(ngModel)]="days" optionLabel="label" optionValue="value" (onChange)="loadOverview()"></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 mb-4 mt-4">
+    <p-button label="Overview" severity="primary" [outlined]="activeTab !== 'overview'" (click)="onTabChange('overview')" size="small"></p-button>
+    <p-button label="Timeline" severity="primary" [outlined]="activeTab !== 'timeline'" (click)="onTabChange('timeline')" size="small"></p-button>
+    <p-button label="Workflows" severity="primary" [outlined]="activeTab !== 'workflows'" (click)="onTabChange('workflows')" size="small"></p-button>
+    <p-button label="Versions" severity="primary" [outlined]="activeTab !== 'versions'" (click)="onTabChange('versions')" size="small"></p-button>
+  </div>
+
+  <!-- ═══ OVERVIEW TAB ═══ -->
+  @if (activeTab === 'overview' && overview) {
+    <div class="stat-cards-grid mb-4">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-sync"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Cycles</span>
+          <span class="stat-card__value stat-card__value--lg">{{ overview.total_cycles }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-check-circle"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Promotions</span>
+          <span class="stat-card__value stat-card__value--lg">{{ overview.promotions }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-chart-line"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Avg Improvement</span>
+          <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.avg_improvement) }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--amber"><i class="pi pi-exclamation-triangle"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Active Canaries</span>
+          <span class="stat-card__value stat-card__value--lg">{{ overview.active_canaries }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-dollar"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Budget Spent</span>
+          <span class="stat-card__value stat-card__value--lg">${{ overview.total_budget_spent?.toFixed(2) }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-percentage"></i></div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Promotion Rate</span>
+          <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.promotion_rate) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status breakdown -->
+    @if (overview.cycles_by_status) {
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <p-chip [label]="'Completed: ' + overview.cycles_by_status.completed" icon="pi pi-check" styleClass="bg-green-100 text-green-800"></p-chip>
+        <p-chip [label]="'Awaiting: ' + overview.cycles_by_status.awaiting_approval" icon="pi pi-clock" styleClass="bg-yellow-100 text-yellow-800"></p-chip>
+        <p-chip [label]="'Running: ' + overview.cycles_by_status.running" icon="pi pi-spin pi-spinner" styleClass="bg-blue-100 text-blue-800"></p-chip>
+        <p-chip [label]="'Failed: ' + overview.cycles_by_status.failed" icon="pi pi-times" styleClass="bg-red-100 text-red-800"></p-chip>
+      </div>
+    }
+  }
+
+  <!-- ═══ TIMELINE TAB ═══ -->
+  @if (activeTab === 'timeline') {
+    <div class="rsi-table-card">
+      <div class="card-title">
+        <i class="pi pi-history"></i>
+        Cycle Timeline
+      </div>
+      <p-table [value]="timeline" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true"
+               [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Status</th>
+            <th>Trigger</th>
+            <th>Mutations</th>
+            <th>Winner</th>
+            <th>Improvement</th>
+            <th>Budget</th>
+            <th>Duration</th>
+            <th>Started</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cycle>
+          <tr>
+            <td><p-tag [value]="cycle.status" [severity]="getStatusSeverity(cycle.status)"></p-tag></td>
+            <td>{{ cycle.trigger || '-' }}</td>
+            <td>{{ cycle.mutations_generated }}</td>
+            <td>{{ cycle.promotion?.winning_mutation_type || '-' }}</td>
+            <td>
+              @if (cycle.promotion?.improvement) {
+                <span class="text-green-600 font-semibold">+{{ formatPercent(cycle.promotion.improvement) }}</span>
+              } @else {
+                -
+              }
+            </td>
+            <td>${{ cycle.budget_spent?.toFixed(3) }}</td>
+            <td>{{ formatDuration(cycle.duration_seconds) }}</td>
+            <td>{{ cycle.started_at ? (cycle.started_at | date:'short') : '-' }}</td>
+            <td>
+              <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (click)="viewCycle(cycle.cycle_id)" pTooltip="View details"></p-button>
+              @if (cycle.status === 'AWAITING_APPROVAL') {
+                <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="promoteCycle(cycle.cycle_id)" pTooltip="Promote"></p-button>
+              }
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="9" class="text-center py-8" style="color:var(--text-color-secondary);">No AutoTune cycles found. Create a baseline and trigger a cycle to get started.</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+
+  <!-- ═══ WORKFLOWS TAB ═══ -->
+  @if (activeTab === 'workflows') {
+    <div class="rsi-table-card">
+      <div class="card-title">
+        <i class="pi pi-sitemap"></i>
+        Enrolled Workflows
+      </div>
+      <p-table [value]="enrolledWorkflows" styleClass="p-datatable-sm" [rowHover]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Baseline Version</th>
+            <th>Total Cycles</th>
+            <th>Promotions</th>
+            <th>Latest Status</th>
+            <th>Last Cycle</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-wf>
+          <tr>
+            <td>v{{ wf.baseline_version }}</td>
+            <td>{{ wf.total_cycles }}</td>
+            <td>{{ wf.total_promotions }}</td>
+            <td>
+              @if (wf.latest_cycle_status) {
+                <p-tag [value]="wf.latest_cycle_status" [severity]="getStatusSeverity(wf.latest_cycle_status)"></p-tag>
+              } @else {
+                <span style="color:var(--text-color-secondary);">-</span>
+              }
+            </td>
+            <td>{{ wf.latest_cycle_at ? (wf.latest_cycle_at | date:'short') : 'Never' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="5" class="text-center py-8" style="color:var(--text-color-secondary);">No workflows enrolled. Select an app and create a baseline to start.</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+
+  <!-- ═══ VERSIONS TAB ═══ -->
+  @if (activeTab === 'versions') {
+    <div class="rsi-table-card">
+      <div class="card-title">
+        <i class="pi pi-clock"></i>
+        Version History
+      </div>
+    <p-table [value]="versionHistory" styleClass="p-datatable-sm" [rowHover]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:8%">Version</th>
+          <th style="width:12%">Source</th>
+          <th style="width:10%">Status</th>
+          <th style="width:30%">Mutation Info</th>
+          <th style="width:20%">Created</th>
+          <th style="width:10%">Created By</th>
+          <th style="width:10%">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ver>
+        <tr>
+          <td class="font-bold">v{{ ver.version }}</td>
+          <td>
+            <p-tag [value]="ver.source || 'manual'" [severity]="getSourceSeverity(ver.source)" [rounded]="true"></p-tag>
+          </td>
+          <td>
+            @if (ver.is_current) {
+              <p-tag value="Current" severity="success"></p-tag>
+            }
+          </td>
+          <td>
+            @if (ver.mutation) {
+              <div>
+                <span class="text-sm font-medium">{{ ver.mutation.mutation_type }}</span>
+                <p class="text-xs mt-1" style="color:var(--text-color-secondary);">{{ ver.mutation.description }}</p>
+              </div>
+            } @else {
+              <span style="color:var(--text-color-secondary);">-</span>
+            }
+          </td>
+          <td>{{ ver.created_at | date:'medium' }}</td>
+          <td class="text-xs">{{ ver.created_by?.email || '-' }}</td>
+          <td>
+            @if (!ver.is_current) {
+              <p-button icon="pi pi-history" [rounded]="true" [text]="true" severity="warn" (click)="restoreVersion(ver.version)" pTooltip="Restore this version"></p-button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="7" class="text-center py-8" style="color:var(--text-color-secondary);">No version history available. Create a baseline to start tracking versions.</td></tr>
+      </ng-template>
+    </p-table>
+    </div>
+  }
+</div>
+
+<!-- ═══ CYCLE DETAIL DIALOG ═══ -->
+<p-dialog header="Cycle Details" [(visible)]="showCycleDialog" [modal]="true" [style]="{width: '80vw', maxHeight: '90vh'}" [dismissableMask]="true">
+  @if (selectedCycle) {
+    <div class="flex flex-col gap-4">
+      <!-- Cycle header -->
+      <div class="flex items-center gap-4">
+        <p-tag [value]="selectedCycle.status" [severity]="getStatusSeverity(selectedCycle.status)"></p-tag>
+        <span class="text-sm" style="color:var(--text-color-secondary);">Trigger: {{ selectedCycle.trigger || 'manual' }}</span>
+        <span class="text-sm" style="color:var(--text-color-secondary);">Budget: ${{ selectedCycle.budget_spent?.toFixed(3) }} / ${{ selectedCycle.budget_limit }}</span>
+        @if (selectedCycle.duration_seconds) {
+          <span class="text-sm" style="color:var(--text-color-secondary);">Duration: {{ formatDuration(selectedCycle.duration_seconds) }}</span>
+        }
+      </div>
+
+      <!-- Error message -->
+      @if (selectedCycle.status === 'FAILED' && (selectedCycle.error_message || selectedCycle.error)) {
+        <div style="border:1px solid var(--flowx-error, #e62200); border-radius:8px; padding:0.75rem 1rem; background:rgba(239, 68, 68, 0.08);">
+          <div class="flex items-center gap-2 mb-2">
+            <i class="pi pi-exclamation-circle" style="color:var(--flowx-error, #e62200);"></i>
+            <span class="font-semibold text-sm" style="color:var(--flowx-error, #e62200);">Error</span>
+          </div>
+          <pre class="text-xs m-0" style="color:var(--text-color); white-space:pre-wrap; word-break:break-word; font-family:monospace; max-height:200px; overflow-y:auto;">{{ selectedCycle.error_message || selectedCycle.error }}</pre>
+        </div>
+      }
+
+      <!-- Observation summary -->
+      @if (selectedCycle.observation_summary) {
+        <div class="observation-card">
+          <h4 class="font-semibold text-sm mb-2">Observation</h4>
+          <div class="text-xs" style="color:var(--text-color-secondary);">
+            <p>Traces: {{ selectedCycle.observation_summary.trace_count }} | Drift: {{ selectedCycle.observation_summary.drift_detected ? 'Yes' : 'No' }}</p>
+            @for (target of selectedCycle.observation_summary.improvement_targets; track target) {
+              <p style="color:var(--flowx-warning, #feb913);">{{ target }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Eval Matrix -->
+      @if (evalMatrix && evalMatrix.mutations?.length > 0) {
+        <div>
+          <h4 class="font-semibold text-sm mb-2">Evaluation Matrix</h4>
+          <p-table [value]="evalMatrix.mutations" styleClass="p-datatable-sm p-datatable-gridlines">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Rank</th>
+                <th>Type</th>
+                <th>Description</th>
+                @for (ev of evalMatrix.evaluators; track ev) {
+                  <th>{{ ev }}</th>
+                }
+                <th>Avg Latency</th>
+                <th>Avg Cost</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-m>
+              <tr [class]="m.rank === 1 ? 'bg-green-50' : ''">
+                <td><span class="font-bold">{{ m.rank || '-' }}</span></td>
+                <td><p-tag [value]="m.mutation_type" severity="info" [rounded]="true"></p-tag></td>
+                <td class="text-xs">{{ m.description }}</td>
+                @for (ev of evalMatrix.evaluators; track ev) {
+                  <td class="font-mono text-sm">{{ m.scores[ev] != null ? (m.scores[ev] | number:'1.2-2') : '-' }}</td>
+                }
+                <td class="text-xs">{{ m.avg_latency_ms ? (m.avg_latency_ms | number:'1.0-0') + 'ms' : '-' }}</td>
+                <td class="text-xs">{{ m.avg_cost ? '$' + (m.avg_cost | number:'1.4-4') : '-' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <!-- Baseline comparison -->
+          @if (evalMatrix.baseline) {
+            <div class="mt-2 p-2 rounded text-xs" style="background:rgba(255, 255, 255, 0.03);">
+              <strong>Baseline:</strong>
+              @for (ev of evalMatrix.evaluators; track ev) {
+                <span class="ml-3">{{ ev }}: {{ evalMatrix.baseline.scores[ev] != null ? (evalMatrix.baseline.scores[ev] | number:'1.2-2') : '-' }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Mutations with Diffs -->
+      @if (mutations.length > 0) {
+        <div>
+          <h4 class="font-semibold text-sm mb-2">Mutations ({{ mutations.length }})</h4>
+          <div class="flex flex-col gap-2">
+            @for (mut of mutations; track mut.id) {
+              <div class="mutation-card">
+                <div class="mutation-header" (click)="toggleMutationDiff(mut)">
+                  <span class="font-bold text-sm">{{ '#' + (mut.rank || ($index + 1)) }}</span>
+                  <p-tag [value]="mut.mutation_type || 'mutation'" severity="info" [rounded]="true"></p-tag>
+                  <span class="text-xs flex-1">{{ mut.description || '-' }}</span>
+                  @if (mut.status) {
+                    <p-tag [value]="mut.status" [severity]="getStatusSeverity(mut.status)" styleClass="text-xs"></p-tag>
+                  }
+                  <i [class]="expandedMutationId === mut.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" style="color:var(--text-color-secondary);"></i>
+                </div>
+                @if (expandedMutationId === mut.id) {
+                  <div class="mutation-body">
+                    @if (mut.generation_reasoning) {
+                      <div class="mb-3">
+                        <span class="text-xs font-semibold" style="color:var(--text-color-secondary);">Reasoning</span>
+                        <p class="text-sm mt-1">{{ mut.generation_reasoning }}</p>
+                      </div>
+                    }
+                    @if (mut.diff?.length > 0) {
+                      <div>
+                        <span class="text-xs font-semibold" style="color:var(--text-color-secondary);">Changes</span>
+                        <div class="mt-1 flex flex-col gap-1">
+                          @for (d of mut.diff; track $index) {
+                            <div class="diff-entry">
+                              <span style="color:var(--flowx-interactive, #006bd8);">{{ d.node_id }}</span>.<span style="color:var(--flowx-warning, #feb913);">{{ d.field }}</span>
+                              <span class="mx-1">&rarr;</span>
+                              <span style="color:var(--flowx-success, #008060);">{{ d.new_value | json }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    } @else if (mut._diffLoaded) {
+                      <div class="text-xs" style="color:var(--text-color-secondary);">No diff details available.</div>
+                    } @else {
+                      <div class="text-xs" style="color:var(--text-color-secondary);">
+                        <i class="pi pi-spinner pi-spin mr-1"></i>Loading diff...
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Statistical summary -->
+      @if (promotion?.statistical_summary?.winner) {
+        <div class="stat-validation-card">
+          <h4 class="font-semibold text-sm mb-2">Statistical Validation</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <div><span class="block text-xs" style="color:var(--text-color-secondary);">p-value</span><span class="font-mono">{{ promotion.statistical_summary.winner.p_value | number:'1.6-6' }}</span></div>
+            <div><span class="block text-xs" style="color:var(--text-color-secondary);">Effect Size</span><span class="font-mono">{{ promotion.statistical_summary.winner.effect_size | number:'1.3-3' }} ({{ promotion.statistical_summary.winner.effect_category }})</span></div>
+            <div><span class="block text-xs" style="color:var(--text-color-secondary);">Improvement</span><span class="font-mono text-green-600">+{{ formatPercent(promotion.statistical_summary.winner.improvement) }}</span></div>
+            <div><span class="block text-xs" style="color:var(--text-color-secondary);">Cost Ratio</span><span class="font-mono">{{ promotion.statistical_summary.winner.cost_ratio | number:'1.3-3' }}x</span></div>
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      @if (selectedCycle.status === 'AWAITING_APPROVAL') {
+        <div class="flex gap-2 justify-end">
+          <p-button label="Reject" icon="pi pi-times" severity="danger" [outlined]="true" (click)="rejectCycle(selectedCycle.id)"></p-button>
+          <p-button label="Deploy Canary (10%)" icon="pi pi-sliders-h" severity="warn" [outlined]="true" (click)="deployCanary(selectedCycle.id, 10)"></p-button>
+          <p-button label="Promote Winner" icon="pi pi-check" severity="success" (click)="promoteCycle(selectedCycle.id)"></p-button>
+        </div>
+      }
+      @if (selectedCycle.status === 'CANARY' && promotion?.canary_id) {
+        <div class="flex gap-2 justify-end mt-2">
+          <p-button label="Rollback Canary" icon="pi pi-undo" severity="danger" [outlined]="true" (click)="rollbackCanary(promotion.canary_id)"></p-button>
+          <p-button label="Promote to 100%" icon="pi pi-check-circle" severity="success" (click)="promoteCanary(promotion.canary_id)"></p-button>
+        </div>
+      }
+    </div>
+  }
+</p-dialog>
+
+<!-- ═══ TRIGGER CYCLE DIALOG ═══ -->
+<p-dialog header="Trigger AutoTune Cycle" [(visible)]="showTriggerDialog" [modal]="true" [style]="{width: '500px'}">
+  <div class="flex flex-col gap-4">
+    <div>
+      <label class="block text-sm font-medium mb-1">Mutation Count</label>
+      <input type="number" pInputText [(ngModel)]="triggerForm.mutation_count" min="2" max="20" class="w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Budget Limit ($)</label>
+      <input type="number" pInputText [(ngModel)]="triggerForm.budget_limit" min="0.1" step="0.5" class="w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Evaluators (comma-separated)</label>
+      <input type="text" pInputText [(ngModel)]="triggerForm.evaluators" class="w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Test Dataset</label>
+      <p-select [options]="testDatasets" [(ngModel)]="triggerForm.dataset_id" optionLabel="name" optionValue="id" placeholder="Select test dataset" class="w-full"></p-select>
+    </div>
+    <div class="flex items-center gap-2">
+      <input type="checkbox" [(ngModel)]="triggerForm.auto_promote" id="autoPromote" />
+      <label for="autoPromote" class="text-sm">Auto-promote if statistically significant</label>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" [text]="true" (click)="showTriggerDialog = false"></p-button>
+    <p-button label="Start Cycle" icon="pi pi-play" (click)="triggerCycle()"></p-button>
+  </ng-template>
+</p-dialog>

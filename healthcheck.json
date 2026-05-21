@@ -1,0 +1,17 @@
+{
+  "status" : "UP",
+  "components" : {
+    "accessInfo" : {
+      "status" : "UP"
+    },
+    "buildInfo" : {
+      "status" : "UP",
+      "details" : {
+        "artifactId" : "observatory",
+        "version" : "VERSION",
+        "name" : "FlowX Observatory",
+        "group" : "ai.flowx.observatory"
+      }
+    }
+  }
+}

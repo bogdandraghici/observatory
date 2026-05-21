@@ -1,0 +1,87 @@
+<div class="status-wrapper">
+  <div class="status-bg">
+    <div class="status-grid"></div>
+    <div class="status-glow status-glow--1"></div>
+    <div class="status-glow status-glow--2"></div>
+  </div>
+
+  <div class="status-content">
+    <img src="assets/layout/images/observatory-light.svg" alt="FLOWX.AI" class="status-logo">
+
+    <h1 class="status-heading">Platform Status</h1>
+
+    <!-- Loading -->
+    @if (loading && !data) {
+      <div class="status-loading">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #006bd8;"></i>
+        <p class="status-loading__text">Checking services...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error && !data) {
+      <div class="status-error">
+        <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem; color: #ef4444;"></i>
+        <p class="status-error__text">Unable to reach status endpoint</p>
+        <button class="status-btn status-btn--secondary" (click)="refresh()">
+          <i class="pi pi-refresh"></i> Retry
+        </button>
+      </div>
+    }
+
+    <!-- Status data -->
+    @if (data) {
+      <!-- Overall banner -->
+      <div class="status-banner" [class]="'status-banner status-banner--' + data.overall_status">
+        <i class="pi" [class]="overallIcon"></i>
+        <span class="status-banner__label">{{ overallLabel }}</span>
+      </div>
+
+      <!-- Services -->
+      <div class="status-services">
+        @for (svc of data.services; track svc.name) {
+          <div class="status-card">
+            <div class="status-card__left">
+              <span class="status-dot" [class]="'status-dot status-dot--' + svc.status"></span>
+              <div>
+                <div class="status-card__name">{{ svc.name }}</div>
+                <div class="status-card__desc">{{ svc.description }}</div>
+              </div>
+            </div>
+            <div class="status-card__right">
+              <span class="status-card__latency">{{ svc.latency_ms }}ms</span>
+              <span class="status-badge" [class]="'status-badge status-badge--' + svc.status">
+                {{ svc.status === 'operational' ? 'Up' : 'Down' }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Checked at -->
+      <div class="status-meta">
+        Last checked: {{ data.checked_at | date:'medium' }}
+        @if (loading) {
+          <i class="pi pi-spin pi-spinner" style="margin-left: 0.5rem; font-size: 0.75rem; color: #006bd8;"></i>
+        }
+      </div>
+
+      <!-- Auto-refresh toggle -->
+      <label class="status-toggle">
+        <input type="checkbox" [checked]="autoRefresh" (change)="toggleAutoRefresh()">
+        <span class="status-toggle__label">Auto-refresh (30s)</span>
+      </label>
+    }
+
+    <!-- Nav links -->
+    <div class="status-nav">
+      <a [routerLink]="['/ai']" class="status-btn status-btn--primary">
+        <i class="pi pi-home"></i> Dashboard
+      </a>
+      <a href="https://observatory-docs.theta.flowxai.dev" target="_blank" rel="noopener" class="status-btn status-btn--secondary">
+        <i class="pi pi-book"></i> Documentation
+        <i class="pi pi-external-link" style="font-size: 0.7rem; opacity: 0.6;"></i>
+      </a>
+    </div>
+  </div>
+</div>

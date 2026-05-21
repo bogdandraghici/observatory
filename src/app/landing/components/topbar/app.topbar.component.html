@@ -1,0 +1,213 @@
+<div
+  class="layout-topbar"
+  [class.layout-topbar--dark]="isDarkMode"
+  [class.layout-topbar--light]="!isDarkMode"
+  [class.layout-topbar--sticky]="isSticky"
+>
+  <!-- Logo -->
+  <a class="layout-topbar-logo" routerLink="">
+    <img
+      [src]="isDarkMode ? 'assets/layout/images/observatory-light.svg' : 'assets/layout/images/observatory-dark.svg'"
+      alt="FlowX Observatory"
+    />
+  </a>
+
+  <!-- Mobile menu toggle -->
+  <button
+    type="button"
+    class="mobile-menu-toggle"
+    [class.mobile-menu-toggle--dark]="isDarkMode"
+    [class.mobile-menu-toggle--light]="!isDarkMode"
+    (click)="toggleMobileMenu()"
+  >
+    <i class="pi" [ngClass]="mobileMenuOpen ? 'pi-times' : 'pi-bars'"></i>
+  </button>
+
+  <!-- Center nav links (desktop: always visible, centered; mobile: hidden) -->
+  <nav class="topbar-center">
+    <ul class="topbar-center__links">
+      @for (category of categories; track category.id) {
+        <li
+          class="nav-item-wrapper"
+          (mouseenter)="onNavItemEnter(category.id)"
+          (mouseleave)="onNavItemLeave()"
+        >
+          <a class="nav-link nav-link--has-dropdown" (click)="navigateToCategory(category.route)">
+            <span>{{ category.label }}</span>
+            <i class="pi pi-chevron-down nav-link__chevron" [class.nav-link__chevron--open]="activeDropdown === category.id"></i>
+          </a>
+
+          <!-- Mega Dropdown Panel -->
+          @if (activeDropdown === category.id) {
+            <div
+              class="mega-dropdown"
+              (mouseenter)="onDropdownEnter()"
+              (mouseleave)="onDropdownLeave()"
+            >
+              <div class="mega-dropdown__bridge"></div>
+              <div class="mega-dropdown__inner" [class.mega-dropdown__inner--light]="!isDarkMode">
+                <!-- Category Header -->
+                <div class="mega-dropdown__header">
+                  <div class="mega-dropdown__header-icon">
+                    <i [class]="category.icon"></i>
+                  </div>
+                  <div>
+                    <div class="mega-dropdown__header-title">{{ category.label }}</div>
+                    <div class="mega-dropdown__header-tagline">{{ category.tagline }}</div>
+                  </div>
+                </div>
+
+                <hr class="mega-dropdown__divider" [class.mega-dropdown__divider--light]="!isDarkMode" />
+
+                <!-- Feature Columns -->
+                <div class="mega-dropdown__columns">
+                  @for (column of category.columns; track column.title) {
+                    <div class="mega-dropdown__column">
+                      <div class="mega-dropdown__column-title" [class.mega-dropdown__column-title--light]="!isDarkMode">{{ column.title }}</div>
+                      @for (feature of column.features; track feature.name) {
+                        <div class="mega-feature" [class.mega-feature--light]="!isDarkMode">
+                          <div class="mega-feature__icon">
+                            <i [class]="feature.icon"></i>
+                          </div>
+                          <div>
+                            <div class="mega-feature__name" [class.mega-feature__name--light]="!isDarkMode">{{ feature.name }}</div>
+                            <div class="mega-feature__desc" [class.mega-feature__desc--light]="!isDarkMode">{{ feature.description }}</div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <!-- Footer Link -->
+                <div class="mega-dropdown__footer">
+                  <a class="mega-dropdown__footer-link" [routerLink]="category.route">
+                    Explore all {{ category.label | lowercase }} features
+                    <i class="pi pi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          }
+        </li>
+      }
+
+      <li>
+        <a
+          href="https://observatory-docs.theta.flowxai.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-link"
+        >
+          <span>Docs</span>
+          <i class="pi pi-external-link external-icon"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Right actions (desktop: always visible; mobile: hidden) -->
+  <div class="topbar-actions topbar-actions--desktop">
+    <ul class="topbar-actions__icons">
+      <li>
+        <button
+          type="button"
+          class="topbar-icon-link"
+          [class.topbar-icon-link--dark]="isDarkMode"
+          [class.topbar-icon-link--light]="!isDarkMode"
+          (click)="toggleDarkMode()"
+          [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          <i class="pi" [ngClass]="{ 'pi-moon': isDarkMode, 'pi-sun': !isDarkMode }"></i>
+        </button>
+      </li>
+    </ul>
+
+    <button
+      pButton
+      pRipple
+      label="Get Started"
+      class="topbar-cta-btn"
+      (click)="router.navigate(['/ai/'])"
+    ></button>
+  </div>
+
+  <!-- Mobile nav dropdown -->
+  @if (mobileMenuOpen) {
+  <div
+    class="topbar-mobile-nav"
+    [class.topbar-mobile-nav--dark]="isDarkMode"
+    [class.topbar-mobile-nav--light]="!isDarkMode"
+  >
+    <ul class="topbar-mobile-nav__links">
+      @for (category of categories; track category.id) {
+        <li>
+          <a class="nav-link nav-link--has-dropdown" (click)="toggleMobileCategory(category.id)">
+            <span>{{ category.label }}</span>
+            <i class="pi nav-link__chevron"
+               [ngClass]="mobileExpandedCategory === category.id ? 'pi-chevron-up' : 'pi-chevron-down'"
+            ></i>
+          </a>
+
+          @if (mobileExpandedCategory === category.id) {
+            <div class="mobile-submenu" [class.mobile-submenu--light]="!isDarkMode">
+              @for (column of category.columns; track column.title) {
+                <div class="mobile-submenu__group">
+                  <div class="mobile-submenu__title" [class.mobile-submenu__title--light]="!isDarkMode">{{ column.title }}</div>
+                  @for (feature of column.features; track feature.name) {
+                    <div class="mobile-submenu__item" [class.mobile-submenu__item--light]="!isDarkMode">
+                      <i [class]="feature.icon" class="mobile-submenu__icon"></i>
+                      <span>{{ feature.name }}</span>
+                    </div>
+                  }
+                </div>
+              }
+              <a class="mobile-submenu__explore" [routerLink]="category.route">
+                Explore all features <i class="pi pi-arrow-right"></i>
+              </a>
+            </div>
+          }
+        </li>
+      }
+
+      <li>
+        <a
+          href="https://observatory-docs.theta.flowxai.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-link"
+        >
+          <span>Docs</span>
+          <i class="pi pi-external-link external-icon"></i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Mobile actions -->
+    <div class="topbar-actions topbar-actions--mobile">
+      <ul class="topbar-actions__icons">
+        <li>
+          <button
+            type="button"
+            class="topbar-icon-link"
+            [class.topbar-icon-link--dark]="isDarkMode"
+            [class.topbar-icon-link--light]="!isDarkMode"
+            (click)="toggleDarkMode()"
+            [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+          >
+            <i class="pi" [ngClass]="{ 'pi-moon': isDarkMode, 'pi-sun': !isDarkMode }"></i>
+          </button>
+        </li>
+      </ul>
+
+      <button
+        pButton
+        pRipple
+        label="Get Started"
+        class="topbar-cta-btn"
+        (click)="router.navigate(['/ai/'])"
+      ></button>
+    </div>
+  </div>
+  }
+</div>

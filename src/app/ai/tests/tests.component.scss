@@ -1,0 +1,141 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+// Reuse eval-card / card-title from insights (global styles or re-declare)
+.eval-card {
+  @include tokens.card-base;
+  padding: 1.5rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1.25rem;
+
+  i {
+    font-size: 1.125rem;
+    color: var(--text-color-secondary);
+  }
+}
+
+.eval-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+
+  &__icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-ground);
+    border-radius: 50%;
+    font-size: 2rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    max-width: 20rem;
+    line-height: 1.5;
+  }
+}
+
+// Loading overlay
+.loading-overlay {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  .loading-bar {
+    width: 100%;
+  }
+}
+
+// Datasets bar
+.datasets-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.dataset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--surface-400);
+  }
+
+  &--active {
+    border-color: var(--p-primary-color);
+    background: rgba(0, 107, 216, 0.08);
+  }
+
+  &__count {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.75rem;
+    background: var(--surface-border);
+    color: var(--text-color-secondary);
+  }
+
+  &__delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background: none;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 0.625rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      background: rgba(230, 34, 0, 0.1);
+      color: var(--flowx-error, #e62200);
+    }
+  }
+
+  &:hover .dataset-chip__delete {
+    opacity: 1;
+  }
+}
+
+// Table styling
+:host {
+  @include tokens.table-modern;
+}

@@ -1,0 +1,53 @@
+<div class="card mb-0 agent-usage">
+  <div class="flex justify-between mb-4">
+    <div class="flex flex-row items-center">
+      <i class="pi pi-prime mr-2"></i>
+      <span class="block text-xl font-bold">Actions Usage</span>
+    </div>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="text-5xl font-bold mb-4">{{ totalRuns | shortNumber }}</span
+      ><span class="font-normal ml-2">runs</span>
+    </div>
+  </div>
+  <p-table [value]="models" [rows]="4" [scrollable]="true" scrollHeight="240px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Action</th>
+        <th>Agent</th>
+        <th>Runs</th>
+        <th>Positive</th>
+        <th>Negative</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-model>
+      <tr>
+        <td class="text-lg font-bold">
+          {{ model.action }}
+        </td>
+        <td>
+        <p-tag
+          [value]="model.agent"
+          severity="info"
+          class="text-xl"
+          [rounded]="true"
+        ></p-tag>
+      </td>
+      <td class="text-lg font-bold">
+        {{ model.total_cnt }}
+      </td>
+        <td class="text-lg font-bold">{{ model.positive_cnt | shortNumber }}</td>
+        <td class="text-lg font-bold">{{ model.negative_cnt | shortNumber }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">
+          <empty-state-widget message="No data found."></empty-state-widget>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -1,0 +1,210 @@
+.llm-header {
+  border: 1px solid var(--surface-border);
+  border-width: 0 0 1px 0;
+  padding: 0.5rem;
+}
+
+.summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+  flex-shrink: 0;
+}
+
+.tree-sidebar {
+  min-width: 350px;
+  width: 350px;
+  height: 100%;
+  overflow: auto;
+  border-right: 1px solid var(--surface-border);
+}
+
+.metric-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  min-width: 120px;
+  flex: 1;
+  .metric-label {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+  }
+  .metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+}
+
+.waterfall-row {
+  &:hover {
+    background-color: var(--surface-hover);
+    border-radius: 4px;
+  }
+}
+
+::ng-deep {
+
+  .small {
+    font-size: 1rem;
+  }
+
+  .run-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+    .run-content {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+
+  .p-popover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--surface-border);
+
+    &::before,
+    &::after {
+      border-bottom-color: var(--surface-overlay, var(--surface-card)) !important;
+    }
+  }
+
+  .graph-panel {
+    display: flex;
+    flex: 1;
+    padding: 1rem;
+    overflow: hidden;
+    height: calc(100vh - 200px);
+  }
+
+  .mermaid-container {
+    margin-left: 0 !important;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 1rem;
+
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  .run-input {
+    background-color: var(--surface-ground);
+    padding: 0.5rem;
+    width: 100%;
+  }
+  ngx-json-viewer {
+    background-color: var(--surface-ground);
+    max-height: calc(35vh);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 0.5rem;
+    display: block;
+    width: 100%;
+  }
+  .llm-details {
+    .p-tree {
+      height: 100%;
+      border-width: 0;
+      overflow: auto;
+    }
+    .p-drawer-right {
+      width: 75vw;
+    }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content {
+      border-radius: 6px;
+      transition: box-shadow 0.2s;
+      padding: 0.3rem 0.5rem;
+    }
+  }
+  .trace {
+    .p-tag {
+      padding: 0.1rem 0.2rem;
+      align-items: center;
+      display: flex;
+      font-weight: 400;
+      margin: 0.1rem;
+    }
+  }
+  pre {
+    white-space: pre;
+    padding: 0.5rem;
+    max-height: calc(35vh);
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: grid;
+    width: 100%;
+    &.no-whitespace {
+      white-space: pre-line;
+    }
+  }
+  .code-preview {
+    background-color: var(--surface-ground);
+    white-space: pre-wrap;
+    max-height: 30vh;
+    word-break: break-word;
+    border-radius: 6px;
+  }
+}
+
+.llm-footer {
+  border: 1px solid var(--surface-border);
+  border-width: 1px 0 0 0;
+  padding: 0.5rem;
+}
+
+.tag {
+  color: var(--text-color-secondary);
+  font-size: 0.75rem;
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.3rem;
+  line-height: 1.5;
+  border: 0.5px solid var(--text-color-secondary);
+}
+
+.selected-trace {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  .trace-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    .trace-icon {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem;
+      font-size: 1.75rem;
+      border-radius: 0.2rem;
+      background-color: var(--primary-color);
+    }
+  }
+
+  .invalid {
+    color: var(--primary-color);
+    font-weight: 900;
+  }
+  .valid {
+    color: var(--text-color-secondary);
+    font-weight: 900;
+  }
+}

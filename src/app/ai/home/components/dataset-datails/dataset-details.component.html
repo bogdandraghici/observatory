@@ -1,0 +1,75 @@
+<div class="dataset-card">
+  <!-- Header -->
+  <div class="dataset-card__header">
+    <div class="dataset-card__title-section">
+      <p-inplace
+        #datasetName
+        [closable]="true"
+        [active]="activeProjectEdit"
+        pTooltip="Click to edit dataset name"
+      >
+        <ng-template pTemplate="display">
+          <div class="dataset-card__title">
+            <i class="pi pi-database dataset-card__icon"></i>
+            <span class="dataset-card__name">{{ dataset.name }}</span>
+            <i class="pi pi-pencil dataset-card__edit-icon"></i>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="dataset-card__edit-form">
+            <input
+              pInputText
+              id="currentDataset"
+              [value]="dataset.name"
+              [(ngModel)]="dataset.name"
+              class="dataset-card__edit-input"
+            />
+            <p-button
+              icon="pi pi-check"
+              (onClick)="saveItem($event, datasetName, dataset)"
+              [rounded]="true"
+              severity="success"
+              size="small"
+            ></p-button>
+          </div>
+        </ng-template>
+      </p-inplace>
+    </div>
+
+    <div class="dataset-card__actions">
+      <p-button
+        icon="pi pi-trash"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        (click)="confirmDelete($event)"
+        pTooltip="Archive dataset"
+        size="small"
+      ></p-button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="dataset-card__stats">
+    <div class="dataset-card__stat">
+      <span class="dataset-card__stat-value">{{ datasetItems || 0 }}</span>
+      <span class="dataset-card__stat-label">Items</span>
+    </div>
+    <div class="dataset-card__stat-divider"></div>
+    <div class="dataset-card__stat">
+      <span class="dataset-card__stat-value">--</span>
+      <span class="dataset-card__stat-label">Last Run</span>
+    </div>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="dataset-card__footer">
+    <a [routerLink]="['/ai/datasets', dataset.id]" class="dataset-card__link">
+      <span>View Dataset</span>
+      <i class="pi pi-arrow-right"></i>
+    </a>
+  </div>
+
+  <p-confirmDialog></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

@@ -1,0 +1,66 @@
+// Usage Time Card Styles
+// Matching landing page card design language
+
+$gold: #006bd8;
+$gold-light: rgba(0, 107, 216, 0.1);
+$success-color: var(--flowx-success, #008060);
+$success-bg: rgba(16, 185, 129, 0.15);
+$danger-color: var(--flowx-red-400, #ee6b54);
+
+// Dark mode tokens
+$card-bg-dark: rgba(255, 255, 255, 0.02);
+$card-border-dark: rgba(255, 255, 255, 0.06);
+$card-border-hover-dark: rgba(0, 107, 216, 0.3);
+$card-glow-dark: 0 0 30px rgba(0, 107, 216, 0.1);
+
+// Light mode tokens
+$card-bg-light: #ffffff;
+$card-border-light: rgba(0, 0, 0, 0.08);
+$card-border-hover-light: rgba(0, 107, 216, 0.4);
+$card-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+$card-shadow-hover-light: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+.danger {
+  color: $danger-color;
+}
+
+.success {
+  background-color: $success-bg;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  height: 40px;
+  border-radius: 0.5rem;
+  margin: 1px;
+}
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .analytics-card {
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 300ms ease;
+
+    // Dark mode (default)
+    background: $card-bg-dark;
+    border: 1px solid $card-border-dark;
+
+    &:hover {
+      border-color: $card-border-hover-dark;
+      box-shadow: $card-glow-dark;
+    }
+
+    // Light mode
+    .flowx-light &, .layout-theme-light & {
+      background: $card-bg-light;
+      border: 1px solid $card-border-light;
+      box-shadow: $card-shadow-light;
+
+      &:hover {
+        border-color: $card-border-hover-light;
+        box-shadow: $card-shadow-hover-light;
+      }
+    }
+  }
+}

@@ -1,0 +1,414 @@
+<div class="home-page">
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">
+        Welcome to <span class="text-accent">Observatory</span>
+      </h1>
+      <p class="page-header__subtitle">
+        Monitor, debug, and optimize your AI applications
+      </p>
+    </div>
+</header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <div class="filter-group__row">
+          <p-select
+            [options]="workspaces"
+            [(ngModel)]="selectedWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="true"
+            (onChange)="workspaceChanged($event)"
+            placeholder="All Workspaces"
+          ></p-select>
+          @if (isDefaultOrg()) {
+            <button class="btn-icon" (click)="showDialogWorkspace()" pTooltip="Create Workspace">
+              <i class="pi pi-plus"></i>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- API Key Card -->
+    @if (getAPIKeys(selectedOrg)?.length > 0) {
+      <div class="api-key-card">
+        <div class="api-key-card__icon">
+          <i class="pi pi-key"></i>
+        </div>
+        <div class="api-key-card__content">
+          <span class="api-key-card__label">API Key</span>
+          @for (key of getAPIKeys(selectedOrg); track key) {
+            <div class="api-key-card__value-wrapper">
+              <code class="api-key-card__value">{{ key.value }}</code>
+              <button
+                class="api-key-card__copy"
+                (click)="copyToClipboard($event, key.value)"
+                pTooltip="Copy API key to clipboard"
+              >
+                <i class="pi pi-copy"></i>
+              </button>
+            </div>
+          }
+        </div>
+        <div class="api-key-card__hint">
+          <i class="pi pi-info-circle"></i>
+          Set as <code>FLOWX_OBSERVATORY_API_KEY</code> environment variable
+        </div>
+      </div>
+    }
+
+  <!-- Quick Stats Overview -->
+  @if (apps?.length > 0) {
+    <section class="quick-stats">
+      <div class="quick-stats__grid grid-cols-12">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--projects">
+            <i class="pi pi-folder"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ apps?.length || 0 }}</span>
+            <span class="stat-card__label">Active Projects</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--agents">
+            <i class="pi pi-android"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ getTotalAgents() }}</span>
+            <span class="stat-card__label">Agents</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--runs">
+            <i class="pi pi-play"></i>
+          </div>
+          <div class="stat-card__content">
+            <span class="stat-card__value">{{ getTotalRuns() }}</span>
+            <span class="stat-card__label">Total Runs (7D)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Getting Started / Documentation -->
+  <section class="getting-started">
+    <div class="getting-started__card">
+      <div class="getting-started__content">
+        <div class="getting-started__icon">
+          <i class="pi pi-book"></i>
+        </div>
+        <div class="getting-started__text">
+          <h3>Documentation</h3>
+          <p>Learn how to integrate Observatory into your AI applications</p>
+        </div>
+      </div>
+      <a
+        href="https://observatory-docs.theta.flowxai.dev"
+        target="_blank"
+        class="getting-started__btn"
+      >
+        View Docs
+        <i class="pi pi-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="section-projects">
+    <div class="section-header">
+      <div class="section-header__left">
+        <h2 class="section-header__title">
+          <i class="pi pi-folder"></i>
+          Projects
+        </h2>
+        <span class="section-header__count">{{ apps?.length || 0 }} projects</span>
+      </div>
+      <div class="section-header__actions">
+        @if (isDefaultOrg()) {
+          <button class="btn-add" (click)="showDialogProject()">
+            <i class="pi pi-plus"></i>
+            Add Project
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="projects-grid">
+      @for (app of apps; track app) {
+        <app-details-widget
+          [app]="app"
+          (appChanged)="reloadAll($event)"
+          (integrate)="showIntegrateForProject($event)"
+        ></app-details-widget>
+      }
+      @if (!apps || apps.length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <i class="pi pi-folder-open"></i>
+          </div>
+          <h3 class="empty-state__title">No projects yet</h3>
+          <p class="empty-state__description">
+            @if (isDefaultOrg()) {
+              Create your first project to start monitoring your AI applications
+            } @else {
+              Projects will appear here when events are reported
+            }
+          </p>
+          @if (isDefaultOrg()) {
+            <button class="btn-add btn-add--primary" (click)="showDialogProject()">
+              <i class="pi pi-plus"></i>
+              Create Project
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+</div>
+
+<!-- Create Project Dialog -->
+<p-dialog
+  [(visible)]="visibleProject"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-folder-plus"></i>
+      <span>Create New Project</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="projectName">Project Name</label>
+        <input
+          pInputText
+          id="projectName"
+          [(ngModel)]="newProjectName"
+          placeholder="Enter project name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogProject()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Project"
+        (click)="saveProject()"
+        [disabled]="!newProjectName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Integration Dialog -->
+<p-dialog
+  [(visible)]="visibleIntegrate"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="integrate-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-code"></i>
+      <span>Integrate with Observatory</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="integrate-content">
+      <!-- Workspace & Project selectors -->
+      <div class="integrate-selectors">
+        <div class="form-field">
+          <label>Workspace</label>
+          <p-select
+            [options]="getIntegrateWorkspaces()"
+            [(ngModel)]="integrateWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            (onChange)="integrateWorkspaceChanged()"
+            placeholder="Select Workspace"
+            styleClass="integrate-select"
+          ></p-select>
+        </div>
+        <div class="form-field">
+          <label>Project</label>
+          <p-select
+            [options]="getIntegrateProjects()"
+            [(ngModel)]="integrateProject"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            placeholder="Select Project"
+            styleClass="integrate-select"
+          ></p-select>
+        </div>
+      </div>
+
+      <!-- Integration method selector -->
+      <div class="integrate-methods">
+        <label class="integrate-methods__label">Integration Method</label>
+        <div class="integrate-methods__grid">
+          @for (method of integrationMethods; track method.value) {
+            <button
+              class="integrate-method-btn"
+              [class.integrate-method-btn--active]="selectedIntegration === method.value"
+              (click)="selectedIntegration = method.value"
+            >
+              <i [class]="method.icon"></i>
+              <span>{{ method.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Code block -->
+      <div class="integrate-code">
+        <div class="integrate-code__header">
+          <span class="integrate-code__lang">Python</span>
+          <button class="integrate-code__copy" (click)="copyIntegrationCode()" pTooltip="Copy code">
+            <i class="pi pi-copy"></i>
+            Copy
+          </button>
+        </div>
+        <pre class="integrate-code__block"><code>{{ getIntegrationCode() }}</code></pre>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Close"
+        (click)="closeIntegrateDialog()"
+        styleClass="p-button-text"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Create Workspace Dialog -->
+<p-dialog
+  [(visible)]="visibleWorkspace"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-th-large"></i>
+      <span>Create New Workspace</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="workspaceName">Workspace Name</label>
+        <input
+          pInputText
+          id="workspaceName"
+          [(ngModel)]="newWorkspaceName"
+          placeholder="Enter workspace name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogWorkspace()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Workspace"
+        (click)="saveWorkspace()"
+        [disabled]="!newWorkspaceName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Create Organization Dialog -->
+<p-dialog
+  [(visible)]="visibleOrganization"
+  [modal]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="create-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <i class="pi pi-building"></i>
+      <span>Create New Organization</span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="dialog-content">
+      <div class="form-field">
+        <label for="organizationName">Organization Name</label>
+        <input
+          pInputText
+          id="organizationName"
+          [(ngModel)]="newOrganizationName"
+          placeholder="Enter organization name"
+          class="form-input"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancel"
+        (click)="closeDialogOrganization()"
+        styleClass="p-button-text"
+      ></p-button>
+      <p-button
+        label="Create Organization"
+        (click)="saveOrganization()"
+        [disabled]="!newOrganizationName"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

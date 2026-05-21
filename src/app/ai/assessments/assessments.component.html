@@ -1,0 +1,341 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Assessment Engine</h1>
+      <p class="page-header__subtitle">Create templates and run compliance assessments</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <p-tabs [(value)]="activeTab">
+    <p-tablist>
+      <p-tab value="0">Templates</p-tab>
+      <p-tab value="1">Assessments</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Templates Tab -->
+      <p-tabpanel value="0">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--blue">
+                <i class="pi pi-file-edit"></i>
+              </div>
+              <span class="stat-card__title">Templates</span>
+            </div>
+            <div class="flex gap-2">
+              <p-button label="Use Predefined" icon="pi pi-book" severity="secondary" (click)="openPredefinedDialog()"></p-button>
+              <p-button label="Create Template" icon="pi pi-plus" (click)="createTemplate()"></p-button>
+            </div>
+          </div>
+          <p-table [value]="templates" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Questions</th>
+                <th>Version</th>
+                <th>Active</th>
+                <th style="width: 7rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-t>
+              <tr>
+                <td class="font-semibold">{{ t.name }}</td>
+                <td><p-tag [value]="t.category"></p-tag></td>
+                <td>{{ t.questions?.length || 0 }} questions</td>
+                <td>v{{ t.version }}</td>
+                <td><p-tag [value]="t.is_active ? 'Active' : 'Inactive'" [severity]="t.is_active ? 'success' : 'secondary'"></p-tag></td>
+                <td>
+                  <div class="flex gap-1">
+                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editTemplate(t)"></p-button>
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(t, 'template')"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="6" class="text-center p-6">No templates found. Click "Create Template" to get started.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Assessments Tab -->
+      <p-tabpanel value="1">
+        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <div class="flex items-center gap-2">
+              <div class="stat-card__icon stat-card__icon--green">
+                <i class="pi pi-check-square"></i>
+              </div>
+              <span class="stat-card__title">Assessments</span>
+            </div>
+            <p-button label="Start Assessment" icon="pi pi-plus" (click)="createAssessment()"></p-button>
+          </div>
+          <p-table [value]="assessments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Template</th>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Completed By</th>
+                <th>Created</th>
+                <th>Signature</th>
+                <th style="width: 7rem">Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-a>
+              <tr>
+                <td class="font-semibold">{{ getTemplateName(a.template_id) }}</td>
+                <td>{{ getAppName(a.project_id) }}</td>
+                <td><p-tag [value]="a.status" [severity]="getStatusSeverity(a.status)"></p-tag></td>
+                <td>
+                  @if (a.score !== null && a.score !== undefined) {
+                    <div class="flex items-center gap-2">
+                      <p-progressBar [value]="a.score * 100" [showValue]="false" [style]="{height: '0.5rem', width: '5rem'}"></p-progressBar>
+                      <span>{{ (a.score * 100).toFixed(1) }}%</span>
+                    </div>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+                <td>{{ a.completed_by || '-' }}</td>
+                <td>{{ a.created_at | date:'short' }}</td>
+                <td>
+                  @if (a.status === 'completed') {
+                    @if (getSignatureStatus(a.id); as sig) {
+                      @if (sig.loading) {
+                        <i class="pi pi-spin pi-spinner"></i>
+                      } @else if (sig.valid) {
+                        <p-tag value="Valid" severity="success" icon="pi pi-check-circle"></p-tag>
+                      } @else {
+                        <p-tag value="Invalid" severity="danger" icon="pi pi-times-circle"></p-tag>
+                      }
+                    } @else {
+                      <p-button icon="pi pi-shield" label="Verify" [text]="true" size="small" pTooltip="Verify Signature" tooltipPosition="top" (click)="verifySignature(a)"></p-button>
+                    }
+                  } @else {
+                    <span style="color: var(--text-color-secondary)">-</span>
+                  }
+                </td>
+                <td>
+                  @if (a.status !== 'completed') {
+                    <p-button icon="pi pi-pencil" label="Take" [text]="true" pTooltip="Take Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
+                  } @else {
+                    <p-button icon="pi pi-eye" label="View" [text]="true" pTooltip="View Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr><td colspan="8" class="text-center p-6">No assessments found. Click "Start Assessment" to begin.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+<!-- Template Dialog -->
+<p-dialog [(visible)]="templateDialogVisible" [header]="templateEditMode ? 'Edit Template' : 'Create Template'" [modal]="true" [style]="{width: '42rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="templateForm.name" class="w-full" />
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Category</label>
+        <p-select [options]="categoryOptions" [(ngModel)]="templateForm.category" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Description</label>
+        <textarea pInputTextarea [(ngModel)]="templateForm.description" class="w-full" rows="2"></textarea>
+      </div>
+    </div>
+    <div>
+      <label class="font-semibold block mb-2">Questions</label>
+      @for (q of templateForm.questions; track $index) {
+        <div class="rounded p-3 mb-3" style="background: var(--surface-ground);">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-semibold text-sm" style="color:var(--text-color-secondary);">Q{{ $index + 1 }}</span>
+            <div class="flex-1"></div>
+            <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" size="small" (click)="removeQuestion($index)"></p-button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <input type="text" pInputText [(ngModel)]="q.text" placeholder="Question text" class="w-full" />
+              </div>
+              <p-select [options]="questionTypeOptions" [(ngModel)]="q.type" placeholder="Type" appendTo="body" [style]="{width: '12rem'}"></p-select>
+              <input type="number" pInputText [(ngModel)]="q.weight" placeholder="Weight" style="width:5rem;" />
+            </div>
+            @if (q.type === 'scale') {
+              <div class="flex items-center gap-2">
+                <label class="text-sm" style="color:var(--text-color-secondary);">Max scale:</label>
+                <input type="number" pInputText [(ngModel)]="q.max_scale" placeholder="5" style="width:5rem;" />
+              </div>
+            }
+            @if (q.type === 'select' || q.type === 'multiselect') {
+              <div class="flex items-center gap-2">
+                <label class="text-sm" style="color:var(--text-color-secondary);">Options (comma-separated):</label>
+                <input type="text" pInputText [ngModel]="q.options?.join(', ')" (ngModelChange)="q.options = parseOptions($event)" placeholder="Option A, Option B, ..." class="flex-1" />
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <p-button label="Add Question" icon="pi pi-plus" severity="secondary" [text]="true" size="small" (click)="addQuestion()"></p-button>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="templateDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveTemplate()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Start Assessment Dialog -->
+<p-dialog [(visible)]="assessmentDialogVisible" header="Start Assessment" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Template</label>
+        <p-select [options]="templates" [(ngModel)]="assessmentForm.template_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Project</label>
+        <p-select [options]="apps" [(ngModel)]="assessmentForm.project_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="assessmentDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveAssessment()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Take Assessment Dialog -->
+<p-dialog [(visible)]="takeDialogVisible" header="Take Assessment" [modal]="true" [style]="{width: '42rem'}" [maximizable]="true">
+  @if (currentTemplate) {
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="mb-2">
+        <h6 class="m-0">{{ currentTemplate.name }}</h6>
+        <small style="color: var(--text-color-secondary)">{{ currentTemplate.description }}</small>
+      </div>
+
+      @for (q of currentTemplate.questions; track q.id) {
+        <div class="stat-card stat-card--stacked">
+          <label class="font-semibold block mb-2">{{ q.text || q.id }}</label>
+
+          @if (q.type === 'boolean') {
+            <p-toggleSwitch [(ngModel)]="responses[q.id]"></p-toggleSwitch>
+          }
+
+          @if (q.type === 'text') {
+            <textarea pInputTextarea [(ngModel)]="responses[q.id]" class="w-full" rows="2"></textarea>
+          }
+
+          @if (q.type === 'scale') {
+            <div class="flex items-center gap-2">
+              <p-slider [(ngModel)]="responses[q.id]" [min]="0" [max]="q.max_scale || 5" [step]="1" class="w-full"></p-slider>
+              <span class="font-semibold">{{ responses[q.id] || 0 }}/{{ q.max_scale || 5 }}</span>
+            </div>
+          }
+
+          @if (q.type === 'select') {
+            <p-select [options]="q.options" [(ngModel)]="responses[q.id]" appendTo="body" class="w-full"></p-select>
+          }
+
+          @if (q.type === 'multiselect') {
+            <p-multiSelect [options]="q.options" [(ngModel)]="responses[q.id]" appendTo="body" class="w-full"></p-multiSelect>
+          }
+
+          @if (q.weight) {
+            <small class="mt-1 block" style="color: var(--text-color-secondary)">Weight: {{ q.weight }}</small>
+          }
+        </div>
+      }
+
+      @if (lastScore !== null) {
+        <div class="stat-card stat-card--stacked">
+          <div class="font-medium mb-1">Assessment Score</div>
+          <p-progressBar [value]="lastScore * 100" [style]="{height: '1.5rem'}"></p-progressBar>
+          <div class="text-2xl font-bold mt-1">{{ (lastScore * 100).toFixed(1) }}%</div>
+        </div>
+      }
+    </div>
+  }
+  <ng-template pTemplate="footer">
+    @if (currentAssessment?.status !== 'completed') {
+      <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="takeDialogVisible = false"></p-button>
+      <p-button label="Submit" icon="pi pi-check" (click)="submitAssessment()"></p-button>
+    } @else {
+      <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="takeDialogVisible = false"></p-button>
+    }
+  </ng-template>
+</p-dialog>
+
+<!-- Predefined Templates Dialog -->
+<p-dialog [(visible)]="predefinedDialogVisible" header="Predefined Assessment Templates" [modal]="true" [style]="{width: '48rem'}">
+  <div class="flex flex-col gap-3 pt-2">
+    <p style="color: var(--text-color-secondary)">Select a governance framework to create a ready-made assessment template with pre-built questions.</p>
+    @if (loadingPredefined) {
+      <div class="text-center p-4"><i class="pi pi-spin pi-spinner text-2xl"></i></div>
+    } @else {
+      @for (tpl of predefinedTemplates; track tpl.framework) {
+        <div class="stat-card" style="flex-direction: column; align-items: stretch; cursor: pointer;" (click)="applyPredefinedTemplate(tpl.framework)">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <i [class]="getFrameworkIcon(tpl.framework)"></i>
+            </div>
+            <div class="flex-1">
+              <div class="font-semibold">{{ tpl.name }}</div>
+              <small style="color: var(--text-color-secondary)">{{ tpl.question_count }} questions &middot; {{ tpl.category }}</small>
+            </div>
+            <p-button icon="pi pi-plus" [rounded]="true" severity="secondary" pTooltip="Create Template" tooltipPosition="left"></p-button>
+          </div>
+          <p class="m-0 text-sm" style="color: var(--text-color-secondary)">{{ tpl.description }}</p>
+        </div>
+      }
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="predefinedDialogVisible = false"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Delete Dialog -->
+<p-dialog header="Confirm Delete" [(visible)]="deleteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
+  <p>Are you sure you want to delete this {{ deleteType }}?</p>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="deleteDialogVisible = false"></p-button>
+    <p-button label="Delete" icon="pi pi-trash" severity="danger" (click)="deleteItem()"></p-button>
+  </ng-template>
+</p-dialog>

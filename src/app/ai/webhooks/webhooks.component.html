@@ -1,0 +1,187 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Webhooks</h1>
+      <p class="page-header__subtitle">Configure webhook integrations for event notifications</p>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Organization"
+          (onChange)="orgChanged($event)"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Webhooks Table -->
+  <div class="stat-card stat-card--stacked">
+    <div class="flex items-center justify-between mb-3 w-full">
+      <div class="flex items-center gap-2">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-link"></i>
+        </div>
+        <span class="stat-card__title">Webhooks</span>
+      </div>
+      <p-button label="Create Webhook" icon="pi pi-plus" (click)="showCreateWebhook()"></p-button>
+    </div>
+    <p-table [value]="webhooks" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>URL</th>
+          <th>Events</th>
+          <th>Status</th>
+          <th style="width: 14rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-hook>
+        <tr>
+          <td class="font-semibold">{{ hook.name }}</td>
+          <td>
+            @if (hook.webhook_type === 'slack') {
+              <p-tag value="Slack" severity="info" icon="pi pi-slack"></p-tag>
+            } @else if (hook.webhook_type === 'teams') {
+              <p-tag value="Teams" severity="contrast" icon="pi pi-microsoft"></p-tag>
+            } @else {
+              <p-tag value="Generic" severity="secondary"></p-tag>
+            }
+          </td>
+          <td class="text-ellipsis overflow-hidden" style="max-width: 18rem">{{ hook.url }}</td>
+          <td>
+            <div class="flex gap-1 flex-wrap">
+              @for (ev of hook.events; track ev) {
+                <p-tag [value]="ev" severity="secondary" [style]="{'font-size': '0.75rem'}"></p-tag>
+              }
+            </div>
+          </td>
+          <td>
+            @if (hook.is_active) {
+              <p-tag value="Active" severity="success"></p-tag>
+            } @else {
+              <p-tag value="Inactive" severity="warn"></p-tag>
+            }
+          </td>
+          <td>
+            <div class="flex gap-1">
+              <p-button icon="pi pi-send" [rounded]="true" [text]="true" severity="primary" pTooltip="Test" tooltipPosition="top" (click)="testWebhook(hook)"></p-button>
+              <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="primary" pTooltip="Deliveries" tooltipPosition="top" (click)="showDeliveries(hook)"></p-button>
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" pTooltip="Edit" tooltipPosition="top" (click)="editWebhook(hook)"></p-button>
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteWebhook(hook)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-6">No webhooks configured.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Create/Edit Webhook Dialog -->
+<p-dialog [(visible)]="webhookDialogVisible" [header]="editingWebhook ? 'Edit Webhook' : 'New Webhook'" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="webhookForm.name" class="w-full" />
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Type</label>
+        <p-select
+          [options]="webhookTypes"
+          [(ngModel)]="webhookForm.webhook_type"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{'width': '100%'}"
+        ></p-select>
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Webhook URL</label>
+        <input type="text" pInputText [(ngModel)]="webhookForm.url" class="w-full"
+          [placeholder]="webhookForm.webhook_type === 'slack' ? 'https://hooks.slack.com/services/...' : webhookForm.webhook_type === 'teams' ? 'https://outlook.office.com/webhook/...' : 'https://...'" />
+        @if (webhookForm.webhook_type === 'slack') {
+          <small class="text-color-secondary">Create an Incoming Webhook in your Slack workspace settings</small>
+        }
+        @if (webhookForm.webhook_type === 'teams') {
+          <small class="text-color-secondary">Create an Incoming Webhook connector in your Teams channel</small>
+        }
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Secret (HMAC)</label>
+        <input type="text" pInputText [(ngModel)]="webhookForm.secret" class="w-full" placeholder="Optional" />
+      </div>
+      <div class="col-12">
+        <label class="font-semibold block mb-1">Events</label>
+        <p-multiselect
+          [options]="availableEvents"
+          [(ngModel)]="webhookForm.events"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select events"
+          appendTo="body"
+          [style]="{'width': '100%'}"
+        ></p-multiselect>
+      </div>
+      <div class="col-12">
+        <div class="flex items-center gap-2">
+          <p-toggleswitch [(ngModel)]="webhookForm.is_active"></p-toggleswitch>
+          <span>Active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="webhookDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (click)="saveWebhook()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Delivery History Dialog -->
+<p-dialog [(visible)]="deliveryDialogVisible" [header]="'Deliveries: ' + deliveryWebhookName" [modal]="true" [style]="{width: '42rem'}" [maximizable]="true">
+  <p-table [value]="deliveries" styleClass="p-datatable-sm" [scrollable]="true" scrollHeight="400px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Timestamp</th>
+        <th>Event</th>
+        <th>Status</th>
+        <th>Result</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-d>
+      <tr>
+        <td>{{ d.created_at | date:'short' }}</td>
+        <td>{{ d.event }}</td>
+        <td>{{ d.response_status || '-' }}</td>
+        <td>
+          @if (d.success) {
+            <p-tag value="OK" severity="success"></p-tag>
+          } @else {
+            <p-tag value="Failed" severity="danger"></p-tag>
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center p-6">No deliveries yet.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: observatory-web-admin
+  namespace: dev-pr2127
+  annotations:
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://*.cloud.pr2127.dev1.flowxai.dev"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - observatory.cloud.pr2127.dev1.flowxai.dev
+      secretName: saas-wildcard
+  rules:
+    - host: observatory.cloud.pr2127.dev1.flowxai.dev
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: observatory-web
+                port:
+                  name: http

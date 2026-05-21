@@ -1,0 +1,15 @@
+@import "./landing/_light";
+@import "./landing/_dark";
+@import "./main/_light";
+@import "./main/_dark";
+
+/* General */
+$scale: 13px; /* main font size */
+$borderRadius: 4px; /* border radius of layout element e.g. card, sidebar */
+$transitionDuration: 0.6s;
+:root {
+  /* transition duration of layout elements e.g. sidebar, overlay menus */
+  --ngx-json-string: var(--text-color);
+  --ngx-json-key: var(--text-color-secondary);
+  --ngx-json-number: var(--primary-color);
+}

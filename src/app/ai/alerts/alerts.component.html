@@ -1,0 +1,309 @@
+<p-toast></p-toast>
+
+<div class="ai-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Alerts & SLA Tracking</h1>
+      <p class="page-header__subtitle">Configure alert rules and monitor SLA compliance</p>
+    </div>
+    <div class="page-header__right">
+      <p-button label="Evaluate Now" icon="pi pi-play" severity="info" (click)="evaluateNow()"></p-button>
+      <p-button label="Create Rule" icon="pi pi-plus" (click)="createRule()"></p-button>
+    </div>
+  </header>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-bar__left">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Organization"
+          (onChange)="orgChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="All Projects"
+          [showClear]="true"
+          (onChange)="appChanged()"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Period</label>
+        <p-select
+          [options]="periodOptions"
+          [(ngModel)]="hours"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="periodChanged()"
+        ></p-select>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="stat-cards-grid mb-4">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="pi pi-list-check"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Active Rules</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ activeRules }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--amber">
+        <i class="pi pi-bell"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Alerts in Period</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ alertsToday }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: rgba(249, 115, 22, 0.1); color: var(--flowx-orange-500, #fd6b1c);">
+        <i class="pi pi-exclamation-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Unacknowledged</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-orange-500, #fd6b1c)">{{ unacknowledged }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Critical</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ criticalCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Rules Table -->
+  <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+    <div class="flex items-center justify-between mb-3 w-full">
+      <div class="flex items-center gap-2">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="pi pi-list-check"></i>
+        </div>
+        <span class="stat-card__title">Alert Rules</span>
+      </div>
+    </div>
+    <p-table [value]="rules" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Project</th>
+          <th>Metric</th>
+          <th>Condition</th>
+          <th>Window</th>
+          <th>Severity</th>
+          <th>Active</th>
+          <th style="width: 7rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rule>
+        <tr>
+          <td class="font-semibold">{{ rule.name }}</td>
+          <td>{{ rule.project_id ? 'Specific' : 'Org-wide' }}</td>
+          <td>{{ getMetricLabel(rule.metric) }}</td>
+          <td>{{ getOperatorLabel(rule.operator) }} {{ rule.threshold }}</td>
+          <td>{{ rule.window_minutes }}m</td>
+          <td><p-tag [value]="rule.severity" [severity]="getSeverity(rule.severity)"></p-tag></td>
+          <td>
+            <p-toggleswitch [(ngModel)]="rule.is_active" (onChange)="toggleActive(rule)"></p-toggleswitch>
+          </td>
+          <td>
+            <div class="flex gap-1">
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" pTooltip="Edit" tooltipPosition="top" (click)="editRule(rule)"></p-button>
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(rule)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center p-6">No alert rules configured. Click "Create Rule" to get started.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Alert History Table -->
+  <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="stat-card__icon stat-card__icon--amber">
+        <i class="pi pi-history"></i>
+      </div>
+      <span class="stat-card__title">Alert History</span>
+    </div>
+    <p-table [value]="history" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Time</th>
+          <th>Message</th>
+          <th>Metric</th>
+          <th>Actual</th>
+          <th>Threshold</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th style="width: 8rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-event>
+        <tr>
+          <td>{{ event.fired_at | date:'short' }}</td>
+          <td>{{ event.message }}</td>
+          <td>{{ getMetricLabel(event.metric) }}</td>
+          <td>{{ event.actual_value | number:'1.2-2' }}</td>
+          <td>{{ event.threshold | number:'1.2-2' }}</td>
+          <td><p-tag [value]="event.severity" [severity]="getSeverity(event.severity)"></p-tag></td>
+          <td><p-tag [value]="event.status" [severity]="getStatusSeverity(event.status)"></p-tag></td>
+          <td>
+            <div class="flex gap-1">
+              @if (event.status === 'fired') {
+                <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="warn" pTooltip="Acknowledge" (click)="acknowledgeAlert(event)"></p-button>
+              }
+              @if (event.status !== 'resolved') {
+                <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" severity="success" pTooltip="Resolve" (click)="resolveAlert(event)"></p-button>
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center p-6">No alerts in the selected period.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- SLA Compliance -->
+  @if (selectedApp && slaStatus.length > 0) {
+    <div class="flex items-center gap-2 mb-3">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="pi pi-shield"></i>
+      </div>
+      <span class="stat-card__title">SLA Compliance</span>
+    </div>
+    <div class="stat-cards-grid" style="grid-template-columns: repeat(3, 1fr);">
+      @for (sla of slaStatus; track sla.rule_id) {
+        <div class="stat-card stat-card--stacked">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-semibold">{{ sla.rule_name }}</span>
+            <p-tag
+              [value]="sla.compliant ? 'Compliant' : 'Breached'"
+              [severity]="sla.compliant ? 'success' : 'danger'"
+            ></p-tag>
+          </div>
+          <span class="stat-card__label">{{ getMetricLabel(sla.metric) }}: {{ sla.actual_value != null ? (sla.actual_value | number:'1.2-2') : 'N/A' }} {{ getOperatorLabel(sla.operator) }} {{ sla.threshold }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Create/Edit Rule Dialog -->
+<p-dialog [(visible)]="ruleDialogVisible" [header]="editingRule ? 'Edit Alert Rule' : 'Create Alert Rule'" [modal]="true" [style]="{width: '36rem'}">
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="grid">
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Name</label>
+        <input type="text" pInputText [(ngModel)]="ruleForm.name" class="w-full" />
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Project (optional)</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="ruleForm.project_id"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Org-wide"
+          [showClear]="true"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+        ></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Metric</label>
+        <p-select
+          [options]="metricOptions"
+          [(ngModel)]="ruleForm.metric"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+        ></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Operator</label>
+        <p-select
+          [options]="operatorOptions"
+          [(ngModel)]="ruleForm.operator"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+        ></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Threshold</label>
+        <p-inputNumber [(ngModel)]="ruleForm.threshold" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="4" [style]="{'width':'100%'}"></p-inputNumber>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Severity</label>
+        <p-select
+          [options]="severityOptions"
+          [(ngModel)]="ruleForm.severity"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+        ></p-select>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Window (minutes)</label>
+        <p-inputNumber [(ngModel)]="ruleForm.window_minutes" [min]="1" [style]="{'width':'100%'}"></p-inputNumber>
+      </div>
+      <div class="col-6">
+        <label class="font-semibold block mb-1">Cooldown (minutes)</label>
+        <p-inputNumber [(ngModel)]="ruleForm.cooldown_minutes" [min]="1" [style]="{'width':'100%'}"></p-inputNumber>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="ruleDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" (onClick)="saveRule()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Delete Confirmation -->
+<p-dialog header="Delete Alert Rule" [(visible)]="deleteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
+  <p>Are you sure you want to delete "{{ ruleToDelete?.name }}"?</p>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="deleteDialogVisible = false"></p-button>
+    <p-button label="Delete" icon="pi pi-trash" severity="danger" (click)="deleteRule()"></p-button>
+  </ng-template>
+</p-dialog>

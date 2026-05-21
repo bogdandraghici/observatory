@@ -1,0 +1,32 @@
+<div class="stat-card error-rate" style="flex-direction: column; align-items: stretch;">
+  <div class="flex items-center gap-2 mb-3">
+    <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+      <i class="pi pi-exclamation-triangle"></i>
+    </div>
+    <span class="stat-card__title">Error Rate</span>
+  </div>
+  <div class="flex justify-between mb-4">
+    <div>
+      <span class="stat-card__value--lg">{{ totalRuns | shortNumber }}</span>
+      <span class="stat-card__label ml-2">runs</span>
+    </div>
+    <div>
+      <span class="stat-card__value--lg">{{ errorRate }}%</span>
+      <span class="stat-card__label ml-2">errors</span>
+    </div>
+  </div>
+  @if (totalRuns > 0) {
+    <div class="flex justify-center" style="height: 240px;">
+      <p-chart
+        type="doughnut"
+        [data]="chartData"
+        [options]="chartOptions"
+        [style]="{ width: '100%', height: '100%' }"
+      ></p-chart>
+    </div>
+  } @else {
+    <div style="height: 240px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No data found."></empty-state-widget>
+    </div>
+  }
+</div>
