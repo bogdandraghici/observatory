@@ -28,11 +28,17 @@
       [options]="chartOptionsBar"
     ></p-chart>
   }
-  <div class="flex justify-between mt-4">
-    @for (item of chartData?.labels; track item) {
-      <div class="flex flex-row items-center">
-        <span class="block text">{{ item }}</span>
-      </div>
+  <ul class="pie-legend">
+    @for (item of legend; track item.label) {
+      <li class="pie-legend__item">
+        <span
+          class="pie-legend__swatch"
+          [style.background]="item.fill"
+          [style.borderColor]="item.stroke"
+        ></span>
+        <span class="pie-legend__label">{{ item.label }}</span>
+        <span class="pie-legend__count">{{ item.count | number }}</span>
+      </li>
     }
-  </div>
+  </ul>
 </div>

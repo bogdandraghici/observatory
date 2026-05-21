@@ -2,19 +2,48 @@
   color: var(--flowx-error, #e62200);
 }
 
+// Activity is the tallest card on the page — its inner content must
+// stack to roughly the height of (Requests/Users row) + (Response Times
+// row) on the left column so the two columns line up.
+:host {
+  display: block;
+
+  ::ng-deep .stat-card {
+    height: 100%;
+  }
+
+  // Each line chart gets an explicit minimum height; together with the
+  // header + success-rate row, the card now matches the combined left
+  // rows instead of hugging Chart.js's 150px default canvas.
+  ::ng-deep p-chart {
+    display: block;
+    min-height: 200px;
+  }
+}
+
+// Success-rate heatmap row — each pill represents one bucket. Default
+// state shows healthy (FlowX green); shorter + tighter for a quieter
+// look than the previous chunky yellow rectangles.
 .success {
-  background-color: var(--primary-200);
-  border: 1px solid var(--primary-500);;
-  height: 40px;
-  border-radius: 4px;
+  background-color: var(--flowx-green-50, #e6f2ef);
+  border: 1px solid var(--flowx-green-500, #008060);
+  height: 16px;
+  border-radius: 3px;
   margin-right: 2px;
-  opacity: 80%;
- 
+}
+
+// Dark mode — green-50 on dark slate disappears and green-500 stroke
+// loses contrast. Use a translucent green fill + lifted green-300
+// stroke (the FlowX dark-mode green) so the row reads on dark surface.
+:host-context(.flowx-dark) .success {
+  background-color: rgba(0, 128, 96, 0.25);
+  border-color: var(--flowx-green-300, #54aa94);
 }
 
 .container {
-  padding: 2px;
+  padding: 2px 0;
   display: flex;
   align-items: stretch;
+  gap: 2px;
   overflow: hidden;
 }

@@ -47,64 +47,80 @@ export class ActivityCardComponent implements OnInit, OnDestroy, OnChanges {
   }
   ngOnDestroy(): void {}
 
+  // Primary blue — light mode uses flowx-blue-500, dark mode lifts to
+  // flowx-blue-400 (the FlowX dark-mode interactive token) so the
+  // stroke and the translucent fill both pop on a dark surface.
+  private bluePrimary(): { hex: string; rgb: string } {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    return isDark
+      ? { hex: '#3389e0', rgb: '51, 137, 224' }
+      : { hex: '#006bd8', rgb: '0, 107, 216' }
+  }
+
+  // Secondary blue (for the second stacked chart). One step deeper in
+  // light mode (blue-700) and a paler counterpart in dark mode (blue-300)
+  // so the two stacked charts remain distinct.
+  private blueSecondary(): { hex: string; rgb: string } {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    return isDark
+      ? { hex: '#8abbed', rgb: '138, 187, 237' }   // blue-200
+      : { hex: '#004c99', rgb: '0, 76, 153' }      // blue-700
+  }
+
+  private flowxTooltip(): any {
+    return {
+      enabled: true,
+      backgroundColor: '#1d232c',
+      titleColor: '#f7f8f9',
+      bodyColor: '#e3e8ed',
+      borderWidth: 0,
+      cornerRadius: 6,
+      padding: { x: 10, y: 6 },
+      displayColors: false,
+      titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+      bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
+    }
+  }
+
   getOptionsRequestsNo(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color')
-    const textColorSecondary = documentStyle.getPropertyValue(
-      '--text-color-secondary',
-    )
-    const _____surfaceBorder = documentStyle.getPropertyValue('--surface-border')
     return {
       maintainAspectRatio: false,
       aspectRatio: 2,
+      responsive: true,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: {
-          display: false,
-          labels: {
-            display: false,
-            color: textColor,
-          },
-          datalabels: {
-            display: false
-          }
-        },
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: this.flowxTooltip(),
       },
-      layout: {
-        padding: 0,
-      },
+      layout: { padding: 0 },
       scales: {
         x: {
-          stacked: true,
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
+          ticks: { display: false },
+          border: { display: false },
+          grid: { display: false, drawBorder: false },
         },
         y: {
-          stacked: true,
-          title: {
-            display: true,
-            text: 'Requests',
-            color: textColor,
-          },
+          beginAtZero: true,
+          border: { display: false },
           ticks: {
-            display: true,
-            color: textColorSecondary,
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            maxTicksLimit: 3,
+            padding: 4,
           },
           grid: {
-            display: false,
-            drawBorder: true,
+            color: 'rgba(99, 116, 139, 0.10)',
+            drawBorder: false,
+            drawTicks: false,
           },
+          grace: '10%',
         },
       },
     }
   }
 
   getDataRequestsNo(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
     return {
       labels: this.data?.map((d) => d.date),
       datasets: [
@@ -112,21 +128,24 @@ export class ActivityCardComponent implements OnInit, OnDestroy, OnChanges {
           label: 'Requests',
           data: this.data?.map((d) => d.count_requests),
           fill: true,
-          borderColor: documentStyle.getPropertyValue('--primary-500')+ 'cc',
-          borderWidth: 3,
+          borderColor: this.bluePrimary().hex,
+          borderWidth: 2,
           tension: 0.4,
-          radius:0,
-          backgroundColor: documentStyle.getPropertyValue('--primary-200')+ 'cc',
-        },
-        {
-          label: 'Users',
-          data: this.data?.map((d) => d.count_users),
-          fill: true,
-          borderColor: documentStyle.getPropertyValue('--gray-500')+ 'cc',
-          borderWidth: 3,
-          tension: 0.4,
-          radius:0,
-          backgroundColor: documentStyle.getPropertyValue('--gray-200')+ 'cc',
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: this.bluePrimary().hex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: (context: any) => {
+            const chart = context.chart
+            const { ctx, chartArea } = chart
+            const rgb = this.bluePrimary().rgb
+            if (!chartArea) { return `rgba(${rgb}, 0.25)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${rgb}, 0.45)`)
+            gradient.addColorStop(1, `rgba(${rgb}, 0)`)
+            return gradient
+          },
         },
       ],
     }
@@ -136,73 +155,69 @@ export class ActivityCardComponent implements OnInit, OnDestroy, OnChanges {
 
 
   getOptionsRequestsTime(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color')
-    const textColorSecondary = documentStyle.getPropertyValue(
-      '--text-color-secondary',
-    )
-    const _____surfaceBorder = documentStyle.getPropertyValue('--surface-border')
     return {
       maintainAspectRatio: false,
       aspectRatio: 2,
+      responsive: true,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: {
-          display: false,
-          labels: {
-            display: false,
-            color: textColor,
-          },
-          datalabels: {
-            display: false
-          }
-        },
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: this.flowxTooltip(),
       },
-      layout: {
-        padding: 0,
-      },
+      layout: { padding: 0 },
       scales: {
         x: {
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
+          ticks: { display: false },
+          border: { display: false },
+          grid: { display: false, drawBorder: false },
         },
         y: {
-          title: {
-            display: true,
-            text: 'Response Time (ms)',
-            color: textColor,
-          },
+          beginAtZero: true,
+          border: { display: false },
           ticks: {
-            display: true,
-            color: textColorSecondary,
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            maxTicksLimit: 3,
+            padding: 4,
           },
           grid: {
-            display: false,
-            drawBorder: true,
+            color: 'rgba(99, 116, 139, 0.10)',
+            drawBorder: false,
+            drawTicks: false,
           },
+          grace: '10%',
         },
       },
     }
   }
 
   getDataRequestsTime(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
     return {
       labels: this.data?.map((d) => d.date),
       datasets: [
         {
-          label: 'Time(ms)',
+          label: 'Response time (ms)',
           data: this.data?.map((d) => d.avg_response),
           fill: true,
-          borderColor: documentStyle.getPropertyValue('--gray-500') + 'cc',
-          borderWidth: 3,
+          borderColor: this.blueSecondary().hex,
+          borderWidth: 2,
           tension: 0.4,
-          radius:0,
-          backgroundColor: documentStyle.getPropertyValue('--gray-200')+ 'cc',
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: this.blueSecondary().hex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: (context: any) => {
+            const chart = context.chart
+            const { ctx, chartArea } = chart
+            const rgb = this.blueSecondary().rgb
+            if (!chartArea) { return `rgba(${rgb}, 0.25)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${rgb}, 0.45)`)
+            gradient.addColorStop(1, `rgba(${rgb}, 0)`)
+            return gradient
+          },
         },
       ],
     }

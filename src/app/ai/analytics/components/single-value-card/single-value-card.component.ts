@@ -42,69 +42,78 @@ export class SingleValueCardComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {}
 
   getOptions(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color')
-
     return {
       maintainAspectRatio: false,
       aspectRatio: 3,
+      responsive: true,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: {
-          display: false,
-          labels: {
-            display: false,
-            color: textColor,
-          },
-          datalabels: {
-            display: false
-          }
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: {
+          enabled: true,
+          backgroundColor: '#1d232c',
+          titleColor: '#f7f8f9',
+          bodyColor: '#e3e8ed',
+          borderWidth: 0,
+          cornerRadius: 6,
+          padding: { x: 10, y: 6 },
+          displayColors: false,
+          titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+          bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
         },
       },
-      layout: {
-        padding: -10,
-      },
+      layout: { padding: 0 },
       scales: {
         x: {
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
+          display: false,
+          ticks: { display: false },
+          grid: { display: false, drawBorder: false },
         },
         y: {
-          border: {
-            display: false,
-          },
-          ticks: {
-            display: false,
-          },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
+          display: false,
+          border: { display: false },
+          ticks: { display: false },
+          grid: { display: false, drawBorder: false },
+          min: 0,
+          grace: '10%',
         },
       },
     }
   }
 
   getData(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    this.value= this.useAvg ?  calculateAverage(this.data, this.dataProperty):  calculateTotal(this.data, this.dataProperty)
+    this.value = this.useAvg ? calculateAverage(this.data, this.dataProperty) : calculateTotal(this.data, this.dataProperty)
     this.trendValue = calculateTrend(this.data, this.dataProperty)
+    // FlowX uses blue-500 (#006bd8) on light surfaces and blue-400
+    // (#3389e0) on dark — match so the stroke pops in both modes.
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const strokeHex = isDark ? '#3389e0' : '#006bd8'
+    const strokeRgb = isDark ? '51, 137, 224' : '0, 107, 216'
     return {
       labels: this.data?.map((d) => d.date),
       datasets: [
         {
-          label: 'Requests',
+          label: this.title,
           data: this.data?.map((d) => d[this.dataProperty]),
           fill: true,
-          borderColor: documentStyle.getPropertyValue('--primary-500')+'cc',
-          borderWidth: 3,
+          borderColor: strokeHex,
+          borderWidth: 2,
           tension: 0.4,
-          radius:0,
-          backgroundColor: documentStyle.getPropertyValue('--primary-200')+'cc',
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: strokeHex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: (context: any) => {
+            const chart = context.chart
+            const { ctx, chartArea } = chart
+            if (!chartArea) { return `rgba(${strokeRgb}, 0.25)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${strokeRgb}, 0.45)`)
+            gradient.addColorStop(1, `rgba(${strokeRgb}, 0)`)
+            return gradient
+          },
         },
       ],
     }

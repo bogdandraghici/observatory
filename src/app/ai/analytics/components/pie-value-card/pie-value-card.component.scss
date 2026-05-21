@@ -6,3 +6,57 @@
   color: #5ac06c;;
 }
 
+// Fill the grid row height so this card matches its row sibling
+// (Usage Time card) instead of hugging its own content.
+:host {
+  display: block;
+  height: 100%;
+
+  ::ng-deep .stat-card {
+    height: 100%;
+  }
+}
+
+// ── Pie / bar legend ───────────────────────────────────────
+// Composed from foundation tokens (no FlowX library legend component).
+// Each entry pairs a small color swatch with the version/agent label
+// and its request count — the swatch borrow the pie segment colors so
+// the legend visually maps onto the chart.
+.pie-legend {
+  list-style: none;
+  margin: var(--flowx-space-16, 16px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flowx-space-8, 8px) var(--flowx-space-16, 16px);
+}
+
+.pie-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flowx-space-6, 6px);
+  font-family: var(--flowx-font-primary, "Open Sans", system-ui, sans-serif);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--flowx-text-primary, #1d232c);
+}
+
+.pie-legend__swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.pie-legend__label {
+  font-weight: 600;
+  color: var(--flowx-text-primary, #1d232c);
+}
+
+.pie-legend__count {
+  font-family: var(--flowx-font-monospace, "JetBrains Mono", monospace);
+  font-size: 11px;
+  color: var(--flowx-text-secondary, #64748b);
+}
