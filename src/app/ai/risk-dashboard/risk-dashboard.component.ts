@@ -113,7 +113,7 @@ export class RiskDashboardComponent implements OnInit {
   }
 
   getCellColor(score: number | null): string {
-    if (score == null) {return 'var(--surface-ground)'}
+    if (score == null) {return 'var(--flowx-text-disabled, #a6b0be)'}
     if (score >= 0.8) {return 'var(--flowx-success, #008060)'}
     if (score >= 0.6) {return 'var(--flowx-warning, #feb913)'}
     if (score >= 0.3) {return 'var(--flowx-orange-500, #fd6b1c)'}
