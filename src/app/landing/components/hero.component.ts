@@ -146,7 +146,7 @@ import { ButtonModule } from 'primeng/button'
       .particle {
         position: absolute;
         border-radius: 50%;
-        background: #fdb913;
+        background: #feb913;
         animation: twinkle 4s ease-in-out infinite;
 
         // Large bright stars
@@ -207,7 +207,7 @@ import { ButtonModule } from 'primeng/button'
       font-size: 0.875rem;
       font-weight: 600;
       letter-spacing: 0.15em;
-      color: #fdb913;
+      color: #feb913;
       margin-bottom: 1.5rem;
       padding: 0.5rem 1rem;
       background: rgba(253, 185, 19, 0.1);
@@ -245,7 +245,7 @@ import { ButtonModule } from 'primeng/button'
     }
 
     .hero__star {
-      color: #fdb913;
+      color: #feb913;
       font-size: 0.8em;
       animation: float 3s ease-in-out infinite;
     }
@@ -307,7 +307,7 @@ import { ButtonModule } from 'primeng/button'
       gap: 0.5rem;
 
       i {
-        color: #fdb913;
+        color: #feb913;
         font-size: 1rem;
       }
     }
@@ -335,7 +335,7 @@ import { ButtonModule } from 'primeng/button'
     .hero__scroll-line {
       width: 1px;
       height: 40px;
-      background: linear-gradient(to bottom, #fdb913, transparent);
+      background: linear-gradient(to bottom, #feb913, transparent);
       animation: scrollPulse 2s ease-in-out infinite;
     }
 
@@ -382,7 +382,7 @@ import { ButtonModule } from 'primeng/button'
       text-decoration: none;
 
       &--primary {
-        background: linear-gradient(135deg, #fdb913 0%, #cc950f 100%);
+        background: linear-gradient(135deg, #feb913 0%, #b4830d 100%);
         color: #1a1a1a;
         box-shadow: 0 4px 14px rgba(253, 185, 19, 0.3);
 
@@ -403,8 +403,8 @@ import { ButtonModule } from 'primeng/button'
         }
 
         &:hover {
-          border-color: #fdb913;
-          color: #fdb913;
+          border-color: #feb913;
+          color: #feb913;
         }
       }
 

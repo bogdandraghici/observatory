@@ -163,7 +163,7 @@ interface ShowcaseItem {
         font-size: 0.875rem;
         font-weight: 600;
         letter-spacing: 0.15em;
-        color: #fdb913;
+        color: #feb913;
         margin-bottom: 1rem;
       }
 
@@ -317,7 +317,7 @@ interface ShowcaseItem {
         border-radius: 999px;
 
         .showcase-scroll-item.is-active & {
-          color: #fdb913;
+          color: #feb913;
         }
 
         .showcase-section--light & {
@@ -337,7 +337,7 @@ interface ShowcaseItem {
         }
 
         @media (max-width: 1023px) {
-          color: #fdb913;
+          color: #feb913;
           .showcase-section--light & {
             color: #b48200;
           }

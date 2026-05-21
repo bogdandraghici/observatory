@@ -183,8 +183,8 @@ interface FooterColumn {
         }
 
         &:hover {
-          border-color: #fdb913;
-          color: #fdb913;
+          border-color: #feb913;
+          color: #feb913;
         }
 
         i {
@@ -229,7 +229,7 @@ interface FooterColumn {
         }
 
         &:hover {
-          color: #fdb913;
+          color: #feb913;
         }
       }
     }
@@ -285,7 +285,7 @@ interface FooterColumn {
         }
 
         &:hover {
-          color: #fdb913;
+          color: #feb913;
         }
       }
     }

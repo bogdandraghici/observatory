@@ -51,7 +51,7 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Total Evidence</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ totalEvidence }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalEvidence }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -60,7 +60,7 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Approved</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ approvedCount }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ approvedCount }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -69,16 +69,16 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Pending Review</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ pendingCount }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ pendingCount }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
         <i class="pi pi-calendar-times"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Expired</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ expiredCount }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ expiredCount }}</span>
       </div>
     </div>
   </div>

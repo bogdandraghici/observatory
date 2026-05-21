@@ -4,7 +4,7 @@
 $gold: #fdb913;
 $gold-light: rgba(253, 185, 19, 0.1);
 $gold-dark: #cc950f;
-$blue: #3b82f6;
+$blue: #006bd8;
 $blue-light: rgba(59, 130, 246, 0.1);
 
 // Dark mode card design tokens
@@ -228,7 +228,7 @@ $card-padding: 1.5rem;
 
       &.p-button-danger:hover {
         background: rgba(248, 113, 113, 0.1);
-        color: #f87171;
+        color: var(--flowx-red-400, #ee6b54);
       }
     }
   }

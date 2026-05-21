@@ -52,21 +52,21 @@
   &--good {
     .correctness-card__icon {
       background: rgba(34, 197, 94, 0.1);
-      color: #22c55e;
+      color: var(--flowx-success, #008060);
     }
   }
 
   &--neutral {
     .correctness-card__icon {
       background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+      color: var(--flowx-warning, #feb913);
     }
   }
 
   &--bad {
     .correctness-card__icon {
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      color: var(--flowx-error, #e62200);
     }
   }
 }

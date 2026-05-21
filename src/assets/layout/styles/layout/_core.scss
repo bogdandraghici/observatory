@@ -152,8 +152,8 @@ button {
             }
 
             &.p-highlight {
-                background: rgba(253, 185, 19, 0.16);
-                color: #fdb913;
+                background: rgba(0, 107, 216, 0.16);
+                color: #006bd8;
             }
         }
     }
@@ -327,8 +327,8 @@ button {
             }
 
             &.p-tree-node-selected {
-                background: rgba(253, 185, 19, 0.16);
-                color: #fdb913;
+                background: rgba(0, 107, 216, 0.16);
+                color: #006bd8;
             }
         }
     }
@@ -351,8 +351,8 @@ button {
             }
 
             &.p-tab-active {
-                color: #fdb913;
-                border-color: #fdb913;
+                color: #006bd8;
+                border-color: #006bd8;
             }
         }
 
@@ -390,8 +390,8 @@ button {
             }
 
             &.p-highlight {
-                background: rgba(253, 185, 19, 0.16);
-                color: #fdb913;
+                background: rgba(0, 107, 216, 0.16);
+                color: #006bd8;
             }
         }
     }
@@ -466,7 +466,7 @@ button {
             }
 
             &:focus {
-                box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.2);
+                box-shadow: 0 0 0 2px rgba(0, 107, 216, 0.2);
             }
 
             &.p-disabled {
@@ -475,13 +475,13 @@ button {
         }
 
         .p-paginator-page.p-highlight {
-            background: #fdb913;
-            border-color: #fdb913;
+            background: #006bd8;
+            border-color: #006bd8;
             color: #090909;
 
             &:hover {
-                background: #e5a711;
-                border-color: #e5a711;
+                background: #005fc0;
+                border-color: #005fc0;
             }
         }
 
@@ -518,7 +518,7 @@ button {
             }
 
             &:focus {
-                box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.2);
+                box-shadow: 0 0 0 2px rgba(0, 107, 216, 0.2);
             }
 
             &.p-disabled {
@@ -527,13 +527,13 @@ button {
         }
 
         .p-paginator-page.p-highlight {
-            background: #fdb913;
-            border-color: #fdb913;
+            background: #006bd8;
+            border-color: #006bd8;
             color: #090909;
 
             &:hover {
-                background: #e5a711;
-                border-color: #e5a711;
+                background: #005fc0;
+                border-color: #005fc0;
             }
         }
 
@@ -615,10 +615,10 @@ button {
 
             &.p-highlight {
                 background: var(--surface-card);
-                color: #fdb913;
+                color: #006bd8;
 
                 .p-sortable-column-icon {
-                    color: #fdb913;
+                    color: #006bd8;
                 }
             }
         }
@@ -638,11 +638,11 @@ button {
             }
 
             &.p-highlight {
-                background: rgba(253, 185, 19, 0.08);
+                background: rgba(0, 107, 216, 0.08);
                 color: var(--text-color);
 
                 &:hover {
-                    background: rgba(253, 185, 19, 0.12);
+                    background: rgba(0, 107, 216, 0.12);
                 }
             }
 
@@ -721,10 +721,10 @@ button {
 
             &.p-highlight {
                 background: #ffffff;
-                color: #cc950f;
+                color: #004c99;
 
                 .p-sortable-column-icon {
-                    color: #cc950f;
+                    color: #004c99;
                 }
             }
         }
@@ -744,11 +744,11 @@ button {
             }
 
             &.p-highlight {
-                background: rgba(253, 185, 19, 0.08);
+                background: rgba(0, 107, 216, 0.08);
                 color: #1e293b;
 
                 &:hover {
-                    background: rgba(253, 185, 19, 0.12);
+                    background: rgba(0, 107, 216, 0.12);
                 }
             }
 
@@ -844,14 +844,14 @@ button {
         }
 
         .p-togglebutton:focus {
-            box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.2) !important;
+            box-shadow: 0 0 0 2px rgba(0, 107, 216, 0.2) !important;
             z-index: 1;
         }
 
         // Selected state
         .p-togglebutton.p-togglebutton-checked {
-            background: #fdb913 !important;
-            border-color: #fdb913 !important;
+            background: #006bd8 !important;
+            border-color: #006bd8 !important;
             color: #090909 !important;
 
             .p-togglebutton-content {
@@ -863,8 +863,8 @@ button {
             }
 
             &:hover {
-                background: #e5a711 !important;
-                border-color: #e5a711 !important;
+                background: #005fc0 !important;
+                border-color: #005fc0 !important;
             }
         }
 
@@ -897,13 +897,13 @@ button {
         }
 
         .p-togglebutton:focus {
-            box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.2) !important;
+            box-shadow: 0 0 0 2px rgba(0, 107, 216, 0.2) !important;
             z-index: 1;
         }
 
         .p-togglebutton.p-togglebutton-checked {
-            background: #fdb913 !important;
-            border-color: #fdb913 !important;
+            background: #006bd8 !important;
+            border-color: #006bd8 !important;
             color: #090909 !important;
 
             .p-togglebutton-content {
@@ -915,8 +915,8 @@ button {
             }
 
             &:hover {
-                background: #e5a711 !important;
-                border-color: #e5a711 !important;
+                background: #005fc0 !important;
+                border-color: #005fc0 !important;
             }
         }
 

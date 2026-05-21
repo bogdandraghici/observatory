@@ -20,11 +20,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #fdb913;
-      color: #1a1a2e;
+      background: #006bd8;
+      color: #ffffff;
       border: none;
       cursor: pointer;
-      box-shadow: 0 3px 12px rgba(253, 185, 19, 0.35);
+      box-shadow: 0 3px 12px rgba(0, 107, 216, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -34,7 +34,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
     }
     .assistant-fab:hover {
       transform: scale(1.08);
-      box-shadow: 0 4px 16px rgba(253, 185, 19, 0.5);
+      box-shadow: 0 4px 16px rgba(0, 107, 216, 0.5);
     }
   `],
 })

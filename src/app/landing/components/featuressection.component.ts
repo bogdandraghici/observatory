@@ -103,7 +103,7 @@ interface CategoryCard {
       font-size: 0.875rem;
       font-weight: 600;
       letter-spacing: 0.15em;
-      color: #fdb913;
+      color: #feb913;
       margin-bottom: 1rem;
     }
 
@@ -133,7 +133,7 @@ interface CategoryCard {
     }
 
     .text-gold {
-      color: #fdb913;
+      color: #feb913;
     }
 
     // Categories Grid
@@ -190,7 +190,7 @@ interface CategoryCard {
 
         i {
           font-size: 1.75rem;
-          color: #fdb913;
+          color: #feb913;
         }
       }
 
@@ -236,7 +236,7 @@ interface CategoryCard {
 
           i {
             font-size: 0.75rem;
-            color: #fdb913;
+            color: #feb913;
             flex-shrink: 0;
           }
         }
@@ -248,7 +248,7 @@ interface CategoryCard {
         gap: 0.5rem;
         font-size: 0.9375rem;
         font-weight: 600;
-        color: #fdb913;
+        color: #feb913;
         text-decoration: none;
         transition: gap 200ms ease;
 

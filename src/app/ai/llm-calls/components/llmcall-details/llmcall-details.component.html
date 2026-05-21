@@ -128,12 +128,12 @@
                 <div class="flex items-center gap-2" style="border-left: 1px solid var(--surface-border); padding-left: 8px;">
                   <i class="pi pi-file" style="color: var(--text-color-secondary)"></i>
                   @if (getTraceOcrSummary().ocr_mean_score != null) {
-                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().ocr_mean_score >= 0.8 ? '#4ade80' : '#fb923c'">
+                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
                       OCR {{ (getTraceOcrSummary().ocr_mean_score * 100).toFixed(0) }}%
                     </span>
                   }
                   @if (getTraceOcrSummary().doc_confidence != null) {
-                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().doc_confidence >= 0.75 ? '#4ade80' : '#fb923c'">
+                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
                       Conf {{ (getTraceOcrSummary().doc_confidence * 100).toFixed(0) }}%
                     </span>
                   }
@@ -406,7 +406,7 @@
                               @if (getOcrData(selectedRun.data).ocr_mean_score != null) {
                                 <div class="metric-card">
                                   <div class="metric-label">OCR Quality</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_mean_score >= 0.8 ? '#4ade80' : getOcrData(selectedRun.data).ocr_mean_score >= 0.6 ? '#fb923c' : '#f87171'">
+                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).ocr_mean_score >= 0.6 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
                                     {{ (getOcrData(selectedRun.data).ocr_mean_score * 100).toFixed(1) }}%
                                   </div>
                                 </div>
@@ -414,7 +414,7 @@
                               @if (getOcrData(selectedRun.data).doc_confidence != null) {
                                 <div class="metric-card">
                                   <div class="metric-label">Doc Confidence</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).doc_confidence >= 0.75 ? '#4ade80' : getOcrData(selectedRun.data).doc_confidence >= 0.5 ? '#fb923c' : '#f87171'">
+                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).doc_confidence >= 0.5 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
                                     {{ (getOcrData(selectedRun.data).doc_confidence * 100).toFixed(1) }}%
                                   </div>
                                 </div>
@@ -428,7 +428,7 @@
                               @if (getOcrData(selectedRun.data).ocr_low_score != null) {
                                 <div class="metric-card">
                                   <div class="metric-label">OCR Low Score</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_low_score >= 0.6 ? '#4ade80' : '#f87171'">
+                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_low_score >= 0.6 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-red-400, #ee6b54)'">
                                     {{ (getOcrData(selectedRun.data).ocr_low_score * 100).toFixed(1) }}%
                                   </div>
                                 </div>

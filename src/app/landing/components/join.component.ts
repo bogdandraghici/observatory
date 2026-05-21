@@ -52,7 +52,7 @@ import { Router } from '@angular/router'
     .cta-section {
       position: relative;
       padding: 6rem 1.5rem;
-      background: linear-gradient(135deg, #fdb913 0%, #e5a810 50%, #cc950f 100%);
+      background: linear-gradient(135deg, #feb913 0%, #e5a810 50%, #b4830d 100%);
       overflow: hidden;
 
       @media (min-width: 768px) {

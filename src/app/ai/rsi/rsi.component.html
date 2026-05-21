@@ -270,10 +270,10 @@
 
       <!-- Error message -->
       @if (selectedCycle.status === 'FAILED' && (selectedCycle.error_message || selectedCycle.error)) {
-        <div style="border:1px solid #ef4444; border-radius:8px; padding:0.75rem 1rem; background:rgba(239, 68, 68, 0.08);">
+        <div style="border:1px solid var(--flowx-error, #e62200); border-radius:8px; padding:0.75rem 1rem; background:rgba(239, 68, 68, 0.08);">
           <div class="flex items-center gap-2 mb-2">
-            <i class="pi pi-exclamation-circle" style="color:#ef4444;"></i>
-            <span class="font-semibold text-sm" style="color:#ef4444;">Error</span>
+            <i class="pi pi-exclamation-circle" style="color:var(--flowx-error, #e62200);"></i>
+            <span class="font-semibold text-sm" style="color:var(--flowx-error, #e62200);">Error</span>
           </div>
           <pre class="text-xs m-0" style="color:var(--text-color); white-space:pre-wrap; word-break:break-word; font-family:monospace; max-height:200px; overflow-y:auto;">{{ selectedCycle.error_message || selectedCycle.error }}</pre>
         </div>
@@ -286,7 +286,7 @@
           <div class="text-xs" style="color:var(--text-color-secondary);">
             <p>Traces: {{ selectedCycle.observation_summary.trace_count }} | Drift: {{ selectedCycle.observation_summary.drift_detected ? 'Yes' : 'No' }}</p>
             @for (target of selectedCycle.observation_summary.improvement_targets; track target) {
-              <p style="color:#f59e0b;">{{ target }}</p>
+              <p style="color:var(--flowx-warning, #feb913);">{{ target }}</p>
             }
           </div>
         </div>
@@ -365,9 +365,9 @@
                         <div class="mt-1 flex flex-col gap-1">
                           @for (d of mut.diff; track $index) {
                             <div class="diff-entry">
-                              <span style="color:#3b82f6;">{{ d.node_id }}</span>.<span style="color:#f59e0b;">{{ d.field }}</span>
+                              <span style="color:var(--flowx-interactive, #006bd8);">{{ d.node_id }}</span>.<span style="color:var(--flowx-warning, #feb913);">{{ d.field }}</span>
                               <span class="mx-1">&rarr;</span>
-                              <span style="color:#22c55e;">{{ d.new_value | json }}</span>
+                              <span style="color:var(--flowx-success, #008060);">{{ d.new_value | json }}</span>
                             </div>
                           }
                         </div>

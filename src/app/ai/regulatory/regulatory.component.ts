@@ -291,9 +291,9 @@ export class RegulatoryComponent implements OnInit {
     }
 
     return [
-      { label: 'No Evidence', color: '#ef4444', bgColor: 'rgba(239,68,68,0.08)', icon: 'pi pi-times-circle', items: red },
-      { label: 'Partial Evidence', color: '#f59e0b', bgColor: 'rgba(245,158,11,0.08)', icon: 'pi pi-exclamation-triangle', items: yellow },
-      { label: 'Fully Covered', color: '#22c55e', bgColor: 'rgba(34,197,94,0.08)', icon: 'pi pi-check-circle', items: green },
+      { label: 'No Evidence', color: 'var(--flowx-error, #e62200)', bgColor: 'rgba(239,68,68,0.08)', icon: 'pi pi-times-circle', items: red },
+      { label: 'Partial Evidence', color: 'var(--flowx-warning, #feb913)', bgColor: 'rgba(245,158,11,0.08)', icon: 'pi pi-exclamation-triangle', items: yellow },
+      { label: 'Fully Covered', color: 'var(--flowx-success, #008060)', bgColor: 'rgba(34,197,94,0.08)', icon: 'pi pi-check-circle', items: green },
     ]
   }
 
@@ -444,11 +444,11 @@ export class RegulatoryComponent implements OnInit {
 
     const statusColor = (s: string): string => {
       switch (s) {
-        case 'compliant': return '#22c55e'
-        case 'in_progress': return '#f59e0b'
-        case 'non_compliant': return '#ef4444'
-        case 'not_applicable': return '#94a3b8'
-        default: return '#3b82f6'
+        case 'compliant': return 'var(--flowx-success, #008060)'
+        case 'in_progress': return 'var(--flowx-warning, #feb913)'
+        case 'non_compliant': return 'var(--flowx-error, #e62200)'
+        case 'not_applicable': return 'var(--flowx-text-disabled, #a6b0be)'
+        default: return 'var(--flowx-interactive, #006bd8)'
       }
     }
 
@@ -487,14 +487,14 @@ export class RegulatoryComponent implements OnInit {
       <h2 style="margin:0 0 4px;color:#475569">${fw.name} (${fw.version || 'N/A'})</h2>
       <p style="color:#64748b;margin:0 0 24px">Project: ${proj.name} &bull; Generated: ${new Date(this.report.generated_at).toLocaleString()}</p>
       <div style="display:flex;gap:16px;margin-bottom:24px">
-        <div style="flex:1;background:#f0fdf4;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:#22c55e">${summary.compliant}</div><div style="font-size:12px;color:#64748b">Compliant</div></div>
-        <div style="flex:1;background:#fefce8;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:#f59e0b">${summary.in_progress}</div><div style="font-size:12px;color:#64748b">In Progress</div></div>
-        <div style="flex:1;background:#eff6ff;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:#3b82f6">${summary.not_started}</div><div style="font-size:12px;color:#64748b">Not Started</div></div>
-        <div style="flex:1;background:#fef2f2;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:#ef4444">${summary.non_compliant}</div><div style="font-size:12px;color:#64748b">Non-Compliant</div></div>
+        <div style="flex:1;background:#f0fdf4;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--flowx-success, #008060)">${summary.compliant}</div><div style="font-size:12px;color:#64748b">Compliant</div></div>
+        <div style="flex:1;background:#fefce8;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--flowx-warning, #feb913)">${summary.in_progress}</div><div style="font-size:12px;color:#64748b">In Progress</div></div>
+        <div style="flex:1;background:#eff6ff;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--flowx-interactive, #006bd8)">${summary.not_started}</div><div style="font-size:12px;color:#64748b">Not Started</div></div>
+        <div style="flex:1;background:#fef2f2;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--flowx-error, #e62200)">${summary.non_compliant}</div><div style="font-size:12px;color:#64748b">Non-Compliant</div></div>
         <div style="flex:1;background:#f8fafc;padding:16px;border-radius:8px;text-align:center"><div style="font-size:24px;font-weight:700;color:${this.getComplianceColor(summary.compliance_percent)}">${summary.compliance_percent}%</div><div style="font-size:12px;color:#64748b">Overall</div></div>
       </div>
       ${categoriesHtml}
-      <div style="margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8">Observatory AI - Compliance Report &bull; ${fw.jurisdiction || ''}</div>
+      <div style="margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:11px;color:var(--flowx-text-disabled, #a6b0be)">Observatory AI - Compliance Report &bull; ${fw.jurisdiction || ''}</div>
       </body></html>`
 
     const printWindow = window.open('', '_blank')
@@ -527,9 +527,9 @@ export class RegulatoryComponent implements OnInit {
   }
 
   getComplianceColor(percent: number): string {
-    if (percent >= 80) {return '#22c55e'}
-    if (percent >= 50) {return '#f59e0b'}
-    return '#ef4444'
+    if (percent >= 80) {return 'var(--flowx-success, #008060)'}
+    if (percent >= 50) {return 'var(--flowx-warning, #feb913)'}
+    return 'var(--flowx-error, #e62200)'
   }
 
   getOverviewFrameworks(): any[] {

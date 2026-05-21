@@ -43,7 +43,7 @@ import { Component } from '@angular/core'
         top: 20%;
         left: 50%;
         transform: translateX(-50%);
-        background: radial-gradient(circle, rgba(253, 185, 19, 0.08) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(0, 107, 216, 0.08) 0%, transparent 70%);
       }
 
       .notfound-glow--2 {
@@ -77,7 +77,7 @@ import { Component } from '@angular/core'
         font-weight: 700;
         line-height: 1;
         letter-spacing: -0.04em;
-        background: linear-gradient(135deg, #fdb913 0%, rgba(253, 185, 19, 0.4) 100%);
+        background: linear-gradient(135deg, #006bd8 0%, rgba(0, 107, 216, 0.4) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -119,14 +119,14 @@ import { Component } from '@angular/core'
       }
 
       .notfound-btn--primary {
-        background: linear-gradient(135deg, #fdb913 0%, #cc950f 100%);
+        background: linear-gradient(135deg, #006bd8 0%, #004c99 100%);
         color: #1a1a1a;
-        box-shadow: 0 4px 14px rgba(253, 185, 19, 0.3);
+        box-shadow: 0 4px 14px rgba(0, 107, 216, 0.3);
       }
 
       .notfound-btn--primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(253, 185, 19, 0.4);
+        box-shadow: 0 6px 20px rgba(0, 107, 216, 0.4);
       }
 
       .notfound-btn--secondary {
@@ -136,8 +136,8 @@ import { Component } from '@angular/core'
       }
 
       .notfound-btn--secondary:hover {
-        border-color: rgba(253, 185, 19, 0.5);
-        color: #fdb913;
+        border-color: rgba(0, 107, 216, 0.5);
+        color: #006bd8;
       }
 
       .notfound-links {
@@ -163,7 +163,7 @@ import { Component } from '@angular/core'
       }
 
       .notfound-link:hover {
-        color: rgba(253, 185, 19, 0.8);
+        color: rgba(0, 107, 216, 0.8);
       }
 
       .notfound-link__external {

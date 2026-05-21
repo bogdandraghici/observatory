@@ -1,6 +1,6 @@
 // LLM Calls List Table Styles
-$gold: #fdb913;
-$gold-light: rgba(253, 185, 19, 0.1);
+$gold: #006bd8;
+$gold-light: rgba(0, 107, 216, 0.1);
 
 // Container
 .llm-calls-table {
@@ -102,17 +102,17 @@ $gold-light: rgba(253, 185, 19, 0.1);
 
   &--success {
     background: rgba(74, 222, 128, 0.15);
-    i { color: #4ade80; }
+    i { color: var(--flowx-green-300, #54aa94); }
   }
 
   &--error {
     background: rgba(248, 113, 113, 0.15);
-    i { color: #f87171; }
+    i { color: var(--flowx-red-400, #ee6b54); }
   }
 
   &--pending {
     background: rgba(251, 146, 60, 0.15);
-    i { color: #fb923c; }
+    i { color: var(--flowx-orange-500, #fd6b1c); }
   }
 }
 

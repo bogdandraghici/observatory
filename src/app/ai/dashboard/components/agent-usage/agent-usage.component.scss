@@ -1,64 +1,25 @@
-// Agent Usage Component Styles
-// Theme-aware styling for dashboard widget
+// Agent Usage Widget — FlowX Design System
+// Table styling inherits from the global FlowX theme (.ai-page .p-datatable).
 
-::ng-deep {
-  .agent-usage {
-    .p-datatable {
-      .p-datatable-thead > tr > th {
-        background: rgba(255, 255, 255, 0.03) !important;
-        color: rgba(255, 255, 255, 0.6) !important;
-        font-weight: 600 !important;
-        font-size: 0.75rem !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-        padding: 0.75rem !important;
-        border: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-      }
-
-      .p-datatable-tbody > tr {
-        background: transparent !important;
-        transition: background-color 150ms ease;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.02) !important;
-        }
-
-        > td {
-          color: var(--text-color) !important;
-          background: transparent !important;
-          border: none !important;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-          padding: 0.5rem 0.75rem !important;
-        }
-
-        &:last-child > td {
-          border-bottom: none !important;
-        }
-      }
-    }
-  }
+:host {
+  display: block;
+  height: 100%;
 }
 
-// Light mode
-.flowx-light {
-  ::ng-deep .agent-usage {
-    .p-datatable {
-      .p-datatable-thead > tr > th {
-        background: #fafafa !important;
-        color: rgba(30, 41, 59, 0.6) !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-      }
+.agent-usage {
+  height: 100%;
 
-      .p-datatable-tbody > tr {
-        &:hover {
-          background: #f8fafc !important;
-        }
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
+    }
 
-        > td {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-        }
-      }
+    .p-datatable-tbody > tr > td {
+      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
+    }
+
+    .p-datatable-tbody > tr:last-child > td {
+      border-bottom: none !important;
     }
   }
 }

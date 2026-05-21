@@ -362,9 +362,9 @@ export class RoiComponent implements OnInit {
     const items = this.financialResult.waterfall
     const labels = items.map((i: any) => i.label)
     const colors = items.map((i: any) => {
-      if (i.type === 'cost') {return '#ef4444'}
-      if (i.type === 'benefit') {return '#22c55e'}
-      return '#3b82f6'
+      if (i.type === 'cost') {return 'var(--flowx-error, #e62200)'}
+      if (i.type === 'benefit') {return 'var(--flowx-success, #008060)'}
+      return 'var(--flowx-interactive, #006bd8)'
     })
 
     let running = 0
@@ -517,7 +517,7 @@ export class RoiComponent implements OnInit {
         {
           label: 'Cumulative Savings ($)',
           data: savings,
-          borderColor: '#22c55e',
+          borderColor: 'var(--flowx-success, #008060)',
           backgroundColor: 'rgba(34,197,94,0.1)',
           fill: true,
           yAxisID: 'y',
@@ -526,7 +526,7 @@ export class RoiComponent implements OnInit {
         {
           label: 'Agent Executions',
           data: counts,
-          borderColor: '#3b82f6',
+          borderColor: 'var(--flowx-interactive, #006bd8)',
           backgroundColor: 'rgba(59,130,246,0.1)',
           type: 'bar',
           yAxisID: 'y1',
@@ -787,9 +787,9 @@ export class RoiComponent implements OnInit {
   }
 
   getAuditReadinessColor(val: string): string {
-    if (val === 'excellent') {return '#22c55e'}
-    if (val === 'poor') {return '#ef4444'}
-    return '#f59e0b'
+    if (val === 'excellent') {return 'var(--flowx-success, #008060)'}
+    if (val === 'poor') {return 'var(--flowx-error, #e62200)'}
+    return 'var(--flowx-warning, #feb913)'
   }
 
   // ── Tab 3: Sensitivity Analysis ───────────────────────
@@ -974,7 +974,7 @@ export class RoiComponent implements OnInit {
         label: 'Total Savings ($)',
         data: savings,
         backgroundColor: savings.map((s: number) => s >= 0 ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)'),
-        borderColor: savings.map((s: number) => s >= 0 ? '#22c55e' : '#ef4444'),
+        borderColor: savings.map((s: number) => s >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'),
         borderWidth: 1,
       }],
     }
@@ -1067,21 +1067,21 @@ export class RoiComponent implements OnInit {
           label: 'Labor Saved',
           data: laborSaved,
           backgroundColor: 'rgba(34,197,94,0.6)',
-          borderColor: '#22c55e',
+          borderColor: 'var(--flowx-success, #008060)',
           borderWidth: 1,
         },
         {
           label: 'LLM Cost',
           data: llmCost,
           backgroundColor: 'rgba(239,68,68,0.6)',
-          borderColor: '#ef4444',
+          borderColor: 'var(--flowx-error, #e62200)',
           borderWidth: 1,
         },
         {
           label: 'Net Contribution',
           data: net,
           backgroundColor: 'rgba(59,130,246,0.6)',
-          borderColor: '#3b82f6',
+          borderColor: 'var(--flowx-interactive, #006bd8)',
           borderWidth: 1,
         },
       ],

@@ -44,16 +44,16 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Total Projects</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ totalProjects }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalProjects }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
         <i class="pi pi-exclamation-triangle"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">High Risk</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ highRiskCount }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ highRiskCount }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -78,7 +78,7 @@
 
   <!-- Risk Heatmap — Project Cards -->
   <div class="flex align-items-center gap-2 mb-3 items-center">
-    <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+    <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
       <i class="pi pi-th-large"></i>
     </div>
     <span class="stat-card__title">Risk Heatmap</span>

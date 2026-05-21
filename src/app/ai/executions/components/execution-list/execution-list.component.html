@@ -62,19 +62,19 @@
             @if (execution.status === 'success') {
               <i
                 class="pi pi-check-circle"
-                style="color: #4ade80"
+                style="color: var(--flowx-green-300, #54aa94)"
               ></i>
             }
             @if (execution.status === 'error' || waitedToMuch(execution)) {
               <i
                 class="pi pi-exclamation-circle"
-                style="color: #f87171"
+                style="color: var(--flowx-red-400, #ee6b54)"
               ></i>
             }
             @if (execution.status === 'started' && !waitedToMuch(execution)) {
               <i
                 class="pi pi-question-circle"
-                style="color: #fb923c"
+                style="color: var(--flowx-orange-500, #fd6b1c)"
               ></i>
             }
           </td>

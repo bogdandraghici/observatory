@@ -204,7 +204,7 @@ export interface FeatureShowcaseTab {
 
         i {
           font-size: 2.25rem;
-          color: #fdb913;
+          color: #feb913;
         }
       }
 
@@ -276,7 +276,7 @@ export interface FeatureShowcaseTab {
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: #fdb913;
+        color: #feb913;
         margin: 0 0 1.25rem;
       }
 
@@ -319,7 +319,7 @@ export interface FeatureShowcaseTab {
 
         i {
           font-size: 1.125rem;
-          color: #fdb913;
+          color: #feb913;
         }
       }
 
@@ -730,7 +730,7 @@ export interface FeatureShowcaseTab {
         padding: 1rem 2rem;
         font-size: 1.0625rem;
         font-weight: 600;
-        background: linear-gradient(135deg, #fdb913 0%, #cc950f 100%);
+        background: linear-gradient(135deg, #feb913 0%, #b4830d 100%);
         color: #1a1a1a;
         border: none;
         border-radius: 0.75rem;

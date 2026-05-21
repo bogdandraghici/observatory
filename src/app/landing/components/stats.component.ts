@@ -93,7 +93,7 @@ interface Stat {
       &__value {
         font-size: clamp(2rem, 6vw, 3rem);
         font-weight: 700;
-        color: #fdb913;
+        color: #feb913;
         line-height: 1;
         margin-bottom: 0.5rem;
 

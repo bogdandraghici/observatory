@@ -6,7 +6,7 @@
     --text-color-secondary: rgba(255, 255, 255, 0.6);
 
     // Primary colors
-    --primary-color: #fdb913;
+    --primary-color: #006bd8;
     --primary-color-default: var(--primary-400);
     --primary-color-inverse-default: var(--gray-900);
 
@@ -15,7 +15,7 @@
     --primary-100: #fef3c7;
     --primary-200: #fde68a;
     --primary-300: #fcd34d;
-    --primary-400: #fdb913;
+    --primary-400: #006bd8;
     --primary-500: #f59e0b;
     --primary-600: #d97706;
     --primary-700: #b45309;
@@ -124,7 +124,7 @@
     --card-bg: #33363d;
     --card-border: rgba(71, 82, 99, 0.4);
     --card-shadow: none;
-    --card-shadow-hover: 0 0 30px rgba(253, 185, 19, 0.1);
+    --card-shadow-hover: 0 0 30px rgba(0, 107, 216, 0.1);
 
     // Topbar
     --topbar-sticky-bg: rgba(43, 45, 51, 0.85);
@@ -146,6 +146,6 @@
     --doc-highlight-text-color: var(--surface-500);
 
     // Highlight
-    --highlight-bg: rgba(253, 185, 19, 0.15);
-    --highlight-text-color: #fdb913;
+    --highlight-bg: rgba(0, 107, 216, 0.15);
+    --highlight-text-color: #006bd8;
 }

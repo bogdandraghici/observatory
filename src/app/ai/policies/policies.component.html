@@ -46,7 +46,7 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Total Policies</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ totalPolicies }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalPolicies }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -55,16 +55,16 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Compliant Apps</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ compliantApps }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ compliantApps }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
         <i class="pi pi-times-circle"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Non-compliant</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ nonCompliantApps }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ nonCompliantApps }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -394,7 +394,7 @@
         <div class="flex flex-col gap-1">
           <span class="font-semibold">{{ tpl.name }}</span>
           <span class="text-sm" style="color:#64748b">{{ tpl.description }}</span>
-          <span class="text-xs" style="color:#94a3b8">{{ tpl.policyCount }} policies</span>
+          <span class="text-xs" style="color:var(--flowx-text-disabled, #a6b0be)">{{ tpl.policyCount }} policies</span>
         </div>
         <p-button label="Apply" icon="pi pi-check" size="small" (click)="applyTemplate(tpl.framework)"></p-button>
       </div>

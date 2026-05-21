@@ -97,7 +97,7 @@
 
   &--active {
     border-color: var(--p-primary-color);
-    background: rgba(59, 130, 246, 0.08);
+    background: rgba(0, 107, 216, 0.08);
   }
 
   &__count {
@@ -125,8 +125,8 @@
     transition: opacity 0.2s ease;
 
     &:hover {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      background: rgba(230, 34, 0, 0.1);
+      color: var(--flowx-error, #e62200);
     }
   }
 

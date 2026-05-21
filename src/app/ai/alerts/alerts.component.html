@@ -72,7 +72,7 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Active Rules</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ activeRules }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ activeRules }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -81,25 +81,25 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Alerts in Period</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ alertsToday }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ alertsToday }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
+      <div class="stat-card__icon" style="background: rgba(249, 115, 22, 0.1); color: var(--flowx-orange-500, #fd6b1c);">
         <i class="pi pi-exclamation-circle"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Unacknowledged</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#f97316">{{ unacknowledged }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-orange-500, #fd6b1c)">{{ unacknowledged }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
         <i class="pi pi-exclamation-triangle"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Critical</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ criticalCount }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ criticalCount }}</span>
       </div>
     </div>
   </div>

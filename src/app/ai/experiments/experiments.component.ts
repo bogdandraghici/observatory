@@ -275,8 +275,8 @@ export class ExperimentsComponent implements OnInit {
   }
 
   getScoreColor(score: number): string {
-    if (score >= 0.9) { return '#4ade80' }
-    if (score >= 0.75) { return '#facc15' }
-    return '#fb923c'
+    if (score >= 0.9) { return 'var(--flowx-green-300, #54aa94)' }
+    if (score >= 0.75) { return 'var(--flowx-yellow-400, #fec742)' }
+    return 'var(--flowx-orange-500, #fd6b1c)'
   }
 }

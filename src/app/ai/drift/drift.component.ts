@@ -205,7 +205,7 @@ export class DriftComponent implements OnInit {
     if (!canvas || this.driftResults.length === 0) {return}
 
     const metrics = [...new Set(this.driftResults.map((r: any) => r.metric))]
-    const colors = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899']
+    const colors = ['#6366f1', 'var(--flowx-success, #008060)', 'var(--flowx-warning, #feb913)', 'var(--flowx-error, #e62200)', '#8b5cf6', '#06b6d4', '#ec4899']
 
     const allLabels = [...new Set(this.driftResults.map((r: any) => new Date(r.detected_at).toLocaleDateString()))].sort()
 

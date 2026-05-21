@@ -13,7 +13,7 @@
     <!-- Loading -->
     @if (loading && !data) {
       <div class="status-loading">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #fdb913;"></i>
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #006bd8;"></i>
         <p class="status-loading__text">Checking services...</p>
       </div>
     }
@@ -62,7 +62,7 @@
       <div class="status-meta">
         Last checked: {{ data.checked_at | date:'medium' }}
         @if (loading) {
-          <i class="pi pi-spin pi-spinner" style="margin-left: 0.5rem; font-size: 0.75rem; color: #fdb913;"></i>
+          <i class="pi pi-spin pi-spinner" style="margin-left: 0.5rem; font-size: 0.75rem; color: #006bd8;"></i>
         }
       </div>
 

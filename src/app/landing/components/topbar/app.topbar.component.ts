@@ -55,7 +55,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
 
         .nav-link {
           color: rgba(255, 255, 255, 0.8);
-          &:hover { color: #fdb913; }
+          &:hover { color: #feb913; }
         }
       }
 
@@ -66,7 +66,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
 
         .nav-link {
           color: #1e293b;
-          &:hover { color: #fdb913; }
+          &:hover { color: #feb913; }
         }
       }
 
@@ -299,7 +299,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       border-radius: 0.625rem;
       background: rgba(253, 185, 19, 0.1);
 
-      i { font-size: 1.125rem; color: #fdb913; }
+      i { font-size: 1.125rem; color: #feb913; }
     }
 
     .mega-dropdown__header-title {
@@ -366,7 +366,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       background: rgba(253, 185, 19, 0.08);
       flex-shrink: 0;
 
-      i { font-size: 0.875rem; color: #fdb913; }
+      i { font-size: 0.875rem; color: #feb913; }
     }
 
     .mega-feature__name {
@@ -400,7 +400,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       gap: 0.5rem;
       font-size: 0.875rem;
       font-weight: 500;
-      color: #fdb913;
+      color: #feb913;
       text-decoration: none;
       transition: gap 200ms ease;
 
@@ -453,7 +453,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
 
     .mobile-submenu__icon {
       font-size: 0.75rem;
-      color: #fdb913;
+      color: #feb913;
     }
 
     .mobile-submenu__explore {
@@ -462,7 +462,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       gap: 0.375rem;
       font-size: 0.8125rem;
       font-weight: 500;
-      color: #fdb913;
+      color: #feb913;
       text-decoration: none;
       padding-top: 0.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -488,13 +488,13 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       &--dark {
         border: 1px solid rgba(255, 255, 255, 0.15);
         color: rgba(255, 255, 255, 0.7);
-        &:hover { border-color: #fdb913; color: #fdb913; }
+        &:hover { border-color: #feb913; color: #feb913; }
       }
 
       &--light {
         border: 1px solid rgba(0, 0, 0, 0.1);
         color: #4b5563;
-        &:hover { border-color: #fdb913; color: #fdb913; }
+        &:hover { border-color: #feb913; color: #feb913; }
       }
     }
 
@@ -505,7 +505,7 @@ import { MEGA_MENU_CATEGORIES, MegaMenuCategory } from '../../data/megamenu-data
       font-weight: 600;
       border: none;
       border-radius: 0.5rem;
-      background: linear-gradient(135deg, #fdb913 0%, #cc950f 100%);
+      background: linear-gradient(135deg, #feb913 0%, #b4830d 100%);
       color: #1a1a1a;
       cursor: pointer;
       transition: all 200ms ease;

@@ -349,9 +349,9 @@ export class TestsComponent implements OnInit {
   }
 
   getScoreColor(score: number | null): string {
-    if (score == null) return '#94a3b8'
-    if (score >= 0.8) return '#22c55e'
-    if (score >= 0.5) return '#f59e0b'
-    return '#ef4444'
+    if (score == null) return 'var(--flowx-text-disabled, #a6b0be)'
+    if (score >= 0.8) return 'var(--flowx-success, #008060)'
+    if (score >= 0.5) return 'var(--flowx-warning, #feb913)'
+    return 'var(--flowx-error, #e62200)'
   }
 }

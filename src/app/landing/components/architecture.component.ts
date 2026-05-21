@@ -157,7 +157,7 @@ import { CommonModule } from '@angular/common'
       font-size: 0.875rem;
       font-weight: 600;
       letter-spacing: 0.15em;
-      color: #fdb913;
+      color: #feb913;
       margin-bottom: 1rem;
     }
 
@@ -186,7 +186,7 @@ import { CommonModule } from '@angular/common'
     }
 
     .text-gold {
-      color: #fdb913;
+      color: #feb913;
     }
 
     // Diagram
@@ -259,7 +259,7 @@ import { CommonModule } from '@angular/common'
           background: rgba(253, 185, 19, 0.15);
 
           i {
-            color: #fdb913;
+            color: #feb913;
           }
         }
       }
@@ -311,7 +311,7 @@ import { CommonModule } from '@angular/common'
       &__arrow {
         i {
           font-size: 1rem;
-          color: #fdb913;
+          color: #feb913;
           transform: rotate(90deg);
 
           @media (min-width: 768px) {
@@ -375,7 +375,7 @@ import { CommonModule } from '@angular/common'
     }
 
     .code-keyword { color: #c678dd; }
-    .code-decorator { color: #fdb913; }
+    .code-decorator { color: #feb913; }
     .code-function { color: #61afef; }
     .code-type { color: #98c379; }
     .code-comment { color: #5c6370; font-style: italic; }
@@ -404,7 +404,7 @@ import { CommonModule } from '@angular/common'
       }
 
       i {
-        color: #fdb913;
+        color: #feb913;
         font-size: 1rem;
       }
     }

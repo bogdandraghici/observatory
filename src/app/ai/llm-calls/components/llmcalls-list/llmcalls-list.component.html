@@ -71,13 +71,13 @@
         <tr [pSelectableRow]="llmCall">
           <td>
             @if (llmCall.status === 'success') {
-              <i class="pi pi-check-circle" style="color: #4ade80"></i>
+              <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
             }
             @if (llmCall.status === 'error' || waitedToMuch(llmCall)) {
-              <i class="pi pi-times-circle" style="color: #f87171"></i>
+              <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
             }
             @if (llmCall.status === 'started' && !waitedToMuch(llmCall)) {
-              <i class="pi pi-clock" style="color: #fb923c"></i>
+              <i class="pi pi-clock" style="color: var(--flowx-orange-500, #fd6b1c)"></i>
             }
           </td>
           <td>

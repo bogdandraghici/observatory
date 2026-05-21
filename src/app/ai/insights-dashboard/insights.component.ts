@@ -314,25 +314,25 @@ export class InsightsComponent implements OnInit {
     // Performance — based on avg_latency_ms
     const latency = s.avg_latency_ms
     let perfStatus = 'N/A'
-    let perfColor = '#94a3b8'
+    let perfColor = 'var(--flowx-text-disabled, #a6b0be)'
     let perfPct: string | null = null
     if (latency != null) {
-      if (latency < 3000) { perfStatus = 'Fast'; perfColor = '#22c55e'; perfPct = '100%' }
-      else if (latency < 5000) { perfStatus = 'Normal'; perfColor = '#22c55e'; perfPct = '75%' }
-      else if (latency < 10000) { perfStatus = 'Slow'; perfColor = '#f59e0b'; perfPct = '50%' }
-      else { perfStatus = 'Slow'; perfColor = '#ef4444'; perfPct = '0%' }
+      if (latency < 3000) { perfStatus = 'Fast'; perfColor = 'var(--flowx-success, #008060)'; perfPct = '100%' }
+      else if (latency < 5000) { perfStatus = 'Normal'; perfColor = 'var(--flowx-success, #008060)'; perfPct = '75%' }
+      else if (latency < 10000) { perfStatus = 'Slow'; perfColor = 'var(--flowx-warning, #feb913)'; perfPct = '50%' }
+      else { perfStatus = 'Slow'; perfColor = 'var(--flowx-error, #e62200)'; perfPct = '0%' }
     }
 
     // Cost Efficiency — based on avg_cost_per_run
     const avgCost = cost?.avg_cost_per_run
     let costStatus = 'N/A'
-    let costColor = '#94a3b8'
+    let costColor = 'var(--flowx-text-disabled, #a6b0be)'
     let costPct: string | null = null
     if (avgCost != null) {
-      if (avgCost < 0.01) { costStatus = 'Low'; costColor = '#22c55e'; costPct = '100%' }
-      else if (avgCost < 0.05) { costStatus = 'Moderate'; costColor = '#22c55e'; costPct = '75%' }
-      else if (avgCost < 0.2) { costStatus = 'Moderate'; costColor = '#f59e0b'; costPct = '50%' }
-      else { costStatus = 'High'; costColor = '#ef4444'; costPct = '25%' }
+      if (avgCost < 0.01) { costStatus = 'Low'; costColor = 'var(--flowx-success, #008060)'; costPct = '100%' }
+      else if (avgCost < 0.05) { costStatus = 'Moderate'; costColor = 'var(--flowx-success, #008060)'; costPct = '75%' }
+      else if (avgCost < 0.2) { costStatus = 'Moderate'; costColor = 'var(--flowx-warning, #feb913)'; costPct = '50%' }
+      else { costStatus = 'High'; costColor = 'var(--flowx-error, #e62200)'; costPct = '25%' }
     }
 
     this.healthIndicators = [
@@ -394,10 +394,10 @@ export class InsightsComponent implements OnInit {
   }
 
   getScoreColor(value: number | null | undefined): string {
-    if (value == null) {return '#94a3b8'}
-    if (value >= 0.8) {return '#22c55e'}
-    if (value >= 0.5) {return '#f59e0b'}
-    return '#ef4444'
+    if (value == null) {return 'var(--flowx-text-disabled, #a6b0be)'}
+    if (value >= 0.8) {return 'var(--flowx-success, #008060)'}
+    if (value >= 0.5) {return 'var(--flowx-warning, #feb913)'}
+    return 'var(--flowx-error, #e62200)'
   }
 
   getScorePercent(value: number | null | undefined): string {
@@ -448,7 +448,7 @@ export class InsightsComponent implements OnInit {
     if (!canvas) {return}
 
     const isDark = this.layoutService.config().colorScheme === 'dark'
-    const textSecondary = isDark ? '#94a3b8' : '#64748b'
+    const textSecondary = isDark ? 'var(--flowx-text-disabled, #a6b0be)' : '#64748b'
     const surfaceBorder = isDark ? 'rgba(148,163,184,0.15)' : '#e2e8f0'
     const isRunMode = this.granularity === 'run'
 
@@ -456,21 +456,21 @@ export class InsightsComponent implements OnInit {
 
     let series: any[] = []
     let label = 'Quality Score'
-    let color = '#22c55e'
+    let color = 'var(--flowx-success, #008060)'
     let isPercent = true
 
     if (tabIndex === 0) {
       series = this.timeseriesData.quality || []
       label = 'Quality Score'
-      color = '#22c55e'
+      color = 'var(--flowx-success, #008060)'
     } else if (tabIndex === 1) {
       series = this.timeseriesData.incidents || []
       label = 'Safety Score'
-      color = '#3b82f6'
+      color = 'var(--flowx-interactive, #006bd8)'
     } else if (tabIndex === 2) {
       series = this.timeseriesData.quality || []
       label = 'Executions'
-      color = '#f59e0b'
+      color = 'var(--flowx-warning, #feb913)'
       isPercent = false
     } else if (tabIndex === 3) {
       series = this.timeseriesData.quality || []
@@ -610,10 +610,10 @@ export class InsightsComponent implements OnInit {
 
   getAlertBorderColor(severity: string): string {
     switch (severity?.toLowerCase()) {
-      case 'critical': return '#ef4444'
-      case 'high': return '#f59e0b'
-      case 'medium': return '#3b82f6'
-      default: return '#94a3b8'
+      case 'critical': return 'var(--flowx-error, #e62200)'
+      case 'high': return 'var(--flowx-warning, #feb913)'
+      case 'medium': return 'var(--flowx-interactive, #006bd8)'
+      default: return 'var(--flowx-text-disabled, #a6b0be)'
     }
   }
 

@@ -206,13 +206,13 @@
               <tr>
                 <td>
                   @if (exec.status === 'success') {
-                    <i class="pi pi-check-circle" style="color: #4ade80"></i>
+                    <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
                   }
                   @if (exec.status === 'error') {
-                    <i class="pi pi-times-circle" style="color: #f87171"></i>
+                    <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
                   }
                   @if (exec.status === 'started') {
-                    <i class="pi pi-clock" style="color: #fb923c"></i>
+                    <i class="pi pi-clock" style="color: var(--flowx-orange-500, #fd6b1c)"></i>
                   }
                 </td>
                 <td>{{ formatTime(exec.time) }}</td>
@@ -502,9 +502,9 @@
           <tr>
             <td>
               @if (result.passed === true) {
-                <i class="pi pi-check-circle" style="color: #4ade80"></i>
+                <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
               } @else if (result.passed === false) {
-                <i class="pi pi-times-circle" style="color: #f87171"></i>
+                <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
               } @else {
                 <span>-</span>
               }

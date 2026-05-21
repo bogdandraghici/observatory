@@ -6,7 +6,7 @@
     --text-color-secondary: rgba(30, 41, 59, 0.6);
 
     // Primary colors
-    --primary-color: #fdb913;
+    --primary-color: #006bd8;
     --primary-color-default: var(--primary-600);
     --primary-color-inverse-default: var(--surface-0);
 
@@ -15,7 +15,7 @@
     --primary-100: #fef3c7;
     --primary-200: #fde68a;
     --primary-300: #fcd34d;
-    --primary-400: #fdb913;
+    --primary-400: #006bd8;
     --primary-500: #f59e0b;
     --primary-600: #d97706;
     --primary-700: #b45309;
@@ -142,8 +142,8 @@
     --doc-highlight-text-color: var(--surface-700);
 
     // Highlight
-    --highlight-bg: rgba(253, 185, 19, 0.15);
-    --highlight-text-color: #cc950f;
+    --highlight-bg: rgba(0, 107, 216, 0.15);
+    --highlight-text-color: #004c99;
 
     // Glow - disabled for clean look
     --glow-image: none;

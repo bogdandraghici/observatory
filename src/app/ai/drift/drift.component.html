@@ -72,7 +72,7 @@
         </div>
         <div class="stat-card__content">
           <span class="stat-card__label">Metrics Monitored</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ metricsMonitored }}</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ metricsMonitored }}</span>
         </div>
       </div>
       <div class="stat-card">
@@ -81,16 +81,16 @@
         </div>
         <div class="stat-card__content">
           <span class="stat-card__label">Drifts Detected</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:#f59e0b">{{ driftsDetected }}</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ driftsDetected }}</span>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
           <i class="pi pi-exclamation-triangle"></i>
         </div>
         <div class="stat-card__content">
           <span class="stat-card__label">Significant Drifts</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ significantDrifts }}</span>
+          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ significantDrifts }}</span>
         </div>
       </div>
       <div class="stat-card">

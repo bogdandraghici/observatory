@@ -1,10 +1,10 @@
 // Single Value Card Styles
 // Matching landing page card design language
 
-$gold: #fdb913;
-$gold-light: rgba(253, 185, 19, 0.1);
-$success-color: #10b981;
-$danger-color: #f87171;
+$gold: #006bd8;
+$gold-light: rgba(0, 107, 216, 0.1);
+$success-color: var(--flowx-success, #008060);
+$danger-color: var(--flowx-red-400, #ee6b54);
 
 .danger-label {
   color: $danger-color;
@@ -28,8 +28,8 @@ $danger-color: #f87171;
     transition: all 300ms ease;
 
     &:hover {
-      border-color: rgba(253, 185, 19, 0.3);
-      box-shadow: 0 0 30px rgba(253, 185, 19, 0.1);
+      border-color: rgba(0, 107, 216, 0.3);
+      box-shadow: 0 0 30px rgba(0, 107, 216, 0.1);
     }
   }
 }

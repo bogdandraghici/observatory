@@ -44,7 +44,7 @@ import { StatusService, PlatformStatus } from './status.service'
       top: 10%;
       left: 50%;
       transform: translateX(-50%);
-      background: radial-gradient(circle, rgba(253, 185, 19, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 107, 216, 0.08) 0%, transparent 70%);
     }
 
     .status-glow--2 {
@@ -78,7 +78,7 @@ import { StatusService, PlatformStatus } from './status.service'
       font-size: 2rem;
       font-weight: 700;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #fdb913 0%, rgba(253, 185, 19, 0.4) 100%);
+      background: linear-gradient(135deg, #006bd8 0%, rgba(0, 107, 216, 0.4) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -121,9 +121,9 @@ import { StatusService, PlatformStatus } from './status.service'
     }
 
     .status-banner--partial_outage {
-      background: rgba(253, 185, 19, 0.1);
-      border: 1px solid rgba(253, 185, 19, 0.25);
-      color: #fdb913;
+      background: rgba(0, 107, 216, 0.1);
+      border: 1px solid rgba(0, 107, 216, 0.25);
+      color: #006bd8;
     }
 
     .status-banner--major_outage {
@@ -242,7 +242,7 @@ import { StatusService, PlatformStatus } from './status.service'
     }
 
     .status-toggle input[type="checkbox"] {
-      accent-color: #fdb913;
+      accent-color: #006bd8;
       width: 1rem;
       height: 1rem;
     }
@@ -273,14 +273,14 @@ import { StatusService, PlatformStatus } from './status.service'
     }
 
     .status-btn--primary {
-      background: linear-gradient(135deg, #fdb913 0%, #cc950f 100%);
+      background: linear-gradient(135deg, #006bd8 0%, #004c99 100%);
       color: #1a1a1a;
-      box-shadow: 0 4px 14px rgba(253, 185, 19, 0.3);
+      box-shadow: 0 4px 14px rgba(0, 107, 216, 0.3);
     }
 
     .status-btn--primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(253, 185, 19, 0.4);
+      box-shadow: 0 6px 20px rgba(0, 107, 216, 0.4);
     }
 
     .status-btn--secondary {
@@ -290,8 +290,8 @@ import { StatusService, PlatformStatus } from './status.service'
     }
 
     .status-btn--secondary:hover {
-      border-color: rgba(253, 185, 19, 0.5);
-      color: #fdb913;
+      border-color: rgba(0, 107, 216, 0.5);
+      color: #006bd8;
     }
 
     @media (max-width: 480px) {

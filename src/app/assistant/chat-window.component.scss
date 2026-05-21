@@ -40,8 +40,8 @@
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: rgba(253, 185, 19, 0.15);
-  color: #fdb913;
+  background: rgba(0, 107, 216, 0.15);
+  color: #006bd8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +73,7 @@
     }
 
     &--active {
-      background: #fdb913;
+      background: #006bd8;
       animation: pulse-dot 1.2s ease-in-out infinite;
     }
   }
@@ -105,7 +105,7 @@
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #fdb913;
+    color: #006bd8;
   }
 
   &:disabled {
@@ -146,7 +146,7 @@
 
   &-icon {
     font-size: 2rem;
-    color: #fdb913;
+    color: #006bd8;
   }
 
   p {
@@ -175,8 +175,8 @@
   transition: background 0.15s, border-color 0.15s;
 
   &:hover {
-    background: rgba(253, 185, 19, 0.1);
-    border-color: rgba(253, 185, 19, 0.3);
+    background: rgba(0, 107, 216, 0.1);
+    border-color: rgba(0, 107, 216, 0.3);
     color: #fff;
   }
 }
@@ -188,8 +188,8 @@
     justify-content: flex-end;
 
     .chat-bubble {
-      background: #fdb913;
-      color: #1a1a2e;
+      background: #006bd8;
+      color: #ffffff;
       border-radius: 14px 14px 4px 14px;
     }
   }
@@ -235,9 +235,9 @@
     }
     strong { color: #fff; }
     h1, h2, h3, h4 { font-size: 0.9rem; font-weight: 600; margin: 0.5em 0 0.25em; color: #fff; }
-    a { color: #fdb913; text-decoration: underline; }
+    a { color: #006bd8; text-decoration: underline; }
     blockquote {
-      border-left: 3px solid rgba(253, 185, 19, 0.5);
+      border-left: 3px solid rgba(0, 107, 216, 0.5);
       margin: 0.4em 0;
       padding: 0.25em 0.6em;
       color: rgba(255, 255, 255, 0.7);
@@ -295,7 +295,7 @@
   }
 
   &:focus {
-    border-color: rgba(253, 185, 19, 0.5);
+    border-color: rgba(0, 107, 216, 0.5);
   }
 }
 
@@ -303,8 +303,8 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #fdb913;
-  color: #1a1a2e;
+  background: #006bd8;
+  color: #ffffff;
   border: none;
   cursor: pointer;
   display: flex;

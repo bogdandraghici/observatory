@@ -234,7 +234,7 @@
 
       &.p-button-danger:hover {
         background: rgba(248, 113, 113, 0.1);
-        color: #f87171;
+        color: var(--flowx-red-400, #ee6b54);
       }
     }
   }

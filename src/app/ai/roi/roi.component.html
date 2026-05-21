@@ -49,12 +49,12 @@
   <!-- KPIs -->
   <div class="stat-cards-grid mb-4">
     <div class="stat-card">
-      <div class="stat-card__icon" [style.background]="financialResult?.net_roi >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="financialResult?.net_roi >= 0 ? '#22c55e' : '#ef4444'">
+      <div class="stat-card__icon" [style.background]="financialResult?.net_roi >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="financialResult?.net_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
         <i class="pi pi-dollar"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Net ROI</span>
-        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult?.net_roi >= 0 ? '#22c55e' : '#ef4444'">{{ financialResult ? formatCurrency(financialResult.net_roi) : '--' }}</span>
+        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult?.net_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ financialResult ? formatCurrency(financialResult.net_roi) : '--' }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -63,7 +63,7 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Projected Annual Savings</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ financialResult ? formatCurrency(financialResult.projected_annual_savings) : '--' }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ financialResult ? formatCurrency(financialResult.projected_annual_savings) : '--' }}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -72,16 +72,16 @@
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Payback Period</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ financialResult?.payback_period_months != null ? (financialResult.payback_period_months + ' mo') : '--' }}</span>
+        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ financialResult?.payback_period_months != null ? (financialResult.payback_period_months + ' mo') : '--' }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card__icon" [style.background]="sensitivityResult?.positive_probability >= 50 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="sensitivityResult?.positive_probability >= 50 ? '#22c55e' : '#ef4444'">
+      <div class="stat-card__icon" [style.background]="sensitivityResult?.positive_probability >= 50 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="sensitivityResult?.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
         <i class="pi pi-percentage"></i>
       </div>
       <div class="stat-card__content">
         <span class="stat-card__label">Positive ROI Prob.</span>
-        <span class="stat-card__value stat-card__value--lg" [style.color]="sensitivityResult?.positive_probability >= 50 ? '#22c55e' : '#ef4444'">{{ sensitivityResult ? (sensitivityResult.positive_probability + '%') : '--' }}</span>
+        <span class="stat-card__value stat-card__value--lg" [style.color]="sensitivityResult?.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ sensitivityResult ? (sensitivityResult.positive_probability + '%') : '--' }}</span>
       </div>
     </div>
   </div>
@@ -143,11 +143,11 @@
                           </div>
                           <div class="text-center">
                             <div class="text-xs" style="color: var(--text-color-secondary);">LLM Cost</div>
-                            <div class="font-bold" style="color:#ef4444;">{{ formatCurrency(group.totals.llm_cost) }}</div>
+                            <div class="font-bold" style="color:var(--flowx-error, #e62200);">{{ formatCurrency(group.totals.llm_cost) }}</div>
                           </div>
                           <div class="text-center">
                             <div class="text-xs" style="color: var(--text-color-secondary);">Net ROI</div>
-                            <div class="font-bold" [style.color]="group.totals.net_contribution >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(group.totals.net_contribution) }}</div>
+                            <div class="font-bold" [style.color]="group.totals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(group.totals.net_contribution) }}</div>
                           </div>
                         </div>
                       </div>
@@ -199,18 +199,18 @@
                             <td class="font-semibold">{{ a.agent_name }}</td>
                             <td class="text-sm" style="color: var(--text-color-secondary);">{{ a.task_description || '-' }}</td>
                             <td>{{ a.runs | number }}</td>
-                            <td style="color:#ef4444;">{{ formatCurrency(a.llm_cost) }}</td>
-                            <td style="color:#22c55e;">{{ formatCurrency(a.labor_saved) }}</td>
-                            <td [style.color]="a.net_contribution >= 0 ? '#22c55e' : '#ef4444'" class="font-semibold">{{ formatCurrency(a.net_contribution) }}</td>
+                            <td style="color:var(--flowx-error, #e62200);">{{ formatCurrency(a.llm_cost) }}</td>
+                            <td style="color:var(--flowx-success, #008060);">{{ formatCurrency(a.labor_saved) }}</td>
+                            <td [style.color]="a.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-semibold">{{ formatCurrency(a.net_contribution) }}</td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="footer">
                           <tr class="font-bold" style="background: var(--surface-ground);">
                             <td colspan="2">Subtotal</td>
                             <td>{{ group.totals.runs | number }}</td>
-                            <td style="color:#ef4444;">{{ formatCurrency(group.totals.llm_cost) }}</td>
-                            <td style="color:#22c55e;">{{ formatCurrency(group.totals.labor_saved) }}</td>
-                            <td [style.color]="group.totals.net_contribution >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(group.totals.net_contribution) }}</td>
+                            <td style="color:var(--flowx-error, #e62200);">{{ formatCurrency(group.totals.llm_cost) }}</td>
+                            <td style="color:var(--flowx-success, #008060);">{{ formatCurrency(group.totals.labor_saved) }}</td>
+                            <td [style.color]="group.totals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(group.totals.net_contribution) }}</td>
                           </tr>
                         </ng-template>
                       </p-table>
@@ -237,19 +237,19 @@
                       <div class="stat-card">
                         <div class="stat-card__content">
                           <span class="stat-card__label">Total LLM Cost</span>
-                          <span class="stat-card__value" style="color:#ef4444;">{{ formatCurrency(vouGrandTotals.llm_cost) }}</span>
+                          <span class="stat-card__value" style="color:var(--flowx-error, #e62200);">{{ formatCurrency(vouGrandTotals.llm_cost) }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
                         <div class="stat-card__content">
                           <span class="stat-card__label">Total Labor Saved</span>
-                          <span class="stat-card__value" style="color:#22c55e;">{{ formatCurrency(vouGrandTotals.labor_saved) }}</span>
+                          <span class="stat-card__value" style="color:var(--flowx-success, #008060);">{{ formatCurrency(vouGrandTotals.labor_saved) }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
                         <div class="stat-card__content">
                           <span class="stat-card__label">Net Contribution</span>
-                          <span class="stat-card__value" [style.color]="vouGrandTotals.net_contribution >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(vouGrandTotals.net_contribution) }}</span>
+                          <span class="stat-card__value" [style.color]="vouGrandTotals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(vouGrandTotals.net_contribution) }}</span>
                         </div>
                       </div>
                     </div>
@@ -372,15 +372,15 @@
                       </div>
                       <div class="stat-card__row">
                         <span class="stat-card__label">Labor Saved</span>
-                        <span class="stat-card__value" style="color:#10b981">{{ formatCurrency(financialForm.labor_cost_saved) }}</span>
+                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.labor_cost_saved) }}</span>
                       </div>
                       <div class="stat-card__row">
                         <span class="stat-card__label">Revenue</span>
-                        <span class="stat-card__value" style="color:#10b981">{{ formatCurrency(financialForm.revenue_attributed) }}</span>
+                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.revenue_attributed) }}</span>
                       </div>
                       <div class="stat-card__row">
                         <span class="stat-card__label">Audit Avoided</span>
-                        <span class="stat-card__value" style="color:#10b981">{{ formatCurrency(financialForm.audit_cost_avoided) }}</span>
+                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.audit_cost_avoided) }}</span>
                       </div>
                     </div>
                   </div>
@@ -407,17 +407,17 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Total Runs</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ financialResult.total_runs | number }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ financialResult.total_runs | number }}</span>
                       </div>
                     </div>
                     <!-- Total Costs -->
                     <div class="stat-card">
-                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
                         <i class="pi pi-arrow-down"></i>
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Total Costs</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#ef4444">{{ formatCurrency(financialResult.total_costs) }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ formatCurrency(financialResult.total_costs) }}</span>
                       </div>
                     </div>
                     <!-- Total Benefits -->
@@ -427,17 +427,17 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Total Benefits</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ formatCurrency(financialResult.total_benefits) }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialResult.total_benefits) }}</span>
                       </div>
                     </div>
                     <!-- Net ROI -->
                     <div class="stat-card">
-                      <div class="stat-card__icon" [style.background]="financialResult.net_roi >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="financialResult.net_roi >= 0 ? '#22c55e' : '#ef4444'">
+                      <div class="stat-card__icon" [style.background]="financialResult.net_roi >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="financialResult.net_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
                         <i class="pi pi-dollar"></i>
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Net ROI</span>
-                        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult.net_roi >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(financialResult.net_roi) }}</span>
+                        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult.net_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(financialResult.net_roi) }}</span>
                       </div>
                     </div>
                     <!-- ROI % -->
@@ -447,7 +447,7 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">ROI %</span>
-                        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult.roi_percent >= 0 ? '#22c55e' : '#ef4444'">{{ financialResult.roi_percent }}%</span>
+                        <span class="stat-card__value stat-card__value--lg" [style.color]="financialResult.roi_percent >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ financialResult.roi_percent }}%</span>
                       </div>
                     </div>
                     <!-- Compliance Value -->
@@ -514,18 +514,18 @@
                             <tr style="border-bottom: 1px solid var(--surface-border);">
                               <td style="padding:0.5rem;" class="font-semibold">{{ a.agent_name }}</td>
                               <td style="padding:0.5rem;">{{ a.runs | number }}</td>
-                              <td style="padding:0.5rem; color:#ef4444;">{{ formatCurrency(a.llm_cost) }}</td>
-                              <td style="padding:0.5rem; color:#22c55e;">{{ formatCurrency(a.labor_saved) }}</td>
-                              <td style="padding:0.5rem;" [style.color]="a.net_contribution >= 0 ? '#22c55e' : '#ef4444'" class="font-semibold">{{ formatCurrency(a.net_contribution) }}</td>
+                              <td style="padding:0.5rem; color:var(--flowx-error, #e62200);">{{ formatCurrency(a.llm_cost) }}</td>
+                              <td style="padding:0.5rem; color:var(--flowx-success, #008060);">{{ formatCurrency(a.labor_saved) }}</td>
+                              <td style="padding:0.5rem;" [style.color]="a.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-semibold">{{ formatCurrency(a.net_contribution) }}</td>
                             </tr>
                           }
                           @if (agentBreakdownGrouped.length > 1 || group.group !== 'Ungrouped') {
                             <tr style="border-bottom: 2px solid var(--surface-border); background: var(--surface-ground);">
                               <td style="padding:0.4rem 0.5rem; font-weight:600; font-size:0.85rem;">Subtotal</td>
                               <td style="padding:0.4rem 0.5rem; font-weight:600;">{{ group.totals.runs | number }}</td>
-                              <td style="padding:0.4rem 0.5rem; font-weight:600; color:#ef4444;">{{ formatCurrency(group.totals.llm_cost) }}</td>
-                              <td style="padding:0.4rem 0.5rem; font-weight:600; color:#22c55e;">{{ formatCurrency(group.totals.labor_saved) }}</td>
-                              <td style="padding:0.4rem 0.5rem; font-weight:600;" [style.color]="group.totals.net_contribution >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(group.totals.net_contribution) }}</td>
+                              <td style="padding:0.4rem 0.5rem; font-weight:600; color:var(--flowx-error, #e62200);">{{ formatCurrency(group.totals.llm_cost) }}</td>
+                              <td style="padding:0.4rem 0.5rem; font-weight:600; color:var(--flowx-success, #008060);">{{ formatCurrency(group.totals.labor_saved) }}</td>
+                              <td style="padding:0.4rem 0.5rem; font-weight:600;" [style.color]="group.totals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(group.totals.net_contribution) }}</td>
                             </tr>
                           }
                         }
@@ -534,9 +534,9 @@
                         <tr style="border-top: 2px solid var(--surface-border); font-weight:700;">
                           <td style="padding:0.5rem;">Grand Total</td>
                           <td style="padding:0.5rem;">{{ agentTotalRuns | number }}</td>
-                          <td style="padding:0.5rem; color:#ef4444;">{{ formatCurrency(agentTotalLlmCost) }}</td>
-                          <td style="padding:0.5rem; color:#22c55e;">{{ formatCurrency(agentTotalLaborSaved) }}</td>
-                          <td style="padding:0.5rem;" [style.color]="agentTotalNetContribution >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(agentTotalNetContribution) }}</td>
+                          <td style="padding:0.5rem; color:var(--flowx-error, #e62200);">{{ formatCurrency(agentTotalLlmCost) }}</td>
+                          <td style="padding:0.5rem; color:var(--flowx-success, #008060);">{{ formatCurrency(agentTotalLaborSaved) }}</td>
+                          <td style="padding:0.5rem;" [style.color]="agentTotalNetContribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(agentTotalNetContribution) }}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -561,7 +561,7 @@
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">30-Day Savings</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ formatCurrency(projectionResult.roi_30d) }}</span>
+                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.roi_30d) }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
@@ -570,7 +570,7 @@
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">Annual Projection</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ formatCurrency(projectionResult.annual_savings) }}</span>
+                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.annual_savings) }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
@@ -579,7 +579,7 @@
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">Breakeven</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ projectionResult.breakeven_months != null ? (projectionResult.breakeven_months + ' mo') : 'N/A' }}</span>
+                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ projectionResult.breakeven_months != null ? (projectionResult.breakeven_months + ' mo') : 'N/A' }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
@@ -588,7 +588,7 @@
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">Avg Savings/Exec</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ formatCurrency(projectionResult.avg_savings_per_execution) }}</span>
+                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(projectionResult.avg_savings_per_execution) }}</span>
                         </div>
                       </div>
                     </div>
@@ -644,8 +644,8 @@
                           <td><p-tag [value]="item.success ? 'Success' : 'Error'" [severity]="item.success ? 'success' : 'danger'"></p-tag></td>
                           <td>{{ formatCurrency(item.agent_cost_usd) }}</td>
                           <td>{{ formatCurrency(item.equivalent_manual_cost_usd) }}</td>
-                          <td [style.color]="item.cost_savings_usd >= 0 ? '#22c55e' : '#ef4444'" class="font-bold">{{ formatCurrency(item.cost_savings_usd) }}</td>
-                          <td [style.color]="item.roi_percentage >= 0 ? '#22c55e' : '#ef4444'">{{ item.roi_percentage }}%</td>
+                          <td [style.color]="item.cost_savings_usd >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-bold">{{ formatCurrency(item.cost_savings_usd) }}</td>
+                          <td [style.color]="item.roi_percentage >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ item.roi_percentage }}%</td>
                           <td>{{ item.time_saved_hours | number:'1.2-2' }}h</td>
                         </tr>
                       </ng-template>
@@ -684,8 +684,8 @@
                           <td>{{ item.period_start | date:'shortDate' }} - {{ item.period_end | date:'shortDate' }}</td>
                           <td>{{ item.total_runs | number }}</td>
                           <td>{{ formatCurrency(item.total_llm_cost) }}</td>
-                          <td [style.color]="item.net_roi >= 0 ? '#22c55e' : '#ef4444'">{{ formatCurrency(item.net_roi) }}</td>
-                          <td style="color:#22c55e">{{ formatCurrency(item.projected_annual_savings) }}</td>
+                          <td [style.color]="item.net_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(item.net_roi) }}</td>
+                          <td style="color:var(--flowx-success, #008060)">{{ formatCurrency(item.projected_annual_savings) }}</td>
                           <td>{{ item.payback_period_months != null ? (item.payback_period_months + ' mo') : '--' }}</td>
                           <td><p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="deleteFinancial(item)"></p-button></td>
                         </tr>
@@ -740,7 +740,7 @@
                       </div>
                       <div class="stat-card__row">
                         <span class="stat-card__label">With Agent</span>
-                        <span class="stat-card__value" style="color:#22c55e">{{ complianceForm.regulatory_response_time_with_agent_days }} days</span>
+                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ complianceForm.regulatory_response_time_with_agent_days }} days</span>
                       </div>
                       <div class="stat-card__row">
                         <span class="stat-card__label">Confidence</span>
@@ -769,7 +769,7 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Decisions Logged</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ complianceResult.total_decisions_logged | number }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ complianceResult.total_decisions_logged | number }}</span>
                       </div>
                     </div>
                     <div class="stat-card">
@@ -787,19 +787,19 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Hours Saved</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ complianceResult.manual_audit_hours_saved }}h</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ complianceResult.manual_audit_hours_saved }}h</span>
                       </div>
                     </div>
                     <div class="stat-card">
-                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
                         <i class="pi pi-exclamation-triangle"></i>
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Audit Risk</span>
                         <div>
-                          <span class="font-bold" style="color:#ef4444">{{ (complianceResult.audit_failure_risk_baseline * 100) | number:'1.1-1' }}%</span>
+                          <span class="font-bold" style="color:var(--flowx-error, #e62200)">{{ (complianceResult.audit_failure_risk_baseline * 100) | number:'1.1-1' }}%</span>
                           <span class="text-color-secondary"> → </span>
-                          <span class="font-bold" style="color:#22c55e">{{ (complianceResult.audit_failure_risk_with_agent * 100) | number:'1.2-2' }}%</span>
+                          <span class="font-bold" style="color:var(--flowx-success, #008060)">{{ (complianceResult.audit_failure_risk_with_agent * 100) | number:'1.2-2' }}%</span>
                         </div>
                       </div>
                     </div>
@@ -810,9 +810,9 @@
                       <div class="stat-card__content">
                         <span class="stat-card__label">Response Time</span>
                         <div>
-                          <span class="font-bold" style="color:#ef4444">{{ complianceResult.regulatory_response_time_baseline_days }}d</span>
+                          <span class="font-bold" style="color:var(--flowx-error, #e62200)">{{ complianceResult.regulatory_response_time_baseline_days }}d</span>
                           <span class="text-color-secondary"> → </span>
-                          <span class="font-bold" style="color:#22c55e">{{ complianceResult.regulatory_response_time_with_agent_days }}d</span>
+                          <span class="font-bold" style="color:var(--flowx-success, #008060)">{{ complianceResult.regulatory_response_time_with_agent_days }}d</span>
                         </div>
                       </div>
                     </div>
@@ -823,9 +823,9 @@
                       <div class="stat-card__content">
                         <span class="stat-card__label">Compliance Confidence</span>
                         <div>
-                          <span class="font-bold" style="color:#f59e0b">{{ complianceResult.compliance_confidence_baseline }}%</span>
+                          <span class="font-bold" style="color:var(--flowx-warning, #feb913)">{{ complianceResult.compliance_confidence_baseline }}%</span>
                           <span class="text-color-secondary"> → </span>
-                          <span class="font-bold" style="color:#22c55e">{{ complianceResult.compliance_confidence_with_agent }}%</span>
+                          <span class="font-bold" style="color:var(--flowx-success, #008060)">{{ complianceResult.compliance_confidence_with_agent }}%</span>
                         </div>
                       </div>
                     </div>
@@ -835,7 +835,7 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Audit Savings</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ formatCurrency(complianceResult.audit_cost_savings) }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(complianceResult.audit_cost_savings) }}</span>
                       </div>
                     </div>
                     <div class="stat-card">
@@ -844,7 +844,7 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Response Time Value</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ formatCurrency(complianceResult.response_time_value) }}</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(complianceResult.response_time_value) }}</span>
                       </div>
                     </div>
                     <div class="stat-card">
@@ -853,7 +853,7 @@
                       </div>
                       <div class="stat-card__content">
                         <span class="stat-card__label">Efficiency Gain</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#22c55e">{{ complianceResult.efficiency_gain_percent }}%</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ complianceResult.efficiency_gain_percent }}%</span>
                       </div>
                     </div>
                   </div>
@@ -886,7 +886,7 @@
                           <td>{{ item.manual_audit_hours_saved }}h</td>
                           <td>{{ item.total_decisions_logged | number }}</td>
                           <td>{{ (item.evidence_completeness * 100) | number:'1.0-1' }}%</td>
-                          <td style="color:#22c55e;font-weight:600">{{ formatCurrency(item.audit_cost_savings) }}</td>
+                          <td style="color:var(--flowx-success, #008060);font-weight:600">{{ formatCurrency(item.audit_cost_savings) }}</td>
                         </tr>
                       </ng-template>
                     </p-table>
@@ -965,7 +965,7 @@
                       </div>
                       <div class="flex align-items-center gap-2">
                         <span class="stat-card__label">AI Monthly Cost:</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ formatCurrency(benchmarkComparison.ai_monthly_cost) }}/mo</span>
+                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(benchmarkComparison.ai_monthly_cost) }}/mo</span>
                       </div>
                     </div>
                     <p-table [value]="benchmarkComparison.comparisons" styleClass="p-datatable-sm p-datatable-gridlines">
@@ -985,7 +985,7 @@
                           <td><p-tag [value]="getTypeLabel(c.benchmark.alternative_type)" [severity]="getTypeSeverity(c.benchmark.alternative_type)"></p-tag></td>
                           <td>{{ formatCurrency(c.alternative_annual_cost) }}</td>
                           <td>{{ formatCurrency(c.ai_annual_cost) }}</td>
-                          <td [style.color]="c.annual_savings >= 0 ? '#22c55e' : '#ef4444'" class="font-bold">{{ formatCurrency(c.annual_savings) }}</td>
+                          <td [style.color]="c.annual_savings >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-bold">{{ formatCurrency(c.annual_savings) }}</td>
                           <td>
                             <p-tag [value]="c.savings_percent + '%'" [severity]="c.savings_percent >= 0 ? 'success' : 'danger'"></p-tag>
                           </td>
@@ -1013,7 +1013,7 @@
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">AI 5-Year TCO</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:#3b82f6">{{ formatCurrency(tcoComparison.ai_5year_tco) }}</span>
+                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(tcoComparison.ai_5year_tco) }}</span>
                         </div>
                       </div>
                       <div class="stat-card">
@@ -1053,7 +1053,7 @@
                           <td class="font-semibold">{{ c.name }}</td>
                           <td><p-tag [value]="getTypeLabel(c.alternative_type)" [severity]="getTypeSeverity(c.alternative_type)"></p-tag></td>
                           <td>{{ formatCurrency(c.alt_5year_tco) }}</td>
-                          <td [style.color]="c.savings_5year >= 0 ? '#22c55e' : '#ef4444'" class="font-bold">{{ formatCurrency(c.savings_5year) }}</td>
+                          <td [style.color]="c.savings_5year >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-bold">{{ formatCurrency(c.savings_5year) }}</td>
                           <td>{{ c.accuracy_percent }}%</td>
                           <td [style.color]="getAuditReadinessColor(c.audit_readiness)">{{ c.audit_readiness }}</td>
                           <td>{{ c.regulatory_approval_days }}d</td>
@@ -1149,11 +1149,11 @@
                       <div class="stat-card__content">
                         <span class="stat-card__label">90% Confidence Range</span>
                         <div class="flex align-items-center gap-2">
-                          <span class="font-bold" style="color:#ef4444">{{ formatCurrency(sensitivityResult.p5) }}</span>
+                          <span class="font-bold" style="color:var(--flowx-error, #e62200)">{{ formatCurrency(sensitivityResult.p5) }}</span>
                           <span class="text-color-secondary">—</span>
-                          <span class="font-bold" style="color:#22c55e">{{ formatCurrency(sensitivityResult.p95) }}</span>
+                          <span class="font-bold" style="color:var(--flowx-success, #008060)">{{ formatCurrency(sensitivityResult.p95) }}</span>
                           <span class="text-color-secondary ml-2">Most Likely:</span>
-                          <span class="font-bold" style="color:#3b82f6">{{ formatCurrency(sensitivityResult.median) }}</span>
+                          <span class="font-bold" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(sensitivityResult.median) }}</span>
                         </div>
                       </div>
                     </div>
@@ -1179,12 +1179,12 @@
                         </div>
                       </div>
                       <div class="stat-card">
-                        <div class="stat-card__icon" [style.background]="sensitivityResult.positive_probability >= 50 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="sensitivityResult.positive_probability >= 50 ? '#22c55e' : '#ef4444'">
+                        <div class="stat-card__icon" [style.background]="sensitivityResult.positive_probability >= 50 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="sensitivityResult.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
                           <i class="pi pi-percentage"></i>
                         </div>
                         <div class="stat-card__content">
                           <span class="stat-card__label">Positive Prob.</span>
-                          <span class="stat-card__value stat-card__value--lg" [style.color]="sensitivityResult.positive_probability >= 50 ? '#22c55e' : '#ef4444'">{{ sensitivityResult.positive_probability }}%</span>
+                          <span class="stat-card__value stat-card__value--lg" [style.color]="sensitivityResult.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ sensitivityResult.positive_probability }}%</span>
                         </div>
                       </div>
                     </div>
@@ -1203,7 +1203,7 @@
                         <ng-template pTemplate="body" let-s>
                           <tr>
                             <td class="font-semibold">{{ getParamLabel(s.parameter) }}</td>
-                            <td [style.color]="s.correlation >= 0 ? '#22c55e' : '#ef4444'">{{ s.correlation }}</td>
+                            <td [style.color]="s.correlation >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ s.correlation }}</td>
                             <td>
                               <p-progressBar [value]="s.abs_correlation * 100" [showValue]="false" [style]="{'height':'8px'}"></p-progressBar>
                             </td>
@@ -1220,7 +1220,7 @@
                 <div class="col-12">
                   <div class="stat-card" style="flex-direction: column; align-items: stretch;">
                     <div class="flex align-items-center gap-2 mb-3 items-center">
-                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
                         <i class="pi pi-sort-alt"></i>
                       </div>
                       <span class="stat-card__title">Tornado Chart — Parameter Impact on ROI</span>
@@ -1316,8 +1316,8 @@
                           <td class="font-semibold">{{ a.project_name || a.project_id }}</td>
                           <td>{{ a.execution_count | number }}</td>
                           <td>{{ formatCurrency(a.total_cost) }}</td>
-                          <td [style.color]="a.total_savings >= 0 ? '#22c55e' : '#ef4444'" class="font-bold">{{ formatCurrency(a.total_savings) }}</td>
-                          <td [style.color]="a.avg_roi >= 0 ? '#22c55e' : '#ef4444'">{{ a.avg_roi }}%</td>
+                          <td [style.color]="a.total_savings >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'" class="font-bold">{{ formatCurrency(a.total_savings) }}</td>
+                          <td [style.color]="a.avg_roi >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ a.avg_roi }}%</td>
                           <td>
                             <p-tag [value]="a.success_rate + '%'" [severity]="a.success_rate >= 90 ? 'success' : (a.success_rate >= 70 ? 'warn' : 'danger')"></p-tag>
                           </td>
