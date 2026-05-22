@@ -61,7 +61,7 @@
             <ng-template pTemplate="body" let-exp>
               <tr>
                 <td class="font-semibold">{{ exp.name }}</td>
-                <td><p-tag [value]="exp.experiment_type"></p-tag></td>
+                <td><p-tag [value]="exp.experiment_type" severity="info"></p-tag></td>
                 <td>{{ getDatasetName(exp.dataset_id) }}</td>
                 <td>{{ exp.llm_provider }} / {{ exp.llm_name }}</td>
                 <td>
@@ -74,15 +74,15 @@
                 <td>
                   <div class="flex gap-1">
                     @if (exp.status === 'CREATED' || exp.status === 'FAILED') {
-                      <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
+                      <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" styleClass="action-chip action-chip--success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
                     }
                     @if (exp.status === 'RUNNING') {
                       <i class="pi pi-spin pi-spinner" style="font-size: 1.2rem; padding: 0.5rem;"></i>
                     }
                     @if (exp.status === 'COMPLETED') {
-                      <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
+                      <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
                     }
-                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
                   </div>
                 </td>
               </tr>

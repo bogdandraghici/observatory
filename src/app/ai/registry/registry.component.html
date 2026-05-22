@@ -113,7 +113,7 @@
                   }
                 </td>
                 <td>
-                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" pTooltip="Edit Project" tooltipPosition="top" (click)="showAppDetail(app)"></p-button>
+                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit Project" tooltipPosition="top" (click)="showAppDetail(app)"></p-button>
                 </td>
               </tr>
             </ng-template>
@@ -178,7 +178,7 @@
                   <td>{{ getBaselineForAgent(agent) ? ('$' + getBaselineForAgent(agent).manual_effort_hourly_rate) : '-' }}</td>
                   <td>{{ getBaselineForAgent(agent)?.avg_executions_per_period || '-' }}</td>
                   <td>
-                    <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" pTooltip="Configure Baseline" tooltipPosition="top" (click)="openBaselineConfig(agent)"></p-button>
+                    <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Configure Baseline" tooltipPosition="top" (click)="openBaselineConfig(agent)"></p-button>
                   </td>
                 </tr>
               </ng-template>
@@ -235,8 +235,8 @@
                 </td>
                 <td>
                   <div class="flex gap-1">
-                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" pTooltip="Edit" tooltipPosition="top" (click)="openEditVendor(vendor)"></p-button>
-                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteVendor(vendor)"></p-button>
+                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit" tooltipPosition="top" (click)="openEditVendor(vendor)"></p-button>
+                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteVendor(vendor)"></p-button>
                   </div>
                 </td>
               </tr>
@@ -313,6 +313,7 @@
                     [rounded]="true"
                     [text]="true"
                     [severity]="model.is_approved ? 'danger' : 'success'"
+                    [styleClass]="model.is_approved ? 'action-chip action-chip--danger' : 'action-chip action-chip--success'"
                     [pTooltip]="model.is_approved ? 'Revoke' : 'Approve'"
                     (click)="toggleApproved(model)"
                   ></p-button>

@@ -10,6 +10,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './registry.component.html',
+    styleUrls: ['./registry.component.scss'],
     standalone: false,
     providers: [MessageService],
 })

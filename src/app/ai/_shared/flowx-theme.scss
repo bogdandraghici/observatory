@@ -1059,10 +1059,11 @@
     border-radius: var(--flowx-radius-24);
     padding: var(--flowx-space-2) var(--flowx-space-8);
   }
-  .p-tag.p-tag-success, .p-tag-success { background: var(--flowx-green-50); color: var(--flowx-green-600); }
-  .p-tag.p-tag-danger,  .p-tag-danger  { background: var(--flowx-red-50);   color: var(--flowx-red-600); }
-  .p-tag.p-tag-warning, .p-tag-warning { background: rgba(254, 185, 19, 0.15); color: var(--flowx-yellow-600); }
-  .p-tag.p-tag-info,    .p-tag-info    { background: var(--flowx-blue-50);  color: var(--flowx-blue-600); }
+  .p-tag.p-tag-success,   .p-tag-success   { background: var(--flowx-green-50);    color: var(--flowx-green-600); }
+  .p-tag.p-tag-danger,    .p-tag-danger    { background: var(--flowx-red-50);      color: var(--flowx-red-600); }
+  .p-tag.p-tag-warning,   .p-tag-warning   { background: rgba(254, 185, 19, 0.15); color: var(--flowx-yellow-600); }
+  .p-tag.p-tag-info,      .p-tag-info      { background: var(--flowx-blue-50);     color: var(--flowx-blue-600); }
+  .p-tag.p-tag-secondary, .p-tag-secondary { background: var(--flowx-neutrals-100); color: var(--flowx-neutrals-600); }
 
   // ── Checkbox / Radio / Switch ────────────────────────────
   .p-checkbox .p-checkbox-box,
@@ -1361,6 +1362,11 @@
   .p-tag-warn {
     background: rgba(254, 185, 19, 0.22);
     color: var(--flowx-yellow-300);
+  }
+  .p-tag.p-tag-secondary,
+  .p-tag-secondary {
+    background: rgba(255, 255, 255, 0.10);
+    color: var(--flowx-neutrals-300);
   }
 
   // ── Segmented button (per segmented-button.json — dark) ─────
