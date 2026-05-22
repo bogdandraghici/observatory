@@ -57,61 +57,82 @@ export class CostTrendComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {}
 
   getChartData(labels: string[], costs: number[]): any {
-    const documentStyle = getComputedStyle(document.documentElement)
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const strokeHex = isDark ? '#3389e0' : '#006bd8'         // flowx-blue-400 / -500
+    const strokeRgb = isDark ? '51, 137, 224' : '0, 107, 216'
     return {
       labels,
       datasets: [
         {
           label: 'Cost ($)',
-          backgroundColor: documentStyle.getPropertyValue('--primary-color'),
-          borderColor: documentStyle.getPropertyValue('--primary-color'),
           data: costs,
-          borderWidth: 0,
-          borderRadius: 4,
+          borderColor: strokeHex,
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false,
           barPercentage: 0.7,
+          hoverBackgroundColor: strokeHex,
+          backgroundColor: (context: any) => {
+            const { ctx, chartArea } = context.chart
+            if (!chartArea) { return `rgba(${strokeRgb}, 0.35)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${strokeRgb}, 0.55)`)
+            gradient.addColorStop(1, `rgba(${strokeRgb}, 0.10)`)
+            return gradient
+          },
         },
       ],
     }
   }
 
   getChartOptions(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color').trim()
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border').trim()
-
     return {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: {
-          display: false,
-        },
+        legend: { display: false },
+        datalabels: { display: false },
         tooltip: {
           enabled: true,
+          backgroundColor: '#1d232c',
+          titleColor: '#f7f8f9',
+          bodyColor: '#e3e8ed',
+          borderWidth: 0,
+          cornerRadius: 6,
+          padding: { x: 10, y: 6 },
+          displayColors: false,
+          titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+          bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
           callbacks: {
-            label: (context) => '$' + (context.raw || 0).toFixed(4),
+            label: (context: any) => '$' + (context.raw || 0).toFixed(4),
           },
         },
       },
       scales: {
         x: {
+          border: { display: false },
           ticks: {
-            color: textColor,
-            font: { size: 10 },
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
             maxRotation: 45,
           },
-          grid: {
-            display: false,
-          },
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          beginAtZero: true,
+          border: { display: false },
           ticks: {
-            color: textColor,
-            font: { size: 10 },
-            callback: (value) => '$' + value.toFixed(2),
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            maxTicksLimit: 4,
+            padding: 4,
+            callback: (value: any) => '$' + value.toFixed(2),
           },
           grid: {
-            color: surfaceBorder,
+            color: 'rgba(99, 116, 139, 0.10)',
+            drawBorder: false,
+            drawTicks: false,
           },
         },
       },

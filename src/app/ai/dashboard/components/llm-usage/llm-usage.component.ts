@@ -114,13 +114,19 @@ export class LLMUsageComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   getData(row: any): any {
-    const documentStyle = getComputedStyle(document.documentElement)
+    // Two stacked-bar shades from the FlowX blue palette — saturated
+    // blue-500 (light) / blue-400 (dark) for the completion half, a
+    // softer blue-300 / blue-200 for the prompt half. Same scheme in
+    // both modes; only the absolute shade lifts in dark mode.
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const completionFill = isDark ? '#3389e0' : '#006bd8'  // blue-400 / -500
+    const promptFill     = isDark ? '#8abbed' : '#549ce5'  // blue-200 / -300
     const returnValue = {
       labels: [row.name],
       datasets: [
         {
           label: 'Completion',
-          backgroundColor: documentStyle.getPropertyValue('--primary-color'),
+          backgroundColor: completionFill,
           data: [row.completion_tokens],
           borderWidth: 0,
           borderRadius: [
@@ -130,7 +136,7 @@ export class LLMUsageComponent implements OnInit, OnDestroy, OnChanges {
         },
         {
           label: 'Prompt',
-          backgroundColor: documentStyle.getPropertyValue('--yellow-500'),
+          backgroundColor: promptFill,
           data: [row.prompt_tokens],
           borderWidth: 0,
           borderRadius: [

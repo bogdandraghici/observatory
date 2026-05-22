@@ -67,12 +67,9 @@ export class TokensUsageComponent implements OnInit, OnDestroy, OnChanges {
 
 
   initChart(): void {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color')
-    const textColorSecondary = documentStyle.getPropertyValue(
-      '--text-color-secondary',
-    )
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border')
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const strokeHex = isDark ? '#3389e0' : '#006bd8'        // flowx-blue-400 / -500
+    const strokeRgb = isDark ? '51, 137, 224' : '0, 107, 216'
 
     const labels = this.models?.map((e) => moment.utc(e.ts).local())
     const data = this.models?.map((e) => +e.cnt)
@@ -84,63 +81,73 @@ export class TokensUsageComponent implements OnInit, OnDestroy, OnChanges {
           label: 'Tokens',
           data,
           fill: true,
-          backgroundColor: documentStyle.getPropertyValue('--green-300')+ "AA",
-          borderColor: documentStyle.getPropertyValue('--green-300')+"FF",
-          color: textColor,
-          tension: 0.2,
-          pointRadius: 1,
-          pointHoverRadius: 5,
-
+          borderColor: strokeHex,
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: strokeHex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: (context: any) => {
+            const { ctx, chartArea } = context.chart
+            if (!chartArea) { return `rgba(${strokeRgb}, 0.25)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${strokeRgb}, 0.45)`)
+            gradient.addColorStop(1, `rgba(${strokeRgb}, 0)`)
+            return gradient
+          },
         },
       ],
     }
     this.chartOptions = {
-      tooltips: true,
       responsive: true,
       indexAxis: 'x',
       maintainAspectRatio: true,
       aspectRatio: 6,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: {
-          display:false,
-
-        },
+        legend: { display: false },
+        datalabels: { display: false },
         tooltip: {
-          enabled: true, // <-- this option disables tooltips
+          enabled: true,
+          backgroundColor: '#1d232c',
+          titleColor: '#f7f8f9',
+          bodyColor: '#e3e8ed',
+          borderWidth: 0,
+          cornerRadius: 6,
+          padding: { x: 10, y: 6 },
+          displayColors: false,
+          titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+          bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
         },
       },
       scales: {
         x: {
           type: 'timeseries',
-          grid: {
-            display: false,
-          },
+          border: { display: false },
+          grid: { display: false },
           ticks: {
-            color: textColorSecondary,
-            align: 'center',
-            font: {
-              size: 10,
-              weight:'bold',
-              lineHeight: 1.2,
-            },
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            maxRotation: 0,
           },
         },
         y: {
-          display: true,
-          stacked: false,
+          beginAtZero: true,
+          border: { display: false },
           grid: {
-            display: true,
-            color: surfaceBorder,
+            color: 'rgba(99, 116, 139, 0.10)',
+            drawBorder: false,
+            drawTicks: false,
           },
           ticks: {
-            color: textColorSecondary,
-            align: 'center',
-            font: {
-              size: 10,
-              weight:'bold',
-              lineHeight: 1.2,
-            },
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            maxTicksLimit: 4,
+            padding: 4,
           },
+          grace: '10%',
         },
       },
     }

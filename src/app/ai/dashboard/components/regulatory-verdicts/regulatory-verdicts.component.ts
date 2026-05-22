@@ -91,35 +91,57 @@ export class RegulatoryVerdictsComponent implements OnInit, OnDestroy, OnChanges
   ngOnDestroy(): void {}
 
   private getChartData(rows: { framework: string; count: number }[]): any {
-    const documentStyle = getComputedStyle(document.documentElement)
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const strokeHex = isDark ? '#3389e0' : '#006bd8'         // flowx-blue-400 / -500
+    const strokeRgb = isDark ? '51, 137, 224' : '0, 107, 216'
     return {
       labels: rows.map((r) => r.framework),
       datasets: [
         {
           label: 'Verdicts',
-          backgroundColor: documentStyle.getPropertyValue('--primary-color'),
-          borderColor: documentStyle.getPropertyValue('--primary-color'),
           data: rows.map((r) => r.count),
-          borderWidth: 0,
-          borderRadius: 4,
+          borderColor: strokeHex,
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false,
           barPercentage: 0.7,
+          hoverBackgroundColor: strokeHex,
+          // Horizontal bars — gradient runs left→right, saturated at the
+          // bar's start fading toward its end so the FlowX blue reads on
+          // both surfaces.
+          backgroundColor: (context: any) => {
+            const { ctx, chartArea } = context.chart
+            if (!chartArea) { return `rgba(${strokeRgb}, 0.35)` }
+            const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0)
+            gradient.addColorStop(0, `rgba(${strokeRgb}, 0.55)`)
+            gradient.addColorStop(1, `rgba(${strokeRgb}, 0.15)`)
+            return gradient
+          },
         },
       ],
     }
   }
 
   private getChartOptions(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
-    const textColor = documentStyle.getPropertyValue('--text-color').trim()
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border').trim()
     return {
       indexAxis: 'y', // Horizontal bars — better for variable-length framework names.
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'y' },
       plugins: {
         legend: { display: false },
+        datalabels: { display: false },
         tooltip: {
           enabled: true,
+          backgroundColor: '#1d232c',
+          titleColor: '#f7f8f9',
+          bodyColor: '#e3e8ed',
+          borderWidth: 0,
+          cornerRadius: 6,
+          padding: { x: 10, y: 6 },
+          displayColors: false,
+          titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+          bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
           callbacks: {
             label: (context: any) => ` ${context.raw} verdict(s)`,
           },
@@ -127,12 +149,26 @@ export class RegulatoryVerdictsComponent implements OnInit, OnDestroy, OnChanges
       },
       scales: {
         x: {
-          ticks: { color: textColor, font: { size: 10 }, precision: 0 },
-          grid: { color: surfaceBorder },
+          beginAtZero: true,
+          border: { display: false },
+          ticks: {
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+            precision: 0,
+          },
+          grid: {
+            color: 'rgba(99, 116, 139, 0.10)',
+            drawBorder: false,
+            drawTicks: false,
+          },
         },
         y: {
-          ticks: { color: textColor, font: { size: 10 } },
-          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            color: '#64748b',
+            font: { size: 10, family: '"Open Sans", system-ui, sans-serif' },
+          },
+          grid: { display: false, drawBorder: false },
         },
       },
     }
