@@ -71,13 +71,19 @@
         <tr [pSelectableRow]="llmCall">
           <td>
             @if (llmCall.status === 'success') {
-              <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
+              <span class="status-badge status-badge--success">
+                <i class="pi pi-check-circle"></i>
+              </span>
             }
             @if (llmCall.status === 'error' || waitedToMuch(llmCall)) {
-              <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
+              <span class="status-badge status-badge--error">
+                <i class="pi pi-times-circle"></i>
+              </span>
             }
             @if (llmCall.status === 'started' && !waitedToMuch(llmCall)) {
-              <i class="pi pi-clock" style="color: var(--flowx-orange-500, #fd6b1c)"></i>
+              <span class="status-badge status-badge--pending">
+                <i class="pi pi-clock"></i>
+              </span>
             }
           </td>
           <td>
@@ -87,7 +93,7 @@
             <p-tag [value]="llmCall.agent" severity="info" [rounded]="true"></p-tag>
           </td>
           <td>
-            <p-tag [value]="llmCall.model" severity="warning"></p-tag>
+            {{ llmCall.model }}
           </td>
           <td>
             @if (llmCall.status === 'started' && !waitedToMuch(llmCall)) {
@@ -97,18 +103,10 @@
               ></p-progressBar>
             }
             @if (llmCall.status === 'success') {
-              <p-tag
-                icon="pi pi-clock"
-                [value]="llmCall.duration + 's'"
-                [severity]="llmCall.latency"
-              ></p-tag>
+              {{ llmCall.duration }}s
             }
             @if (llmCall.status === 'error') {
-              <p-tag
-                icon="pi pi-exclamation-triangle"
-                value="ERROR"
-                severity="danger"
-              ></p-tag>
+              ERROR
             }
           </td>
           <td>
@@ -123,7 +121,6 @@
           </td>
           <td>
             <span class="font-bold">
-              <i class="pi pi-bitcoin"></i>
               {{ llmCall.tokens || 0 }}
             </span>
           </td>
