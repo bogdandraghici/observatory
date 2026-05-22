@@ -13,9 +13,15 @@
   gap: 1rem;
   padding: 1rem 1.25rem;
   border-radius: 8px;
-  border: 1px solid var(--surface-border);
-  background: var(--surface-ground);
+  border: 1px solid var(--flowx-neutrals-100, #e3e8ed);
+  background: transparent;
   transition: background-color 150ms ease;
+
+  // Match the dark-mode token (per CLAUDE.md rule) so the hairline
+  // stays visible on the dark slate card surface.
+  :host-context(.flowx-dark) & {
+    border-color: var(--flowx-neutrals-700, #475263);
+  }
 
   &:hover {
     opacity: 0.9;
