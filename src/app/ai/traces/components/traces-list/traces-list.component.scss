@@ -50,10 +50,38 @@ $code-bg: rgba(255, 255, 255, 0.05);
   }
 }
 
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+
+  i {
+    font-size: 1rem;
+  }
+
+  &--success {
+    background: rgba(74, 222, 128, 0.15);
+    i { color: var(--flowx-green-300, #54aa94); }
+  }
+
+  &--error {
+    background: rgba(248, 113, 113, 0.15);
+    i { color: var(--flowx-red-400, #ee6b54); }
+  }
+
+  &--pending {
+    background: rgba(251, 146, 60, 0.15);
+    i { color: var(--flowx-orange-500, #fd6b1c); }
+  }
+}
+
 .prompt-text {
   height: 45px;
-  background-color: rgba(74, 222, 128, 0.15);
-  border: 1px solid rgba(74, 222, 128, 0.25);
+  background-color: var(--flowx-green-50);
+  border: 1px solid rgba(0, 128, 96, 0.2);
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin: 0 0.5rem;
@@ -68,8 +96,8 @@ $code-bg: rgba(255, 255, 255, 0.05);
 
 .result-text {
   height: 45px;
-  background-color: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  background-color: var(--flowx-blue-50);
+  border: 1px solid var(--flowx-blue-100);
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin: 0 0.5rem;
@@ -80,6 +108,18 @@ $code-bg: rgba(255, 255, 255, 0.05);
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+:host-context(.flowx-dark) {
+  .prompt-text {
+    background-color: rgba(0, 128, 96, 0.22);
+    border-color: rgba(0, 128, 96, 0.45);
+  }
+
+  .result-text {
+    background-color: rgba(0, 107, 216, 0.22);
+    border-color: rgba(0, 107, 216, 0.45);
+  }
 }
 
 .feedback {
@@ -101,6 +141,10 @@ $code-bg: rgba(255, 255, 255, 0.05);
   padding: 0.25rem 0.5rem;
   line-height: 1.5;
   width: max-content;
-  border: 1px solid $card-border;
-  background: $code-bg;
+  border: 1px solid var(--flowx-surface-tertiary);
+  background: var(--flowx-surface-secondary);
+
+  & + .tag {
+    margin-top: 0.25rem;
+  }
 }

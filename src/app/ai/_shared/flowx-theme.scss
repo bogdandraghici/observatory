@@ -1336,6 +1336,14 @@
     &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
   }
 
+  // Info chip (e.g. agent column) — light blue-50 fill disappears on dark.
+  // Lift to blue-800 background with blue-50 text for contrast.
+  .p-tag.p-tag-info,
+  .p-tag-info {
+    background: var(--flowx-blue-800);
+    color: var(--flowx-blue-50);
+  }
+
   // ── Segmented button (per segmented-button.json — dark) ─────
   // Light mode = neutrals-100 track + blue-500 active. Dark spec:
   // rgba(255,255,255,0.1) track, blue-400 active, neutrals-300 idle.
