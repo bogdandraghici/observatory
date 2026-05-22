@@ -70,22 +70,19 @@
         <tr [pSelectableRow]="trace">
           <td>
             @if (trace.status === 'success') {
-              <i
-                class="pi pi-check-circle"
-                style="color: var(--flowx-green-300, #54aa94)"
-              ></i>
+              <span class="status-badge status-badge--success">
+                <i class="pi pi-check-circle"></i>
+              </span>
             }
             @if (trace.status === 'error' || waitedToMuch(trace)) {
-              <i
-                class="pi pi-exclamation-circle"
-                style="color: var(--flowx-red-400, #ee6b54)"
-              ></i>
+              <span class="status-badge status-badge--error">
+                <i class="pi pi-exclamation-circle"></i>
+              </span>
             }
             @if (trace.status === 'started' && !waitedToMuch(trace)) {
-              <i
-                class="pi pi-question-circle"
-                style="color: var(--flowx-orange-500, #fd6b1c)"
-              ></i>
+              <span class="status-badge status-badge--pending">
+                <i class="pi pi-question-circle"></i>
+              </span>
             }
           </td>
           <td>
@@ -95,7 +92,7 @@
             <p-tag [value]="trace.agent" severity="info" [rounded]="true"></p-tag>
           </td>
           <td>
-            <p-tag [value]="trace.model"></p-tag>
+            {{ trace.model }}
           </td>
           <td class="font-bold">
             @if (trace.status === 'started' && !waitedToMuch(trace)) {
@@ -105,11 +102,7 @@
               ></p-progressBar>
             }
             @if (trace.status === 'success') {
-              <p-tag
-                icon="pi pi-clock"
-                [value]="trace.duration + 's'"
-                [severity]="trace.latency"
-              ></p-tag>
+              {{ trace.duration }}s
             }
           </td>
           <td class="font-bold">
