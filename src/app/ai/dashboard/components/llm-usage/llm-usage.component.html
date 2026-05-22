@@ -25,7 +25,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-model>
       <tr>
-        <td><p-chart type="bar" [height]="'50px'" [width]="'160px'" [responsive]="true" [data]="model.chartData" [options]="model.chartOptions"></p-chart></td>
+        <td style="width: 60%"><p-chart type="bar" [height]="'40px'" [width]="'100%'" [responsive]="true" [data]="model.chartData" [options]="model.chartOptions"></p-chart></td>
         <td class="text-lg font-bold">{{ model.prompt_tokens + model.completion_tokens | shortNumber }}</td>
         <td class="text-lg font-bold">{{ model.cost | currency }}</td>
       </tr>

@@ -91,7 +91,7 @@ export class AgentUsageComponent implements OnInit, OnDestroy, OnChanges {
       scales: {
         x: {
           display: false,
-          stacked: false,
+          stacked: true,
           grid: {
             display: false,
           },
@@ -115,27 +115,32 @@ export class AgentUsageComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getData(row: any): any {
-    const documentStyle = getComputedStyle(document.documentElement)
+    // Semantic green / red for the success-vs-errors split, lifted in
+    // dark mode so the pastel doesn't disappear against the dark card.
+    // (Following the dark-mode rule in CLAUDE.md.)
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const successFill = isDark ? '#54aa94' : '#008060'   // flowx-green-300 / -500
+    const errorFill   = isDark ? '#ee6b54' : '#e62200'   // flowx-red-400 / -500
     const returnValue = {
       labels: [row.name],
       datasets: [
         {
           label: 'Success',
-          backgroundColor: documentStyle.getPropertyValue('--green-300'),
+          backgroundColor: successFill,
           data: [row.success],
           borderWidth: 0,
           borderRadius: [
-            { topLeft: 5, topRight: 5, bottomLeft: 5, bottomRight: 5 },
+            { topLeft: 5, topRight: 0, bottomLeft: 5, bottomRight: 0 },
           ],
           borderSkipped: false,
         },
         {
           label: 'Error',
-          backgroundColor: documentStyle.getPropertyValue('--red-300'),
+          backgroundColor: errorFill,
           data: [row.errors],
           borderWidth: 0,
           borderRadius: [
-            { topLeft: 5, topRight: 5, bottomLeft: 5, bottomRight: 5 },
+            { topLeft: 0, topRight: 5, bottomLeft: 0, bottomRight: 5 },
           ],
           borderSkipped: false,
         },
