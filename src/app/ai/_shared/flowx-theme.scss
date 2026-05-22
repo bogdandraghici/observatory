@@ -301,13 +301,12 @@
       &--neutral { background: var(--flowx-neutrals-50); color: var(--flowx-neutrals-500); }
     }
 
-    // Section-header title — prototype's .axis-header h3 (18/28/700)
+    // Section-header title — quieter than the prototype's axis-header.
     &__title {
-      font-size: 18px;
-      line-height: 28px;
-      font-weight: 700;
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 600;
       color: var(--flowx-text-primary);
-      letter-spacing: -0.01em;
     }
 
     &__label {
@@ -343,11 +342,23 @@
     }
   }
 
-  // Force 12px gap on any flex row that pairs the icon swatch with the
-  // section title — matches the prototype's .axis-header rhythm and
-  // overrides Tailwind gap utilities (gap-2 / gap-1) used in templates.
+  // Force 8px gap on any flex row that pairs the icon with the section
+  // title — overrides Tailwind gap utilities (gap-2 / gap-1) used in
+  // templates so spacing stays consistent.
   :is(.stat-card, .card, .surface-card) .flex:has(> .stat-card__icon):has(> .stat-card__title) {
-    gap: var(--flowx-space-12) !important;
+    gap: var(--flowx-space-8) !important;
+  }
+
+  // Section-header icon — strip the 32x32 neutrals-50 swatch when the
+  // icon is paired with a title (KPI tiles pair icon with __value and
+  // keep their colored swatch — that pattern is untouched).
+  :is(.stat-card, .card, .surface-card) .flex:has(> .stat-card__icon):has(> .stat-card__title) > .stat-card__icon {
+    width: auto;
+    height: auto;
+    background: transparent;
+    border-radius: 0;
+    font-size: 16px;
+    color: var(--flowx-text-secondary);
   }
 
   // ── Generic .card / .surface-card ────────────────────────
