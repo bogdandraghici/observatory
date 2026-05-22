@@ -9,6 +9,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-experiments',
   templateUrl: './experiments.component.html',
+  styleUrls: ['./experiments.component.scss'],
   providers: [MessageService],
   standalone: false,
 })

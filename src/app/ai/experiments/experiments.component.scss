@@ -1,0 +1,40 @@
+// Tinted chip-style background for row action icons. Mirrors the
+// registry tables — PrimeNG's text/rounded buttons are transparent by
+// default, so the icons read as adornments rather than controls.
+
+:host ::ng-deep .p-button.action-chip {
+  background-color: rgba(0, 107, 216, 0.12);
+  transition: background-color 150ms ease;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background-color: rgba(0, 107, 216, 0.22);
+  }
+
+  &.action-chip--primary {
+    background-color: rgba(0, 107, 216, 0.12);
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background-color: rgba(0, 107, 216, 0.22);
+    }
+  }
+
+  &.action-chip--danger {
+    background-color: rgba(238, 107, 84, 0.15);
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background-color: rgba(238, 107, 84, 0.25);
+    }
+  }
+
+  &.action-chip--success {
+    background-color: rgba(0, 128, 96, 0.18);
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background-color: rgba(0, 128, 96, 0.28);
+    }
+  }
+}
