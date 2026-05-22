@@ -25,11 +25,11 @@
     </ng-template>
     <ng-template pTemplate="body" let-model>
       <tr>
-        <td>
+        <td style="width: 60%">
           <p-chart
             type="bar"
-            [height]="'50px'"
-            [width]="'160px'"
+            [height]="'40px'"
+            [width]="'100%'"
             [responsive]="true"
             [data]="model.chartData"
             [options]="model.chartOptions"
