@@ -60,22 +60,19 @@
         <tr [pSelectableRow]="execution">
           <td>
             @if (execution.status === 'success') {
-              <i
-                class="pi pi-check-circle"
-                style="color: var(--flowx-green-300, #54aa94)"
-              ></i>
+              <span class="status-badge status-badge--success">
+                <i class="pi pi-check-circle"></i>
+              </span>
             }
             @if (execution.status === 'error' || waitedToMuch(execution)) {
-              <i
-                class="pi pi-exclamation-circle"
-                style="color: var(--flowx-red-400, #ee6b54)"
-              ></i>
+              <span class="status-badge status-badge--error">
+                <i class="pi pi-exclamation-circle"></i>
+              </span>
             }
             @if (execution.status === 'started' && !waitedToMuch(execution)) {
-              <i
-                class="pi pi-question-circle"
-                style="color: var(--flowx-orange-500, #fd6b1c)"
-              ></i>
+              <span class="status-badge status-badge--pending">
+                <i class="pi pi-question-circle"></i>
+              </span>
             }
           </td>
           <td>
@@ -92,11 +89,7 @@
               ></p-progressBar>
             }
             @if (execution.status === 'success') {
-              <p-tag
-                icon="pi pi-clock"
-                [value]="execution.duration + 's'"
-                [severity]="execution.latency"
-              ></p-tag>
+              {{ execution.duration }}s
             }
           </td>
           <td>

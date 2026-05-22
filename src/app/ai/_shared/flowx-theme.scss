@@ -1336,12 +1336,31 @@
     &--amber  { background: rgba(254, 185, 19, 0.18); color: var(--flowx-yellow-500); }
   }
 
-  // Info chip (e.g. agent column) — light blue-50 fill disappears on dark.
-  // Lift to blue-800 background with blue-50 text for contrast.
+  // Info / success / danger / warning chips — light *-50 fills disappear on
+  // the dark slate. Lift each onto a translucent saturated step so the
+  // dark surface still shows through but the chip reads as tinted, and
+  // pair with the pale *-50 text for contrast.
   .p-tag.p-tag-info,
   .p-tag-info {
     background: var(--flowx-blue-800);
     color: var(--flowx-blue-50);
+  }
+  .p-tag.p-tag-success,
+  .p-tag-success {
+    background: rgba(0, 128, 96, 0.28);
+    color: #b8dccf;
+  }
+  .p-tag.p-tag-danger,
+  .p-tag-danger {
+    background: rgba(238, 107, 84, 0.25);
+    color: #f8b1a4;
+  }
+  .p-tag.p-tag-warning,
+  .p-tag-warning,
+  .p-tag.p-tag-warn,
+  .p-tag-warn {
+    background: rgba(254, 185, 19, 0.22);
+    color: var(--flowx-yellow-300);
   }
 
   // ── Segmented button (per segmented-button.json — dark) ─────
