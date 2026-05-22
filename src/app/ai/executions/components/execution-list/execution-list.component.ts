@@ -15,6 +15,7 @@ import { getDurationLLM, formatTime } from 'src/app/ai/utils/time'
 @Component({
     selector: 'execution-list-widget',
     templateUrl: './execution-list.component.html',
+    styleUrls: ['./execution-list.component.scss'],
     standalone: false
 })
 export class ExecutionListComponent implements OnInit, OnDestroy, OnChanges {
