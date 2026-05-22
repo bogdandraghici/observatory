@@ -7,8 +7,9 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core'
+import { Subscription, debounceTime } from 'rxjs'
 
-
+import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { MetricsService } from 'src/app/ai/services/metrics.service'
 
 
@@ -85,10 +86,26 @@ export class EndpointsCardComponent implements OnInit, OnDestroy, OnChanges {
     },
   ]
 
+  private themeSubscription?: Subscription
+
   constructor(
     public el: ElementRef,
     private metricsService: MetricsService,
-  ) {}
+    private layoutService: LayoutService,
+  ) {
+    // Chart.js doesn't observe the html class change that drives dark
+    // mode, so the inline-label plugin's color check stays stuck on the
+    // initial theme. Subscribe to layout updates and refresh chart
+    // options/data so the new colors take effect on the next paint.
+    this.themeSubscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.data?.length) {
+          this.chartOptionsEndNo = this.getOptionsEndpointsNo()
+          this.chartDataEndNo = this.getDataEndpointsNo()
+        }
+      })
+  }
 
   populateData(): void {
     if (!this.days) {
@@ -126,7 +143,9 @@ export class EndpointsCardComponent implements OnInit, OnDestroy, OnChanges {
     this.chartOptionsEndNo = this.getOptionsEndpointsNo()
     this.chartDataEndNo = this.getDataEndpointsNo()
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe()
+  }
 
   getOptionsEndpointsNo(): any {
     const documentStyle = getComputedStyle(document.documentElement)
