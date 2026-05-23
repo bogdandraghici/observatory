@@ -1163,6 +1163,11 @@
     padding: var(--flowx-space-24);
   }
 
+  // FlowX Modal M-size styles live at root level (below the
+  // `.ai-page` block) because `<p-dialog>` markup in component
+  // templates sits OUTSIDE the `.ai-page` wrapper div. See the
+  // `.p-dialog.flowx-modal--s { ... }` block further down.
+
   // ── Progress bar ─────────────────────────────────────────
   .p-progressbar {
     background: var(--flowx-neutrals-100);
@@ -1515,6 +1520,9 @@
       }
     }
   }
+
+  // FlowX Modal — S size, dark mode lives at root level
+  // (see `.flowx-dark .p-dialog.flowx-modal--s { ... }` below).
 }
 
 // ============================================================
@@ -1574,4 +1582,574 @@
   background: var(--flowx-blue-50, #e6f0fb) !important;
   color: var(--flowx-blue-700, #004c99) !important;
   font-weight: 600;
+}
+
+// ============================================================
+// FlowX Modal — S size
+// Per FlowX Design System / patterns / modals (S):
+//   • Width 600px, container radius 16px, xl elevation
+//   • Header: centered title + subtitle stack, 4px gap
+//   • Title: 24/32, 700, neutrals-800 (light) / neutrals-50 (dark)
+//   • Subtitle: 14/20, 400, neutrals-400 (both modes)
+//   • Field labels: 14/20, 700, text-primary
+//   • Field values: 14/22, 400, text-primary
+//   • Footer: actions right-aligned, primary right-most
+//   • Close (X) icon pinned top-right
+//   • No interior divider lines (header/body/footer flow as one surface)
+//
+// At root level so the styles apply regardless of where the
+// dialog renders (component templates often place <p-dialog>
+// outside the .ai-page wrapper).
+// ============================================================
+.p-dialog.flowx-modal--s {
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  border-radius: var(--flowx-radius-16, 16px);
+  border: 1px solid var(--flowx-border-default, #cbd1db);
+  background: var(--flowx-surface-primary, #ffffff);
+  box-shadow: var(--flowx-shadow-xl, 0 24px 32px #1634621a);
+  overflow: hidden;
+  font-family: "Open Sans", system-ui, sans-serif;
+  color: var(--flowx-text-primary, #1d232c);
+
+  // Header — centered title stack with corner-pinned close
+  .p-dialog-header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--flowx-space-24, 24px) var(--flowx-space-48, 48px) var(--flowx-space-12, 12px);
+    border-bottom: none;
+    background: var(--flowx-surface-primary, #ffffff);
+    gap: 0;
+  }
+  // PrimeNG injects `.p-dialog-title` span around pTemplate="header" content
+  // only when no custom template is provided — but defend just in case.
+  .p-dialog-title {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    font-weight: inherit;
+    font-size: inherit;
+  }
+  .p-dialog-header-actions,
+  .p-dialog-header-icons {
+    position: absolute;
+    top: var(--flowx-space-16, 16px);
+    right: var(--flowx-space-16, 16px);
+    margin: 0;
+    gap: 0;
+  }
+  .p-dialog-header-actions .p-button,
+  .p-dialog-header-actions button,
+  .p-dialog-close-button,
+  .p-dialog-header-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+    border-radius: var(--flowx-radius-8, 8px);
+    background: transparent;
+    color: var(--flowx-text-secondary, #64748b);
+    border: none;
+    box-shadow: none;
+    transition: background-color 120ms ease, color 120ms ease;
+    &:hover {
+      background: var(--flowx-surface-secondary, #f7f8f9);
+      color: var(--flowx-text-primary, #1d232c);
+    }
+  }
+
+  .flowx-modal__header-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--flowx-space-6, 6px);
+    width: 100%;
+  }
+  .flowx-modal__title {
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 700;
+    color: var(--flowx-neutrals-800, #2a313a);
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+  .flowx-modal__subtitle {
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--flowx-neutrals-400, #8390a2);
+    text-align: center;
+  }
+
+  // Body
+  .p-dialog-content {
+    padding: var(--flowx-space-12, 12px) var(--flowx-space-32, 32px) var(--flowx-space-24, 24px);
+    background: var(--flowx-surface-primary, #ffffff);
+  }
+  .flowx-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flowx-space-12, 12px);
+  }
+  // 2-column grid for compact form layouts inside the body
+  .flowx-modal__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--flowx-space-16, 16px);
+    row-gap: var(--flowx-space-12, 12px);
+  }
+  .flowx-modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flowx-space-4, 4px);
+    min-width: 0;
+
+    // Form inputs that live inside a field — make them fill the column
+    .p-inputtext,
+    .p-inputnumber,
+    .p-inputnumber-input,
+    .p-select,
+    .p-dropdown,
+    .p-multiselect,
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+    }
+
+    // ── FlowX Small input / select — per input-field.json / select-field.json
+    // Small: containerHeight 28, font 12/16, paddingH 8, radius 8.
+    // PrimeNG generates .p-inputtext-sm and .p-select-sm when size="small".
+    .p-inputtext.p-inputtext-sm,
+    input.p-inputtext-sm,
+    .p-inputnumber.p-inputnumber-sm .p-inputnumber-input {
+      height: 28px;
+      padding: 0 var(--flowx-space-8, 8px);
+      font-family: "Open Sans", system-ui, sans-serif;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      border-radius: var(--flowx-radius-8, 8px);
+      border: 1px solid var(--flowx-border-default, #cbd1db);
+      background: var(--flowx-surface-primary, #ffffff);
+      color: var(--flowx-text-primary, #1d232c);
+
+      &::placeholder { color: var(--flowx-text-secondary, #64748b); }
+      &:hover:not(:disabled) { border-color: var(--flowx-border-strong, #8390a2); }
+      &:focus,
+      &.p-focus {
+        border-color: var(--flowx-interactive, #006bd8);
+        box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.18);
+        outline: none;
+      }
+    }
+
+    .p-select.p-select-sm,
+    .p-dropdown.p-dropdown-sm,
+    .p-multiselect.p-multiselect-sm {
+      height: 28px;
+      min-height: 28px;
+      border-radius: var(--flowx-radius-8, 8px);
+      border: 1px solid var(--flowx-border-default, #cbd1db);
+      background: var(--flowx-surface-primary, #ffffff);
+      font-family: "Open Sans", system-ui, sans-serif;
+      font-size: 12px;
+      line-height: 16px;
+
+      .p-select-label,
+      .p-dropdown-label,
+      .p-multiselect-label {
+        padding: 0 var(--flowx-space-8, 8px);
+        font-size: 12px;
+        line-height: 28px;
+        color: var(--flowx-text-primary, #1d232c);
+      }
+      .p-select-label.p-placeholder,
+      .p-dropdown-label.p-placeholder { color: var(--flowx-text-secondary, #64748b); }
+
+      .p-select-dropdown,
+      .p-dropdown-trigger { width: 28px; }
+      .p-select-dropdown-icon,
+      .p-dropdown-trigger-icon { font-size: 12px; }
+
+      &:hover:not(.p-disabled) { border-color: var(--flowx-border-strong, #8390a2); }
+      &.p-focus,
+      &.p-inputwrapper-focus {
+        border-color: var(--flowx-interactive, #006bd8);
+        box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.18);
+      }
+    }
+
+    // Textarea — multi-line, small typography to match other inputs
+    // pTextarea (PrimeNG 21) emits `.p-textarea-sm`; legacy pInputTextarea
+    // emits `.p-inputtext-sm`; cover both.
+    textarea.p-textarea-sm,
+    textarea.p-inputfield-sm,
+    textarea.p-inputtext.p-inputtext-sm,
+    textarea[pInputTextarea].p-inputtext-sm,
+    textarea[pTextarea].p-textarea-sm,
+    textarea.p-inputtextarea-sm {
+      width: 100%;
+      min-height: 64px;
+      padding: var(--flowx-space-6, 6px) var(--flowx-space-8, 8px);
+      font-family: "Open Sans", system-ui, sans-serif;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      border-radius: var(--flowx-radius-8, 8px);
+      border: 1px solid var(--flowx-border-default, #cbd1db);
+      background: var(--flowx-surface-primary, #ffffff);
+      color: var(--flowx-text-primary, #1d232c);
+      resize: vertical;
+
+      &::placeholder { color: var(--flowx-text-secondary, #64748b); }
+      &:hover:not(:disabled) { border-color: var(--flowx-border-strong, #8390a2); }
+      &:focus,
+      &.p-focus {
+        border-color: var(--flowx-interactive, #006bd8);
+        box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.18);
+        outline: none;
+      }
+    }
+  }
+
+  // Info / context notice block inside the body
+  .flowx-modal__notice {
+    background: var(--flowx-blue-50, #e6f0fb);
+    border-left: 3px solid var(--flowx-interactive, #006bd8);
+    border-radius: var(--flowx-radius-6, 6px);
+    padding: var(--flowx-space-12, 12px) var(--flowx-space-16, 16px);
+  }
+  .flowx-modal__notice-title {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 700;
+    color: var(--flowx-interactive, #006bd8);
+    margin-bottom: var(--flowx-space-4, 4px);
+  }
+  .flowx-modal__notice-text {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--flowx-text-secondary, #64748b);
+  }
+
+  // Subtle metadata line inside the body (e.g. "Created 2026-05-23")
+  .flowx-modal__meta {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+    color: var(--flowx-text-secondary, #64748b);
+    margin-top: var(--flowx-space-4, 4px);
+  }
+
+  // Inline rule-builder row inside a field (used in Policy modal)
+  .flowx-modal__rule-row {
+    display: flex;
+    align-items: center;
+    gap: var(--flowx-space-8, 8px);
+    margin-top: var(--flowx-space-6, 6px);
+
+    .flowx-modal__rule-metric { flex: 1 1 auto; min-width: 0; }
+    .flowx-modal__rule-op     { flex: 0 0 110px; }
+    .flowx-modal__rule-value  { flex: 0 0 88px; min-width: 0; }
+  }
+  .flowx-modal__field--full {
+    grid-column: 1 / -1;
+  }
+  // Field label — FlowX input-field SMALL spec (12/16, 600)
+  // per references/components/input-field.json → typography.label.small
+  .flowx-modal__field-label {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--flowx-text-primary, #1d232c);
+  }
+  .flowx-modal__field-value {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 400;
+    color: var(--flowx-text-primary, #1d232c);
+    word-break: break-word;
+  }
+  .flowx-modal__field-value--mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-secondary, #64748b);
+  }
+
+  .flowx-modal__details {
+    margin: 0;
+    padding: var(--flowx-space-16, 16px);
+    background: var(--flowx-surface-secondary, #f7f8f9);
+    border: 1px solid var(--flowx-border-default, #cbd1db);
+    border-radius: var(--flowx-radius-8, 8px);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--flowx-text-primary, #1d232c);
+    max-height: 280px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  // Footer
+  .p-dialog-footer {
+    padding: var(--flowx-space-8, 8px) var(--flowx-space-32, 32px) var(--flowx-space-24, 24px);
+    border-top: none;
+    background: var(--flowx-surface-primary, #ffffff);
+  }
+  .flowx-modal__footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--flowx-space-12, 12px);
+  }
+
+  // ── Footer buttons — FlowX Brand Medium per button.json ──
+  // Per spec: height 36, fontSize 14/24, weight 600, radius 8,
+  // paddingH 12, paddingV 6, gap 6.
+  .p-dialog-footer .p-button {
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 600;
+    height: 36px;
+    padding: var(--flowx-space-6, 6px) var(--flowx-space-12, 12px);
+    border-radius: var(--flowx-radius-8, 8px);
+    gap: var(--flowx-space-6, 6px);
+    border: 1px solid transparent;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  .p-dialog-footer .p-button .p-button-icon { font-size: 16px; }
+
+  // Brand Primary (default — no severity / outlined / text)
+  // Default #006bd8 / Hover #005fc0 / Pressed #004c99
+  .p-dialog-footer .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {
+    background: var(--flowx-blue-500, #006bd8);
+    border-color: var(--flowx-blue-500, #006bd8);
+    color: #ffffff;
+
+    .p-button-label, .p-button-icon { color: #ffffff; }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-600, #005fc0);
+      border-color: var(--flowx-blue-600, #005fc0);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-700, #004c99);
+      border-color: var(--flowx-blue-700, #004c99);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--flowx-blue-300, #549ce5);
+      outline-offset: 2px;
+    }
+    &:disabled,
+    &.p-disabled {
+      background: var(--flowx-neutrals-100, #e3e8ed);
+      border-color: var(--flowx-neutrals-100, #e3e8ed);
+      color: var(--flowx-neutrals-400, #8390a2);
+      .p-button-label, .p-button-icon { color: var(--flowx-neutrals-400, #8390a2); }
+    }
+  }
+
+  // Brand Secondary — severity="secondary" and/or [outlined]="true"
+  // Default fill #ffffff, stroke #e3e8ed, text #006bd8, icon #1d232c
+  // Hover   fill #f7f8f9, stroke #e3e8ed
+  // Pressed fill #e3e8ed, stroke #e3e8ed
+  .p-dialog-footer .p-button.p-button-secondary,
+  .p-dialog-footer .p-button.p-button-outlined {
+    background: #ffffff;
+    border: 1px solid var(--flowx-neutrals-100, #e3e8ed);
+    color: var(--flowx-blue-500, #006bd8);
+
+    .p-button-label { color: var(--flowx-blue-500, #006bd8); }
+    .p-button-icon  { color: var(--flowx-text-primary, #1d232c); }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-50, #f7f8f9);
+      border-color: var(--flowx-neutrals-100, #e3e8ed);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-100, #e3e8ed);
+      border-color: var(--flowx-neutrals-100, #e3e8ed);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--flowx-blue-300, #549ce5);
+      outline-offset: 2px;
+    }
+    &:disabled,
+    &.p-disabled {
+      background: transparent;
+      border-color: var(--flowx-neutrals-200, #cbd1db);
+      color: var(--flowx-neutrals-300, #a6b0be);
+      .p-button-label, .p-button-icon { color: var(--flowx-neutrals-300, #a6b0be); }
+    }
+  }
+}
+
+// Scrim behind a FlowX M modal — soft tinted overlay
+.p-dialog-mask:has(.flowx-modal--s) {
+  background: rgba(29, 35, 44, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+// ── Dark mode counterpart (FlowX inverted spec) ─────────────
+.flowx-dark .p-dialog.flowx-modal--s {
+  background: var(--flowx-surface-primary, #2a313a);
+  border-color: var(--flowx-border-default, #475263);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  color: var(--flowx-text-primary, #f7f8f9);
+
+  .p-dialog-header,
+  .p-dialog-content,
+  .p-dialog-footer {
+    background: var(--flowx-surface-primary, #2a313a);
+  }
+
+  // Spec: title flips to grays-50 in inverted mode
+  .flowx-modal__title { color: var(--flowx-neutrals-50, #f7f8f9); }
+  // Subtitle stays neutrals-400 — palette token unchanged across modes
+
+  .p-dialog-header-actions .p-button,
+  .p-dialog-header-actions button,
+  .p-dialog-close-button,
+  .p-dialog-header-icon {
+    color: var(--flowx-text-secondary, #a6b0be);
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--flowx-text-primary, #f7f8f9);
+    }
+  }
+
+  .flowx-modal__field-label,
+  .flowx-modal__field-value { color: var(--flowx-text-primary, #f7f8f9); }
+  .flowx-modal__field-value--mono { color: var(--flowx-text-secondary, #a6b0be); }
+
+  // Small input / select on dark
+  .flowx-modal__field {
+    .p-inputtext.p-inputtext-sm,
+    input.p-inputtext-sm,
+    textarea.p-inputtext-sm,
+    textarea[pInputTextarea].p-inputtext-sm,
+    textarea.p-textarea-sm,
+    textarea[pTextarea].p-textarea-sm,
+    .p-inputnumber.p-inputnumber-sm .p-inputnumber-input,
+    .p-select.p-select-sm,
+    .p-dropdown.p-dropdown-sm,
+    .p-multiselect.p-multiselect-sm {
+      background: var(--flowx-surface-primary, #2a313a);
+      border-color: var(--flowx-border-default, #475263);
+      color: var(--flowx-text-primary, #f7f8f9);
+
+      &::placeholder { color: var(--flowx-text-secondary, #a6b0be); }
+    }
+    .p-select.p-select-sm,
+    .p-dropdown.p-dropdown-sm,
+    .p-multiselect.p-multiselect-sm {
+      .p-select-label,
+      .p-dropdown-label,
+      .p-multiselect-label { color: var(--flowx-text-primary, #f7f8f9); }
+      .p-select-label.p-placeholder,
+      .p-dropdown-label.p-placeholder { color: var(--flowx-text-secondary, #a6b0be); }
+    }
+    .p-inputtext.p-inputtext-sm:focus,
+    input.p-inputtext-sm:focus,
+    .p-inputnumber.p-inputnumber-sm .p-inputnumber-input:focus,
+    .p-select.p-select-sm.p-focus,
+    .p-select.p-select-sm.p-inputwrapper-focus {
+      border-color: var(--flowx-interactive, #3389e0);
+      box-shadow: 0 0 0 3px rgba(51, 137, 224, 0.25);
+    }
+  }
+
+  .flowx-modal__details {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--flowx-border-default, #475263);
+    color: var(--flowx-text-primary, #f7f8f9);
+  }
+
+  // Info notice — translucent blue tint on dark surface
+  .flowx-modal__notice {
+    background: rgba(51, 137, 224, 0.12);
+    border-left-color: var(--flowx-interactive, #3389e0);
+  }
+  .flowx-modal__notice-title { color: var(--flowx-blue-400, #3389e0); }
+  .flowx-modal__notice-text  { color: var(--flowx-text-secondary, #a6b0be); }
+
+  // ── Footer buttons — dark mode per button.json ──
+  // Brand Primary dark: fill #3389e0 / Hover #006bd8 / Pressed #005fc0
+  .p-dialog-footer .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {
+    background: var(--flowx-blue-400, #3389e0);
+    border-color: var(--flowx-blue-400, #3389e0);
+    color: #ffffff;
+    .p-button-label, .p-button-icon { color: #ffffff; }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-500, #006bd8);
+      border-color: var(--flowx-blue-500, #006bd8);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-600, #005fc0);
+      border-color: var(--flowx-blue-600, #005fc0);
+    }
+    &:disabled,
+    &.p-disabled {
+      background: var(--flowx-neutrals-700, #475263);
+      border-color: var(--flowx-neutrals-700, #475263);
+      color: var(--flowx-neutrals-400, #8390a2);
+      .p-button-label, .p-button-icon { color: var(--flowx-neutrals-400, #8390a2); }
+    }
+  }
+
+  // Brand Secondary dark:
+  // Default fill transparent, stroke #5b6a7e, text #3389e0, icon #ffffff
+  // Hover   fill #475263 / Pressed #5b6a7e
+  .p-dialog-footer .p-button.p-button-secondary,
+  .p-dialog-footer .p-button.p-button-outlined {
+    background: transparent;
+    border: 1px solid var(--flowx-neutrals-600, #5b6a7e);
+    color: var(--flowx-blue-400, #3389e0);
+
+    .p-button-label { color: var(--flowx-blue-400, #3389e0); }
+    .p-button-icon  { color: #ffffff; }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-700, #475263);
+      border-color: var(--flowx-neutrals-600, #5b6a7e);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-600, #5b6a7e);
+      border-color: var(--flowx-neutrals-600, #5b6a7e);
+    }
+    &:disabled,
+    &.p-disabled {
+      background: transparent;
+      border-color: var(--flowx-neutrals-600, #5b6a7e);
+      color: var(--flowx-neutrals-500, #64748b);
+      .p-button-label, .p-button-icon { color: var(--flowx-neutrals-500, #64748b); }
+    }
+  }
+}
+
+.flowx-dark .p-dialog-mask:has(.flowx-modal--s) {
+  background: rgba(0, 0, 0, 0.65);
 }

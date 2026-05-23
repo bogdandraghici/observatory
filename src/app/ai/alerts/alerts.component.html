@@ -225,77 +225,94 @@
   }
 </div>
 
-<!-- Create/Edit Rule Dialog -->
-<p-dialog [(visible)]="ruleDialogVisible" [header]="editingRule ? 'Edit Alert Rule' : 'Create Alert Rule'" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="grid">
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Name</label>
-        <input type="text" pInputText [(ngModel)]="ruleForm.name" class="w-full" />
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Project (optional)</label>
-        <p-select
-          [options]="apps"
-          [(ngModel)]="ruleForm.project_id"
-          optionLabel="name"
-          optionValue="id"
-          placeholder="Org-wide"
-          [showClear]="true"
-          appendTo="body"
-          [style]="{'width':'100%'}"
-        ></p-select>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Metric</label>
-        <p-select
-          [options]="metricOptions"
-          [(ngModel)]="ruleForm.metric"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-          [style]="{'width':'100%'}"
-        ></p-select>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Operator</label>
-        <p-select
-          [options]="operatorOptions"
-          [(ngModel)]="ruleForm.operator"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-          [style]="{'width':'100%'}"
-        ></p-select>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Threshold</label>
-        <p-inputNumber [(ngModel)]="ruleForm.threshold" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="4" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Severity</label>
-        <p-select
-          [options]="severityOptions"
-          [(ngModel)]="ruleForm.severity"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-          [style]="{'width':'100%'}"
-        ></p-select>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Window (minutes)</label>
-        <p-inputNumber [(ngModel)]="ruleForm.window_minutes" [min]="1" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Cooldown (minutes)</label>
-        <p-inputNumber [(ngModel)]="ruleForm.cooldown_minutes" [min]="1" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
+<!-- Create/Edit Rule Dialog — FlowX S modal -->
+<p-dialog
+  [(visible)]="ruleDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ editingRule ? 'Edit Alert Rule' : 'Create Alert Rule' }}</h2>
+      <p class="flowx-modal__subtitle">Configure threshold and notification settings</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="ruleForm.name" />
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Project (optional)</span>
+      <p-select
+        [options]="apps"
+        [(ngModel)]="ruleForm.project_id"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Org-wide"
+        [showClear]="true"
+        size="small"
+        appendTo="body"
+      ></p-select>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Metric</span>
+      <p-select
+        [options]="metricOptions"
+        [(ngModel)]="ruleForm.metric"
+        optionLabel="label"
+        optionValue="value"
+        size="small"
+        appendTo="body"
+      ></p-select>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Operator</span>
+      <p-select
+        [options]="operatorOptions"
+        [(ngModel)]="ruleForm.operator"
+        optionLabel="label"
+        optionValue="value"
+        size="small"
+        appendTo="body"
+      ></p-select>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Threshold</span>
+      <p-inputNumber [(ngModel)]="ruleForm.threshold" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="4" size="small"></p-inputNumber>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Severity</span>
+      <p-select
+        [options]="severityOptions"
+        [(ngModel)]="ruleForm.severity"
+        optionLabel="label"
+        optionValue="value"
+        size="small"
+        appendTo="body"
+      ></p-select>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Window (minutes)</span>
+      <p-inputNumber [(ngModel)]="ruleForm.window_minutes" [min]="1" size="small"></p-inputNumber>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Cooldown (minutes)</span>
+      <p-inputNumber [(ngModel)]="ruleForm.cooldown_minutes" [min]="1" size="small"></p-inputNumber>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="ruleDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (onClick)="saveRule()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="ruleDialogVisible = false"></p-button>
+      <p-button label="Save" (onClick)="saveRule()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
