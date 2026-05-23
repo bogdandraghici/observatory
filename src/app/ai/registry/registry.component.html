@@ -436,90 +436,127 @@
 </p-dialog>
 
 <!-- Vendor Dialog -->
-<p-dialog [(visible)]="vendorDialogVisible" [header]="isNewVendor ? 'New Vendor' : 'Edit Vendor'" [modal]="true" [style]="{width: '32rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
-      <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">What is a Vendor?</div>
-      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+<p-dialog
+  [(visible)]="vendorDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ isNewVendor ? 'New Vendor' : 'Edit Vendor' }}</h2>
+      <p class="flowx-modal__subtitle">Register an AI/LLM provider for governance and compliance tracking</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">What is a Vendor?</div>
+      <div class="flowx-modal__notice-text">
         A vendor represents an AI/LLM provider your organization uses (e.g. OpenAI, Anthropic, Google).
         Register vendors to track which providers are approved, their data residency policies,
         and certifications for governance and compliance purposes.
       </div>
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Name</label>
-      <input type="text" pInputText [(ngModel)]="editingVendor.name" class="w-full" placeholder="e.g. OpenAI Production" />
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="editingVendor.name" placeholder="e.g. OpenAI Production" />
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Provider</label>
-      <p-select [options]="providerOptions" [(ngModel)]="editingVendor.provider" optionLabel="label" optionValue="value" placeholder="Select provider" appendTo="body" class="w-full"></p-select>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Provider</span>
+      <p-select [options]="providerOptions" [(ngModel)]="editingVendor.provider" optionLabel="label" optionValue="value" placeholder="Select provider" size="small" appendTo="body"></p-select>
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Data Residency</label>
-      <p-select [options]="dataResidencyOptions" [(ngModel)]="editingVendor.data_residency" optionLabel="label" optionValue="value" placeholder="Select data residency" appendTo="body" class="w-full"></p-select>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Data Residency</span>
+      <p-select [options]="dataResidencyOptions" [(ngModel)]="editingVendor.data_residency" optionLabel="label" optionValue="value" placeholder="Select data residency" size="small" appendTo="body"></p-select>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="vendorDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="saveVendor()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="vendorDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="saveVendor()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- Agent Baseline Dialog -->
-<p-dialog [(visible)]="baselineDialogVisible" header="Configure Agent Baseline" [modal]="true" [style]="{width: '32rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
-      <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">Agent ROI Baseline</div>
-      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+<p-dialog
+  [(visible)]="baselineDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Configure Agent Baseline</h2>
+      <p class="flowx-modal__subtitle">Define the manual effort this agent replaces so ROI can be calculated</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">Agent ROI Baseline</div>
+      <div class="flowx-modal__notice-text">
         Define the manual effort this agent replaces. This baseline is used to calculate ROI by comparing
         the cost of manual work against the agent's LLM costs. Set how long the task takes manually,
         the hourly rate, and how often the agent runs.
       </div>
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Agent Name</label>
-      <input type="text" pInputText [(ngModel)]="baselineForm.agent_name" class="w-full" [disabled]="true" />
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Agent Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="baselineForm.agent_name" [disabled]="true" />
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Value Outcome Unit</label>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Value Outcome Unit</span>
       <p-autoComplete
         [(ngModel)]="baselineForm.value_outcome_unit"
         [suggestions]="vouSuggestions"
         (completeMethod)="filterVouSuggestions($event)"
         [dropdown]="true"
         placeholder="e.g. Insurance Claims Processing"
+        size="small"
         [style]="{'width':'100%'}"
         [inputStyle]="{'width':'100%'}"
         appendTo="body"
       ></p-autoComplete>
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Task Description</label>
-      <textarea pTextarea [(ngModel)]="baselineForm.task_description" [rows]="2" class="w-full" placeholder="e.g. Document validation for insurance claims"></textarea>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Task Description</span>
+      <textarea pTextarea pSize="small" [(ngModel)]="baselineForm.task_description" [rows]="2" placeholder="e.g. Document validation for insurance claims"></textarea>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Manual Hours/Execution</label>
-        <p-inputNumber [(ngModel)]="baselineForm.manual_effort_hours_per_execution" [min]="0" [step]="0.25" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" hrs" [style]="{'width':'100%'}"></p-inputNumber>
+
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Manual Hours / Execution</span>
+        <p-inputNumber [(ngModel)]="baselineForm.manual_effort_hours_per_execution" [min]="0" [step]="0.25" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" hrs" size="small" [style]="{'width':'100%'}"></p-inputNumber>
       </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Hourly Rate</label>
-        <p-inputNumber [(ngModel)]="baselineForm.manual_effort_hourly_rate" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Hourly Rate</span>
+        <p-inputNumber [(ngModel)]="baselineForm.manual_effort_hourly_rate" mode="currency" currency="USD" size="small" [style]="{'width':'100%'}"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Execution Frequency</span>
+        <p-select [options]="executionFrequencyOptions" [(ngModel)]="baselineForm.execution_frequency" optionLabel="label" optionValue="value" size="small" appendTo="body"></p-select>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Avg Agent Executions / Period</span>
+        <p-inputNumber [(ngModel)]="baselineForm.avg_executions_per_period" [min]="0" size="small" [style]="{'width':'100%'}"></p-inputNumber>
       </div>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Execution Frequency</label>
-        <p-select [options]="executionFrequencyOptions" [(ngModel)]="baselineForm.execution_frequency" optionLabel="label" optionValue="value" appendTo="body" [style]="{'width':'100%'}"></p-select>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Avg Agent Executions/Period</label>
-        <p-inputNumber [(ngModel)]="baselineForm.avg_executions_per_period" [min]="0" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <div style="background: var(--surface-ground); border-radius: 6px; padding: 1rem; border-left: 3px solid var(--p-primary-color);">
-      <div class="text-sm font-semibold mb-2" style="color: var(--p-primary-color);">How ROI is calculated</div>
-      <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How ROI is calculated</div>
+      <div class="flowx-modal__notice-text">
         <strong>Labor Saved</strong> = Manual Hours &times; Hourly Rate &times; Avg Agent Executions<br/>
         <strong>Net ROI</strong> = Labor Saved &minus; Actual Agent LLM Cost (from runs)<br/><br/>
         <span style="opacity: 0.8;">
@@ -529,8 +566,11 @@
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="baselineDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="saveBaseline()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="baselineDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="saveBaseline()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
