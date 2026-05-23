@@ -4,6 +4,44 @@
   padding: 0.5rem;
 }
 
+// Close button (X in blue circle) — center the icon by zeroing PrimeNG's
+// empty label span (`&nbsp;`) that otherwise pushes the icon off-center,
+// and laying the icon out via inline-flex with explicit centering.
+// Global rule (no ::ng-deep) because the drawer is portaled to <body>.
+:host ::ng-deep .p-button.llm-details-close,
+::ng-deep .p-button.llm-details-close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  line-height: 1 !important;
+
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+
+  .p-button-label {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .p-button-icon,
+  .p-icon-wrapper,
+  .pi,
+  svg {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
 .summary-bar {
   display: flex;
   align-items: center;

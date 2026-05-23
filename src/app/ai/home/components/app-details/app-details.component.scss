@@ -369,6 +369,25 @@
       &.p-button-secondary:hover .pi-trash {
         color: var(--flowx-red-500);
       }
+
+      // Trash button — keep it as a bare icon with no background box or
+      // border ring (the global .p-button-secondary rule paints a 1px ring;
+      // we have to !important past it). Only the icon color shifts on hover.
+      &:has(.pi-trash) {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        &:hover,
+        &:focus,
+        &:focus-visible,
+        &:active {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: var(--flowx-red-500);
+        }
+      }
     }
   }
 }
@@ -432,5 +451,21 @@
   .p-button-icon-only:hover {
     background: rgba(255, 255, 255, 0.06);
     color: var(--flowx-interactive);
+  }
+
+  .p-button-icon-only:has(.pi-trash) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus,
+    &:focus-visible,
+    &:active {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--flowx-red-400, var(--flowx-red-500));
+    }
   }
 }
