@@ -227,30 +227,22 @@
                       </div>
                       <span class="stat-card__title">Grand Total</span>
                     </div>
-                    <div class="stat-cards-grid">
-                      <div class="stat-card">
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Total Runs</span>
-                          <span class="stat-card__value">{{ vouGrandTotals.runs | number }}</span>
-                        </div>
+                    <div class="grand-total">
+                      <div class="grand-total__tile">
+                        <span class="grand-total__label">Total Runs</span>
+                        <span class="grand-total__value">{{ vouGrandTotals.runs | number }}</span>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Total LLM Cost</span>
-                          <span class="stat-card__value" style="color:var(--flowx-error, #e62200);">{{ formatCurrency(vouGrandTotals.llm_cost) }}</span>
-                        </div>
+                      <div class="grand-total__tile">
+                        <span class="grand-total__label">Total LLM Cost</span>
+                        <span class="grand-total__value" style="color:var(--flowx-error, #e62200);">{{ formatCurrency(vouGrandTotals.llm_cost) }}</span>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Total Labor Saved</span>
-                          <span class="stat-card__value" style="color:var(--flowx-success, #008060);">{{ formatCurrency(vouGrandTotals.labor_saved) }}</span>
-                        </div>
+                      <div class="grand-total__tile">
+                        <span class="grand-total__label">Total Labor Saved</span>
+                        <span class="grand-total__value" style="color:var(--flowx-success, #008060);">{{ formatCurrency(vouGrandTotals.labor_saved) }}</span>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Net Contribution</span>
-                          <span class="stat-card__value" [style.color]="vouGrandTotals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(vouGrandTotals.net_contribution) }}</span>
-                        </div>
+                      <div class="grand-total__tile">
+                        <span class="grand-total__label">Net Contribution</span>
+                        <span class="grand-total__value" [style.color]="vouGrandTotals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(vouGrandTotals.net_contribution) }}</span>
                       </div>
                     </div>
                   </div>
@@ -276,111 +268,120 @@
               <div class="col-12">
                 <div class="stat-cards-grid">
                   <!-- Card 1: Agent Baselines -->
-                  <div class="stat-card">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-users"></i>
-                    </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Agent Baselines</span>
-                        <span class="stat-card__badge" [ngClass]="agentBaselines.length > 0 ? 'stat-card__badge--success' : 'stat-card__badge--warn'">{{ agentBaselines.length }} configured</span>
+                  <div class="config-card">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-users"></i></span>
+                        <span class="config-card__title">Agent Baselines</span>
                       </div>
-                      @if (agentBaselines.length === 0) {
-                        <span class="stat-card__label">Configure in Registry &gt; Agents</span>
-                      } @else {
+                      <span class="config-card__pill"
+                            [ngClass]="agentBaselines.length > 0 ? 'config-card__pill--success' : 'config-card__pill--warn'">
+                        {{ agentBaselines.length }} configured
+                      </span>
+                    </div>
+                    @if (agentBaselines.length === 0) {
+                      <span class="config-card__empty">Configure in Registry &gt; Agents</span>
+                    } @else {
+                      <div class="config-card__rows config-card__rows--dashed-top">
                         @for (b of agentBaselines; track b.id) {
-                          <div class="stat-card__row">
-                            <span class="stat-card__label">{{ b.agent_name }}</span>
-                            <span class="stat-card__value">{{ b.manual_effort_hours_per_execution }}h &times; {{ formatCurrency(b.manual_effort_hourly_rate) }}</span>
+                          <div class="config-card__row">
+                            <span class="config-card__label">{{ b.agent_name }}</span>
+                            <span class="config-card__value config-card__value--mono">{{ b.manual_effort_hours_per_execution }}h &times; {{ formatCurrency(b.manual_effort_hourly_rate) }}</span>
                           </div>
                         }
-                      }
-                    </div>
+                      </div>
+                    }
                   </div>
 
                   <!-- Card 2: Project Baseline -->
-                  <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'baseline'">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-sliders-h"></i>
+                  <div class="config-card config-card--clickable" (click)="editCardDialog = 'baseline'">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-sliders-h"></i></span>
+                        <span class="config-card__title">Project Baseline</span>
+                      </div>
+                      <button type="button" class="config-card__pencil" aria-label="Edit Project Baseline">
+                        <i class="pi pi-pencil"></i>
+                      </button>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Project Baseline</span>
-                        <i class="pi pi-pencil" style="font-size:0.875rem; color:var(--text-color-secondary)"></i>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Task</span>
+                        <span class="config-card__value" [class.config-card__value--dim]="!financialForm.task_description">{{ financialForm.task_description || '-' }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Task</span>
-                        <span class="stat-card__value">{{ financialForm.task_description || '-' }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Hours/Exec</span>
+                        <span class="config-card__value">{{ financialForm.manual_effort_hours_per_execution }} hrs</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Hours/Exec</span>
-                        <span class="stat-card__value">{{ financialForm.manual_effort_hours_per_execution }} hrs</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Rate</span>
+                        <span class="config-card__value">{{ formatCurrency(financialForm.manual_effort_hourly_rate) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Rate</span>
-                        <span class="stat-card__value">{{ formatCurrency(financialForm.manual_effort_hourly_rate) }}</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Avg Exec/Period</span>
-                        <span class="stat-card__value">{{ financialForm.avg_executions_per_period }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Avg Exec/Period</span>
+                        <span class="config-card__value">{{ financialForm.avg_executions_per_period }}</span>
                       </div>
                     </div>
                   </div>
 
                   <!-- Card 3: Compliance Risk -->
-                  <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'compliance'">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-shield"></i>
+                  <div class="config-card config-card--clickable" (click)="editCardDialog = 'compliance'">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-shield"></i></span>
+                        <span class="config-card__title">Compliance Risk</span>
+                      </div>
+                      <button type="button" class="config-card__pencil" aria-label="Edit Compliance Risk">
+                        <i class="pi pi-pencil"></i>
+                      </button>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Compliance Risk</span>
-                        <i class="pi pi-pencil" style="font-size:0.875rem; color:var(--text-color-secondary)"></i>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Fine Exposure</span>
+                        <span class="config-card__value">{{ formatCurrency(financialForm.regulatory_fine_exposure) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Fine Exposure</span>
-                        <span class="stat-card__value">{{ formatCurrency(financialForm.regulatory_fine_exposure) }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Failure Prob.</span>
+                        <span class="config-card__value">{{ financialForm.regulatory_failure_probability }}%</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Failure Prob.</span>
-                        <span class="stat-card__value">{{ financialForm.regulatory_failure_probability }}%</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Risk Reduction</span>
+                        <span class="config-card__value">{{ formatCurrency(financialForm.operational_risk_reduction) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Risk Reduction</span>
-                        <span class="stat-card__value">{{ formatCurrency(financialForm.operational_risk_reduction) }}</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Governance</span>
-                        <span class="stat-card__value">{{ formatCurrency(financialForm.governance_overhead_cost) }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Governance</span>
+                        <span class="config-card__value">{{ formatCurrency(financialForm.governance_overhead_cost) }}</span>
                       </div>
                     </div>
                   </div>
 
                   <!-- Card 4: Cost & Benefits -->
-                  <div class="stat-card stat-card--clickable" (click)="editCardDialog = 'costs'">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-dollar"></i>
+                  <div class="config-card config-card--clickable" (click)="editCardDialog = 'costs'">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-dollar"></i></span>
+                        <span class="config-card__title">Cost &amp; Benefits</span>
+                      </div>
+                      <button type="button" class="config-card__pencil" aria-label="Edit Cost & Benefits">
+                        <i class="pi pi-pencil"></i>
+                      </button>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Cost & Benefits</span>
-                        <i class="pi pi-pencil" style="font-size:0.875rem; color:var(--text-color-secondary)"></i>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Infrastructure</span>
+                        <span class="config-card__value">{{ formatCurrency(financialForm.infrastructure_cost) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Infrastructure</span>
-                        <span class="stat-card__value">{{ formatCurrency(financialForm.infrastructure_cost) }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Labor Saved</span>
+                        <span class="config-card__value config-card__value--green">{{ formatCurrency(financialForm.labor_cost_saved) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Labor Saved</span>
-                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.labor_cost_saved) }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Revenue</span>
+                        <span class="config-card__value config-card__value--green">{{ formatCurrency(financialForm.revenue_attributed) }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Revenue</span>
-                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.revenue_attributed) }}</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Audit Avoided</span>
-                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(financialForm.audit_cost_avoided) }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Audit Avoided</span>
+                        <span class="config-card__value config-card__value--green">{{ formatCurrency(financialForm.audit_cost_avoided) }}</span>
                       </div>
                     </div>
                   </div>
@@ -554,41 +555,33 @@
                       </div>
                       <span class="stat-card__title">Projected Impact</span>
                     </div>
-                    <div class="stat-cards-grid">
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--green">
-                          <i class="pi pi-calendar"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">30-Day Savings</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.roi_30d) }}</span>
+                    <div class="projected-impact">
+                      <div class="projected-impact__tile">
+                        <span class="projected-impact__label">30-Day Savings</span>
+                        <div class="projected-impact__value-row">
+                          <i class="pi pi-calendar projected-impact__icon"></i>
+                          <span class="projected-impact__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.roi_30d) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--green">
-                          <i class="pi pi-chart-line"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Annual Projection</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.annual_savings) }}</span>
+                      <div class="projected-impact__tile">
+                        <span class="projected-impact__label">Annual Projection</span>
+                        <div class="projected-impact__value-row">
+                          <i class="pi pi-chart-line projected-impact__icon"></i>
+                          <span class="projected-impact__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(projectionResult.annual_savings) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--blue">
-                          <i class="pi pi-stopwatch"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Breakeven</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ projectionResult.breakeven_months != null ? (projectionResult.breakeven_months + ' mo') : 'N/A' }}</span>
+                      <div class="projected-impact__tile">
+                        <span class="projected-impact__label">Breakeven</span>
+                        <div class="projected-impact__value-row">
+                          <i class="pi pi-stopwatch projected-impact__icon"></i>
+                          <span class="projected-impact__value" style="color:var(--flowx-interactive, #006bd8)">{{ projectionResult.breakeven_months != null ? (projectionResult.breakeven_months + ' mo') : 'N/A' }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--blue">
-                          <i class="pi pi-bolt"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Avg Savings/Exec</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(projectionResult.avg_savings_per_execution) }}</span>
+                      <div class="projected-impact__tile">
+                        <span class="projected-impact__label">Avg Savings/Exec</span>
+                        <div class="projected-impact__value-row">
+                          <i class="pi pi-bolt projected-impact__icon"></i>
+                          <span class="projected-impact__value" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(projectionResult.avg_savings_per_execution) }}</span>
                         </div>
                       </div>
                     </div>
@@ -703,48 +696,53 @@
               <!-- Audit Parameters Summary Card -->
               <div class="col-12">
                 <div class="stat-cards-grid">
-                  <div class="stat-card stat-card--clickable" (click)="auditDialogVisible = true">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-sliders-h"></i>
+                  <!-- Audit Parameters -->
+                  <div class="config-card config-card--clickable" (click)="auditDialogVisible = true">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-sliders-h"></i></span>
+                        <span class="config-card__title">Audit Parameters</span>
+                      </div>
+                      <button type="button" class="config-card__pencil" aria-label="Edit Audit Parameters">
+                        <i class="pi pi-pencil"></i>
+                      </button>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Audit Parameters</span>
-                        <i class="pi pi-pencil" style="font-size:0.875rem; color:var(--text-color-secondary)"></i>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Framework</span>
+                        <span class="config-card__value" [class.config-card__value--dim]="!selectedFramework?.short_name">{{ selectedFramework?.short_name || '-' }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Framework</span>
-                        <span class="stat-card__value">{{ selectedFramework?.short_name || '-' }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Auditor Rate</span>
+                        <span class="config-card__value">{{ formatCurrency(hourlyRate) }}/h</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Auditor Rate</span>
-                        <span class="stat-card__value">{{ formatCurrency(hourlyRate) }}/h</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Failure Risk</span>
-                        <span class="stat-card__value">{{ complianceForm.audit_failure_risk_baseline }}% → {{ complianceForm.audit_failure_risk_with_agent }}%</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Failure Risk</span>
+                        <span class="config-card__value">{{ complianceForm.audit_failure_risk_baseline }}% &rarr; {{ complianceForm.audit_failure_risk_with_agent }}%</span>
                       </div>
                     </div>
                   </div>
-                  <div class="stat-card">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-stopwatch"></i>
+
+                  <!-- Response Time -->
+                  <div class="config-card">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-stopwatch"></i></span>
+                        <span class="config-card__title">Response Time</span>
+                      </div>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Response Time</span>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Baseline</span>
+                        <span class="config-card__value">{{ complianceForm.regulatory_response_time_baseline_days }} days</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Baseline</span>
-                        <span class="stat-card__value">{{ complianceForm.regulatory_response_time_baseline_days }} days</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">With Agent</span>
+                        <span class="config-card__value config-card__value--green">{{ complianceForm.regulatory_response_time_with_agent_days }} days</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">With Agent</span>
-                        <span class="stat-card__value" style="color:var(--flowx-success, #008060)">{{ complianceForm.regulatory_response_time_with_agent_days }} days</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Confidence</span>
-                        <span class="stat-card__value">{{ complianceForm.compliance_confidence_baseline }}% → {{ complianceForm.compliance_confidence_with_agent }}%</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Confidence</span>
+                        <span class="config-card__value">{{ complianceForm.compliance_confidence_baseline }}% &rarr; {{ complianceForm.compliance_confidence_with_agent }}%</span>
                       </div>
                     </div>
                   </div>
@@ -956,16 +954,19 @@
               @if (benchmarkComparison?.comparisons?.length > 0) {
                 <div class="col-12">
                   <div class="stat-card stat-card--stacked">
-                    <div class="flex align-items-center justify-content-between mb-3">
-                      <div class="flex align-items-center gap-2">
-                        <div class="stat-card__icon">
-                          <i class="pi pi-chart-bar"></i>
-                        </div>
-                        <span class="stat-card__title">AI vs Alternatives — Annual Cost Comparison</span>
+                    <div class="flex align-items-center gap-2 mb-3">
+                      <div class="stat-card__icon">
+                        <i class="pi pi-chart-bar"></i>
                       </div>
-                      <div class="flex align-items-center gap-2">
-                        <span class="stat-card__label">AI Monthly Cost:</span>
-                        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(benchmarkComparison.ai_monthly_cost) }}/mo</span>
+                      <span class="stat-card__title">AI vs Alternatives — Annual Cost Comparison</span>
+                    </div>
+                    <div class="flex justify-content-end mb-3">
+                      <div class="ai-monthly-tile">
+                        <span class="ai-monthly-tile__label">AI Monthly Cost</span>
+                        <div class="ai-monthly-tile__value-row">
+                          <i class="pi pi-dollar ai-monthly-tile__icon"></i>
+                          <span class="ai-monthly-tile__value" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(benchmarkComparison.ai_monthly_cost) }}/mo</span>
+                        </div>
                       </div>
                     </div>
                     <p-table [value]="benchmarkComparison.comparisons" styleClass="p-datatable-sm p-datatable-gridlines">
@@ -1006,32 +1007,26 @@
                       </div>
                       <span class="stat-card__title">5-Year Total Cost of Ownership</span>
                     </div>
-                    <div class="stat-cards-grid mb-3" style="grid-template-columns: repeat(3, 1fr);">
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--blue">
-                          <i class="pi pi-dollar"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">AI 5-Year TCO</span>
-                          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(tcoComparison.ai_5year_tco) }}</span>
+                    <div class="tco-comparison mb-3">
+                      <div class="tco-comparison__tile">
+                        <span class="tco-comparison__label">AI 5-Year TCO</span>
+                        <div class="tco-comparison__value-row">
+                          <i class="pi pi-dollar tco-comparison__icon"></i>
+                          <span class="tco-comparison__value" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(tcoComparison.ai_5year_tco) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--amber">
-                          <i class="pi pi-calendar"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Year 1</span>
-                          <span class="stat-card__value stat-card__value--lg">{{ formatCurrency(tcoComparison.ai_year_1) }}</span>
+                      <div class="tco-comparison__tile">
+                        <span class="tco-comparison__label">Year 1</span>
+                        <div class="tco-comparison__value-row">
+                          <i class="pi pi-calendar tco-comparison__icon"></i>
+                          <span class="tco-comparison__value">{{ formatCurrency(tcoComparison.ai_year_1) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--green">
-                          <i class="pi pi-refresh"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Annual</span>
-                          <span class="stat-card__value stat-card__value--lg">{{ formatCurrency(tcoComparison.ai_annual) }}</span>
+                      <div class="tco-comparison__tile">
+                        <span class="tco-comparison__label">Annual</span>
+                        <div class="tco-comparison__value-row">
+                          <i class="pi pi-refresh tco-comparison__icon"></i>
+                          <span class="tco-comparison__value">{{ formatCurrency(tcoComparison.ai_annual) }}</span>
                         </div>
                       </div>
                     </div>
@@ -1073,44 +1068,47 @@
               <!-- Parameter Summary Cards -->
               <div class="col-12">
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="stat-card stat-card--clickable" (click)="sensitivityDialogVisible = true">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-sliders-h"></i>
-                    </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Parameter Ranges</span>
-                        <i class="pi pi-pencil" style="font-size:0.875rem; color:var(--text-color-secondary)"></i>
+                  <!-- Parameter Ranges -->
+                  <div class="config-card config-card--clickable" (click)="sensitivityDialogVisible = true">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-sliders-h"></i></span>
+                        <span class="config-card__title">Parameter Ranges</span>
                       </div>
-                      <div class="grid grid-cols-2 gap-2">
+                      <button type="button" class="config-card__pencil" aria-label="Edit Parameter Ranges">
+                        <i class="pi pi-pencil"></i>
+                      </button>
+                    </div>
+                    <div class="config-card__rows config-card__rows--cols-2">
                       @for (key of sensitivityParamKeys; track key) {
-                        <div class="stat-card__row grid-cols-2">
-                          <span class="stat-card__label">{{ getParamLabel(key) }}</span>
-                          <span class="stat-card__value">{{ formatCurrency(sensitivityParams[key].min) }} — {{ formatCurrency(sensitivityParams[key].likely) }} — {{ formatCurrency(sensitivityParams[key].max) }}</span>
+                        <div class="config-card__row">
+                          <span class="config-card__label">{{ getParamLabel(key) }}</span>
+                          <span class="config-card__value">{{ formatCurrency(sensitivityParams[key].min) }} — {{ formatCurrency(sensitivityParams[key].likely) }} — {{ formatCurrency(sensitivityParams[key].max) }}</span>
                         </div>
                       }
                     </div>
-                    </div>
                   </div>
-                  <div class="stat-card">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-cog"></i>
+
+                  <!-- Simulation Config -->
+                  <div class="config-card">
+                    <div class="config-card__head">
+                      <div class="config-card__head-left">
+                        <span class="config-card__icon"><i class="pi pi-cog"></i></span>
+                        <span class="config-card__title">Simulation Config</span>
+                      </div>
                     </div>
-                    <div class="stat-card__content">
-                      <div class="stat-card__header">
-                        <span class="stat-card__title">Simulation Config</span>
+                    <div class="config-card__rows">
+                      <div class="config-card__row">
+                        <span class="config-card__label">Simulations</span>
+                        <span class="config-card__value">{{ numSimulations | number }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Simulations</span>
-                        <span class="stat-card__value">{{ numSimulations | number }}</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Parameters</span>
+                        <span class="config-card__value">{{ sensitivityParamKeys.length }}</span>
                       </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Parameters</span>
-                        <span class="stat-card__value">{{ sensitivityParamKeys.length }}</span>
-                      </div>
-                      <div class="stat-card__row">
-                        <span class="stat-card__label">Method</span>
-                        <span class="stat-card__value">Monte Carlo</span>
+                      <div class="config-card__row">
+                        <span class="config-card__label">Method</span>
+                        <span class="config-card__value">Monte Carlo</span>
                       </div>
                     </div>
                   </div>
@@ -1145,46 +1143,38 @@
                     }
 
                     <!-- Confidence Range -->
-                    <div class="stat-card mb-3" style="background: var(--surface-ground);">
-                      <div class="stat-card__content">
-                        <span class="stat-card__label">90% Confidence Range</span>
-                        <div class="flex align-items-center gap-2">
-                          <span class="font-bold" style="color:var(--flowx-error, #e62200)">{{ formatCurrency(sensitivityResult.p5) }}</span>
-                          <span class="text-color-secondary">—</span>
-                          <span class="font-bold" style="color:var(--flowx-success, #008060)">{{ formatCurrency(sensitivityResult.p95) }}</span>
-                          <span class="text-color-secondary ml-2">Most Likely:</span>
-                          <span class="font-bold" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(sensitivityResult.median) }}</span>
-                        </div>
+                    <div class="simulation-results__tile mb-3">
+                      <span class="simulation-results__label">90% Confidence Range</span>
+                      <div class="flex align-items-baseline gap-2 mt-2">
+                        <span class="simulation-results__value" style="color:var(--flowx-error, #e62200)">{{ formatCurrency(sensitivityResult.p5) }}</span>
+                        <span class="text-color-secondary">—</span>
+                        <span class="simulation-results__value" style="color:var(--flowx-success, #008060)">{{ formatCurrency(sensitivityResult.p95) }}</span>
+                        <span class="text-color-secondary ml-2">Most Likely:</span>
+                        <span class="simulation-results__value" style="color:var(--flowx-interactive, #006bd8)">{{ formatCurrency(sensitivityResult.median) }}</span>
                       </div>
                     </div>
 
                     <!-- Stats Cards -->
-                    <div class="stat-cards-grid mb-3" style="grid-template-columns: repeat(3, 1fr);">
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--blue">
-                          <i class="pi pi-chart-bar"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Mean</span>
-                          <span class="stat-card__value stat-card__value--lg">{{ formatCurrency(sensitivityResult.mean) }}</span>
+                    <div class="simulation-results mb-3">
+                      <div class="simulation-results__tile">
+                        <span class="simulation-results__label">Mean</span>
+                        <div class="simulation-results__value-row">
+                          <i class="pi pi-chart-bar simulation-results__icon"></i>
+                          <span class="simulation-results__value">{{ formatCurrency(sensitivityResult.mean) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon stat-card__icon--amber">
-                          <i class="pi pi-wave-pulse"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Std Dev</span>
-                          <span class="stat-card__value stat-card__value--lg">{{ formatCurrency(sensitivityResult.std_dev) }}</span>
+                      <div class="simulation-results__tile">
+                        <span class="simulation-results__label">Std Dev</span>
+                        <div class="simulation-results__value-row">
+                          <i class="pi pi-wave-pulse simulation-results__icon"></i>
+                          <span class="simulation-results__value">{{ formatCurrency(sensitivityResult.std_dev) }}</span>
                         </div>
                       </div>
-                      <div class="stat-card">
-                        <div class="stat-card__icon" [style.background]="sensitivityResult.positive_probability >= 50 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="sensitivityResult.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
-                          <i class="pi pi-percentage"></i>
-                        </div>
-                        <div class="stat-card__content">
-                          <span class="stat-card__label">Positive Prob.</span>
-                          <span class="stat-card__value stat-card__value--lg" [style.color]="sensitivityResult.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ sensitivityResult.positive_probability }}%</span>
+                      <div class="simulation-results__tile">
+                        <span class="simulation-results__label">Positive Prob.</span>
+                        <div class="simulation-results__value-row">
+                          <i class="pi pi-percentage simulation-results__icon"></i>
+                          <span class="simulation-results__value" [style.color]="sensitivityResult.positive_probability >= 50 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ sensitivityResult.positive_probability }}%</span>
                         </div>
                       </div>
                     </div>

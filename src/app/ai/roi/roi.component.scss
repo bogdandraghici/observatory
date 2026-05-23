@@ -1,0 +1,338 @@
+/* ============================================================
+ * ROI KPI tiles — mirrors the framework-meta tile pattern from
+ * the regulatory page: bordered card, 10px uppercase label, 22px
+ * tabular value, optional inline icon before the value.
+ *
+ * Shared by Grand Total (Value Outcomes tab), Projected Impact
+ * (Financial ROI tab), 5-Year TCO and the AI Monthly Cost stamp
+ * on the AI vs Alternatives card (Alternative Comparison tab).
+ *
+ * Dark mode lifts the border to default token so the tile outline
+ * remains visible against the dark surface.
+ * ============================================================ */
+.grand-total,
+.projected-impact,
+.tco-comparison,
+.simulation-results {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+/* 5-Year TCO and Simulation Results have 3 tiles — keep the 3-up
+ * rhythm at desktop. */
+.tco-comparison,
+.simulation-results {
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.grand-total__tile,
+.projected-impact__tile,
+.tco-comparison__tile,
+.simulation-results__tile,
+.ai-monthly-tile {
+  padding: 16px 18px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-50);
+  border-radius: 16px;
+}
+
+.grand-total__label,
+.projected-impact__label,
+.tco-comparison__label,
+.simulation-results__label,
+.ai-monthly-tile__label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--flowx-text-secondary);
+}
+
+.grand-total__value-row,
+.projected-impact__value-row,
+.tco-comparison__value-row,
+.simulation-results__value-row,
+.ai-monthly-tile__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.grand-total__icon,
+.projected-impact__icon,
+.tco-comparison__icon,
+.simulation-results__icon,
+.ai-monthly-tile__icon {
+  font-size: 14px;
+  color: var(--flowx-text-secondary);
+  align-self: center;
+  margin-right: 2px;
+  flex: 0 0 auto;
+}
+
+.grand-total__value,
+.projected-impact__value,
+.tco-comparison__value,
+.simulation-results__value,
+.ai-monthly-tile__value {
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--flowx-text-primary);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Grand Total tiles render the value directly on the tile (no
+ * value-row wrapper, since there's no inline icon) — give the value
+ * its own margin-top so it sits 8px below the label, matching the
+ * value-row offset used by the other sections. */
+.grand-total__tile > .grand-total__value {
+  margin-top: 8px;
+}
+
+:host-context(.flowx-dark) {
+  .grand-total__tile,
+  .projected-impact__tile,
+  .tco-comparison__tile,
+  .simulation-results__tile,
+  .ai-monthly-tile {
+    border-color: var(--flowx-border-default);
+  }
+}
+
+/* ============================================================
+ * Financial ROI — configuration cards (V1: Refined Classic).
+ *
+ * Four cards in a row across the top of the Financial ROI tab:
+ * Agent Baselines (read-only with status pill) + Project Baseline,
+ * Compliance Risk, Cost & Benefits (clickable, opens edit dialog).
+ *
+ * Header: 28×28 icon chip, 15px bold title, trailing element on the
+ * right (status pill or pencil affordance). Body: row pairs with a
+ * 13px secondary label and a 13px tabular value. Positive monetary
+ * values get green-600; the Project Baseline empty placeholder ("-")
+ * dims to neutrals-300.
+ * ============================================================ */
+.config-card {
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: var(--flowx-radius-16);
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: var(--flowx-font-primary);
+  min-width: 0;
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--flowx-neutrals-200);
+      box-shadow: 0 2px 8px rgba(22, 52, 98, 0.06);
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__head-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--flowx-radius-8);
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-neutrals-500);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    font-size: 14px;
+  }
+
+  &__title {
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+
+    &--success {
+      background: var(--flowx-green-50);
+      color: var(--flowx-green-700);
+    }
+
+    &--warn {
+      background: rgba(254, 185, 19, 0.18);
+      color: var(--flowx-yellow-700);
+    }
+  }
+
+  &__pencil {
+    background: none;
+    border: 0;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--flowx-neutrals-400);
+    font-size: 14px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    &:hover { color: var(--flowx-text-secondary); }
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+
+    /* Used by the Agent Baselines body to separate the dynamic list
+     * from the header with a hairline divider. */
+    &--dashed-top {
+      padding-top: 4px;
+      border-top: 1px dashed var(--flowx-neutrals-100);
+    }
+
+    /* 2-up grid for dynamic lists (e.g. Parameter Ranges) — keeps the
+     * card compact when many short label/value pairs are present. */
+    &--cols-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 16px;
+
+      @media (max-width: 900px) { grid-template-columns: 1fr; }
+    }
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 4px 0;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-secondary);
+    font-weight: 400;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__value {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-primary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    flex: 0 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+
+    &--green { color: var(--flowx-green-600); }
+    &--dim   { color: var(--flowx-neutrals-300); }
+    &--mono  {
+      font-family: var(--flowx-font-monospace);
+      font-size: 12.5px;
+    }
+  }
+
+  &__empty {
+    padding-top: 4px;
+    border-top: 1px dashed var(--flowx-neutrals-100);
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+:host-context(.flowx-dark) .config-card {
+  border-color: var(--flowx-border-default);
+
+  &--clickable:hover {
+    border-color: var(--flowx-border-strong);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  &__icon {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--flowx-text-secondary);
+  }
+
+  &__pill--success {
+    background: rgba(0, 128, 96, 0.25);
+    color: #8ac5b6;
+  }
+
+  &__pill--warn {
+    background: rgba(254, 185, 19, 0.20);
+    color: #f4c878;
+  }
+
+  &__rows--dashed-top,
+  &__empty {
+    border-top-color: var(--flowx-border-default);
+  }
+
+  &__value--dim { color: var(--flowx-neutrals-400); }
+}

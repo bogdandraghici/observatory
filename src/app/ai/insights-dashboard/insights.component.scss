@@ -200,8 +200,8 @@
 
   &__item {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 0.625rem;
     padding: 0.75rem 0.875rem;
     border-radius: 0.625rem;
     background: var(--surface-ground);
@@ -210,6 +210,28 @@
     &:hover {
       background: var(--surface-hover);
     }
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__track {
+    width: 100%;
+    height: 4px;
+    background: var(--flowx-neutrals-100);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+                background 160ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   &__dot {
@@ -510,47 +532,60 @@
   }
 }
 
+/* Cost forecast tile — mirrors the framework-meta / projected-impact
+ * tile aesthetic from the ROI page (bordered card, uppercase label,
+ * 22px tabular value). Adds a small descriptor line below the value
+ * since each forecast tile carries an extra hint ("Per execution",
+ * "Projected", etc.) — preserved from the original. */
 .cost-card {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  background: var(--surface-ground);
-  border-radius: 0.75rem;
-  border: 1px solid var(--surface-border);
-  transition: border-color 0.2s ease;
+  padding: 16px 18px;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-50);
+  border-radius: var(--flowx-radius-16);
+  min-width: 0;
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
 
   &:hover {
-    border-color: var(--surface-400);
-  }
-
-  &--highlight {
-    background: rgba(0, 107, 216, 0.08);
-    border-color: rgba(0, 107, 216, 0.25);
-
-    .cost-card__value {
-      color: var(--flowx-interactive, #006bd8);
-    }
+    border-color: var(--flowx-neutrals-200);
   }
 
   &__label {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    color: var(--text-color-secondary);
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.5rem;
+    color: var(--flowx-text-secondary);
   }
 
   &__value {
-    font-size: 1.25rem;
+    margin-top: 8px;
+    font-size: 22px;
+    line-height: 1.25;
     font-weight: 700;
-    color: var(--text-color);
-    margin-bottom: 0.25rem;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__desc {
-    font-size: 0.6875rem;
-    color: var(--text-color-secondary);
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+:host-context(.flowx-dark) .cost-card {
+  border-color: var(--flowx-border-default);
+
+  &:hover {
+    border-color: var(--flowx-border-strong);
   }
 }
 
@@ -639,4 +674,11 @@
     max-width: 20rem;
     line-height: 1.5;
   }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+// Track recedes darker than the card so the fill reads forward.
+// Mirrors the Risk Heatmap progress-bar treatment.
+:host-context(.flowx-dark) .eval-health__track {
+  background: rgba(0, 0, 0, 0.28);
 }

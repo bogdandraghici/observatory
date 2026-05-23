@@ -189,17 +189,26 @@
           <div class="eval-health">
             @for (h of healthIndicators; track h.label) {
               <div class="eval-health__item">
-                <span class="eval-health__dot"
-                  [class.eval-health__dot--good]="h.status === 'Healthy' || h.status === 'Fast' || h.status === 'Low'"
-                  [class.eval-health__dot--warning]="h.status === 'Needs Attention' || h.status === 'Normal' || h.status === 'Moderate'"
-                  [class.eval-health__dot--danger]="h.status === 'Slow' || h.status === 'High'"
-                ></span>
-                <i [class]="h.icon" class="eval-health__icon"></i>
-                <span class="eval-health__label">{{ h.label }}</span>
-                <span class="eval-health__value"
-                      [style.background]="h.color + '1a'" [style.color]="h.color">
-                  {{ h.status }}{{ h.detail ? ' (' + h.detail + ')' : '' }}
-                </span>
+                <div class="eval-health__row">
+                  <span class="eval-health__dot"
+                    [class.eval-health__dot--good]="h.tone === 'good'"
+                    [class.eval-health__dot--warning]="h.tone === 'warning'"
+                    [class.eval-health__dot--danger]="h.tone === 'danger'"
+                  ></span>
+                  <i [class]="h.icon" class="eval-health__icon"></i>
+                  <span class="eval-health__label">{{ h.label }}</span>
+                  <span class="eval-health__value"
+                        [style.background]="h.color + '1a'" [style.color]="h.color">
+                    {{ h.status }}{{ h.detail ? ' (' + h.detail + ')' : '' }}
+                  </span>
+                </div>
+                @if (h.detail) {
+                  <div class="eval-health__track">
+                    <div class="eval-health__fill"
+                         [style.width]="h.detail"
+                         [style.background]="h.color"></div>
+                  </div>
+                }
               </div>
             }
           </div>
@@ -382,7 +391,7 @@
           Cost & Consumption Forecast
         </div>
         <div class="cost-cards">
-          <div class="cost-card cost-card--highlight">
+          <div class="cost-card">
             <span class="cost-card__label">Window Cost</span>
             <span class="cost-card__value">{{ costForecast.window_cost != null ? '$' + costForecast.window_cost.toFixed(2) : '—' }}</span>
             <span class="cost-card__desc">Total in selected window</span>

@@ -48,7 +48,7 @@ export class RegulatoryComponent implements OnInit {
   reportGrouped: { category: string; requirements: any[]; compliant: number; total: number; percent: number }[] = []
 
   // Gap analysis tiers
-  gapTiers: { label: string; color: string; bgColor: string; icon: string; items: any[] }[] = []
+  gapTiers: { label: string; color: string; bgColor: string; tone: string; icon: string; items: any[] }[] = []
 
   // Framework detail drawer
   frameworkDetail: any = null
@@ -252,7 +252,7 @@ export class RegulatoryComponent implements OnInit {
     this.gapTiers = this.buildGapTiers(this.report?.requirements || [])
   }
 
-  buildGapTiers(reqs: any[]): { label: string; color: string; bgColor: string; icon: string; items: any[] }[] {
+  buildGapTiers(reqs: any[]): { label: string; color: string; bgColor: string; tone: string; icon: string; items: any[] }[] {
     const red: any[] = []
     const yellow: any[] = []
     const green: any[] = []
@@ -270,9 +270,9 @@ export class RegulatoryComponent implements OnInit {
     }
 
     return [
-      { label: 'No Evidence', color: 'var(--flowx-error, #e62200)', bgColor: 'rgba(239,68,68,0.08)', icon: 'pi pi-times-circle', items: red },
-      { label: 'Partial Evidence', color: 'var(--flowx-warning, #feb913)', bgColor: 'rgba(245,158,11,0.08)', icon: 'pi pi-exclamation-triangle', items: yellow },
-      { label: 'Fully Covered', color: 'var(--flowx-success, #008060)', bgColor: 'rgba(34,197,94,0.08)', icon: 'pi pi-check-circle', items: green },
+      { label: 'No Evidence', color: 'var(--flowx-red-500, #e62200)', bgColor: 'var(--flowx-red-50, #fde9e6)', tone: 'danger', icon: 'pi pi-times-circle', items: red },
+      { label: 'Partial Evidence', color: 'var(--flowx-yellow-500, #feb913)', bgColor: 'var(--flowx-yellow-50, #fff8e7)', tone: 'warning', icon: 'pi pi-exclamation-triangle', items: yellow },
+      { label: 'Fully Covered', color: 'var(--flowx-green-500, #008060)', bgColor: 'var(--flowx-green-50, #e6f2ef)', tone: 'success', icon: 'pi pi-check-circle', items: green },
     ]
   }
 

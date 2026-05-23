@@ -10,6 +10,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './risk-dashboard.component.html',
+    styleUrl: './risk-dashboard.component.scss',
     standalone: false,
     providers: [MessageService],
 })
