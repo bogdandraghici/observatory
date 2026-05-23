@@ -1,13 +1,12 @@
-// Project Card Styles
-// Matching landing page card design language
+// Project Card — V1 Symmetric KPI grid
+// Tight identity header (title + ID + last-run meta + actions), divider,
+// and a 3×2 metric grid with internal-only borders.
 
-// Host element
 :host {
   display: block;
   width: 100%;
 }
 
-// PrimeNG overrides
 ::ng-deep {
   .p-inplace {
     display: block;
@@ -22,220 +21,416 @@
   }
 }
 
-// Project Card
+// ─────────────────────────────────────────────
+// Card
+// ─────────────────────────────────────────────
 .project-card {
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  transition: all 300ms ease;
+  border-radius: var(--flowx-radius-16, 16px);
+  background: var(--flowx-surface-primary);
+  border: none;
+  box-shadow: var(--flowx-shadow-xs);
   height: 100%;
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
+  overflow: hidden;
+  transition: box-shadow 200ms ease, transform 200ms ease;
 
   &:hover {
-    transform: translateY(-4px);
-    border-color: var(--surface-400);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  }
-
-  // Header
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-  }
-
-  &__title-section {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-
-    &:hover {
-      .project-card__edit-icon {
-        opacity: 1;
-      }
-    }
-  }
-
-  &__name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__edit-icon {
-    font-size: 0.75rem;
-    color: var(--p-primary-color);
-    opacity: 0;
-    transition: opacity 150ms ease;
-  }
-
-  &__edit-form {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  &__edit-input {
-    flex: 1;
-    font-size: 0.875rem;
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex-shrink: 0;
-  }
-
-  // ID Row
-  &__id-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--surface-border);
-  }
-
-  &__id {
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    font-size: 0.75rem;
-    color: var(--text-color-secondary);
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__copy-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: none;
-    border-radius: 0.25rem;
-    background: transparent;
-    color: var(--text-color-secondary);
-    cursor: pointer;
-    transition: all 150ms ease;
-    flex-shrink: 0;
-
-    &:hover {
-      background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
-      color: var(--p-primary-color);
-    }
-
-    i {
-      font-size: 0.75rem;
-    }
-  }
-
-  // Stats Grid
-  &__stats {
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-    flex: 1;
-  }
-
-  // Empty State
-  &__empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-    color: var(--text-color-secondary);
-    text-align: center;
-    flex: 1;
-
-    i {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      opacity: 0.5;
-    }
-
-    span {
-      font-size: 0.875rem;
-    }
+    transform: translateY(-2px);
+    box-shadow: var(--flowx-shadow-m);
   }
 }
 
-// Stats Row
-.stat-row {
+// ─────────────────────────────────────────────
+// Identity header
+// ─────────────────────────────────────────────
+.project-card__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--flowx-neutrals-50);
+}
+
+.project-card__identity {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-// Stat Item
-.stat-item {
+// Avatar tile — mirrors `.getting-started__icon` (44×44, blue-50/blue-600)
+.project-card__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--flowx-radius-8, 8px);
+  background: var(--flowx-blue-50);
+  color: var(--flowx-blue-600);
+  font-size: 18px;
+  flex-shrink: 0;
+
+  i { line-height: 1; }
+}
+
+.project-card__title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  &:hover .project-card__edit-icon {
+    opacity: 1;
+  }
+}
+
+.project-card__name {
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--flowx-text-primary);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-card__edit-icon {
+  font-size: 11px;
+  color: var(--flowx-interactive);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.project-card__edit-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-card__edit-input {
+  flex: 1;
+  font-size: 14px;
+}
+
+// Meta row: id · copy · last run
+.project-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.project-card__id {
+  font-family: var(--flowx-font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--flowx-text-secondary);
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.project-card__copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: var(--flowx-radius-4, 4px);
+  background: transparent;
+  color: var(--flowx-text-secondary);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-interactive);
+  }
+
+  i {
+    font-size: 11px;
+  }
+}
+
+.project-card__last-run {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--flowx-text-secondary);
+  white-space: nowrap;
+}
+
+.project-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-top: -4px;
+  margin-right: -8px;
+}
+
+// ─────────────────────────────────────────────
+// KPI grid — 3 columns × 2 rows, internal borders only
+// ─────────────────────────────────────────────
+.project-card__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex: 1;
+}
+
+.kpi-tile {
+  padding: 16px 18px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
+  position: relative;
 
-  &--right {
-    text-align: right;
-    align-items: flex-end;
+  // Internal borders only — right border on cols 1,2; bottom border on row 1.
+  &:not(:nth-child(3n)) {
+    border-right: 1px solid var(--flowx-neutrals-50);
+  }
+  &:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--flowx-neutrals-50);
   }
 
   &__label {
-    font-size: 0.6875rem;
-    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--text-color-secondary);
-    white-space: nowrap;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 8px;
+    min-width: 0;
+  }
+
+  &__icon {
+    font-size: 12px;
+    color: var(--flowx-text-secondary);
+    align-self: center;
+    margin-right: 2px;
   }
 
   &__value {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-color);
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-    &--small {
-      font-size: 0.875rem;
-      font-weight: 500;
+  &__unit {
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__sub {
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--flowx-text-secondary);
+    margin-top: 6px;
+  }
+
+  // Tone — "good" colors value, unit, and icon green.
+  &--good {
+    .kpi-tile__value,
+    .kpi-tile__unit,
+    .kpi-tile__icon {
+      color: var(--flowx-green-700);
+    }
+  }
+  &--warn {
+    .kpi-tile__value,
+    .kpi-tile__unit,
+    .kpi-tile__icon {
+      color: var(--flowx-yellow-700);
+    }
+  }
+  &--bad {
+    .kpi-tile__value,
+    .kpi-tile__unit,
+    .kpi-tile__icon {
+      color: var(--flowx-red-600);
+    }
+  }
+  &--muted {
+    .kpi-tile__value {
+      color: var(--flowx-text-disabled);
     }
   }
 }
 
-// Action buttons
+// Two-column fallback at narrow widths (e.g. single-column projects-grid on mobile)
+@media (max-width: 480px) {
+  .project-card__kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kpi-tile {
+    border-right: none !important;
+    border-bottom: 1px solid var(--flowx-neutrals-50);
+
+    &:not(:nth-child(2n)) {
+      border-right: 1px solid var(--flowx-neutrals-50) !important;
+    }
+    &:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Empty state
+// ─────────────────────────────────────────────
+.project-card__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  color: var(--flowx-text-secondary);
+  text-align: center;
+  flex: 1;
+
+  i {
+    font-size: 28px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+// ─────────────────────────────────────────────
+// Action button overrides — keep them quiet so they don't fight the header
+// ─────────────────────────────────────────────
 ::ng-deep {
   .project-card__actions {
     .p-button-icon-only {
-      width: 2rem;
-      height: 2rem;
-      padding: 0;
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      padding: 0 !important;
       background: transparent;
       border: none;
-      color: var(--text-color-secondary);
+      color: var(--flowx-text-secondary);
+      border-radius: var(--flowx-radius-8, 8px);
+      transition: background-color 120ms ease, color 120ms ease;
+      display: grid !important;
+      place-items: center !important;
+      gap: 0 !important;
+      line-height: 1;
+
+      .p-button-icon,
+      .p-icon-wrapper,
+      .pi {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1;
+        font-size: 15px;
+        display: block;
+      }
+
+      // PrimeNG ships an empty label span (`&nbsp;`) for icon-only buttons —
+      // it nudges the icon off-center even with display: none losing the
+      // specificity battle. Force it out.
+      .p-button-label {
+        display: none !important;
+      }
 
       &:hover {
-        background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
-        color: var(--p-primary-color);
+        background: var(--flowx-neutrals-50);
+        color: var(--flowx-interactive);
       }
 
-      &.p-button-danger:hover {
-        background: rgba(248, 113, 113, 0.1);
-        color: var(--flowx-red-400, #ee6b54);
+      &.p-button-danger:hover,
+      &.p-button-secondary:hover .pi-trash {
+        color: var(--flowx-red-500);
       }
     }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Dark-mode overrides
+// CLAUDE.md: pastels (green-50, blue-50) and dark text steps (green-700)
+// need explicit treatment on the dark slate.
+// ─────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .project-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  // neutrals-50 (#f7f8f9) reads as stark white on the dark card —
+  // swap for a faint white tint that mirrors the same "barely there" feel.
+  .project-card__header,
+  .kpi-tile {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  .project-card__avatar {
+    background: rgba(51, 137, 224, 0.18);
+    color: var(--flowx-blue-300);
+  }
+
+  .project-card__copy-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .kpi-tile {
+    &--good {
+      .kpi-tile__value,
+      .kpi-tile__unit,
+      .kpi-tile__icon {
+        color: var(--flowx-green-300);
+      }
+    }
+    &--warn {
+      .kpi-tile__value,
+      .kpi-tile__unit,
+      .kpi-tile__icon {
+        color: var(--flowx-yellow-400);
+      }
+    }
+    &--bad {
+      .kpi-tile__value,
+      .kpi-tile__unit,
+      .kpi-tile__icon {
+        color: var(--flowx-red-300);
+      }
+    }
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .project-card__actions {
+  .p-button-icon-only:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-interactive);
   }
 }

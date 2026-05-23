@@ -1,142 +1,169 @@
 <div class="project-card">
-  <!-- Header -->
+  <!-- Identity Header -->
   <div class="project-card__header">
-    <div class="project-card__title-section">
-      <p-inplace
-        #projectName
-        [closable]="true"
-        [active]="activeProjectEdit"
-        pTooltip="Click to edit project name"
-      >
-        <ng-template pTemplate="display">
-          <div class="project-card__title">
-            <span class="project-card__name">{{ app.name }}</span>
-            <i class="pi pi-pencil project-card__edit-icon"></i>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="content">
-          <div class="project-card__edit-form">
-            <input
-              pInputText
-              id="currentApp"
-              [value]="app.name"
-              [(ngModel)]="app.name"
-              class="project-card__edit-input"
-            />
-            <p-button
-              icon="pi pi-check"
-              (onClick)="saveItem($event, projectName, app)"
-              [rounded]="true"
-              severity="success"
-              size="small"
-            ></p-button>
-          </div>
-        </ng-template>
-      </p-inplace>
-    </div>
+    <div class="project-card__identity">
+      <div class="project-card__avatar" aria-hidden="true">
+        <i class="pi pi-folder"></i>
+      </div>
+      <div class="project-card__title-section">
+        <p-inplace
+          #projectName
+          [closable]="true"
+          [active]="activeProjectEdit"
+          pTooltip="Click to edit project name"
+        >
+          <ng-template pTemplate="display">
+            <div class="project-card__title">
+              <span class="project-card__name">{{ app.name }}</span>
+              <i class="pi pi-pencil project-card__edit-icon"></i>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="content">
+            <div class="project-card__edit-form">
+              <input
+                pInputText
+                id="currentApp"
+                [value]="app.name"
+                [(ngModel)]="app.name"
+                class="project-card__edit-input"
+              />
+              <p-button
+                icon="pi pi-check"
+                (onClick)="saveItem($event, projectName, app)"
+                [rounded]="true"
+                severity="success"
+                size="small"
+              ></p-button>
+            </div>
+          </ng-template>
+        </p-inplace>
 
-    <div class="project-card__actions">
-      <p-button
-        icon="pi pi-code"
-        [rounded]="true"
-        [text]="true"
-        severity="primary"
-        (click)="integrate.emit(app)"
-        pTooltip="Integrate"
-        size="small"
-      ></p-button>
-      <p-button
-        [icon]="app.is_default ? 'pi pi-star-fill' : 'pi pi-star'"
-        [rounded]="true"
-        [text]="true"
-        [severity]="app.is_default ? 'warning' : 'secondary'"
-        (click)="setDefault($event)"
-        [pTooltip]="
-          app.is_default
-            ? 'Default project'
-            : 'Set as default'
-        "
-        size="small"
-      ></p-button>
-      <p-button
-        icon="pi pi-trash"
-        [rounded]="true"
-        [text]="true"
-        severity="secondary"
-        (click)="confirmDelete($event)"
-        pTooltip="Archive project"
-        size="small"
-      ></p-button>
+        <!-- Meta row: ID + last run -->
+        <div class="project-card__meta">
+          <code class="project-card__id">{{ app.id }}</code>
+          <button
+            class="project-card__copy-btn"
+            (click)="copyToClipboard($event)"
+            pTooltip="Copy project ID"
+          >
+            <i class="pi pi-copy"></i>
+          </button>
+          @if (app.stats?.most_recent_run) {
+            <span class="project-card__last-run" pTooltip="Last run">
+              Last run · {{ formatTime(app.stats.most_recent_run) }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="project-card__actions">
+        <p-button
+          icon="pi pi-code"
+          [rounded]="true"
+          [text]="true"
+          severity="primary"
+          (click)="integrate.emit(app)"
+          pTooltip="Integrate"
+          size="small"
+        ></p-button>
+        <p-button
+          [icon]="app.is_default ? 'pi pi-star-fill' : 'pi pi-star'"
+          [rounded]="true"
+          [text]="true"
+          [severity]="app.is_default ? 'warning' : 'secondary'"
+          (click)="setDefault($event)"
+          [pTooltip]="
+            app.is_default
+              ? 'Default project'
+              : 'Set as default'
+          "
+          size="small"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          (click)="confirmDelete($event)"
+          pTooltip="Archive project"
+          size="small"
+        ></p-button>
+      </div>
     </div>
   </div>
 
-  <!-- ID Row -->
-  <div class="project-card__id-row">
-    <code class="project-card__id">{{ app.id }}</code>
-    <button
-      class="project-card__copy-btn"
-      (click)="copyToClipboard($event)"
-      pTooltip="Copy project ID"
-    >
-      <i class="pi pi-copy"></i>
-    </button>
-  </div>
-
-  <!-- Stats Grid -->
+  <!-- KPI Grid -->
   @if (app.stats) {
-    <div class="project-card__stats">
-      <div class="stat-row">
-        <div class="stat-item">
-          <span class="stat-item__label">Run Count (7D)</span>
-          <span class="stat-item__value">{{ app.stats.run_cnt || 0 }}</span>
+    <div class="project-card__kpis">
+      <div class="kpi-tile">
+        <span class="kpi-tile__label">Run count</span>
+        <div class="kpi-tile__value-row">
+          <span class="kpi-tile__value">{{ app.stats.run_cnt || 0 }}</span>
         </div>
-        <div class="stat-item stat-item--right">
-          <span class="stat-item__label">Error Rate (7D)</span>
-          <span class="stat-item__value">{{ app.stats.error_rate || 0 }}</span>
-        </div>
+        <span class="kpi-tile__sub">7 day</span>
       </div>
 
-      <div class="stat-row">
-        <div class="stat-item">
-          <span class="stat-item__label">Streams (7D)</span>
-          <span class="stat-item__value">{{ app.stats.streamed_cnt || 0 }}</span>
+      <div class="kpi-tile">
+        <span class="kpi-tile__label">Median tokens</span>
+        <div class="kpi-tile__value-row">
+          <span class="kpi-tile__value">{{ app.stats.median_tokens || '-' }}</span>
         </div>
+        <span class="kpi-tile__sub">7 day</span>
       </div>
 
-      <div class="stat-row">
-        <div class="stat-item">
-          <span class="stat-item__label">Median Tokens (7D)</span>
-          <span class="stat-item__value">{{ app.stats.median_tokens || '-' }}</span>
+      <div
+        class="kpi-tile"
+        [class.kpi-tile--good]="getLatency(processDuration(app.stats.p50_latency)) === 'success'"
+        [class.kpi-tile--warn]="getLatency(processDuration(app.stats.p50_latency)) === 'warning'"
+        [class.kpi-tile--bad]="getLatency(processDuration(app.stats.p50_latency)) === 'danger'"
+      >
+        <span class="kpi-tile__label">P50 latency</span>
+        <div class="kpi-tile__value-row">
+          <i class="pi pi-clock kpi-tile__icon"></i>
+          <span class="kpi-tile__value">{{ processDuration(app.stats.p50_latency) }}</span>
+          <span class="kpi-tile__unit">s</span>
         </div>
-        <div class="stat-item stat-item--right">
-          <span class="stat-item__label">P50 Latency (7D)</span>
-          <span class="stat-item__value">
-            <p-tag
-              icon="pi pi-clock"
-              [value]="processDuration(app.stats.p50_latency) + 's'"
-              [severity]="getLatency(processDuration(app.stats.p50_latency))"
-            ></p-tag>
-          </span>
-        </div>
+        <span class="kpi-tile__sub">7 day</span>
       </div>
 
-      <div class="stat-row">
-        <div class="stat-item">
-          <span class="stat-item__label">Last Run (7D)</span>
-          <span class="stat-item__value stat-item__value--small">{{
-            formatTime(app.stats.most_recent_run)
-          }}</span>
+      <div
+        class="kpi-tile"
+        [class.kpi-tile--good]="(app.stats.error_rate || 0) === 0"
+        [class.kpi-tile--warn]="(app.stats.error_rate || 0) > 0 && (app.stats.error_rate || 0) < 5"
+        [class.kpi-tile--bad]="(app.stats.error_rate || 0) >= 5"
+      >
+        <span class="kpi-tile__label">Error rate</span>
+        <div class="kpi-tile__value-row">
+          <span class="kpi-tile__value">{{ app.stats.error_rate || 0 }}</span>
+          <span class="kpi-tile__unit">%</span>
         </div>
-        <div class="stat-item stat-item--right">
-          <span class="stat-item__label">P90 Latency (7D)</span>
-          <span class="stat-item__value">
-            <p-tag
-              icon="pi pi-clock"
-              [value]="processDuration(app.stats.p90_latency) + 's'"
-              [severity]="getLatency(processDuration(app.stats.p90_latency))"
-            ></p-tag>
-          </span>
+        <span class="kpi-tile__sub">7 day</span>
+      </div>
+
+      <div
+        class="kpi-tile"
+        [class.kpi-tile--muted]="(app.stats.streamed_cnt || 0) === 0"
+      >
+        <span class="kpi-tile__label">Streams</span>
+        <div class="kpi-tile__value-row">
+          <span class="kpi-tile__value">{{ app.stats.streamed_cnt || 0 }}</span>
         </div>
+        <span class="kpi-tile__sub">7 day</span>
+      </div>
+
+      <div
+        class="kpi-tile"
+        [class.kpi-tile--good]="getLatency(processDuration(app.stats.p90_latency)) === 'success'"
+        [class.kpi-tile--warn]="getLatency(processDuration(app.stats.p90_latency)) === 'warning'"
+        [class.kpi-tile--bad]="getLatency(processDuration(app.stats.p90_latency)) === 'danger'"
+      >
+        <span class="kpi-tile__label">P90 latency</span>
+        <div class="kpi-tile__value-row">
+          <i class="pi pi-clock kpi-tile__icon"></i>
+          <span class="kpi-tile__value">{{ processDuration(app.stats.p90_latency) }}</span>
+          <span class="kpi-tile__unit">s</span>
+        </div>
+        <span class="kpi-tile__sub">7 day</span>
       </div>
     </div>
   }
