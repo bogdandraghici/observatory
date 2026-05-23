@@ -392,8 +392,8 @@
               <div class="col-12">
                 <div class="flex gap-2">
                   <p-button label="Compute" icon="pi pi-calculator" (onClick)="computeFinancial()" [loading]="loading"></p-button>
-                  <p-button label="Compute (Per-Agent)" icon="pi pi-users" severity="info" (onClick)="computeFinancialByAgents()" [loading]="loading" [disabled]="agentBaselines.length === 0"></p-button>
-                  <p-button label="Save" icon="pi pi-save" severity="secondary" (onClick)="saveFinancial()" [disabled]="!financialResult"></p-button>
+                  <p-button label="Compute (Per-Agent)" icon="pi pi-users" severity="primary" [outlined]="true" (onClick)="computeFinancialByAgents()" [loading]="loading" [disabled]="agentBaselines.length === 0"></p-button>
+                  <p-button label="Save" icon="pi pi-save" severity="primary" [outlined]="true" (onClick)="saveFinancial()" [disabled]="!financialResult"></p-button>
                 </div>
               </div>
 
@@ -753,7 +753,7 @@
               <div class="col-12">
                 <div class="flex gap-2">
                   <p-button label="Compute" icon="pi pi-calculator" (onClick)="computeCompliance()" [loading]="loading"></p-button>
-                  <p-button label="Save" icon="pi pi-save" severity="secondary" (onClick)="saveCompliance()" [disabled]="!complianceResult"></p-button>
+                  <p-button label="Save" icon="pi pi-save" severity="primary" [outlined]="true" (onClick)="saveCompliance()" [disabled]="!complianceResult"></p-button>
                 </div>
               </div>
 
@@ -909,8 +909,8 @@
                     </div>
                     <div class="flex gap-2">
                       <p-button label="Add Alternative" icon="pi pi-plus" (onClick)="openNewBenchmark()"></p-button>
-                      <p-button label="Compare" icon="pi pi-chart-bar" severity="secondary" (onClick)="compareBenchmarks()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
-                      <p-button label="5-Year TCO" icon="pi pi-calendar" severity="help" (onClick)="compare5Year()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
+                      <p-button label="Compare" icon="pi pi-chart-bar" severity="primary" [outlined]="true" (onClick)="compareBenchmarks()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
+                      <p-button label="5-Year TCO" icon="pi pi-calendar" severity="primary" [outlined]="true" (onClick)="compare5Year()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
                     </div>
                   </div>
                   <p-table [value]="benchmarks" styleClass="p-datatable-sm p-datatable-gridlines">
