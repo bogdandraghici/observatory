@@ -420,3 +420,660 @@
     color: #8abbed;
   }
 }
+
+/* ============================================================
+ * Compliance Report card — three-band hierarchy
+ * (editorial header / category-card list / metadata bar)
+ * Light mode below; dark overrides at the bottom of the block.
+ * ============================================================ */
+.report-card {
+  font-family: var(--flowx-font-primary);
+
+  /* ── Empty state ─────────────────────────────────────────── */
+  &__empty {
+    margin: 8px 0 4px;
+    padding: 56px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--flowx-surface-secondary);
+    border: 1px dashed var(--flowx-border-default);
+    border-radius: var(--flowx-radius-12);
+  }
+  &__empty-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--flowx-radius-12);
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    color: var(--flowx-text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  &__empty-title {
+    margin: 0 0 4px;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.005em;
+  }
+  &__empty-text {
+    margin: 0;
+    max-width: 360px;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--flowx-text-secondary);
+
+    strong { color: var(--flowx-text-primary); font-weight: 600; }
+  }
+
+  /* ── Editorial header (framework + overall + KPIs) ──────── */
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 4px 4px 24px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--flowx-border-default);
+  }
+  &__head-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  &__head-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  &__overline {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
+  &__title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--flowx-text-primary);
+  }
+  &__project {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    align-self: flex-start;
+    margin-top: 2px;
+    padding: 2px 9px 2px 7px;
+    background: var(--flowx-neutrals-50);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: 9999px;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+  }
+  &__project-icon {
+    font-size: 10px;
+    color: var(--flowx-text-secondary);
+  }
+  &__overall {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  &__overall-value {
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+  }
+  &__overall-unit {
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 1px;
+    letter-spacing: -0.005em;
+  }
+  &__overall-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--flowx-neutrals-100);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  &__progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-12);
+    background: var(--flowx-surface-primary);
+    overflow: hidden;
+  }
+  &__kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 16px;
+    min-width: 0;
+    border-right: 1px solid var(--flowx-border-default);
+    position: relative;
+
+    &:last-child { border-right: none; }
+  }
+  &__kpi-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--flowx-neutrals-300);
+    margin-bottom: 3px;
+  }
+  &__kpi-value {
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+  }
+  &__kpi-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+  &__kpi--compliant       .report-card__kpi-dot { background: var(--flowx-green-500); }
+  &__kpi--in-progress     .report-card__kpi-dot { background: var(--flowx-blue-500); }
+  &__kpi--not-started     .report-card__kpi-dot { background: var(--flowx-neutrals-300); }
+  &__kpi--non-compliant   .report-card__kpi-dot { background: var(--flowx-red-500); }
+
+  /* ── Category card (consolidated) ────────────────────────── */
+  &__group {
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-12);
+    overflow: hidden;
+
+    + .report-card__group { margin-top: 8px; }
+  }
+  &__group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    background: var(--flowx-neutrals-50);
+    border-bottom: 1px solid var(--flowx-border-default);
+  }
+  &__group-titles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  &__group-title {
+    margin: 0;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--flowx-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__group-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9999px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--flowx-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  &__group-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  &__group-fraction {
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--flowx-text-secondary);
+    font-variant-numeric: tabular-nums;
+
+    strong { color: var(--flowx-text-primary); font-weight: 700; }
+  }
+  &__group-slash {
+    color: var(--flowx-text-disabled);
+    margin: 0 2px;
+  }
+  &__group-track {
+    width: 100px;
+    height: 4px;
+    background: var(--flowx-neutrals-100);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  &__group-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &__group-percent {
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    font-variant-numeric: tabular-nums;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* ── Requirement (accordion) ─────────────────────────────── */
+  &__req-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  &__req-code {
+    font-family: var(--flowx-font-monospace);
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--flowx-text-secondary);
+    padding: 2px 7px;
+    background: var(--flowx-neutrals-50);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-4);
+    flex: 0 0 auto;
+  }
+  &__req-title {
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 1 auto;
+  }
+  &__req-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px 2px 7px;
+    border-radius: 9999px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-text-secondary);
+    border: 1px solid var(--flowx-border-default);
+    flex: 0 0 auto;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  &__req-status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--flowx-neutrals-400);
+  }
+  &__req-status--compliant {
+    background: var(--flowx-green-50);
+    color: var(--flowx-green-700);
+    border-color: transparent;
+    .report-card__req-status-dot { background: var(--flowx-green-500); }
+  }
+  &__req-status--in_progress {
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-700);
+    border-color: transparent;
+    .report-card__req-status-dot { background: var(--flowx-blue-500); }
+  }
+  &__req-status--not_started {
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-text-secondary);
+    .report-card__req-status-dot { background: var(--flowx-neutrals-300); }
+  }
+  &__req-status--non_compliant {
+    background: var(--flowx-red-50);
+    color: var(--flowx-red-700);
+    border-color: transparent;
+    .report-card__req-status-dot { background: var(--flowx-red-500); }
+  }
+  &__req-status--not_applicable {
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-text-secondary);
+    .report-card__req-status-dot { background: var(--flowx-neutrals-400); }
+  }
+
+  &__req-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+  }
+  &__req-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--flowx-text-secondary);
+    max-width: 92%;
+  }
+  &__req-meta {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 8px 14px;
+    background: var(--flowx-neutrals-50);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-6);
+  }
+  &__req-meta-cell {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding-right: 16px;
+
+    &--empty .report-card__req-meta-value {
+      color: var(--flowx-text-disabled);
+      font-weight: 600;
+    }
+  }
+  &__req-meta-divider {
+    width: 1px;
+    height: 12px;
+    background: var(--flowx-border-default);
+    margin-right: 16px;
+  }
+  &__req-meta-value {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.005em;
+  }
+  &__req-meta-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__req-extras {
+    margin: 0;
+    padding: 10px 12px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-6);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  &__req-extra {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  &__req-extra-label {
+    margin: 0;
+    font-size: 10px;
+    line-height: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+  &__req-extra-value {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--flowx-text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  &__req-extra-icon {
+    font-size: 11px;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+/* ── PrimeNG accordion restyle (scoped to .report-card) ──────
+ * Strips PrimeNG's panel borders/backgrounds so each requirement
+ * sits flush within the consolidated category card. Items get a
+ * thin top divider; the first one inherits the category header's
+ * bottom border so we don't double up.
+ *
+ * Padding is applied on a SINGLE inner element so it isn't doubled
+ * by nested PrimeNG wrappers (which happens with the v18 markup).
+ * Header padding and content padding share the same horizontal
+ * value so the description aligns with the requirement code chip. */
+:host ::ng-deep .report-card {
+  .report-card__acc.p-accordion,
+  .report-card__acc .p-accordion {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .report-card__acc .p-accordionpanel {
+    background: var(--flowx-surface-primary);
+    border: 0;
+    border-top: 1px solid var(--flowx-border-default);
+    margin: 0;
+    padding: 0;
+
+    &:first-child { border-top: 0; }
+
+    &:hover { background: var(--flowx-surface-secondary); }
+  }
+  .report-card__acc .p-accordionheader {
+    background: transparent !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 8px 14px !important;
+    color: var(--flowx-text-primary) !important;
+    font-weight: 500;
+    border-radius: 0 !important;
+    gap: 12px;
+    min-height: 0;
+
+    /* PrimeNG sometimes wraps header content in nested spans/buttons
+     * with default margins — flatten them so the row doesn't gain
+     * extra bottom space. */
+    > * { margin: 0 !important; }
+
+    &:hover { background: transparent !important; }
+    &:focus-visible { box-shadow: inset 0 0 0 2px var(--flowx-blue-500); outline: 0; }
+
+    /* PrimeNG toggle icon stays on the right; keep it muted */
+    .p-icon, svg {
+      color: var(--flowx-text-disabled);
+      transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
+  .report-card__acc .p-accordionpanel.p-accordionpanel-active > .p-accordionheader {
+    background: var(--flowx-neutrals-50) !important;
+  }
+
+  /* Outer wrappers — strip ALL padding/margin so the inner cell
+   * is the single source of spacing (PrimeNG nests up to 3 levels). */
+  .report-card__acc .p-accordioncontent,
+  .report-card__acc .p-accordion-content,
+  .report-card__acc .p-accordioncontent-wrapper {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Innermost content cell — single source of padding.
+   * Horizontal 14px matches the header so the description's left
+   * edge aligns with the requirement code chip. */
+  .report-card__acc .p-accordioncontent-content {
+    background: var(--flowx-surface-primary) !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 10px 14px 14px 14px !important;
+  }
+}
+
+/* ============================================================
+ * Dark mode — translucent saturated fills so the dark surface
+ * shows through (per CLAUDE.md guidance). Status tokens lift
+ * to the dark-mode palette stops.
+ * ============================================================ */
+:host-context(.flowx-dark) .report-card {
+  &__empty {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--flowx-border-default);
+  }
+  &__empty-icon {
+    background: var(--flowx-surface-primary);
+    border-color: var(--flowx-border-default);
+  }
+
+  &__head { border-bottom-color: var(--flowx-border-default); }
+
+  &__project {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--flowx-border-default);
+  }
+
+  &__progress-track { background: rgba(255, 255, 255, 0.06); }
+
+  &__kpis { border-color: var(--flowx-border-default); }
+  &__kpi { border-right-color: var(--flowx-border-default); }
+  &__kpi--compliant     .report-card__kpi-dot { background: #54aa94; }
+  &__kpi--in-progress   .report-card__kpi-dot { background: #3389e0; }
+  &__kpi--not-started   .report-card__kpi-dot { background: var(--flowx-neutrals-400); }
+  &__kpi--non-compliant .report-card__kpi-dot { background: #ee6b54; }
+
+  &__group {
+    border-color: var(--flowx-border-default);
+  }
+  &__group-head {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom-color: var(--flowx-border-default);
+  }
+  &__group-count {
+    background: var(--flowx-surface-primary);
+    border-color: var(--flowx-border-default);
+  }
+  &__group-track { background: rgba(255, 255, 255, 0.06); }
+
+  &__req-code {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--flowx-border-default);
+  }
+  &__req-status {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--flowx-border-default);
+  }
+  &__req-status--compliant {
+    background: rgba(0, 128, 96, 0.28);
+    color: #8ac5b6;
+    .report-card__req-status-dot { background: #54aa94; }
+  }
+  &__req-status--in_progress {
+    background: rgba(51, 137, 224, 0.28);
+    color: #8abbed;
+    .report-card__req-status-dot { background: #3389e0; }
+  }
+  &__req-status--not_started {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+    .report-card__req-status-dot { background: var(--flowx-neutrals-400); }
+  }
+  &__req-status--non_compliant {
+    background: rgba(230, 34, 0, 0.32);
+    color: #f4998a;
+    .report-card__req-status-dot { background: #ee6b54; }
+  }
+  &__req-status--not_applicable {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+  }
+
+  &__req-meta {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--flowx-border-default);
+  }
+  &__req-meta-divider { background: var(--flowx-border-default); }
+
+  &__req-extras {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--flowx-border-default);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .report-card {
+  .report-card__acc .p-accordionpanel {
+    background: var(--flowx-surface-primary);
+    border-top-color: var(--flowx-border-default);
+
+    &:hover { background: rgba(255, 255, 255, 0.025); }
+  }
+  .report-card__acc .p-accordionpanel.p-accordionpanel-active > .p-accordionheader {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+  .report-card__acc .p-accordioncontent,
+  .report-card__acc .p-accordioncontent-wrapper,
+  .report-card__acc .p-accordion-content,
+  .report-card__acc .p-accordioncontent-content {
+    background: var(--flowx-surface-primary) !important;
+  }
+}
