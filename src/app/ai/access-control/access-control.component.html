@@ -160,18 +160,34 @@
 </div>
 
 <!-- Invite Member Dialog -->
-<p-dialog header="Add Member" [(visible)]="inviteDialogVisible" [modal]="true" [style]="{width: '25rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div>
-      <label class="font-semibold block mb-1">User ID</label>
-      <input type="text" pInputText [(ngModel)]="newMember.user_id" class="w-full" />
+<p-dialog
+  [(visible)]="inviteDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Add Member</h2>
+      <p class="flowx-modal__subtitle">Grant a teammate access to this workspace under a chosen role</p>
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Email</label>
-      <input type="text" pInputText [(ngModel)]="newMember.user_email" class="w-full" />
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">User ID</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="newMember.user_id" />
     </div>
-    <div>
-      <label class="font-semibold block mb-1">Role</label>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Email</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="newMember.user_email" />
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Role</span>
       <p-select
         [options]="roles"
         [(ngModel)]="newMember.role_id"
@@ -179,13 +195,16 @@
         optionValue="id"
         placeholder="Select Role"
         appendTo="body"
-        [style]="{'width':'100%'}"
+        size="small"
       ></p-select>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="inviteDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="inviteMember()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="inviteDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="inviteMember()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
