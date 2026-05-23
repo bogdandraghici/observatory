@@ -330,96 +330,108 @@
   </p-tabs>
 </div>
 
-<!-- Project Detail Dialog -->
+<!-- Project Detail Dialog — FlowX S modal -->
 <p-dialog
   [(visible)]="appDialogVisible"
-  header="Edit Project"
   [modal]="true"
-  [style]="{width: '36rem'}"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
 >
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Edit Project</h2>
+      <p class="flowx-modal__subtitle">Configure governance metadata and ownership</p>
+    </div>
+  </ng-template>
+
   @if (selectedApp) {
-    <div class="flex flex-col gap-4 pt-2">
-      <div style="background: var(--surface-ground); border-left: 3px solid var(--primary-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
-        <div class="text-sm font-semibold mb-1" style="color: var(--primary-color)">Project Governance</div>
-        <div class="text-sm" style="color: var(--text-color-secondary); line-height: 1.5">
+    <div class="flowx-modal__body">
+      <div class="flowx-modal__notice">
+        <div class="flowx-modal__notice-title">Project Governance</div>
+        <div class="flowx-modal__notice-text">
           Configure governance metadata for this auto-discovered project. Set lifecycle status, risk level,
           and ownership to track compliance posture. Tags help categorize projects for policy assignments and reporting.
         </div>
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Name</label>
-        <input type="text" pInputText [ngModel]="selectedApp.name" class="w-full" [disabled]="true" />
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Name</span>
+        <input type="text" pInputText pSize="small" [ngModel]="selectedApp.name" [disabled]="true" />
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Description</label>
-        <textarea pTextarea [(ngModel)]="selectedApp.description" [rows]="3" class="w-full" placeholder="Project description"></textarea>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Description</span>
+        <textarea pTextarea pSize="small" [(ngModel)]="selectedApp.description" [rows]="3" placeholder="Project description"></textarea>
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Owner</label>
-        <input type="text" pInputText [(ngModel)]="selectedApp.owner" class="w-full" placeholder="Project owner" />
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Owner</span>
+        <input type="text" pInputText pSize="small" [(ngModel)]="selectedApp.owner" placeholder="Project owner" />
       </div>
-      <div class="flex gap-4">
-        <div class="flex-1">
-          <label class="font-semibold block mb-1">Lifecycle Status</label>
-          <p-select
-            [options]="lifecycleEditOptions"
-            [(ngModel)]="selectedApp.lifecycle_status"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select lifecycle"
-            [showClear]="true"
-            appendTo="body"
-            class="w-full"
-          ></p-select>
-        </div>
-        <div class="flex-1">
-          <label class="font-semibold block mb-1">Risk Level</label>
-          <p-select
-            [options]="riskEditOptions"
-            [(ngModel)]="selectedApp.risk_level"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Select risk level"
-            [showClear]="true"
-            appendTo="body"
-            class="w-full"
-          ></p-select>
-        </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Lifecycle Status</span>
+        <p-select
+          [options]="lifecycleEditOptions"
+          [(ngModel)]="selectedApp.lifecycle_status"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select lifecycle"
+          [showClear]="true"
+          size="small"
+          appendTo="body"
+        ></p-select>
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Business Owner</label>
-        <input type="text" pInputText [(ngModel)]="selectedApp.business_owner" class="w-full" placeholder="Business owner name" />
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Risk Level</span>
+        <p-select
+          [options]="riskEditOptions"
+          [(ngModel)]="selectedApp.risk_level"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select risk level"
+          [showClear]="true"
+          size="small"
+          appendTo="body"
+        ></p-select>
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Technical Owner</label>
-        <input type="text" pInputText [(ngModel)]="selectedApp.technical_owner" class="w-full" placeholder="Technical owner name" />
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Business Owner</span>
+        <input type="text" pInputText pSize="small" [(ngModel)]="selectedApp.business_owner" placeholder="Business owner name" />
       </div>
-      <div>
-        <label class="font-semibold block mb-1">Tags</label>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Technical Owner</span>
+        <input type="text" pInputText pSize="small" [(ngModel)]="selectedApp.technical_owner" placeholder="Technical owner name" />
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Tags</span>
         <input
           type="text"
           pInputText
+          pSize="small"
           [ngModel]="selectedApp.tags?.join(', ')"
           (ngModelChange)="onTagsChange($event)"
-          class="w-full"
           placeholder="Comma-separated tags (e.g. production, ml, nlp)"
         />
         @if (selectedApp.tags?.length) {
-          <div class="flex flex-wrap gap-1 mt-2">
+          <div class="flex flex-wrap gap-1 mt-1">
             @for (tag of selectedApp.tags; track tag) {
               <p-chip [label]="tag"></p-chip>
             }
           </div>
         }
       </div>
-      <div class="text-sm" style="color: var(--text-color-secondary)">
-        Created: {{ selectedApp.created_at | date:'medium' }}
+      <div class="flowx-modal__meta">
+        Created {{ selectedApp.created_at | date:'medium' }}
       </div>
     </div>
   }
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="appDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="saveApp()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="appDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="saveApp()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 

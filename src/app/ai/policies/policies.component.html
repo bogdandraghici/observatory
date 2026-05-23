@@ -270,43 +270,61 @@
   </p-tabs>
 </div>
 
-<!-- Policy Dialog -->
-<p-dialog [(visible)]="policyDialogVisible" [header]="editMode ? 'Edit Policy' : 'Create Policy'" [modal]="true" [style]="{width: '42rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="grid">
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Name</label>
-        <input type="text" pInputText [(ngModel)]="policyForm.name" class="w-full" />
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Category</label>
-        <p-select [options]="categoryOptions" [(ngModel)]="policyForm.category" appendTo="body" [style]="{'width':'100%'}"></p-select>
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Description</label>
-        <textarea pInputTextarea [(ngModel)]="policyForm.description" class="w-full" rows="2"></textarea>
-      </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Enforcement Level</label>
-        <p-select [options]="enforcementOptions" [(ngModel)]="policyForm.enforcement_level" appendTo="body" [style]="{'width':'100%'}"></p-select>
-      </div>
+<!-- Policy Dialog — FlowX S modal -->
+<p-dialog
+  [(visible)]="policyDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ editMode ? 'Edit Policy' : 'Create Policy' }}</h2>
+      <p class="flowx-modal__subtitle">Configure category, enforcement, and rules</p>
     </div>
-    <div>
-      <label class="font-semibold block mb-2">Rules</label>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="policyForm.name" />
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Category</span>
+      <p-select [options]="categoryOptions" [(ngModel)]="policyForm.category" size="small" appendTo="body"></p-select>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Description</span>
+      <textarea pInputTextarea pSize="small" [(ngModel)]="policyForm.description" rows="2"></textarea>
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Enforcement Level</span>
+      <p-select [options]="enforcementOptions" [(ngModel)]="policyForm.enforcement_level" size="small" appendTo="body"></p-select>
+    </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Rules</span>
       @for (rule of policyForm.rules; track $index) {
-        <div class="flex items-center gap-2 mb-2">
-          <p-select [options]="metricOptions" [(ngModel)]="rule.metric" placeholder="Metric" appendTo="body" class="flex-1"></p-select>
-          <p-select [options]="operatorOptions" [(ngModel)]="rule.operator" placeholder="Op" appendTo="body" [style]="{width: '8rem'}"></p-select>
-          <input type="number" pInputText [(ngModel)]="rule.threshold" placeholder="Value" style="width:6rem;" />
-          <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" (click)="removeRule($index)"></p-button>
+        <div class="flowx-modal__rule-row">
+          <p-select [options]="metricOptions" [(ngModel)]="rule.metric" placeholder="Metric" size="small" appendTo="body" class="flowx-modal__rule-metric"></p-select>
+          <p-select [options]="operatorOptions" [(ngModel)]="rule.operator" placeholder="Op" size="small" appendTo="body" class="flowx-modal__rule-op"></p-select>
+          <input type="number" pInputText pSize="small" [(ngModel)]="rule.threshold" placeholder="Value" class="flowx-modal__rule-value" />
+          <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" size="small" (click)="removeRule($index)"></p-button>
         </div>
       }
       <p-button label="Add Rule" icon="pi pi-plus" severity="secondary" [text]="true" size="small" (click)="addRule()"></p-button>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="policyDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (onClick)="savePolicy()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="policyDialogVisible = false"></p-button>
+      <p-button label="Save" (onClick)="savePolicy()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 

@@ -120,45 +120,82 @@
   </div>
 </div>
 
-<!-- Audit Log Detail Dialog -->
-<p-dialog [(visible)]="detailDialogVisible" header="Audit Log Details" [modal]="true" [style]="{width: '36rem'}">
+<!-- Audit Log Detail Dialog — FlowX S modal -->
+<p-dialog
+  [(visible)]="detailDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [showHeader]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Audit log details</h2>
+      <p class="flowx-modal__subtitle">
+        @if (selectedLog) {
+          {{ selectedLog.created_at | date:'medium' }}
+        } @else {
+          Inspect the recorded action
+        }
+      </p>
+    </div>
+  </ng-template>
+
   @if (selectedLog) {
-    <div class="flex flex-col gap-4 pt-2">
-      <div class="grid">
-        <div class="col-6">
-          <label class="font-semibold block mb-1">Timestamp</label>
-          <span>{{ selectedLog.created_at | date:'medium' }}</span>
-        </div>
-        <div class="col-6">
-          <label class="font-semibold block mb-1">User</label>
-          <span>{{ selectedLog.user_email || selectedLog.user_id }}</span>
-        </div>
-        <div class="col-6">
-          <label class="font-semibold block mb-1">Action</label>
+    <div class="flowx-modal__body">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">User</span>
+        <div class="flowx-modal__field-value">{{ selectedLog.user_email || selectedLog.user_id || '—' }}</div>
+      </div>
+
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Action</span>
+        <div class="flowx-modal__field-value">
           <p-tag [value]="selectedLog.action" [severity]="getActionSeverity(selectedLog.action)"></p-tag>
         </div>
-        <div class="col-6">
-          <label class="font-semibold block mb-1">Resource Type</label>
-          <span>{{ selectedLog.resource_type }}</span>
-        </div>
-        <div class="col-6">
-          <label class="font-semibold block mb-1">Resource ID</label>
-          <span>{{ selectedLog.resource_id || '-' }}</span>
-        </div>
-        <div class="col-6">
-          <label class="font-semibold block mb-1">IP Address</label>
-          <span>{{ selectedLog.ip_address || '-' }}</span>
-        </div>
       </div>
+
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Resource Type</span>
+        <div class="flowx-modal__field-value">{{ selectedLog.resource_type || '—' }}</div>
+      </div>
+
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Resource ID</span>
+        <div class="flowx-modal__field-value flowx-modal__field-value--mono">{{ selectedLog.resource_id || '—' }}</div>
+      </div>
+
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">IP Address</span>
+        <div class="flowx-modal__field-value flowx-modal__field-value--mono">{{ selectedLog.ip_address || '—' }}</div>
+      </div>
+
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Timestamp</span>
+        <div class="flowx-modal__field-value">{{ selectedLog.created_at | date:'medium' }}</div>
+      </div>
+
       @if (selectedLog.details) {
-        <div>
-          <label class="font-semibold block mb-1">Details</label>
-          <pre class="p-4 rounded text-sm" style="background: var(--surface-ground);">{{ selectedLog.details | json }}</pre>
+        <div class="flowx-modal__field">
+          <span class="flowx-modal__field-label">Details</span>
+          <pre class="flowx-modal__details">{{ selectedLog.details | json }}</pre>
         </div>
       }
     </div>
   }
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-times" severity="secondary" (click)="detailDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button
+        label="Close"
+        severity="secondary"
+        [outlined]="true"
+        (click)="detailDialogVisible = false"
+      ></p-button>
+    </div>
   </ng-template>
 </p-dialog>
