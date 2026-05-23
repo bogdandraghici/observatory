@@ -192,29 +192,49 @@
 </div>
 
 <!-- Manual Evidence Dialog -->
-<p-dialog [(visible)]="evidenceDialogVisible" header="Add Manual Evidence" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="grid">
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Project</label>
-        <p-select [options]="apps" [(ngModel)]="evidenceForm.project_id" optionLabel="name" optionValue="id" appendTo="body" [style]="{'width':'100%'}"></p-select>
+<p-dialog
+  [(visible)]="evidenceDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Add Manual Evidence</h2>
+      <p class="flowx-modal__subtitle">Attach an artifact against a compliance requirement</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Project</span>
+        <p-select [options]="apps" [(ngModel)]="evidenceForm.project_id" optionLabel="name" optionValue="id" appendTo="body" size="small"></p-select>
       </div>
-      <div class="col-6">
-        <label class="font-semibold block mb-1">Source</label>
-        <p-select [options]="sourceOptions" [(ngModel)]="evidenceForm.source" appendTo="body" [style]="{'width':'100%'}"></p-select>
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Requirement ID</label>
-        <input type="text" pInputText [(ngModel)]="evidenceForm.requirement_id" class="w-full" />
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Artifact Data (JSON)</label>
-        <textarea pInputTextarea [(ngModel)]="evidenceForm.artifact_data" class="w-full font-mono text-sm" rows="6"></textarea>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Source</span>
+        <p-select [options]="sourceOptions" [(ngModel)]="evidenceForm.source" appendTo="body" size="small"></p-select>
       </div>
     </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Requirement ID</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="evidenceForm.requirement_id" />
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Artifact Data (JSON)</span>
+      <textarea pInputTextarea pSize="small" [(ngModel)]="evidenceForm.artifact_data" rows="6" style="font-family: 'JetBrains Mono', ui-monospace, monospace;"></textarea>
+    </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="evidenceDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (onClick)="saveEvidence()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="evidenceDialogVisible = false"></p-button>
+      <p-button label="Save" (onClick)="saveEvidence()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>

@@ -95,61 +95,82 @@
 </div>
 
 <!-- Create/Edit Webhook Dialog -->
-<p-dialog [(visible)]="webhookDialogVisible" [header]="editingWebhook ? 'Edit Webhook' : 'New Webhook'" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="grid">
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Name</label>
-        <input type="text" pInputText [(ngModel)]="webhookForm.name" class="w-full" />
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Type</label>
-        <p-select
-          [options]="webhookTypes"
-          [(ngModel)]="webhookForm.webhook_type"
-          optionLabel="label"
-          optionValue="value"
-          [style]="{'width': '100%'}"
-        ></p-select>
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Webhook URL</label>
-        <input type="text" pInputText [(ngModel)]="webhookForm.url" class="w-full"
-          [placeholder]="webhookForm.webhook_type === 'slack' ? 'https://hooks.slack.com/services/...' : webhookForm.webhook_type === 'teams' ? 'https://outlook.office.com/webhook/...' : 'https://...'" />
-        @if (webhookForm.webhook_type === 'slack') {
-          <small class="text-color-secondary">Create an Incoming Webhook in your Slack workspace settings</small>
-        }
-        @if (webhookForm.webhook_type === 'teams') {
-          <small class="text-color-secondary">Create an Incoming Webhook connector in your Teams channel</small>
-        }
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Secret (HMAC)</label>
-        <input type="text" pInputText [(ngModel)]="webhookForm.secret" class="w-full" placeholder="Optional" />
-      </div>
-      <div class="col-12">
-        <label class="font-semibold block mb-1">Events</label>
-        <p-multiselect
-          [options]="availableEvents"
-          [(ngModel)]="webhookForm.events"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Select events"
-          appendTo="body"
-          [style]="{'width': '100%'}"
-        ></p-multiselect>
-      </div>
-      <div class="col-12">
-        <div class="flex items-center gap-2">
-          <p-toggleswitch [(ngModel)]="webhookForm.is_active"></p-toggleswitch>
-          <span>Active</span>
-        </div>
-      </div>
+<p-dialog
+  [(visible)]="webhookDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ editingWebhook ? 'Edit Webhook' : 'New Webhook' }}</h2>
+      <p class="flowx-modal__subtitle">Forward selected events to an external endpoint</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="webhookForm.name" />
+    </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Type</span>
+      <p-select
+        [options]="webhookTypes"
+        [(ngModel)]="webhookForm.webhook_type"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        size="small"
+      ></p-select>
+    </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Webhook URL</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="webhookForm.url"
+        [placeholder]="webhookForm.webhook_type === 'slack' ? 'https://hooks.slack.com/services/...' : webhookForm.webhook_type === 'teams' ? 'https://outlook.office.com/webhook/...' : 'https://...'" />
+      @if (webhookForm.webhook_type === 'slack') {
+        <small class="text-color-secondary">Create an Incoming Webhook in your Slack workspace settings</small>
+      }
+      @if (webhookForm.webhook_type === 'teams') {
+        <small class="text-color-secondary">Create an Incoming Webhook connector in your Teams channel</small>
+      }
+    </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Secret (HMAC)</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="webhookForm.secret" placeholder="Optional" />
+    </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Events</span>
+      <p-multiselect
+        [options]="availableEvents"
+        [(ngModel)]="webhookForm.events"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select events"
+        appendTo="body"
+        size="small"
+      ></p-multiselect>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <p-toggleswitch [(ngModel)]="webhookForm.is_active"></p-toggleswitch>
+      <span class="flowx-modal__field-label">Active</span>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="webhookDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="saveWebhook()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="webhookDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="saveWebhook()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
