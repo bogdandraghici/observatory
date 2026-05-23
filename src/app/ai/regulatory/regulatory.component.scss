@@ -9,6 +9,15 @@
   margin-bottom: 24px;
 
   &--cols-2 { grid-template-columns: repeat(2, 1fr); }
+  &--cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* Tone modifiers — used by the Gap Analysis summary tiles.
+   * Light mode uses the FlowX 50 fills; dark mode swaps to a
+   * translucent saturated equivalent so the tint reads against
+   * the dark slate (per CLAUDE.md guidance on dark surfaces). */
+  &__tile--danger  { background: var(--flowx-red-50,    #fde9e6); }
+  &__tile--warning { background: var(--flowx-yellow-50, #fff8e7); }
+  &__tile--success { background: var(--flowx-green-50,  #e6f2ef); }
 
   &__tile {
     padding: 16px 18px;
@@ -72,6 +81,33 @@
 
 :host-context(.flowx-dark) .framework-meta__tile {
   border-color: var(--flowx-border-default);
+
+  /* Dark-mode tone fills: translucent saturated tokens so the slate
+   * shows through (light pastels would wash out to grey). */
+  &--danger  { background: rgba(230, 34, 0,   0.22); }
+  &--warning { background: rgba(254, 185, 19, 0.18); }
+  &--success { background: rgba(0,   128, 96, 0.22); }
+}
+
+/* ============================================================
+ * Gap Analysis — requirement rows
+ * Same tone-aware fill recipe as the summary tiles. Light mode
+ * uses the FlowX 50 fills; dark mode swaps to translucent
+ * saturated tokens. The 4px left rail keeps its 500-token color
+ * in both modes (the saturated stops read on either surface).
+ * ============================================================ */
+.gap-row {
+  background: var(--flowx-surface-primary);
+
+  &--danger  { background: var(--flowx-red-50,    #fde9e6); }
+  &--warning { background: var(--flowx-yellow-50, #fff8e7); }
+  &--success { background: var(--flowx-green-50,  #e6f2ef); }
+}
+
+:host-context(.flowx-dark) .gap-row {
+  &--danger  { background: rgba(230, 34, 0,   0.22); }
+  &--warning { background: rgba(254, 185, 19, 0.18); }
+  &--success { background: rgba(0,   128, 96, 0.22); }
 }
 
 /* ============================================================

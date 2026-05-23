@@ -109,11 +109,18 @@
             </div>
           </div>
           <!-- Dimension Scores -->
-          <div class="stat-cards-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom: 0;">
+          <div class="risk-card__metrics">
             @for (dim of dimensions; track dim) {
-              <div class="flex flex-column justify-between items-center gap-1 p-3 rounded-lg" style="background: var(--surface-ground);">
-                <span class="text-xs text-color-secondary" style="text-transform: capitalize;">{{ dim }}</span>
-                <span class="text-lg font-bold" [style.color]="getCellColor(app[dim])">{{ getCellText(app[dim]) }}</span>
+              <div class="risk-card__metric">
+                <div class="risk-card__metric-row">
+                  <span class="risk-card__metric-label">{{ dim }}</span>
+                  <span class="risk-card__metric-value" [style.color]="getCellColor(app[dim])">{{ getCellText(app[dim]) }}</span>
+                </div>
+                <div class="risk-card__metric-track">
+                  <div class="risk-card__metric-fill"
+                       [style.width.%]="(app[dim] || 0) * 100"
+                       [style.background]="getCellColor(app[dim])"></div>
+                </div>
               </div>
             }
           </div>

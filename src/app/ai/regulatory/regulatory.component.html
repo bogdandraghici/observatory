@@ -402,14 +402,15 @@
           @if (!report) {
             <div class="text-center p-6" style="color: var(--text-color-secondary)">Generate a report first to see gap analysis.</div>
           } @else {
-            <!-- Summary bar -->
-            <div class="flex gap-4 mb-4">
+            <!-- Summary tiles — colored fill + saturated border per tier -->
+            <div class="framework-meta framework-meta--cols-3">
               @for (tier of gapTiers; track tier.label) {
-                <div class="flex-1 rounded p-3 text-center" [style.background]="tier.bgColor" [style.border]="'1px solid ' + tier.color + '33'">
-                  <div class="text-2xl font-bold" [style.color]="tier.color">{{ tier.items.length }}</div>
-                  <div class="flex items-center justify-center gap-1 mt-1">
-                    <i [class]="tier.icon" [style.color]="tier.color" style="font-size: 0.75rem"></i>
-                    <span class="text-xs font-semibold" [style.color]="tier.color">{{ tier.label }}</span>
+                <div class="framework-meta__tile framework-meta__tile--{{ tier.tone }}"
+                     [style.border-color]="tier.color">
+                  <span class="framework-meta__label" [style.color]="tier.color">{{ tier.label }}</span>
+                  <div class="framework-meta__value-row">
+                    <i [class]="tier.icon" class="framework-meta__icon" [style.color]="tier.color"></i>
+                    <span class="framework-meta__value">{{ tier.items.length }}</span>
                   </div>
                 </div>
               }
@@ -427,7 +428,7 @@
 
                   <div class="flex flex-col gap-2">
                     @for (req of tier.items; track req.requirement_id) {
-                      <div class="flex items-center gap-3 rounded p-3" [style.background]="tier.bgColor" [style.border-left]="'4px solid ' + tier.color">
+                      <div class="gap-row gap-row--{{ tier.tone }} flex items-center gap-3 rounded p-3" [style.border-left]="'4px solid ' + tier.color">
                         <!-- Code -->
                         <div style="min-width: 100px">
                           <strong>{{ req.requirement_code }}</strong>

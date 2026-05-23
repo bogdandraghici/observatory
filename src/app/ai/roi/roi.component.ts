@@ -10,6 +10,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-roi',
   templateUrl: './roi.component.html',
+  styleUrl: './roi.component.scss',
   providers: [MessageService],
   standalone: false,
 })

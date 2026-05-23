@@ -298,24 +298,26 @@ export class InsightsComponent implements OnInit, OnDestroy {
     const latency = s.avg_latency_ms
     let perfStatus = 'N/A'
     let perfColor = 'var(--flowx-text-disabled, #a6b0be)'
+    let perfTone = 'unknown'
     let perfPct: string | null = null
     if (latency != null) {
-      if (latency < 3000) { perfStatus = 'Fast'; perfColor = 'var(--flowx-success, #008060)'; perfPct = '100%' }
-      else if (latency < 5000) { perfStatus = 'Normal'; perfColor = 'var(--flowx-success, #008060)'; perfPct = '75%' }
-      else if (latency < 10000) { perfStatus = 'Slow'; perfColor = 'var(--flowx-warning, #feb913)'; perfPct = '50%' }
-      else { perfStatus = 'Slow'; perfColor = 'var(--flowx-error, #e62200)'; perfPct = '0%' }
+      if (latency < 3000) { perfStatus = 'Fast'; perfColor = 'var(--flowx-success, #008060)'; perfTone = 'good'; perfPct = '100%' }
+      else if (latency < 5000) { perfStatus = 'Normal'; perfColor = 'var(--flowx-success, #008060)'; perfTone = 'good'; perfPct = '75%' }
+      else if (latency < 10000) { perfStatus = 'Slow'; perfColor = 'var(--flowx-warning, #feb913)'; perfTone = 'warning'; perfPct = '50%' }
+      else { perfStatus = 'Slow'; perfColor = 'var(--flowx-error, #e62200)'; perfTone = 'danger'; perfPct = '0%' }
     }
 
     // Cost Efficiency — based on avg_cost_per_run
     const avgCost = cost?.avg_cost_per_run
     let costStatus = 'N/A'
     let costColor = 'var(--flowx-text-disabled, #a6b0be)'
+    let costTone = 'unknown'
     let costPct: string | null = null
     if (avgCost != null) {
-      if (avgCost < 0.01) { costStatus = 'Low'; costColor = 'var(--flowx-success, #008060)'; costPct = '100%' }
-      else if (avgCost < 0.05) { costStatus = 'Moderate'; costColor = 'var(--flowx-success, #008060)'; costPct = '75%' }
-      else if (avgCost < 0.2) { costStatus = 'Moderate'; costColor = 'var(--flowx-warning, #feb913)'; costPct = '50%' }
-      else { costStatus = 'High'; costColor = 'var(--flowx-error, #e62200)'; costPct = '25%' }
+      if (avgCost < 0.01) { costStatus = 'Low'; costColor = 'var(--flowx-success, #008060)'; costTone = 'good'; costPct = '100%' }
+      else if (avgCost < 0.05) { costStatus = 'Moderate'; costColor = 'var(--flowx-success, #008060)'; costTone = 'good'; costPct = '75%' }
+      else if (avgCost < 0.2) { costStatus = 'Moderate'; costColor = 'var(--flowx-warning, #feb913)'; costTone = 'warning'; costPct = '50%' }
+      else { costStatus = 'High'; costColor = 'var(--flowx-error, #e62200)'; costTone = 'danger'; costPct = '25%' }
     }
 
     this.healthIndicators = [
@@ -325,6 +327,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
         status: qualityVal != null ? this.getHealthLabel(qualityVal) : 'N/A',
         detail: qualityPct,
         color: this.getScoreColor(qualityVal),
+        tone: this.getScoreTone(qualityVal),
       },
       {
         label: 'Safety',
@@ -332,6 +335,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
         status: safetyVal != null ? this.getHealthLabel(safetyVal) : 'N/A',
         detail: safetyPct,
         color: this.getScoreColor(safetyVal),
+        tone: this.getScoreTone(safetyVal),
       },
       {
         label: 'Performance',
@@ -339,6 +343,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
         status: perfStatus,
         detail: perfPct,
         color: perfColor,
+        tone: perfTone,
       },
       {
         label: 'Cost Efficiency',
@@ -346,8 +351,16 @@ export class InsightsComponent implements OnInit, OnDestroy {
         status: costStatus,
         detail: costPct,
         color: costColor,
+        tone: costTone,
       },
     ]
+  }
+
+  getScoreTone(value: number | null | undefined): string {
+    if (value == null) {return 'unknown'}
+    if (value >= 0.8) {return 'good'}
+    if (value >= 0.5) {return 'warning'}
+    return 'danger'
   }
 
   getHealthLabel(value: number | null | undefined): string {
