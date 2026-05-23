@@ -199,74 +199,153 @@
 
         <!-- Tab 2: Compliance Report -->
         <p-tabpanel value="2">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
+          <div class="stat-card report-card mb-4" style="flex-direction: column; align-items: stretch;">
           <div class="flex items-center gap-2 mb-3">
             <div class="stat-card__icon">
               <i class="pi pi-chart-pie"></i>
             </div>
             <span class="stat-card__title">Compliance Report</span>
           </div>
+
           @if (!report) {
-            <div class="text-center p-6" style="color: var(--text-color-secondary)">Click "Generate Report" to create a compliance report.</div>
-          } @else {
-            <div class="mb-3">
-              <h3 class="mt-0 mb-2">{{ report.framework?.name }} - {{ report.project?.name }}</h3>
-              <div class="flex gap-3 mb-3">
-                <p-tag value="Compliant: {{ report.summary?.compliant }}" severity="success"></p-tag>
-                <p-tag value="In Progress: {{ report.summary?.in_progress }}" severity="warn"></p-tag>
-                <p-tag value="Not Started: {{ report.summary?.not_started }}" severity="info"></p-tag>
-                <p-tag value="Non-Compliant: {{ report.summary?.non_compliant }}" severity="danger"></p-tag>
+            <div class="report-card__empty">
+              <div class="report-card__empty-icon">
+                <i class="pi pi-file-edit"></i>
               </div>
-              <div class="flex items-center gap-3">
-                <p-progressBar [value]="report.summary?.compliance_percent || 0" [showValue]="false" [style]="{height: '1.25rem', flex: '1'}"></p-progressBar>
-                <span class="font-semibold text-lg" [style.color]="getComplianceColor(report.summary?.compliance_percent || 0)">{{ (report.summary?.compliance_percent || 0) | number:'1.1-1' }}%</span>
-              </div>
+              <p class="report-card__empty-title">No report yet</p>
+              <p class="report-card__empty-text">
+                Click <strong>Generate Report</strong> to build a compliance report for the selected framework and project.
+              </p>
             </div>
-
-            @for (group of reportGrouped; track group.category) {
-              <div class="mb-4 bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border)">
-                <!-- Category header with progress -->
-                <div class="flex items-center gap-3 mb-3">
-                  <h4 class="m-0 font-semibold">{{ group.category }}</h4>
-                  <p-badge [value]="'' + group.total" severity="secondary"></p-badge>
-                  <div class="flex items-center gap-2 ml-auto" style="min-width: 200px">
-                    <p-progressBar [value]="group.percent" [showValue]="false" [style]="{height: '0.6rem', flex: '1'}"></p-progressBar>
-                    <span class="font-semibold text-sm" style="min-width: 45px; text-align: right" [style.color]="getComplianceColor(group.percent)">{{ group.percent | number:'1.1-1' }}%</span>
-                  </div>
-                  <span class="text-xs" style="color: var(--text-color-secondary)">{{ group.compliant }}/{{ group.total }}</span>
+          } @else {
+            <!-- Editorial header: framework + project, summary KPIs, overall track -->
+            <header class="report-card__head">
+              <div class="report-card__head-top">
+                <div class="report-card__head-titles">
+                  <span class="report-card__overline">Framework</span>
+                  <h3 class="report-card__title">{{ report.framework?.name }}</h3>
+                  @if (report.project?.name) {
+                    <span class="report-card__project">
+                      <i class="pi pi-folder report-card__project-icon"></i>{{ report.project?.name }}
+                    </span>
+                  }
                 </div>
+                <div class="report-card__overall">
+                  <span class="report-card__overall-value" [style.color]="getComplianceColor(report.summary?.compliance_percent || 0)">
+                    {{ (report.summary?.compliance_percent || 0) | number:'1.1-1' }}<span class="report-card__overall-unit">%</span>
+                  </span>
+                  <span class="report-card__overall-label">Overall compliance</span>
+                </div>
+              </div>
 
-                <!-- Requirements accordion inside category -->
-                <p-accordion [value]="[]" [multiple]="true">
+              <div class="report-card__progress-track">
+                <div class="report-card__progress-fill"
+                     [style.width.%]="report.summary?.compliance_percent || 0"
+                     [style.background]="getComplianceColor(report.summary?.compliance_percent || 0)"></div>
+              </div>
+
+              <div class="report-card__kpis">
+                <div class="report-card__kpi report-card__kpi--compliant">
+                  <span class="report-card__kpi-dot"></span>
+                  <span class="report-card__kpi-value">{{ report.summary?.compliant || 0 }}</span>
+                  <span class="report-card__kpi-label">Compliant</span>
+                </div>
+                <div class="report-card__kpi report-card__kpi--in-progress">
+                  <span class="report-card__kpi-dot"></span>
+                  <span class="report-card__kpi-value">{{ report.summary?.in_progress || 0 }}</span>
+                  <span class="report-card__kpi-label">In Progress</span>
+                </div>
+                <div class="report-card__kpi report-card__kpi--not-started">
+                  <span class="report-card__kpi-dot"></span>
+                  <span class="report-card__kpi-value">{{ report.summary?.not_started || 0 }}</span>
+                  <span class="report-card__kpi-label">Not Started</span>
+                </div>
+                <div class="report-card__kpi report-card__kpi--non-compliant">
+                  <span class="report-card__kpi-dot"></span>
+                  <span class="report-card__kpi-value">{{ report.summary?.non_compliant || 0 }}</span>
+                  <span class="report-card__kpi-label">Non-Compliant</span>
+                </div>
+              </div>
+            </header>
+
+            <!-- Category groups: consolidated card, header bar + flush requirement list -->
+            @for (group of reportGrouped; track group.category) {
+              <section class="report-card__group">
+                <header class="report-card__group-head">
+                  <div class="report-card__group-titles">
+                    <h4 class="report-card__group-title">{{ group.category }}</h4>
+                    <span class="report-card__group-count">{{ group.total }}</span>
+                  </div>
+                  <div class="report-card__group-right">
+                    <span class="report-card__group-fraction">
+                      <strong>{{ group.compliant }}</strong><span class="report-card__group-slash">/</span>{{ group.total }}
+                    </span>
+                    <div class="report-card__group-track">
+                      <div class="report-card__group-fill"
+                           [style.width.%]="group.percent"
+                           [style.background]="getComplianceColor(group.percent)"></div>
+                    </div>
+                    <span class="report-card__group-percent" [style.color]="getComplianceColor(group.percent)">{{ group.percent | number:'1.1-1' }}%</span>
+                  </div>
+                </header>
+
+                <p-accordion [value]="[]" [multiple]="true" styleClass="report-card__acc">
                   @for (req of group.requirements; track req.requirement_id) {
                     <p-accordion-panel [value]="req.requirement_id">
                       <p-accordion-header>
-                        <div class="flex align-items-center gap-2 w-full">
-                          <strong>{{ req.requirement_code }}</strong>
-                          <span>{{ req.title }}</span>
-                          <span class="ml-auto mr-2">
-                            <p-tag [value]="getStatusLabel(req.status)" [severity]="getStatusSeverity(req.status)"></p-tag>
+                        <div class="report-card__req-head">
+                          <span class="report-card__req-code">{{ req.requirement_code }}</span>
+                          <span class="report-card__req-title">{{ req.title }}</span>
+                          <span class="report-card__req-status report-card__req-status--{{ req.status }}">
+                            <span class="report-card__req-status-dot"></span>{{ getStatusLabel(req.status) }}
                           </span>
                         </div>
                       </p-accordion-header>
                       <p-accordion-content>
-                        <p class="text-color-secondary">{{ req.description }}</p>
-                        <div class="flex gap-4 mt-2">
-                          <div><strong>Evidence:</strong> {{ req.evidence_count }}</div>
-                          <div><strong>Evaluations:</strong> {{ req.evaluation_count }}</div>
-                          <div><strong>Assessments:</strong> {{ req.assessment_count }}</div>
+                        <div class="report-card__req-body">
+                          @if (req.description) {
+                            <p class="report-card__req-desc">{{ req.description }}</p>
+                          }
+                          <div class="report-card__req-meta">
+                            <div class="report-card__req-meta-cell" [class.report-card__req-meta-cell--empty]="!req.evidence_count">
+                              <span class="report-card__req-meta-value">{{ req.evidence_count || 0 }}</span>
+                              <span class="report-card__req-meta-label">Evidence</span>
+                            </div>
+                            <span class="report-card__req-meta-divider" aria-hidden="true"></span>
+                            <div class="report-card__req-meta-cell" [class.report-card__req-meta-cell--empty]="!req.evaluation_count">
+                              <span class="report-card__req-meta-value">{{ req.evaluation_count || 0 }}</span>
+                              <span class="report-card__req-meta-label">Evaluations</span>
+                            </div>
+                            <span class="report-card__req-meta-divider" aria-hidden="true"></span>
+                            <div class="report-card__req-meta-cell" [class.report-card__req-meta-cell--empty]="!req.assessment_count">
+                              <span class="report-card__req-meta-value">{{ req.assessment_count || 0 }}</span>
+                              <span class="report-card__req-meta-label">Assessments</span>
+                            </div>
+                          </div>
+                          @if (req.notes || req.assigned_to) {
+                            <dl class="report-card__req-extras">
+                              @if (req.notes) {
+                                <div class="report-card__req-extra">
+                                  <dt class="report-card__req-extra-label">Notes</dt>
+                                  <dd class="report-card__req-extra-value">{{ req.notes }}</dd>
+                                </div>
+                              }
+                              @if (req.assigned_to) {
+                                <div class="report-card__req-extra">
+                                  <dt class="report-card__req-extra-label">Assigned</dt>
+                                  <dd class="report-card__req-extra-value">
+                                    <i class="pi pi-user report-card__req-extra-icon"></i>{{ req.assigned_to }}
+                                  </dd>
+                                </div>
+                              }
+                            </dl>
+                          }
                         </div>
-                        @if (req.notes) {
-                          <div class="mt-2"><strong>Notes:</strong> {{ req.notes }}</div>
-                        }
-                        @if (req.assigned_to) {
-                          <div class="mt-1"><strong>Assigned to:</strong> {{ req.assigned_to }}</div>
-                        }
                       </p-accordion-content>
                     </p-accordion-panel>
                   }
                 </p-accordion>
-              </div>
+              </section>
             }
           }
           </div>
