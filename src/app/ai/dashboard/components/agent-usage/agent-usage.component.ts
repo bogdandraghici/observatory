@@ -119,8 +119,8 @@ export class AgentUsageComponent implements OnInit, OnDestroy, OnChanges {
     // dark mode so the pastel doesn't disappear against the dark card.
     // (Following the dark-mode rule in CLAUDE.md.)
     const isDark = document.documentElement.classList.contains('flowx-dark')
-    const successFill = isDark ? '#54aa94' : '#008060'   // flowx-green-300 / -500
-    const errorFill   = isDark ? '#ee6b54' : '#e62200'   // flowx-red-400 / -500
+    const successFill = isDark ? '#54aa94' : '#339980'   // flowx-green-300 / -400
+    const errorFill   = isDark ? '#ee6b54' : '#e62200'   // flowx-red-300 / -500
     const returnValue = {
       labels: [row.name],
       datasets: [

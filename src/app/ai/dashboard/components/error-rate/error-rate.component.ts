@@ -7,6 +7,9 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core'
+import { Subscription, debounceTime } from 'rxjs'
+
+import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { calculateTotal, extendWithCosts } from '../../../utils/calcCosts'
 import { DashboardService } from '../../../services/dashboard.service'
 
@@ -26,10 +29,22 @@ export class ErrorRateComponent implements OnInit, OnDestroy, OnChanges {
   chartData: any
   chartOptions: any
 
+  private themeSubscription?: Subscription
+
   constructor(
     private analyticsService: DashboardService,
     public el: ElementRef,
-  ) {}
+    private layoutService: LayoutService,
+  ) {
+    this.themeSubscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.totalRuns > 0) {
+          this.chartData = this.getChartData()
+          this.chartOptions = this.getChartOptions()
+        }
+      })
+  }
 
   populateData(appId: any, hours: any): void {
     this.analyticsService.getUsageRunAgents(appId, hours).then((data) => {
@@ -56,30 +71,41 @@ export class ErrorRateComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe()
+  }
 
   getChartData(): any {
-    const documentStyle = getComputedStyle(document.documentElement)
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+
+    // Matches agent-usage so the two cards read as the same metric.
+    //   Light: green-400 #339980, red-500 #e62200
+    //   Dark:  green-300 #54aa94, red-300 #ee6b54
+    const successFill = isDark ? '#54aa94' : '#339980'
+    const errorFill   = isDark ? '#ee6b54' : '#e62200'
+    const successHover = isDark ? '#339980' : '#008060'  // one step deeper
+    const errorHover   = isDark ? '#eb4e33' : '#d11f00'  // one step deeper
+
     return {
       labels: ['Success', 'Errors'],
       datasets: [
         {
           data: [this.totalSuccess, this.totalErrors],
-          backgroundColor: [
-            documentStyle.getPropertyValue('--green-400'),
-            documentStyle.getPropertyValue('--red-400'),
-          ],
+          backgroundColor: [successFill, errorFill],
           borderWidth: 0,
-          hoverBackgroundColor: [
-            documentStyle.getPropertyValue('--green-300'),
-            documentStyle.getPropertyValue('--red-300'),
-          ],
+          hoverBackgroundColor: [successHover, errorHover],
         },
       ],
     }
   }
 
   getChartOptions(): any {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    // FlowX text-primary: neutrals-900 in light, neutrals-50 in dark.
+    // Resolve to literal hex here because --flowx-* tokens are scoped to
+    // .layout-wrapper/.ai-page and Chart.js needs a concrete color.
+    const textColor = isDark ? '#f7f8f9' : '#1d232c'
+
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -89,9 +115,7 @@ export class ErrorRateComponent implements OnInit, OnDestroy, OnChanges {
           display: true,
           position: 'bottom',
           labels: {
-            color: getComputedStyle(document.documentElement)
-              .getPropertyValue('--text-color')
-              .trim(),
+            color: textColor,
             usePointStyle: true,
             pointStyle: 'circle',
             padding: 16,

@@ -241,8 +241,8 @@
             <p-tab value="3">Cost</p-tab>
           </p-tablist>
         </p-tabs>
-        <div class="chart-container">
-          <canvas id="trendCanvas"></canvas>
+        <div class="chart-container" style="height: 280px;">
+          <p-chart type="line" [data]="trendChartData" [options]="trendChartOptions" height="100%"></p-chart>
         </div>
       </div>
 

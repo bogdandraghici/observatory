@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ConfirmationService, MessageService } from 'primeng/api'
+import { Subscription, debounceTime } from 'rxjs'
+import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { RoiService } from '../services/roi.service'
 import { OrgService } from '../services/orgs.service'
 import { DashboardService } from '../services/dashboard.service'
@@ -11,7 +13,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
   providers: [MessageService],
   standalone: false,
 })
-export class RoiComponent implements OnInit {
+export class RoiComponent implements OnInit, OnDestroy {
   orgs: any[] = []
   apps: any[] = []
   selectedOrg: any = null
@@ -169,13 +171,35 @@ export class RoiComponent implements OnInit {
 
   loading = false
 
+  private themeSubscription?: Subscription
+
   constructor(
     private roiService: RoiService,
     private orgService: OrgService,
     private dashboardService: DashboardService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-  ) {}
+    private layoutService: LayoutService,
+  ) {
+    // Chart.js doesn't react to .flowx-dark class toggles on <html>, so
+    // rebuild the VOU chart (gradients + theme-aware text/grid colors)
+    // whenever the layout config changes. Matches the analytics activity
+    // chart pattern referenced in CLAUDE.md.
+    this.themeSubscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.vouGroups.length > 0) { this.buildVouChart() }
+        if (this.financialResult?.waterfall) { this.buildWaterfallChart() }
+        if (this.trendData.length > 0) { this.buildTrendChart() }
+        if (this.sensitivityResult?.histogram) { this.buildHistogramChart() }
+        if (this.sensitivityResult?.tornado?.length) { this.buildTornadoChart() }
+        if (this.agentComparison.length > 0) { this.buildAgentComparisonChart() }
+      })
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe()
+  }
 
   ngOnInit(): void {
     const now = new Date()
@@ -339,11 +363,17 @@ export class RoiComponent implements OnInit {
     if (!this.financialResult?.waterfall) {return}
     const items = this.financialResult.waterfall
     const labels = items.map((i: any) => i.label)
-    const colors = items.map((i: any) => {
-      if (i.type === 'cost') {return 'var(--flowx-error, #e62200)'}
-      if (i.type === 'benefit') {return 'var(--flowx-success, #008060)'}
-      return 'var(--flowx-interactive, #006bd8)'
-    })
+
+    const cost = this.roiColor('error')
+    const benefit = this.roiColor('success')
+    const total = this.roiColor('interactive')
+    const roleFor = (t: string): { hex: string; rgb: string } => {
+      if (t === 'cost') {return cost}
+      if (t === 'benefit') {return benefit}
+      return total
+    }
+    const hexes = items.map((i: any) => roleFor(i.type).hex)
+    const rgbs  = items.map((i: any) => roleFor(i.type).rgb)
 
     let running = 0
     const data = items.map((item: any) => {
@@ -360,9 +390,10 @@ export class RoiComponent implements OnInit {
       datasets: [{
         label: 'ROI Waterfall',
         data,
-        backgroundColor: colors,
-        borderColor: colors,
-        borderWidth: 1,
+        backgroundColor: this.roiGradient(rgbs),
+        borderColor: hexes,
+        borderWidth: 2,
+        borderRadius: 4,
         borderSkipped: false,
       }],
     }
@@ -371,9 +402,11 @@ export class RoiComponent implements OnInit {
     this.waterfallOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
         tooltip: {
+          ...this.flowxTooltip(),
           callbacks: {
             label: (ctx: any) => {
               const raw = ctx.raw
@@ -385,13 +418,12 @@ export class RoiComponent implements OnInit {
       },
       scales: {
         x: {
-          ticks: { color: wc.textColor },
-          grid: { color: wc.surfaceBorder },
+          ...this.roiAxisStyle(wc.textSecondary),
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          ...this.roiAxisStyle(wc.textSecondary),
           title: { display: true, text: 'Amount ($)', color: wc.textColor },
-          ticks: { color: wc.textSecondary },
-          grid: { color: wc.surfaceBorder },
         },
       },
     }
@@ -520,23 +552,35 @@ export class RoiComponent implements OnInit {
     const savings = this.trendData.map((d: any) => d.cumulative_savings)
     const counts = this.trendData.map((d: any) => d.execution_count)
 
+    const savingsColor = this.roiColor('success')
+    const execColor = this.roiColor('interactive')
+
     this.trendChart = {
       labels,
       datasets: [
         {
           label: 'Cumulative Savings ($)',
           data: savings,
-          borderColor: 'var(--flowx-success, #008060)',
-          backgroundColor: 'rgba(34,197,94,0.1)',
+          borderColor: savingsColor.hex,
+          backgroundColor: this.roiGradient(savingsColor.rgb),
+          borderWidth: 2,
           fill: true,
           yAxisID: 'y',
           tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: savingsColor.hex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
         },
         {
           label: 'Agent Executions',
           data: counts,
-          borderColor: 'var(--flowx-interactive, #006bd8)',
-          backgroundColor: 'rgba(59,130,246,0.1)',
+          borderColor: execColor.hex,
+          backgroundColor: this.roiGradient(execColor.rgb),
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
           type: 'bar',
           yAxisID: 'y1',
         },
@@ -547,30 +591,32 @@ export class RoiComponent implements OnInit {
     this.trendOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: {
           display: true,
           labels: { color: tc.textColor, usePointStyle: true, padding: 16 },
         },
+        tooltip: this.flowxTooltip(),
       },
       scales: {
         x: {
-          ticks: { color: tc.textSecondary, maxRotation: 45 },
-          grid: { color: tc.surfaceBorder },
+          ...this.roiAxisStyle(tc.textSecondary),
+          ticks: { color: tc.textSecondary, maxRotation: 45, font: { family: '"Open Sans", system-ui, sans-serif' } },
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          ...this.roiAxisStyle(tc.textSecondary),
           type: 'linear',
           position: 'left',
           title: { display: true, text: 'Cumulative Savings ($)', color: tc.textColor },
-          ticks: { color: tc.textSecondary },
-          grid: { color: tc.surfaceBorder },
         },
         y1: {
+          ...this.roiAxisStyle(tc.textSecondary),
           type: 'linear',
           position: 'right',
           title: { display: true, text: 'Execution Count', color: tc.textColor },
-          ticks: { color: tc.textSecondary },
-          grid: { drawOnChartArea: false },
+          grid: { drawOnChartArea: false, drawBorder: false },
         },
       },
     }
@@ -854,16 +900,22 @@ export class RoiComponent implements OnInit {
     const bins = this.sensitivityResult.histogram
     const labels = bins.map((b: any) => `$${b.bin_start.toLocaleString()}`)
     const data = bins.map((b: any) => b.count)
-    const colors = bins.map((b: any) => b.bin_start >= 0 ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)')
+
+    const positive = this.roiColor('success')
+    const negative = this.roiColor('error')
+    const hexes = bins.map((b: any) => b.bin_start >= 0 ? positive.hex : negative.hex)
+    const rgbs  = bins.map((b: any) => b.bin_start >= 0 ? positive.rgb : negative.rgb)
 
     this.histogramChart = {
       labels,
       datasets: [{
         label: 'Frequency',
         data,
-        backgroundColor: colors,
-        borderColor: colors.map((c: string) => c.replace('0.6', '1')),
-        borderWidth: 1,
+        backgroundColor: this.roiGradient(rgbs),
+        borderColor: hexes,
+        borderWidth: 2,
+        borderRadius: 4,
+        borderSkipped: false,
       }],
     }
 
@@ -871,17 +923,21 @@ export class RoiComponent implements OnInit {
     this.histogramOptions = {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+      plugins: {
+        legend: { display: false },
+        tooltip: this.flowxTooltip(),
+      },
       scales: {
         x: {
+          ...this.roiAxisStyle(hc.textSecondary),
           title: { display: true, text: 'ROI ($)', color: hc.textColor },
-          ticks: { maxTicksLimit: 10, color: hc.textSecondary },
-          grid: { color: hc.surfaceBorder },
+          ticks: { maxTicksLimit: 10, color: hc.textSecondary, font: { family: '"Open Sans", system-ui, sans-serif' } },
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          ...this.roiAxisStyle(hc.textSecondary),
           title: { display: true, text: 'Frequency', color: hc.textColor },
-          ticks: { color: hc.textSecondary },
-          grid: { color: hc.surfaceBorder },
         },
       },
     }
@@ -898,22 +954,29 @@ export class RoiComponent implements OnInit {
     const lowDeltas = tornado.map((t: any) => t.low_roi - baseline)
     const highDeltas = tornado.map((t: any) => t.high_roi - baseline)
 
+    const low = this.roiColor('error')
+    const high = this.roiColor('success')
+
     this.tornadoChart = {
       labels,
       datasets: [
         {
           label: 'Low Impact',
           data: lowDeltas,
-          backgroundColor: 'rgba(239,68,68,0.6)',
-          borderColor: 'rgba(239,68,68,1)',
-          borderWidth: 1,
+          backgroundColor: this.roiGradient(low.rgb),
+          borderColor: low.hex,
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
         },
         {
           label: 'High Impact',
           data: highDeltas,
-          backgroundColor: 'rgba(34,197,94,0.6)',
-          borderColor: 'rgba(34,197,94,1)',
-          borderWidth: 1,
+          backgroundColor: this.roiGradient(high.rgb),
+          borderColor: high.hex,
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
         },
       ],
     }
@@ -923,21 +986,23 @@ export class RoiComponent implements OnInit {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'y' },
       plugins: {
         legend: {
           display: true,
           labels: { color: tnc.textColor, usePointStyle: true, padding: 16 },
         },
+        tooltip: this.flowxTooltip(),
       },
       scales: {
         x: {
+          ...this.roiAxisStyle(tnc.textSecondary),
           title: { display: true, text: 'Impact on ROI ($)', color: tnc.textColor },
-          ticks: { color: tnc.textSecondary },
-          grid: { color: tnc.surfaceBorder },
         },
         y: {
-          ticks: { color: tnc.textColor },
-          grid: { color: tnc.surfaceBorder },
+          ...this.roiAxisStyle(tnc.textSecondary),
+          ticks: { color: tnc.textColor, font: { family: '"Open Sans", system-ui, sans-serif' } },
+          grid: { display: false, drawBorder: false },
         },
       },
     }
@@ -977,14 +1042,21 @@ export class RoiComponent implements OnInit {
     const labels = this.agentComparison.map((a: any) => a.project_name || a.project_id)
     const savings = this.agentComparison.map((a: any) => a.total_savings)
 
+    const positive = this.roiColor('success')
+    const negative = this.roiColor('error')
+    const hexes = savings.map((s: number) => s >= 0 ? positive.hex : negative.hex)
+    const rgbs  = savings.map((s: number) => s >= 0 ? positive.rgb : negative.rgb)
+
     this.agentComparisonChart = {
       labels,
       datasets: [{
         label: 'Total Savings ($)',
         data: savings,
-        backgroundColor: savings.map((s: number) => s >= 0 ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)'),
-        borderColor: savings.map((s: number) => s >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'),
-        borderWidth: 1,
+        backgroundColor: this.roiGradient(rgbs),
+        borderColor: hexes,
+        borderWidth: 2,
+        borderRadius: 4,
+        borderSkipped: false,
       }],
     }
 
@@ -992,16 +1064,19 @@ export class RoiComponent implements OnInit {
     this.agentComparisonChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+      plugins: {
+        legend: { display: false },
+        tooltip: this.flowxTooltip(),
+      },
       scales: {
         x: {
-          ticks: { color: ac.textColor },
-          grid: { color: ac.surfaceBorder },
+          ...this.roiAxisStyle(ac.textSecondary),
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          ...this.roiAxisStyle(ac.textSecondary),
           title: { display: true, text: 'Total Savings ($)', color: ac.textColor },
-          ticks: { color: ac.textSecondary },
-          grid: { color: ac.surfaceBorder },
         },
       },
     }
@@ -1059,6 +1134,68 @@ export class RoiComponent implements OnInit {
     }))
   }
 
+  // FlowX color triplets for ROI charts. Light/dark variants follow the
+  // CLAUDE.md guidance: success/error keep their semantic hex in light, and
+  // step up to the lighter green-300 / red-300 in dark; interactive blue
+  // lifts from blue-500 to blue-400.
+  private roiColor(role: 'success' | 'error' | 'interactive'): { hex: string; rgb: string } {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    if (role === 'success') {
+      return isDark
+        ? { hex: '#54aa94', rgb: '84, 170, 148' }  // green-300
+        : { hex: '#339980', rgb: '51, 153, 128' }  // green-400
+    }
+    if (role === 'error') {
+      return isDark
+        ? { hex: '#ee6b54', rgb: '238, 107, 84' }  // red-300
+        : { hex: '#e62200', rgb: '230, 34, 0' }    // red-500
+    }
+    return isDark
+      ? { hex: '#3389e0', rgb: '51, 137, 224' }    // blue-400
+      : { hex: '#006bd8', rgb: '0, 107, 216' }     // blue-500
+  }
+
+  // Vertical gradient (top opaque → bottom transparent), keyed to the
+  // chartArea so every bar shares the same gradient anchor — same recipe
+  // the API Calls activity chart uses. `rgb` may be a single string (all
+  // bars same color) or an array indexed by bar position (per-bar colors).
+  private roiGradient(rgb: string | string[]): (context: any) => any {
+    return (context: any) => {
+      const chart = context.chart
+      const { ctx, chartArea } = chart
+      const c = Array.isArray(rgb) ? rgb[context.dataIndex] : rgb
+      if (!chartArea || !c) { return `rgba(${c || '0, 0, 0'}, 0.45)` }
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+      gradient.addColorStop(0, `rgba(${c}, 0.45)`)
+      gradient.addColorStop(1, `rgba(${c}, 0)`)
+      return gradient
+    }
+  }
+
+  // Shared scale defaults: hidden borders, sparse y-grid, Open Sans ticks.
+  private roiAxisStyle(textSecondary: string): any {
+    return {
+      ticks: { color: textSecondary, font: { family: '"Open Sans", system-ui, sans-serif' } },
+      border: { display: false },
+      grid: { color: 'rgba(99, 116, 139, 0.10)', drawBorder: false, drawTicks: false },
+    }
+  }
+
+  private flowxTooltip(): any {
+    return {
+      enabled: true,
+      backgroundColor: '#1d232c',
+      titleColor: '#f7f8f9',
+      bodyColor: '#e3e8ed',
+      borderWidth: 0,
+      cornerRadius: 6,
+      padding: { x: 10, y: 6 },
+      displayColors: false,
+      titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+      bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
+    }
+  }
+
   private buildVouChart(): void {
     if (this.vouGroups.length === 0) {
       this.vouChart = null
@@ -1069,29 +1206,39 @@ export class RoiComponent implements OnInit {
     const llmCost = this.vouGroups.map(g => -g.totals.llm_cost)
     const net = this.vouGroups.map(g => g.totals.net_contribution)
 
+    const labor = this.roiColor('success')
+    const cost  = this.roiColor('error')
+    const net_  = this.roiColor('interactive')
+
     this.vouChart = {
       labels,
       datasets: [
         {
           label: 'Labor Saved',
           data: laborSaved,
-          backgroundColor: 'rgba(34,197,94,0.6)',
-          borderColor: 'var(--flowx-success, #008060)',
-          borderWidth: 1,
+          backgroundColor: this.roiGradient(labor.rgb),
+          borderColor: labor.hex,
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
         },
         {
           label: 'LLM Cost',
           data: llmCost,
-          backgroundColor: 'rgba(239,68,68,0.6)',
-          borderColor: 'var(--flowx-error, #e62200)',
-          borderWidth: 1,
+          backgroundColor: this.roiGradient(cost.rgb),
+          borderColor: cost.hex,
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
         },
         {
           label: 'Net Contribution',
           data: net,
-          backgroundColor: 'rgba(59,130,246,0.6)',
-          borderColor: 'var(--flowx-interactive, #006bd8)',
-          borderWidth: 1,
+          backgroundColor: this.roiGradient(net_.rgb),
+          borderColor: net_.hex,
+          borderWidth: 2,
+          borderRadius: 4,
+          borderSkipped: false,
         },
       ],
     }
@@ -1100,12 +1247,14 @@ export class RoiComponent implements OnInit {
     this.vouChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: {
           display: true,
           labels: { color: vc.textColor, usePointStyle: true, padding: 16 },
         },
         tooltip: {
+          ...this.flowxTooltip(),
           callbacks: {
             label: (ctx: any) => `${ctx.dataset.label}: $${Math.abs(ctx.raw).toLocaleString()}`,
           },
@@ -1113,13 +1262,12 @@ export class RoiComponent implements OnInit {
       },
       scales: {
         x: {
-          ticks: { color: vc.textSecondary },
-          grid: { color: vc.surfaceBorder },
+          ...this.roiAxisStyle(vc.textSecondary),
+          grid: { display: false, drawBorder: false },
         },
         y: {
+          ...this.roiAxisStyle(vc.textSecondary),
           title: { display: true, text: 'Amount ($)', color: vc.textColor },
-          ticks: { color: vc.textSecondary },
-          grid: { color: vc.surfaceBorder },
         },
       },
     }
