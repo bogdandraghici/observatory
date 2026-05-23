@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Subscription, debounceTime } from 'rxjs'
 import { DashboardService } from '../services/dashboard.service'
 import { OrgService } from '../services/orgs.service'
 import { LayoutService } from 'src/app/layout/full-layout/service/app.layout.service'
 import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
-import Chart from 'chart.js/auto'
 import { Drawer } from 'primeng/drawer'
 import { resolveDefaultAppOrg } from '../utils/default-app'
 
@@ -14,7 +14,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
     standalone: false,
     providers: [MessageService],
 })
-export class InsightsComponent implements OnInit {
+export class InsightsComponent implements OnInit, OnDestroy {
   @ViewChild('evalDrawerRef') evalDrawerRef!: Drawer
 
   // Org → Workspace → Project cascade
@@ -64,7 +64,8 @@ export class InsightsComponent implements OnInit {
 
   // Timeseries data
   timeseriesData: any = {}
-  trendChart: any = null
+  trendChartData: any = null
+  trendChartOptions: any = null
   activeTrendTab = '0'
 
   // Alerts
@@ -93,6 +94,8 @@ export class InsightsComponent implements OnInit {
     'pii_leakage', 'prompt_injection', 'jailbreak', 'answer_relevance'
   ]
 
+  private themeSubscription?: Subscription
+
   constructor(
     private dashboardService: DashboardService,
     private orgService: OrgService,
@@ -100,12 +103,24 @@ export class InsightsComponent implements OnInit {
     private metaService: Meta,
     private titleService: Title,
     private messageService: MessageService,
-  ) {}
+  ) {
+    // Chart.js can't observe the .flowx-dark class toggle, so re-render
+    // the trend chart whenever the layout config changes.
+    this.themeSubscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.trendChartData) { this.renderTrendChart() }
+      })
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('FlowX.AI Observatory - Agent Evaluations')
     this.metaService.updateTag({ name: 'description', content: 'Agent evaluation metrics and quality insights.' })
     this.populateApps()
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe()
   }
 
   // ── Org → Workspace → Project cascade ─────────────────────
@@ -410,40 +425,75 @@ export class InsightsComponent implements OnInit {
     })
   }
 
-  renderTrendChart(): void {
-    if (this.trendChart) {this.trendChart.destroy()}
-    const canvas = document.getElementById('trendCanvas') as HTMLCanvasElement
-    if (!canvas) {return}
+  // FlowX color triplets for the trend tabs. Light/dark variants follow the
+  // same CLAUDE.md guidance used by the ROI page: success/error/warning keep
+  // their saturated hex in light, step up one shade in dark; interactive blue
+  // lifts from blue-500 → blue-400. Purple is preserved for the Cost tab
+  // since it's not in the FlowX palette but provides needed differentiation.
+  private trendColor(tabIndex: number): { hex: string; rgb: string } {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    if (tabIndex === 0) {  // Quality → green
+      return isDark
+        ? { hex: '#54aa94', rgb: '84, 170, 148' }    // green-300
+        : { hex: '#339980', rgb: '51, 153, 128' }    // green-400
+    }
+    if (tabIndex === 1) {  // Safety → blue
+      return isDark
+        ? { hex: '#3389e0', rgb: '51, 137, 224' }    // blue-400
+        : { hex: '#006bd8', rgb: '0, 107, 216' }     // blue-500
+    }
+    if (tabIndex === 2) {  // Performance → yellow
+      return isDark
+        ? { hex: '#fec742', rgb: '254, 199, 66' }    // yellow-400
+        : { hex: '#feb913', rgb: '254, 185, 19' }    // yellow-500
+    }
+    // Cost → blue (FlowX interactive)
+    return isDark
+      ? { hex: '#3389e0', rgb: '51, 137, 224' }    // blue-400
+      : { hex: '#006bd8', rgb: '0, 107, 216' }     // blue-500
+  }
 
-    const isDark = this.layoutService.config().colorScheme === 'dark'
-    const textSecondary = isDark ? 'var(--flowx-text-disabled, #a6b0be)' : '#64748b'
-    const surfaceBorder = isDark ? 'rgba(148,163,184,0.15)' : '#e2e8f0'
+  private trendTooltip(): any {
+    return {
+      enabled: true,
+      backgroundColor: '#1d232c',
+      titleColor: '#f7f8f9',
+      bodyColor: '#e3e8ed',
+      borderWidth: 0,
+      cornerRadius: 6,
+      padding: { x: 10, y: 6 },
+      displayColors: false,
+      titleFont: { size: 11, weight: '600', family: '"Open Sans", system-ui, sans-serif' },
+      bodyFont: { size: 12, weight: '400', family: '"Open Sans", system-ui, sans-serif' },
+    }
+  }
+
+  renderTrendChart(): void {
+    const isDark = document.documentElement.classList.contains('flowx-dark')
+    const textSecondary = isDark ? '#a6b0be' : '#64748b'
+    const gridColor = 'rgba(99, 116, 139, 0.10)'
     const isRunMode = this.granularity === 'run'
 
     const tabIndex = parseInt(this.activeTrendTab, 10)
+    const palette = this.trendColor(tabIndex)
 
     let series: any[] = []
     let label = 'Quality Score'
-    let color = 'var(--flowx-success, #008060)'
     let isPercent = true
 
     if (tabIndex === 0) {
       series = this.timeseriesData.quality || []
       label = 'Quality Score'
-      color = 'var(--flowx-success, #008060)'
     } else if (tabIndex === 1) {
       series = this.timeseriesData.incidents || []
       label = 'Safety Score'
-      color = 'var(--flowx-interactive, #006bd8)'
     } else if (tabIndex === 2) {
       series = this.timeseriesData.quality || []
       label = 'Executions'
-      color = 'var(--flowx-warning, #feb913)'
       isPercent = false
     } else if (tabIndex === 3) {
       series = this.timeseriesData.quality || []
       label = 'Executions'
-      color = '#8b5cf6'
       isPercent = false
     }
 
@@ -478,6 +528,7 @@ export class InsightsComponent implements OnInit {
       ? (v: any) => (v * 100).toFixed(0) + '%'
       : undefined
 
+    const tickFont = { family: '"Open Sans", system-ui, sans-serif' }
     const xScale: any = isRunMode
       ? {
           type: 'linear',
@@ -487,75 +538,93 @@ export class InsightsComponent implements OnInit {
           ticks: {
             stepSize: 1,
             color: textSecondary,
+            font: tickFont,
             callback: (value: any) => Number.isInteger(value) ? `#${value}` : '',
           },
-          grid: { color: surfaceBorder },
+          border: { display: false },
+          grid: { display: false, drawBorder: false },
         }
       : {
-          ticks: { color: textSecondary, maxRotation: 45 },
-          grid: { color: surfaceBorder },
+          ticks: { color: textSecondary, maxRotation: 45, font: tickFont },
+          border: { display: false },
+          grid: { display: false, drawBorder: false },
         }
 
-    this.trendChart = new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label,
-            data: values,
-            borderColor: color,
-            backgroundColor: color + '1a',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 3,
-          },
-          {
-            label: 'Trend',
-            data: trendValues,
-            borderColor: color + '80',
-            borderDash: [6, 3],
-            borderWidth: 2,
-            fill: false,
-            tension: 0.4,
-            pointRadius: 0,
-            pointHoverRadius: 0,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: xScale,
-          y: {
-            beginAtZero: true,
-            max: isPercent ? 1 : undefined,
-            ticks: {
-              color: textSecondary,
-              callback: yCallback,
-            },
-            grid: { color: surfaceBorder },
+    const rgb = palette.rgb
+    this.trendChartData = {
+      labels,
+      datasets: [
+        {
+          label,
+          data: values,
+          borderColor: palette.hex,
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: palette.hex,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          backgroundColor: (context: any) => {
+            const { ctx, chartArea } = context.chart
+            if (!chartArea) { return `rgba(${rgb}, 0.25)` }
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+            gradient.addColorStop(0, `rgba(${rgb}, 0.45)`)
+            gradient.addColorStop(1, `rgba(${rgb}, 0)`)
+            return gradient
           },
         },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              title: (items: any[]) => {
-                if (isRunMode && items.length) {
-                  return `Run #${items[0].label}`
-                }
-                return undefined
-              },
-              label: (ctx: any) => isPercent
-                ? `${label}: ${(ctx.parsed.y * 100).toFixed(0)}%`
-                : `${label}: ${ctx.parsed.y}`,
+        {
+          label: 'Trend',
+          data: trendValues,
+          borderColor: `rgba(${rgb}, 0.5)`,
+          backgroundColor: 'transparent',
+          borderDash: [6, 3],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+        },
+      ],
+    }
+    this.trendChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+      scales: {
+        x: xScale,
+        y: {
+          beginAtZero: true,
+          max: isPercent ? 1 : undefined,
+          ticks: {
+            color: textSecondary,
+            font: tickFont,
+            callback: yCallback,
+          },
+          border: { display: false },
+          grid: { color: gridColor, drawBorder: false, drawTicks: false },
+        },
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...this.trendTooltip(),
+          callbacks: {
+            title: (items: any[]) => {
+              if (isRunMode && items.length) {
+                return `Run #${items[0].label}`
+              }
+              return undefined
             },
+            label: (ctx: any) => isPercent
+              ? `${label}: ${(ctx.parsed.y * 100).toFixed(0)}%`
+              : `${label}: ${ctx.parsed.y}`,
           },
         },
       },
-    })
+    }
   }
 
   // ── Period label ────────────────────────────────────────

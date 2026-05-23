@@ -7,6 +7,7 @@ import { TagModule } from 'primeng/tag'
 import { SelectModule } from 'primeng/select'
 import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
+import { ChartModule } from 'primeng/chart'
 import { ToastModule } from 'primeng/toast'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { TabsModule } from 'primeng/tabs'
@@ -25,6 +26,7 @@ const PRIME_NG = [
   SelectModule,
   ButtonModule,
   CardModule,
+  ChartModule,
   ToastModule,
   SelectButtonModule,
   TabsModule,
