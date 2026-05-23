@@ -1605,6 +1605,18 @@
 // dialog renders (component templates often place <p-dialog>
 // outside the .ai-page wrapper).
 // ============================================================
+
+// ── Right-positioned drawer — square right edges ──────────
+// `<p-drawer position="right">` is flush against the viewport's
+// right edge, so its top-right and bottom-right corners must not
+// be rounded. Root-level rule because the drawer is portaled to
+// <body>, outside the .ai-page wrapper.
+.p-drawer.p-drawer-right,
+.p-drawer-right .p-drawer {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
 .p-dialog.flowx-modal--s {
   width: 600px;
   max-width: calc(100vw - 32px);
