@@ -54,7 +54,7 @@
     font-size: 12px;
     line-height: 16px;
     padding: var(--flowx-space-4, 4px) var(--flowx-space-8, 8px);
-    background: var(--flowx-neutrals-100);
+    background: var(--flowx-surface-tertiary);
     border-radius: var(--flowx-radius-4, 4px);
     color: var(--flowx-text-primary);
   }
@@ -99,7 +99,7 @@
       font-size: 11px;
       line-height: 14px;
       padding: 2px var(--flowx-space-6, 6px);
-      background: var(--flowx-neutrals-100);
+      background: var(--flowx-surface-tertiary);
       border-radius: var(--flowx-radius-4, 4px);
     }
   }
@@ -276,6 +276,28 @@
   &:active {
     background: var(--flowx-blue-600);
     border-color: var(--flowx-blue-600);
+  }
+}
+
+// Icon tiles & chips — light pastels (*-50) wash out on the dark slate.
+// Match the project-card avatar treatment: translucent saturated step
+// + lifted text color. Blue for identity tiles; green for the runs tile.
+:host-context(.flowx-dark) {
+  .api-key-card__icon,
+  .stat-card__icon--projects,
+  .getting-started__icon {
+    background: rgba(51, 137, 224, 0.18);
+    color: var(--flowx-blue-300);
+  }
+
+  .stat-card__icon--runs {
+    background: rgba(0, 128, 96, 0.20);
+    color: var(--flowx-green-300);
+  }
+
+  .section-header__count {
+    background: rgba(51, 137, 224, 0.18);
+    color: var(--flowx-blue-300);
   }
 }
 

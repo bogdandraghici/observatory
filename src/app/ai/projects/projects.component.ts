@@ -9,6 +9,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
   templateUrl: './projects.component.html',
+  styleUrl: './projects.component.scss',
   standalone: false,
 })
 export class ProjectsComponent implements OnInit {

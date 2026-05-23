@@ -40,64 +40,99 @@
     <span class="text-lg font-semibold">{{ apps?.length || 0 }} projects</span>
   </div>
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+  <div class="projects-list">
     @for (app of apps; track app.id) {
-      <div
-        class="stat-card"
-        style="flex-direction: column; align-items: stretch; cursor: pointer; transition: border-color 0.2s"
-        (click)="openProject(app)"
-        [style.border-color]="'var(--surface-border)'"
-      >
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <div class="text-lg font-bold" style="color: var(--text-color)">{{ app.name }}</div>
-            <code class="text-xs" style="color: var(--text-color-secondary)">{{ app.id }}</code>
-          </div>
-          <div class="flex items-center gap-1">
+      <div class="project-row" (click)="openProject(app)">
+        <!-- Identity -->
+        <div class="project-row__identity">
+          <div class="project-row__title">
+            <span class="project-row__name">{{ app.name }}</span>
             @if (app.is_default) {
-              <i class="pi pi-star-fill" style="color: var(--flowx-yellow-500, #feb913); font-size: 0.9rem" pTooltip="Default project"></i>
+              <i class="pi pi-star-fill project-row__star" pTooltip="Default project"></i>
             }
-            <p-button icon="pi pi-arrow-right" [rounded]="true" [text]="true" severity="primary" size="small" pTooltip="View details"></p-button>
           </div>
+          <code class="project-row__id">{{ app.id }}</code>
         </div>
 
         @if (app.stats) {
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-            <div>
-              <span class="text-xs" style="color: var(--primary-color); font-weight: 600">Run Count (7D)</span>
-              <div class="font-bold">{{ app.stats.run_cnt || 0 }}</div>
-            </div>
-            <div style="text-align: right">
-              <span class="text-xs" style="color: var(--text-color-secondary)">Error Rate (7D)</span>
-              <div class="font-bold">{{ app.stats.error_rate || 0 }}</div>
-            </div>
-            <div>
-              <span class="text-xs" style="color: var(--text-color-secondary)">Median Tokens (7D)</span>
-              <div class="font-bold">{{ app.stats.median_tokens || '-' }}</div>
-            </div>
-            <div style="text-align: right">
-              <span class="text-xs" style="color: var(--text-color-secondary)">P50 Latency (7D)</span>
-              <div>
-                <p-tag icon="pi pi-clock" [value]="processDuration(app.stats.p50_latency) + 's'" [severity]="getLatency(processDuration(app.stats.p50_latency))"></p-tag>
+          <!-- Inline KPI strip -->
+          <div class="project-row__kpis">
+            <div class="kpi-cell">
+              <span class="kpi-cell__label">Run Count (7D)</span>
+              <div class="kpi-cell__value-row">
+                <span class="kpi-cell__value">{{ app.stats.run_cnt || 0 }}</span>
               </div>
             </div>
-            <div>
-              <span class="text-xs" style="color: var(--text-color-secondary)">Last Run (7D)</span>
-              <div class="text-sm">{{ formatTime(app.stats.most_recent_run) }}</div>
+
+            <div class="kpi-cell">
+              <span class="kpi-cell__label">Median Tokens (7D)</span>
+              <div class="kpi-cell__value-row">
+                <span class="kpi-cell__value">{{ app.stats.median_tokens || '-' }}</span>
+              </div>
             </div>
-            <div style="text-align: right">
-              <span class="text-xs" style="color: var(--text-color-secondary)">P90 Latency (7D)</span>
-              <div>
-                <p-tag icon="pi pi-clock" [value]="processDuration(app.stats.p90_latency) + 's'" [severity]="getLatency(processDuration(app.stats.p90_latency))"></p-tag>
+
+            <div
+              class="kpi-cell"
+              [class.kpi-cell--good]="(app.stats.error_rate || 0) === 0"
+              [class.kpi-cell--warn]="(app.stats.error_rate || 0) > 0 && (app.stats.error_rate || 0) < 5"
+              [class.kpi-cell--bad]="(app.stats.error_rate || 0) >= 5"
+            >
+              <span class="kpi-cell__label">Error Rate (7D)</span>
+              <div class="kpi-cell__value-row">
+                <span class="kpi-cell__value">{{ app.stats.error_rate || 0 }}</span>
+              </div>
+            </div>
+
+            <div
+              class="kpi-cell"
+              [class.kpi-cell--good]="getLatency(processDuration(app.stats.p50_latency)) === 'success'"
+              [class.kpi-cell--warn]="getLatency(processDuration(app.stats.p50_latency)) === 'warn'"
+              [class.kpi-cell--bad]="getLatency(processDuration(app.stats.p50_latency)) === 'danger'"
+            >
+              <span class="kpi-cell__label">P50 Latency (7D)</span>
+              <div class="kpi-cell__value-row">
+                <i class="pi pi-clock kpi-cell__icon"></i>
+                <span class="kpi-cell__value kpi-cell__value--mono">{{ processDuration(app.stats.p50_latency) }}s</span>
+              </div>
+            </div>
+
+            <div
+              class="kpi-cell"
+              [class.kpi-cell--good]="getLatency(processDuration(app.stats.p90_latency)) === 'success'"
+              [class.kpi-cell--warn]="getLatency(processDuration(app.stats.p90_latency)) === 'warn'"
+              [class.kpi-cell--bad]="getLatency(processDuration(app.stats.p90_latency)) === 'danger'"
+            >
+              <span class="kpi-cell__label">P90 Latency (7D)</span>
+              <div class="kpi-cell__value-row">
+                <i class="pi pi-clock kpi-cell__icon"></i>
+                <span class="kpi-cell__value kpi-cell__value--mono">{{ processDuration(app.stats.p90_latency) }}s</span>
               </div>
             </div>
           </div>
         } @else {
-          <div class="text-center p-4" style="color: var(--text-color-secondary)">
-            <i class="pi pi-chart-bar" style="font-size: 1.5rem"></i>
-            <div class="text-sm mt-2">No statistics collected yet</div>
+          <div class="project-row__empty">
+            <i class="pi pi-chart-bar"></i>
+            <span>No statistics collected yet</span>
           </div>
         }
+
+        <!-- Last run + actions -->
+        <div class="project-row__tail">
+          @if (app.stats) {
+            <div class="project-row__last-run">
+              <div class="project-row__last-run__label">Last Run (7D)</div>
+              <div class="project-row__last-run__value">{{ formatTime(app.stats.most_recent_run) }}</div>
+            </div>
+          }
+          <p-button
+            icon="pi pi-arrow-right"
+            [rounded]="true"
+            [text]="true"
+            severity="primary"
+            size="small"
+            pTooltip="View details"
+          ></p-button>
+        </div>
       </div>
     }
   </div>
