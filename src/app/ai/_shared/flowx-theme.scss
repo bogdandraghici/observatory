@@ -532,28 +532,47 @@
   // ============================================================
 
   // ── Buttons (per button.json spec) ───────────────────────
+  // Base p-button — Medium size per button.json
+  // (height 36, fontSize 14, lineHeight 24, paddingV 6, paddingH 12, gap 6,
+  //  iconSize 24, radius 8). p-button-sm / p-button-lg override below.
   .p-button {
     font-family: var(--flowx-font-primary);
     font-size: 14px;
     line-height: 24px;
     font-weight: 600;
     border-radius: var(--flowx-radius-8);
-    padding: var(--flowx-space-8) var(--flowx-space-16);
+    padding: var(--flowx-space-6) var(--flowx-space-12);
+    gap: var(--flowx-space-6);
     transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
   }
+  .p-button .p-button-icon { font-size: 16px; }
 
+  // Brand Primary (filled) — light mode per button.json:
+  //   Default #006bd8 / Hover #005fc0 / Pressed #004c99 / Disabled neutrals-100
   .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {
-    background: var(--flowx-interactive);
-    border-color: var(--flowx-interactive);
+    background: var(--flowx-blue-500);
+    border-color: var(--flowx-blue-500);
     color: #ffffff;
 
-    &:hover {
-      background: var(--flowx-interactive-hover);
-      border-color: var(--flowx-interactive-hover);
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-600);
+      border-color: var(--flowx-blue-600);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-700);
+      border-color: var(--flowx-blue-700);
     }
     &:focus-visible {
       outline: 2px solid var(--flowx-blue-300);
       outline-offset: 2px;
+    }
+    &:disabled,
+    &.p-disabled {
+      background: var(--flowx-neutrals-100);
+      border-color: var(--flowx-neutrals-100);
+      color: var(--flowx-neutrals-400);
+
+      .p-button-icon, .p-button-label { color: var(--flowx-neutrals-400); }
     }
   }
 
@@ -574,6 +593,37 @@
     color: var(--flowx-interactive);
 
     &:hover { background: var(--flowx-blue-50); color: var(--flowx-interactive-hover); }
+  }
+
+  // Brand Secondary per button.json — light:
+  //   Default fill #ffffff, stroke #e3e8ed, text #006bd8, icon #1d232c
+  //   Hover   fill #f7f8f9, stroke #e3e8ed, text #006bd8
+  //   Pressed fill #e3e8ed, stroke #e3e8ed, text #006bd8
+  //   Disabled fill transparent, stroke #cbd1db, text #a6b0be
+  .p-button.p-button-secondary {
+    background: #ffffff;
+    border: 1px solid var(--flowx-neutrals-100);
+    color: var(--flowx-blue-500);
+
+    .p-button-label { color: var(--flowx-blue-500); }
+    .p-button-icon  { color: var(--flowx-text-primary); }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-50);
+      border-color: var(--flowx-neutrals-100);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-100);
+      border-color: var(--flowx-neutrals-100);
+    }
+    &:disabled,
+    &.p-disabled {
+      background: transparent;
+      border-color: var(--flowx-neutrals-200);
+      color: var(--flowx-neutrals-300);
+
+      .p-button-label, .p-button-icon { color: var(--flowx-neutrals-300); }
+    }
   }
 
   // Danger — filled (default) variant only
@@ -644,7 +694,11 @@
     &:hover { border-color: var(--flowx-green-600); }
   }
 
-  .p-button.p-button-sm  { padding: var(--flowx-space-6) var(--flowx-space-12); font-size: 12px; line-height: 16px; }
+  // Small / Large sizes per button.json
+  // Small:  paddingV 6,  paddingH 8,  fontSize 12, lineHeight 16, icon 16
+  .p-button.p-button-sm  { padding: var(--flowx-space-6) var(--flowx-space-8);  font-size: 12px; line-height: 16px; }
+  .p-button.p-button-sm .p-button-icon { font-size: 16px; }
+  // No FlowX "Large" — keep p-button-lg as a Medium-plus for legacy callers.
   .p-button.p-button-lg  { padding: var(--flowx-space-12) var(--flowx-space-24); font-size: 14px; line-height: 24px; }
 
   // ── Segmented button (per segmented-button.json) ─────────
@@ -1328,6 +1382,64 @@
   .filters-bar {
     background: var(--flowx-surface-primary);
     border: none;
+  }
+
+  // Brand Secondary — dark mode per button.json:
+  //   Default fill transparent, stroke neutrals-600, text blue-400, icon #fff
+  //   Hover   fill neutrals-700, Pressed fill neutrals-600
+  //   Disabled fill transparent, stroke neutrals-600, text #64748b, icon #fff
+  .p-button.p-button-secondary {
+    background: transparent;
+    border: 1px solid var(--flowx-neutrals-600);
+    color: var(--flowx-blue-400);
+
+    .p-button-label { color: var(--flowx-blue-400); }
+    .p-button-icon  { color: #ffffff; }
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-700);
+      border-color: var(--flowx-neutrals-600);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-neutrals-600);
+      border-color: var(--flowx-neutrals-600);
+    }
+    &:disabled,
+    &.p-disabled {
+      background: transparent;
+      border-color: var(--flowx-neutrals-600);
+      color: var(--flowx-neutrals-500);
+
+      .p-button-label { color: var(--flowx-neutrals-500); }
+      .p-button-icon  { color: #ffffff; }
+    }
+  }
+
+  // Brand Primary (filled) — dark mode per button.json:
+  //   Default blue-400 (#3389e0) / Hover blue-500 (#006bd8) /
+  //   Pressed blue-600 (#005fc0) / Disabled neutrals-700.
+  // Note: hover/pressed move DARKER on dark, opposite of link-hover
+  // convention, so we override the button only (not --flowx-interactive-hover).
+  .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {
+    background: var(--flowx-blue-400);
+    border-color: var(--flowx-blue-400);
+
+    &:hover:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-500);
+      border-color: var(--flowx-blue-500);
+    }
+    &:active:not(:disabled):not(.p-disabled) {
+      background: var(--flowx-blue-600);
+      border-color: var(--flowx-blue-600);
+    }
+    &:disabled,
+    &.p-disabled {
+      background: var(--flowx-neutrals-700);
+      border-color: var(--flowx-neutrals-700);
+      color: var(--flowx-neutrals-400);
+
+      .p-button-icon, .p-button-label { color: var(--flowx-neutrals-400); }
+    }
   }
 
   // Tag/chip success/info icons on dark

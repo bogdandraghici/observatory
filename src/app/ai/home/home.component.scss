@@ -230,28 +230,52 @@
     }
   }
 
+  // Mirrors the FlowX Brand → Primary → Medium button spec so this <a>
+  // visually matches a <p-button> rendered with the same intent.
   &__btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--flowx-space-8, 8px);
-    padding: var(--flowx-space-8, 8px) var(--flowx-space-16, 16px);
+    gap: var(--flowx-space-6, 6px);
+    padding: var(--flowx-space-6, 6px) var(--flowx-space-12, 12px);
     font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
     font-size: 14px;
     line-height: 24px;
     font-weight: 600;
     color: #ffffff;
-    background: var(--flowx-interactive);
-    border: 1px solid var(--flowx-interactive);
+    background: var(--flowx-blue-500);
+    border: 1px solid var(--flowx-blue-500);
     border-radius: var(--flowx-radius-8, 8px);
     text-decoration: none;
     cursor: pointer;
     transition: background-color 150ms ease, border-color 150ms ease;
     white-space: nowrap;
 
+    i { font-size: 16px; line-height: 1; }
+
     &:hover {
-      background: var(--flowx-interactive-hover);
-      border-color: var(--flowx-interactive-hover);
+      background: var(--flowx-blue-600);
+      border-color: var(--flowx-blue-600);
     }
+    &:active {
+      background: var(--flowx-blue-700);
+      border-color: var(--flowx-blue-700);
+    }
+  }
+}
+
+// View Docs button — dark-mode brand-primary palette per button.json
+// (blue-400 default → blue-500 hover → blue-600 pressed).
+:host-context(.flowx-dark) .getting-started__btn {
+  background: var(--flowx-blue-400);
+  border-color: var(--flowx-blue-400);
+
+  &:hover {
+    background: var(--flowx-blue-500);
+    border-color: var(--flowx-blue-500);
+  }
+  &:active {
+    background: var(--flowx-blue-600);
+    border-color: var(--flowx-blue-600);
   }
 }
 
