@@ -1,0 +1,422 @@
+/* ============================================================
+ * Framework metadata grid — mirrors the project-card KPI tiles
+ * on the home page (label / big value / internal-only dividers).
+ * ============================================================ */
+.framework-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+
+  &--cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+  &__tile {
+    padding: 16px 18px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-50);
+    border-radius: 16px;
+  }
+
+  &__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 8px;
+    min-width: 0;
+  }
+
+  &__icon {
+    font-size: 14px;
+    color: var(--flowx-text-secondary);
+    align-self: center;
+    margin-right: 2px;
+  }
+
+  &__value {
+    font-size: 22px;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  &__empty {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+:host-context(.flowx-dark) .framework-meta__tile {
+  border-color: var(--flowx-border-default);
+}
+
+/* ============================================================
+ * Obligation card — severity-led variant
+ * Built on FlowX tokens. Dark mode mirrored via :host-context.
+ * ============================================================ */
+
+/* Remove the PrimeNG accordion-content wrapper background/border so
+ * obligation cards sit directly on the drawer surface instead of on
+ * a nested gray panel. Scoped to this component only. */
+:host ::ng-deep {
+  .p-accordioncontent,
+  .p-accordioncontent-wrapper,
+  .p-accordion-content,
+  .p-accordioncontent-content {
+    background: transparent !important;
+    border: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+.obligation-card {
+  position: relative;
+  display: flex;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-border-default);
+  border-radius: var(--flowx-radius-12);
+  overflow: hidden;
+  font-family: var(--flowx-font-sans);
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover {
+    border-color: var(--flowx-border-strong, #cbd1db);
+    box-shadow: 0 2px 8px rgba(22, 52, 98, 0.06);
+  }
+
+  &__rail {
+    width: 4px;
+    flex: 0 0 auto;
+    background: #a6b0be;
+  }
+  &__rail--minimal  { background: #008060; }
+  &__rail--limited  { background: #006bd8; }
+  &__rail--high     { background: #fd6b1c; }
+  &__rail--critical { background: #e62200; }
+  &__rail--neutral  { background: #a6b0be; }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    padding: 16px 20px 18px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__id {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-700);
+    font-family: var(--flowx-font-monospace);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: var(--flowx-radius-6);
+  }
+
+  &__meta-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--flowx-neutrals-500);
+    opacity: 0.5;
+  }
+
+  &__risks {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  &__risk-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+
+    .obligation-card__risk-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      display: inline-block;
+    }
+
+    &--minimal  { background: #e6f2ef; color: #005b44; .obligation-card__risk-dot { background: #008060; } }
+    &--limited  { background: #e6f0fb; color: #004c99; .obligation-card__risk-dot { background: #006bd8; } }
+    &--high     { background: #fff0e8; color: #b44c14; .obligation-card__risk-dot { background: #fd6b1c; } }
+    &--critical { background: #fde9e6; color: #a31800; .obligation-card__risk-dot { background: #e62200; } }
+    &--neutral  { background: var(--flowx-surface-secondary); color: var(--flowx-text-secondary); .obligation-card__risk-dot { background: var(--flowx-neutrals-500); } }
+  }
+
+  &__meta-actions {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__title {
+    margin: 12px 0 4px;
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--flowx-text-primary);
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__grid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  &__grid--single { grid-template-columns: 1fr; }
+
+  &__panel {
+    background: var(--flowx-surface-secondary);
+    border-radius: var(--flowx-radius-8);
+    padding: 12px 14px;
+    min-width: 0;
+  }
+
+  &__overline {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+    margin-bottom: 8px;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-border-default);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
+
+    i {
+      font-size: 11px;
+      color: var(--flowx-neutrals-500);
+    }
+  }
+
+  &__rules {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__rule {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--flowx-font-monospace);
+    font-size: 12px;
+
+    code {
+      color: var(--flowx-text-primary);
+      font-weight: 600;
+      background: transparent;
+      padding: 0;
+    }
+  }
+
+  &__rule-icon {
+    font-size: 12px;
+    color: var(--flowx-interactive, var(--flowx-blue-500));
+    flex: 0 0 auto;
+  }
+
+  &__rule-op {
+    font-size: 10px;
+    color: var(--flowx-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    background: var(--flowx-neutrals-100);
+    border-radius: var(--flowx-radius-4);
+    font-family: var(--flowx-font-monospace);
+  }
+
+  &__rule-value {
+    color: var(--flowx-blue-700);
+    font-weight: 700;
+  }
+
+  &__questions {
+    margin-top: 14px;
+  }
+
+  &__q {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--flowx-surface-secondary);
+    border-radius: var(--flowx-radius-8);
+
+    + .obligation-card__q { margin-top: 6px; }
+  }
+
+  &__q-icon {
+    font-size: 14px;
+    color: var(--flowx-text-secondary);
+    flex: 0 0 auto;
+  }
+
+  &__q-num {
+    font-family: var(--flowx-font-monospace);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--flowx-text-secondary);
+    letter-spacing: 0.04em;
+    flex: 0 0 auto;
+  }
+
+  &__q-text {
+    flex: 1;
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--flowx-text-primary);
+  }
+
+  &__q-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  &__q-type {
+    font-family: var(--flowx-font-monospace);
+    font-size: 11px;
+    padding: 2px 8px;
+    border: 1px solid var(--flowx-border-default);
+    border-radius: var(--flowx-radius-6);
+    background: var(--flowx-surface-primary);
+    color: var(--flowx-text-primary);
+  }
+
+  &__q-weight {
+    font-family: var(--flowx-font-monospace);
+    font-size: 10px;
+    color: var(--flowx-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ----------------------------------------------------------------
+ * Dark mode — translucent saturated fills so the dark surface
+ * shows through (per CLAUDE.md guidance). Light pastels would
+ * read gray against #2a313a.
+ * ---------------------------------------------------------------- */
+:host-context(.flowx-dark) .obligation-card {
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  &__id {
+    background: rgba(51, 137, 224, 0.18);
+    color: #8abbed;
+  }
+
+  &__rail--minimal  { background: #4a9985; }
+  &__rail--limited  { background: #3389e0; }
+  &__rail--high     { background: #fd6b1c; }
+  &__rail--critical { background: #ee6b54; }
+
+  &__risk-chip {
+    &--minimal {
+      background: rgba(0, 128, 96, 0.28);
+      color: #8ac5b6;
+      .obligation-card__risk-dot { background: #54aa94; }
+    }
+    &--limited {
+      background: rgba(51, 137, 224, 0.28);
+      color: #8abbed;
+      .obligation-card__risk-dot { background: #3389e0; }
+    }
+    &--high {
+      background: rgba(253, 107, 28, 0.30);
+      color: #febb97;
+      .obligation-card__risk-dot { background: #fd8949; }
+    }
+    &--critical {
+      background: rgba(230, 34, 0, 0.32);
+      color: #f4998a;
+      .obligation-card__risk-dot { background: #ee6b54; }
+    }
+  }
+
+  &__rule-op {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+  }
+
+  &__rule-value {
+    color: #8abbed;
+  }
+}

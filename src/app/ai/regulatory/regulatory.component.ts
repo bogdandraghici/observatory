@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-regulatory',
   templateUrl: './regulatory.component.html',
+  styleUrl: './regulatory.component.scss',
   providers: [MessageService],
   standalone: false,
 })
@@ -399,6 +400,28 @@ export class RegulatoryComponent implements OnInit {
       case 'minimal': return 'secondary'
       default: return 'secondary'
     }
+  }
+
+  getRiskTone(level: string): string {
+    switch (level?.toLowerCase()) {
+      case 'unacceptable': return 'critical'
+      case 'high': return 'high'
+      case 'limited': return 'limited'
+      case 'minimal': return 'minimal'
+      default: return 'neutral'
+    }
+  }
+
+  getDominantRiskTone(levels: string[] | null | undefined): string {
+    if (!levels?.length) return 'neutral'
+    const order = ['unacceptable', 'high', 'limited', 'minimal']
+    const lower = levels.map(l => l?.toLowerCase())
+    for (const lvl of order) if (lower.includes(lvl)) return this.getRiskTone(lvl)
+    return 'neutral'
+  }
+
+  formatQuestionIndex(i: number): string {
+    return String(i + 1).padStart(2, '0')
   }
 
   exportPDF(): void {

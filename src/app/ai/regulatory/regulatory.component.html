@@ -431,40 +431,43 @@
             </div>
           }
 
-          <!-- Info Grid -->
-          <div class="grid grid-cols-2 gap-6 mb-6">
-            <!-- Risk Levels -->
-            <div>
-              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Risk Level Applicability</h4>
-              <div class="flex gap-1 flex-wrap">
-                @for (rl of selectedRequirement.risk_level_applicability; track rl) {
-                  <p-tag [value]="rl" severity="secondary"></p-tag>
-                }
-                @if (!selectedRequirement.risk_level_applicability?.length) {
-                  <span class="text-sm" style="color: var(--text-color-secondary)">None specified</span>
-                }
+          <!-- Requirement KPI grid -->
+          <div class="framework-meta framework-meta--cols-2">
+            <div class="framework-meta__tile">
+              <span class="framework-meta__label">Risk Level Applicability</span>
+              @if (selectedRequirement.risk_level_applicability?.length) {
+                <div class="framework-meta__chips">
+                  @for (rl of selectedRequirement.risk_level_applicability; track rl) {
+                    <p-tag [value]="rl" severity="secondary"></p-tag>
+                  }
+                </div>
+              } @else {
+                <span class="framework-meta__empty">None specified</span>
+              }
+            </div>
+            <div class="framework-meta__tile">
+              <span class="framework-meta__label">Evidence Types</span>
+              @if (selectedRequirement.evidence_types?.length) {
+                <div class="framework-meta__chips">
+                  @for (et of selectedRequirement.evidence_types; track et) {
+                    <p-tag [value]="et" severity="info"></p-tag>
+                  }
+                </div>
+              } @else {
+                <span class="framework-meta__empty">None specified</span>
+              }
+            </div>
+            <div class="framework-meta__tile">
+              <span class="framework-meta__label">Evidence Collected</span>
+              <div class="framework-meta__value-row">
+                <span class="framework-meta__value">{{ selectedRequirement.evidence_count || 0 }}</span>
               </div>
             </div>
-            <!-- Evidence Types -->
-            <div>
-              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Evidence Types</h4>
-              <div class="flex gap-1 flex-wrap">
-                @for (et of selectedRequirement.evidence_types; track et) {
-                  <p-tag [value]="et" severity="info"></p-tag>
-                }
-                @if (!selectedRequirement.evidence_types?.length) {
-                  <span class="text-sm" style="color: var(--text-color-secondary)">None specified</span>
-                }
+            <div class="framework-meta__tile">
+              <span class="framework-meta__label">Policy Evaluations</span>
+              <div class="framework-meta__value-row">
+                <span class="framework-meta__value">{{ selectedRequirement.evaluation_count || 0 }}</span>
               </div>
-            </div>
-            <!-- Mapping Stats -->
-            <div>
-              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Evidence Collected</h4>
-              <span class="text-2xl font-bold">{{ selectedRequirement.evidence_count || 0 }}</span>
-            </div>
-            <div>
-              <h4 class="mt-0 mb-2 text-sm font-semibold uppercase" style="letter-spacing: 0.05em; color: var(--text-color-secondary)">Policy Evaluations</h4>
-              <span class="text-2xl font-bold">{{ selectedRequirement.evaluation_count || 0 }}</span>
             </div>
           </div>
 
@@ -564,23 +567,32 @@
               <p class="m-0 mb-4 leading-relaxed" style="color: var(--text-color-secondary)">{{ frameworkDetail.description }}</p>
             }
 
-            <!-- Metadata grid -->
-            <div class="grid grid-cols-4 gap-4 mb-6">
-              <div class="bg-surface-card rounded p-3 text-center">
-                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Version</div>
-                <div class="text-lg font-bold">{{ frameworkDetail.version || 'N/A' }}</div>
+            <!-- Framework metadata KPI grid -->
+            <div class="framework-meta">
+              <div class="framework-meta__tile">
+                <span class="framework-meta__label">Version</span>
+                <div class="framework-meta__value-row">
+                  <span class="framework-meta__value">{{ frameworkDetail.version || 'N/A' }}</span>
+                </div>
               </div>
-              <div class="bg-surface-card rounded p-3 text-center">
-                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Effective Date</div>
-                <div class="text-lg font-bold">{{ frameworkDetail.effective_date ? (frameworkDetail.effective_date | date:'mediumDate') : 'N/A' }}</div>
+              <div class="framework-meta__tile">
+                <span class="framework-meta__label">Effective Date</span>
+                <div class="framework-meta__value-row">
+                  <i class="pi pi-calendar framework-meta__icon"></i>
+                  <span class="framework-meta__value">{{ frameworkDetail.effective_date ? (frameworkDetail.effective_date | date:'mediumDate') : 'N/A' }}</span>
+                </div>
               </div>
-              <div class="bg-surface-card rounded p-3 text-center">
-                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Requirements</div>
-                <div class="text-lg font-bold">{{ frameworkRequirements.length }}</div>
+              <div class="framework-meta__tile">
+                <span class="framework-meta__label">Requirements</span>
+                <div class="framework-meta__value-row">
+                  <span class="framework-meta__value">{{ frameworkRequirements.length }}</span>
+                </div>
               </div>
-              <div class="bg-surface-card rounded p-3 text-center">
-                <div class="text-sm font-medium mb-1" style="color: var(--text-color-secondary)">Categories</div>
-                <div class="text-lg font-bold">{{ groupedRequirements.length }}</div>
+              <div class="framework-meta__tile">
+                <span class="framework-meta__label">Categories</span>
+                <div class="framework-meta__value-row">
+                  <span class="framework-meta__value">{{ groupedRequirements.length }}</span>
+                </div>
               </div>
             </div>
 
@@ -612,76 +624,88 @@
                     <p-accordion-content>
                       <div class="flex flex-col gap-3">
                         @for (req of group.requirements; track req.id) {
-                          <div class="bg-surface-card rounded p-4" style="border: 1px solid var(--surface-border)">
-                            <!-- Code + Title + Actions -->
-                            <div class="flex items-start gap-2 mb-2">
-                              <p-tag [value]="req.requirement_code" severity="info"></p-tag>
-                              <span class="font-semibold flex-1">{{ req.title }}</span>
-                              @if (!frameworkDetail.is_system) {
-                                <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditRequirementForm(req, $event)" pTooltip="Edit"></p-button>
-                                <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteRequirement(req, $event)" pTooltip="Delete"></p-button>
-                              }
-                            </div>
-
-                            <!-- Description -->
-                            @if (req.description) {
-                              <p class="m-0 mb-3 text-sm leading-relaxed" style="color: var(--text-color-secondary)">{{ req.description }}</p>
-                            }
-
-                            <!-- Risk levels -->
-                            @if (req.risk_level_applicability?.length) {
-                              <div class="flex items-center gap-1 flex-wrap mb-2">
-                                <span class="text-xs font-semibold mr-1" style="color: var(--text-color-secondary)">Risk:</span>
-                                @for (rl of req.risk_level_applicability; track rl) {
-                                  <p-tag [value]="rl" [severity]="getRiskLevelSeverity(rl)" styleClass="text-xs"></p-tag>
+                          <div class="obligation-card">
+                            <div class="obligation-card__rail" [ngClass]="'obligation-card__rail--' + getDominantRiskTone(req.risk_level_applicability)"></div>
+                            <div class="obligation-card__body">
+                              <!-- Meta strip: code · risk chips · actions -->
+                              <div class="obligation-card__meta">
+                                <span class="obligation-card__id">{{ req.requirement_code }}</span>
+                                @if (req.risk_level_applicability?.length) {
+                                  <span class="obligation-card__meta-dot"></span>
+                                  <span class="obligation-card__risks">
+                                    @for (rl of req.risk_level_applicability; track rl) {
+                                      <span class="obligation-card__risk-chip" [ngClass]="'obligation-card__risk-chip--' + getRiskTone(rl)">
+                                        <span class="obligation-card__risk-dot"></span>{{ rl }}
+                                      </span>
+                                    }
+                                  </span>
+                                }
+                                @if (!frameworkDetail.is_system) {
+                                  <span class="obligation-card__meta-actions">
+                                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditRequirementForm(req, $event)" pTooltip="Edit"></p-button>
+                                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteRequirement(req, $event)" pTooltip="Delete"></p-button>
+                                  </span>
                                 }
                               </div>
-                            }
 
-                            <!-- Evidence types -->
-                            @if (req.evidence_types?.length) {
-                              <div class="mb-2">
-                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Evidence to Collect</div>
-                                <div class="flex gap-1 flex-wrap">
-                                  @for (et of req.evidence_types; track et) {
-                                    <p-tag [value]="et" severity="secondary" styleClass="text-xs"></p-tag>
+                              <!-- Title + description -->
+                              <h3 class="obligation-card__title">{{ req.title }}</h3>
+                              @if (req.description) {
+                                <p class="obligation-card__desc">{{ req.description }}</p>
+                              }
+
+                              <!-- Evidence + Policy rules grid -->
+                              @if (req.evidence_types?.length || req.suggested_policy_rules?.length) {
+                                <div class="obligation-card__grid" [class.obligation-card__grid--single]="!(req.evidence_types?.length && req.suggested_policy_rules?.length)">
+                                  @if (req.evidence_types?.length) {
+                                    <div class="obligation-card__panel">
+                                      <div class="obligation-card__overline">Evidence to Collect</div>
+                                      <div class="obligation-card__chips">
+                                        @for (et of req.evidence_types; track et) {
+                                          <span class="obligation-card__chip">
+                                            <i class="pi" [ngClass]="et === 'automated' ? 'pi-bolt' : 'pi-user'"></i>
+                                            {{ et }}
+                                          </span>
+                                        }
+                                      </div>
+                                    </div>
                                   }
-                                </div>
-                              </div>
-                            }
-
-                            <!-- Suggested policy rules -->
-                            @if (req.suggested_policy_rules?.length) {
-                              <div class="mb-2">
-                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Policy Rules to Configure</div>
-                                <div class="flex flex-col gap-1">
-                                  @for (rule of req.suggested_policy_rules; track rule.metric) {
-                                    <div class="flex items-center gap-2 text-xs">
-                                      <i class="pi pi-shield text-xs" style="color: var(--text-color-secondary)"></i>
-                                      <code class="font-semibold">{{ rule.metric }}</code>
-                                      <span style="color: var(--text-color-secondary)">{{ rule.operator }}</span>
-                                      <code class="font-semibold">{{ rule.threshold }}</code>
+                                  @if (req.suggested_policy_rules?.length) {
+                                    <div class="obligation-card__panel">
+                                      <div class="obligation-card__overline">Policy Rules</div>
+                                      <div class="obligation-card__rules">
+                                        @for (rule of req.suggested_policy_rules; track rule.metric) {
+                                          <div class="obligation-card__rule">
+                                            <i class="pi pi-shield obligation-card__rule-icon"></i>
+                                            <code>{{ rule.metric }}</code>
+                                            <span class="obligation-card__rule-op">{{ rule.operator }}</span>
+                                            <code class="obligation-card__rule-value">{{ rule.threshold }}</code>
+                                          </div>
+                                        }
+                                      </div>
                                     </div>
                                   }
                                 </div>
-                              </div>
-                            }
+                              }
 
-                            <!-- Suggested questions -->
-                            @if (req.suggested_questions?.length) {
-                              <div>
-                                <div class="text-xs font-semibold mb-1" style="color: var(--text-color-secondary)">Assessment Questions</div>
-                                <div class="flex flex-col gap-1">
-                                  @for (q of req.suggested_questions; track q.text) {
-                                    <div class="text-xs flex items-start gap-1">
-                                      <i class="pi pi-question-circle" style="color: var(--text-color-secondary); margin-top: 2px"></i>
-                                      <span>{{ q.text }}</span>
-                                      <span class="ml-auto" style="color: var(--text-color-secondary)">{{ q.type }} (w:{{ q.weight }})</span>
+                              <!-- Assessment questions -->
+                              @if (req.suggested_questions?.length) {
+                                <div class="obligation-card__questions">
+                                  <div class="obligation-card__overline">Assessment Questions</div>
+                                  @for (q of req.suggested_questions; track q.text; let i = $index) {
+                                    <div class="obligation-card__q">
+                                      <i class="pi pi-question-circle obligation-card__q-icon"></i>
+                                      <span class="obligation-card__q-num">{{ formatQuestionIndex(i) }}</span>
+                                      <div class="obligation-card__q-text">{{ q.text }}</div>
+                                      <div class="obligation-card__q-meta">
+                                        <span class="obligation-card__q-type">{{ q.type }}</span>
+                                        <span class="obligation-card__q-weight">w {{ q.weight }}</span>
+                                      </div>
                                     </div>
                                   }
                                 </div>
-                              </div>
-                            }
+                              }
+                            </div>
                           </div>
                         }
                       </div>
