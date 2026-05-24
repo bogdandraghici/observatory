@@ -1329,148 +1329,170 @@
 </div>
 
 <!-- Benchmark Dialog -->
-<p-dialog [(visible)]="benchmarkDialogVisible" [header]="editingBenchmark ? 'Edit Alternative' : 'Add Alternative'" [modal]="true" [style]="{width: '36rem'}">
- <div class="flex flex-col gap-4 pt-2">
-  <div class="flex flex-column gap-3">
-    <div class="grid grid-cols-2 gap-3 w-full">
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Name</label>
-        <input type="text" pInputText [(ngModel)]="benchmarkForm.name" class="w-full" />
+<p-dialog
+  [(visible)]="benchmarkDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '700px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ editingBenchmark ? 'Edit Alternative' : 'Add Alternative' }}</h2>
+      <p class="flowx-modal__subtitle">Compare a manual baseline or competing solution against your current AI agent</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Name</span>
+        <input type="text" pInputText pSize="small" [(ngModel)]="benchmarkForm.name" />
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Type</label>
-        <p-select [options]="alternativeTypeOptions" [(ngModel)]="benchmarkForm.alternative_type" optionLabel="label" optionValue="value" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Type</span>
+        <p-select [options]="alternativeTypeOptions" [(ngModel)]="benchmarkForm.alternative_type" optionLabel="label" optionValue="value" appendTo="body" size="small"></p-select>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Monthly Cost</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.monthly_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Monthly Cost</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.monthly_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Setup Cost</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.setup_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Setup Cost</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.setup_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Annual Maintenance</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.annual_maintenance_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Annual Maintenance</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.annual_maintenance_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Year 1 Cost</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.year_1_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Year 1 Cost</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.year_1_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Ongoing Annual Cost</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.ongoing_annual_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Ongoing Annual Cost</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.ongoing_annual_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Error Rate %</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.error_rate_percent" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Error Rate %</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.error_rate_percent" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Accuracy %</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.accuracy_percent" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Accuracy %</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.accuracy_percent" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Audit Readiness</label>
-        <p-select [options]="auditReadinessOptions" [(ngModel)]="benchmarkForm.audit_readiness" optionLabel="label" optionValue="value" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Audit Readiness</span>
+        <p-select [options]="auditReadinessOptions" [(ngModel)]="benchmarkForm.audit_readiness" optionLabel="label" optionValue="value" appendTo="body" size="small"></p-select>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Reg. Approval Days</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.regulatory_approval_days" [min]="0" suffix=" days" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Reg. Approval Days</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.regulatory_approval_days" [min]="0" suffix=" days" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Employee Satisfaction</label>
-        <p-select [options]="satisfactionOptions" [(ngModel)]="benchmarkForm.employee_satisfaction_impact" optionLabel="label" optionValue="value" appendTo="body" [style]="{'width':'100%'}"></p-select>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Employee Satisfaction</span>
+        <p-select [options]="satisfactionOptions" [(ngModel)]="benchmarkForm.employee_satisfaction_impact" optionLabel="label" optionValue="value" appendTo="body" size="small"></p-select>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Scalability (0-10)</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.scalability_score" [min]="0" [max]="10" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Scalability (0-10)</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.scalability_score" [min]="0" [max]="10" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Compliance (0-10)</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.compliance_readiness_score" [min]="0" [max]="10" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Compliance (0-10)</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.compliance_readiness_score" [min]="0" [max]="10" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Throughput/Month</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.throughput_per_month" [min]="0" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Throughput/Month</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.throughput_per_month" [min]="0" size="small"></p-inputNumber>
       </div>
-      <div class="col-6">
-        <label class="block mb-1 text-sm font-semibold">Deploy Time (days)</label>
-        <p-inputNumber [(ngModel)]="benchmarkForm.time_to_deploy_days" [min]="0" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Deploy Time (days)</span>
+        <p-inputNumber [(ngModel)]="benchmarkForm.time_to_deploy_days" [min]="0" size="small"></p-inputNumber>
       </div>
     </div>
-    
-  </div>
-  <!-- Explanation -->
-  <div class="p-3 rounded-lg" style="background: var(--surface-ground); border: 1px solid var(--surface-border);">
-    <div class="flex items-center gap-2 mb-2">
-      <i class="pi pi-info-circle" style="color: var(--p-primary-color);"></i>
-      <span class="text-sm font-semibold">How alternatives are compared</span>
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How alternatives are compared</div>
+      <ul class="flowx-modal__notice-text" style="margin: 0; padding-left: 1.1rem;">
+        <li><b>Compare</b> calculates a weighted score across cost, quality, compliance, and operational metrics for each alternative vs. the current AI agent.</li>
+        <li><b>5-Year TCO</b> = Setup Cost + (Monthly Cost x 12 x 5) + (Annual Maintenance x 5) — projected total cost of ownership.</li>
+        <li><b>Year 1 Cost</b> = Setup Cost + (Monthly Cost x 12) + Annual Maintenance — first-year investment.</li>
+        <li><b>Ongoing Annual Cost</b> = Monthly Cost x 12 + Annual Maintenance — recurring yearly spend after Year 1.</li>
+        <li>Higher accuracy, scalability, compliance scores and lower error rate, deploy time favor the alternative.</li>
+      </ul>
     </div>
-    <ul class="text-xs text-color-secondary m-0 pl-4" style="line-height: 1.6;">
-      <li><b>Compare</b> calculates a weighted score across cost, quality, compliance, and operational metrics for each alternative vs. the current AI agent.</li>
-      <li><b>5-Year TCO</b> = Setup Cost + (Monthly Cost x 12 x 5) + (Annual Maintenance x 5) — projected total cost of ownership.</li>
-      <li><b>Year 1 Cost</b> = Setup Cost + (Monthly Cost x 12) + Annual Maintenance — first-year investment.</li>
-      <li><b>Ongoing Annual Cost</b> = Monthly Cost x 12 + Annual Maintenance — recurring yearly spend after Year 1.</li>
-      <li>Higher accuracy, scalability, compliance scores and lower error rate, deploy time favor the alternative.</li>
-    </ul>
   </div>
-  </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="benchmarkDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (onClick)="saveBenchmark()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="benchmarkDialogVisible = false"></p-button>
+      <p-button label="Save" (onClick)="saveBenchmark()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- ═══ Edit Dialogs ═══ -->
 
 <!-- Audit Cost Parameters Dialog -->
-<p-dialog [(visible)]="auditDialogVisible" header="Audit Cost Parameters" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Framework</label>
-        <p-select [options]="frameworkOptions" [(ngModel)]="selectedFramework" optionLabel="label" optionValue="value"
-                  placeholder="Select framework" appendTo="body" [style]="{'width':'100%'}"></p-select>
+<p-dialog
+  [(visible)]="auditDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Audit Cost Parameters</h2>
+      <p class="flowx-modal__subtitle">Configure the inputs that drive compliance audit ROI</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Framework</span>
+        <p-select [options]="frameworkOptions" [(ngModel)]="selectedFramework" optionLabel="label" optionValue="value" placeholder="Select framework" appendTo="body" size="small"></p-select>
       </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Hourly Auditor Rate</label>
-        <p-inputNumber [(ngModel)]="hourlyRate" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Hourly Auditor Rate</span>
+        <p-inputNumber [(ngModel)]="hourlyRate" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Audit Failure Risk (manual)</span>
+        <p-inputNumber [(ngModel)]="complianceForm.audit_failure_risk_baseline" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Audit Failure Risk (with agent)</span>
+        <p-inputNumber [(ngModel)]="complianceForm.audit_failure_risk_with_agent" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Response Time Baseline</span>
+        <p-inputNumber [(ngModel)]="complianceForm.regulatory_response_time_baseline_days" [min]="0" suffix=" days" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Response Time With Agent</span>
+        <p-inputNumber [(ngModel)]="complianceForm.regulatory_response_time_with_agent_days" [min]="0" suffix=" days" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Compliance Confidence Baseline</span>
+        <p-inputNumber [(ngModel)]="complianceForm.compliance_confidence_baseline" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Compliance Confidence With Agent</span>
+        <p-inputNumber [(ngModel)]="complianceForm.compliance_confidence_with_agent" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
       </div>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Audit Failure Risk (manual)</label>
-        <p-inputNumber [(ngModel)]="complianceForm.audit_failure_risk_baseline" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Audit Failure Risk (with agent)</label>
-        <p-inputNumber [(ngModel)]="complianceForm.audit_failure_risk_with_agent" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Response Time Baseline</label>
-        <p-inputNumber [(ngModel)]="complianceForm.regulatory_response_time_baseline_days" [min]="0" suffix=" days" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Response Time With Agent</label>
-        <p-inputNumber [(ngModel)]="complianceForm.regulatory_response_time_with_agent_days" [min]="0" suffix=" days" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Compliance Confidence Baseline</label>
-        <p-inputNumber [(ngModel)]="complianceForm.compliance_confidence_baseline" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Compliance Confidence With Agent</label>
-        <p-inputNumber [(ngModel)]="complianceForm.compliance_confidence_with_agent" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <!-- Calculation explanation -->
-    <div class="surface-ground border-round p-3" style="border-left: 3px solid var(--p-primary-color);">
-      <div class="text-sm font-semibold mb-2" style="color: var(--p-primary-color);">How audit ROI is calculated</div>
-      <div class="text-sm text-color-secondary" style="line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How audit ROI is calculated</div>
+      <div class="flowx-modal__notice-text">
         <strong>Audit Hours Saved</strong> = (Manual Hours &minus; Agent Hours) &times; Hourly Rate<br/>
         <strong>Risk Reduction Value</strong> = (Baseline Failure Risk &minus; Agent Failure Risk) &times; Potential Penalty<br/>
         <strong>Response Time Improvement</strong> = Baseline Days &minus; Agent Days<br/><br/>
@@ -1481,44 +1503,61 @@
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-check" (onClick)="auditDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Close" (onClick)="auditDialogVisible = false"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- Sensitivity Parameters Dialog -->
-<p-dialog [(visible)]="sensitivityDialogVisible" header="Sensitivity Parameters (Monte Carlo)" [modal]="true" [style]="{width: '42rem'}">
-  <div class="flex flex-col gap-4 pt-2">
+<p-dialog
+  [(visible)]="sensitivityDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '680px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Sensitivity Parameters (Monte Carlo)</h2>
+      <p class="flowx-modal__subtitle">Define parameter ranges to simulate the ROI probability distribution</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
     @for (key of sensitivityParamKeys; track key) {
-      <div>
-        <label class="font-semibold block mb-1">{{ getParamLabel(key) }}</label>
-        <div class="flex gap-3 items-center">
-          <div class="flex-1">
-            <label class="block mb-1 text-xs text-color-secondary">Min</label>
-            <p-inputNumber [(ngModel)]="sensitivityParams[key].min" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">{{ getParamLabel(key) }}</span>
+        <div class="flowx-modal__grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+          <div class="flowx-modal__field">
+            <span class="flowx-modal__field-label" style="font-weight: 400; text-transform: none; letter-spacing: 0;">Min</span>
+            <p-inputNumber [(ngModel)]="sensitivityParams[key].min" mode="currency" currency="USD" size="small"></p-inputNumber>
           </div>
-          <div class="flex-1">
-            <label class="block mb-1 text-xs text-color-secondary">Likely</label>
-            <p-inputNumber [(ngModel)]="sensitivityParams[key].likely" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+          <div class="flowx-modal__field">
+            <span class="flowx-modal__field-label" style="font-weight: 400; text-transform: none; letter-spacing: 0;">Likely</span>
+            <p-inputNumber [(ngModel)]="sensitivityParams[key].likely" mode="currency" currency="USD" size="small"></p-inputNumber>
           </div>
-          <div class="flex-1">
-            <label class="block mb-1 text-xs text-color-secondary">Max</label>
-            <p-inputNumber [(ngModel)]="sensitivityParams[key].max" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+          <div class="flowx-modal__field">
+            <span class="flowx-modal__field-label" style="font-weight: 400; text-transform: none; letter-spacing: 0;">Max</span>
+            <p-inputNumber [(ngModel)]="sensitivityParams[key].max" mode="currency" currency="USD" size="small"></p-inputNumber>
           </div>
         </div>
       </div>
     }
-    <div>
-      <label class="font-semibold block mb-1">Number of Simulations</label>
-      <p-inputNumber [(ngModel)]="numSimulations" [min]="100" [max]="100000" [step]="1000" [style]="{'width':'200px'}"></p-inputNumber>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Number of Simulations</span>
+      <p-inputNumber [(ngModel)]="numSimulations" [min]="100" [max]="100000" [step]="1000" size="small" [style]="{'width':'200px'}"></p-inputNumber>
     </div>
-    <!-- Explanation -->
-    <div class="p-3 rounded-lg" style="background: var(--surface-ground); border: 1px solid var(--surface-border);">
-      <div class="flex items-center gap-2 mb-2">
-        <i class="pi pi-info-circle" style="color: var(--p-primary-color);"></i>
-        <span class="text-sm font-semibold">How Monte Carlo simulation works</span>
-      </div>
-      <ul class="text-xs text-color-secondary m-0 pl-4" style="line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How Monte Carlo simulation works</div>
+      <ul class="flowx-modal__notice-text" style="margin: 0; padding-left: 1.1rem;">
         <li>For each parameter, define a <b>Min</b>, <b>Likely</b> (most probable), and <b>Max</b> value range.</li>
         <li>The simulation runs N iterations, sampling random values within each range using a triangular distribution.</li>
         <li>Results show the probability distribution of ROI outcomes, confidence intervals, and which parameters have the most impact.</li>
@@ -1526,42 +1565,60 @@
       </ul>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-check" (onClick)="sensitivityDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Close" (onClick)="sensitivityDialogVisible = false"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- Project Baseline Dialog -->
-<p-dialog [(visible)]="baselineDialogVisible" header="Project Baseline" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div>
-      <label class="font-semibold block mb-1">Task Description</label>
-      <input type="text" pInputText [(ngModel)]="financialForm.task_description" class="w-full" placeholder="e.g. Document validation for insurance claims" />
+<p-dialog
+  [(visible)]="baselineDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Project Baseline</h2>
+      <p class="flowx-modal__subtitle">Set the manual effort baseline used to compute Financial ROI</p>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Manual Hours/Execution</label>
-        <p-inputNumber [(ngModel)]="financialForm.manual_effort_hours_per_execution" [min]="0" [step]="0.25" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" hrs" [style]="{'width':'100%'}"></p-inputNumber>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Task Description</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="financialForm.task_description" placeholder="e.g. Document validation for insurance claims" />
+    </div>
+
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Manual Hours/Execution</span>
+        <p-inputNumber [(ngModel)]="financialForm.manual_effort_hours_per_execution" [min]="0" [step]="0.25" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" hrs" size="small"></p-inputNumber>
       </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Hourly Rate</label>
-        <p-inputNumber [(ngModel)]="financialForm.manual_effort_hourly_rate" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Hourly Rate</span>
+        <p-inputNumber [(ngModel)]="financialForm.manual_effort_hourly_rate" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Execution Frequency</span>
+        <p-select [options]="executionFrequencyOptions" [(ngModel)]="financialForm.execution_frequency" optionLabel="label" optionValue="value" appendTo="body" size="small"></p-select>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Avg Agent Executions/Period</span>
+        <p-inputNumber [(ngModel)]="financialForm.avg_executions_per_period" [min]="0" size="small"></p-inputNumber>
       </div>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Execution Frequency</label>
-        <p-select [options]="executionFrequencyOptions" [(ngModel)]="financialForm.execution_frequency" optionLabel="label" optionValue="value" appendTo="body" [style]="{'width':'100%'}"></p-select>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Avg Agent Executions/Period</label>
-        <p-inputNumber [(ngModel)]="financialForm.avg_executions_per_period" [min]="0" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <!-- Calculation explanation -->
-    <div class="surface-ground border-round p-3" style="border-left: 3px solid var(--p-primary-color);">
-      <div class="text-sm font-semibold mb-2" style="color: var(--p-primary-color);">How ROI is calculated</div>
-      <div class="text-sm text-color-secondary" style="line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How ROI is calculated</div>
+      <div class="flowx-modal__notice-text">
         <strong>Labor Saved</strong> = Manual Hours &times; Hourly Rate &times; Avg Agent Executions<br/>
         <strong>Net ROI</strong> = Labor Saved &minus; Actual Agent LLM Cost (from runs)<br/><br/>
         <span style="opacity: 0.8;">
@@ -1571,52 +1628,68 @@
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-check" (onClick)="baselineDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Close" (onClick)="baselineDialogVisible = false"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- Compliance Risk Dialog -->
-<p-dialog [(visible)]="complianceDialogVisible" header="Compliance Risk Factors" [modal]="true" [style]="{width: '40rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Framework</label>
-        <p-select [options]="complianceFrameworkOptions" [(ngModel)]="financialForm.compliance_framework" optionLabel="label" optionValue="value" placeholder="Select" appendTo="body" [style]="{'width':'100%'}"></p-select>
+<p-dialog
+  [(visible)]="complianceDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '640px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Compliance Risk Factors</h2>
+      <p class="flowx-modal__subtitle">Quantify regulatory exposure, operational risk, and governance overhead</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Framework</span>
+        <p-select [options]="complianceFrameworkOptions" [(ngModel)]="financialForm.compliance_framework" optionLabel="label" optionValue="value" placeholder="Select" appendTo="body" size="small"></p-select>
       </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Regulatory Fine Exposure</label>
-        <p-inputNumber [(ngModel)]="financialForm.regulatory_fine_exposure" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Regulatory Fine Exposure</span>
+        <p-inputNumber [(ngModel)]="financialForm.regulatory_fine_exposure" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Failure Probability</span>
+        <p-inputNumber [(ngModel)]="financialForm.regulatory_failure_probability" [min]="0" [max]="100" suffix="%" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Operational Risk Reduction</span>
+        <p-inputNumber [(ngModel)]="financialForm.operational_risk_reduction" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Employee Turnover Savings</span>
+        <p-inputNumber [(ngModel)]="financialForm.employee_turnover_savings" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Vendor Lock-in Cost</span>
+        <p-inputNumber [(ngModel)]="financialForm.vendor_lockin_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Failure Probability</label>
-        <p-inputNumber [(ngModel)]="financialForm.regulatory_failure_probability" [min]="0" [max]="100" suffix="%" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Operational Risk Reduction</label>
-        <p-inputNumber [(ngModel)]="financialForm.operational_risk_reduction" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
+
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Governance Overhead</span>
+      <p-inputNumber [(ngModel)]="financialForm.governance_overhead_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Employee Turnover Savings</label>
-        <p-inputNumber [(ngModel)]="financialForm.employee_turnover_savings" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Vendor Lock-in Cost</label>
-        <p-inputNumber [(ngModel)]="financialForm.vendor_lockin_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <div>
-      <label class="font-semibold block mb-1">Governance Overhead</label>
-      <p-inputNumber [(ngModel)]="financialForm.governance_overhead_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-    </div>
-    <!-- Calculation explanation -->
-    <div class="surface-ground border-round p-3" style="border-left: 3px solid var(--p-primary-color);">
-      <div class="text-sm font-semibold mb-2" style="color: var(--p-primary-color);">How compliance risk is calculated</div>
-      <div class="text-sm text-color-secondary" style="line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How compliance risk is calculated</div>
+      <div class="flowx-modal__notice-text">
         <strong>Compliance Upside</strong> = Fine Exposure &times; Failure Probability<br/>
         <strong>Risk Costs</strong> = Vendor Lock-in + Governance Overhead<br/>
         <strong>Risk Benefits</strong> = Operational Risk Reduction + Turnover Savings<br/><br/>
@@ -1627,48 +1700,63 @@
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-check" (onClick)="complianceDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Close" (onClick)="complianceDialogVisible = false"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
 
 <!-- Cost & Benefits Dialog -->
-<p-dialog [(visible)]="costsDialogVisible" header="Cost & Benefit Inputs" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Infrastructure Cost</label>
-        <p-inputNumber [(ngModel)]="financialForm.infrastructure_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+<p-dialog
+  [(visible)]="costsDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Cost &amp; Benefit Inputs</h2>
+      <p class="flowx-modal__subtitle">Specify infrastructure cost and benefit streams that feed the ROI calculation</p>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__grid">
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Infrastructure Cost</span>
+        <p-inputNumber [(ngModel)]="financialForm.infrastructure_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Labor Cost Saved</label>
-        <p-inputNumber [(ngModel)]="financialForm.labor_cost_saved" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Labor Cost Saved</span>
+        <p-inputNumber [(ngModel)]="financialForm.labor_cost_saved" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Revenue Attributed</span>
+        <p-inputNumber [(ngModel)]="financialForm.revenue_attributed" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Compliance Penalty Risk</span>
+        <p-inputNumber [(ngModel)]="financialForm.compliance_penalty_risk" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Audit Cost Avoided</span>
+        <p-inputNumber [(ngModel)]="financialForm.audit_cost_avoided" mode="currency" currency="USD" size="small"></p-inputNumber>
+      </div>
+      <div class="flowx-modal__field">
+        <span class="flowx-modal__field-label">Error Remediation Cost</span>
+        <p-inputNumber [(ngModel)]="financialForm.error_remediation_cost" mode="currency" currency="USD" size="small"></p-inputNumber>
       </div>
     </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Revenue Attributed</label>
-        <p-inputNumber [(ngModel)]="financialForm.revenue_attributed" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Compliance Penalty Risk</label>
-        <p-inputNumber [(ngModel)]="financialForm.compliance_penalty_risk" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Audit Cost Avoided</label>
-        <p-inputNumber [(ngModel)]="financialForm.audit_cost_avoided" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-      <div class="flex-1">
-        <label class="font-semibold block mb-1">Error Remediation Cost</label>
-        <p-inputNumber [(ngModel)]="financialForm.error_remediation_cost" mode="currency" currency="USD" [style]="{'width':'100%'}"></p-inputNumber>
-      </div>
-    </div>
-    <!-- Calculation explanation -->
-    <div class="surface-ground border-round p-3" style="border-left: 3px solid var(--p-primary-color);">
-      <div class="text-sm font-semibold mb-2" style="color: var(--p-primary-color);">How costs & benefits are calculated</div>
-      <div class="text-sm text-color-secondary" style="line-height: 1.6;">
+
+    <div class="flowx-modal__notice">
+      <div class="flowx-modal__notice-title">How costs &amp; benefits are calculated</div>
+      <div class="flowx-modal__notice-text">
         <strong>Total Costs</strong> = LLM Cost + Infrastructure Cost + Error Remediation<br/>
         <strong>Total Benefits</strong> = Labor Saved + Revenue + Audit Avoided + Penalty Risk Avoided<br/>
         <strong>Net ROI</strong> = Total Benefits &minus; Total Costs<br/><br/>
@@ -1679,7 +1767,10 @@
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Close" icon="pi pi-check" (onClick)="costsDialogVisible = false"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Close" (onClick)="costsDialogVisible = false"></p-button>
+    </div>
   </ng-template>
 </p-dialog>
