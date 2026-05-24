@@ -1,0 +1,117 @@
+// Drawer header close button (X in blue circle) — center the icon by
+// zeroing PrimeNG's empty `.p-button-label` span (`&nbsp;`) that
+// otherwise pushes the icon off-center, and lay the icon out via
+// inline-flex with explicit centering. Global rule (no `::ng-deep`
+// nesting) because PrimeNG portals the drawer to <body>.
+:host ::ng-deep .p-button.execution-details-close,
+::ng-deep .p-button.execution-details-close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  line-height: 1 !important;
+
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+
+  .p-button-label {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .p-button-icon,
+  .p-icon-wrapper,
+  .pi,
+  svg {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+// Node-detail metric tiles — mirror the `.cost-card` aesthetic from
+// the insights dashboard's "Cost & Consumption Forecast" section so
+// the prompt/completion/total/duration/cost boxes feel like
+// first-class FlowX tiles instead of inline-styled boxes.
+//
+// Per CLAUDE.md: dark-mode counterpart shipped alongside light.
+.metric-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metric-tile {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 120px;
+  padding: 16px 18px;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-50);
+  border-radius: var(--flowx-radius-16, 16px);
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover {
+    border-color: var(--flowx-neutrals-200);
+  }
+
+  &__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__value {
+    margin-top: 8px;
+    font-size: 22px;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ID variant — same tile chrome, but values are long alphanumeric
+  // strings (workspace_id, application_id, workflow_id, run id, etc.).
+  // Drop to a smaller monospace face and let the ID wrap/break so the
+  // full value is always visible — no ellipsis truncation.
+  &--id {
+    .metric-tile__value {
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--flowx-font-monospace, ui-monospace, "JetBrains Mono", monospace);
+      letter-spacing: 0;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+  }
+}
+
+// Dark-mode — match the cost-card behavior: border shifts to the
+// theme-aware border tokens that contrast against the dark surface.
+:host-context(.flowx-dark) .metric-tile {
+  border-color: var(--flowx-border-default);
+
+  &:hover {
+    border-color: var(--flowx-border-strong);
+  }
+}

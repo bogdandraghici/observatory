@@ -33,6 +33,7 @@ import { ButtonModule } from 'primeng/button'
 @Component({
     selector: 'execution-detail',
     templateUrl: './execution-detail.component.html',
+    styleUrls: ['./execution-detail.component.scss'],
     standalone: true,
     imports: [
       CommonModule,
