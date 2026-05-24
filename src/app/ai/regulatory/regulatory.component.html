@@ -705,7 +705,6 @@
                       <div class="flex flex-col gap-3">
                         @for (req of group.requirements; track req.id) {
                           <div class="obligation-card">
-                            <div class="obligation-card__rail" [ngClass]="'obligation-card__rail--' + getDominantRiskTone(req.risk_level_applicability)"></div>
                             <div class="obligation-card__body">
                               <!-- Meta strip: code · risk chips · actions -->
                               <div class="obligation-card__meta">
