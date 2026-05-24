@@ -666,8 +666,13 @@
   justify-content: center;
   padding: 0.2rem 0.5rem;
   border-radius: 0.75rem;
+  // Font style mirrors the `.p-tag` status chips (flowx-theme.scss) so
+  // the score chip and the status chip in the next column read as the
+  // same typographic family.
+  font-family: var(--flowx-font-primary);
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 600;
-  font-size: 0.75rem;
   min-width: 2.75rem;
 
   &--high {
