@@ -1,4 +1,150 @@
 /* ============================================================
+ * VOU card — ROI hero on the right rail. Renders one card per
+ * Value Outcome Unit (e.g. "claim") in the Value Outcomes tab.
+ * Three small stats (Agents / Runs / LLM Cost) sit on the left
+ * column, separated from a Net ROI hero on the right by a hairline
+ * divider. The grid uses auto-fill / minmax(420px) so a single VOU
+ * stretches wide enough for the hero layout, while multiple VOUs
+ * wrap into a multi-column grid.
+ *
+ * Font sizes mirror neighbouring ROI dashboard tiles: 10px / 12px
+ * uppercase labels match `.grand-total__label`; the 14px / 22px
+ * title matches `.stat-card__title`. The Net ROI hero sits one
+ * notch above the page's 22px tile value (28px / weight 800).
+ * ============================================================ */
+.vou-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.vou-card {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-12);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: var(--flowx-space-24);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+
+  &:hover {
+    box-shadow: var(--flowx-shadow-m);
+    transform: translateY(-2px);
+  }
+
+  &__left { min-width: 0; }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-600);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
+  }
+
+  &__stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__stat-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+    margin-bottom: 4px;
+  }
+
+  &__stat-value {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    font-variant-numeric: tabular-nums;
+
+    &--cost { color: var(--flowx-error, #e62200); }
+  }
+
+  &__hero {
+    text-align: right;
+    padding-left: 2rem;
+    border-left: 1px solid var(--flowx-neutrals-50);
+  }
+
+  &__hero-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  &__hero-value {
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--flowx-success, #008060);
+    font-variant-numeric: tabular-nums;
+
+    &--neg { color: var(--flowx-error, #e62200); }
+  }
+
+  /* On narrow screens the right rail collapses underneath; the
+   * separator flips from a left border to a top border so the
+   * hairline still reads as a divider, not a stray rule. */
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    &__hero {
+      text-align: left;
+      padding-left: 0;
+      padding-top: 1rem;
+      border-left: none;
+      border-top: 1px solid var(--flowx-neutrals-50);
+    }
+  }
+}
+
+:host-context(.flowx-dark) .vou-card__hero {
+  border-left-color: var(--flowx-border-default);
+
+  @media (max-width: 600px) {
+    border-left-color: transparent;
+    border-top-color: var(--flowx-border-default);
+  }
+}
+
+/* ============================================================
  * ROI KPI tiles — mirrors the framework-meta tile pattern from
  * the regulatory page: bordered card, 10px uppercase label, 22px
  * tabular value, optional inline icon before the value.
