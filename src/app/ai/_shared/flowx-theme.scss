@@ -1032,7 +1032,7 @@
     border-collapse: collapse;
 
     .p-datatable-thead > tr > th {
-      background: var(--flowx-neutrals-50);
+      background: transparent;
       color: var(--flowx-text-secondary);
       font-size: 10px;
       line-height: 12px;
@@ -1363,7 +1363,7 @@
   // Tables
   .p-datatable {
     .p-datatable-thead > tr > th {
-      background: var(--flowx-surface-secondary);
+      background: transparent;
       color: var(--flowx-text-secondary);
       border-bottom-color: var(--flowx-border-default);
     }
@@ -1378,6 +1378,28 @@
 
         code,
         .mono { color: var(--flowx-text-secondary); }
+      }
+    }
+  }
+
+  // Tree — the light-mode rule hands hover off to --flowx-neutrals-50,
+  // which is intentionally kept light in dark mode (so text labels using
+  // it stay readable). For a *background* hover state on the dark slate,
+  // that reads as near-white. Mirror the datatable pattern: translucent
+  // white for hover, translucent blue for the selected (.p-highlight)
+  // state, and an explicit hover-on-selected step so PrimeNG's built-in
+  // `.p-highlight:hover` rule doesn't drag us back to the white hover.
+  .p-tree {
+    .p-tree-node-content,
+    .p-treenode-content {
+      &:hover { background: rgba(255, 255, 255, 0.04); }
+      &.p-highlight {
+        background: rgba(51, 137, 224, 0.18);
+        color: var(--flowx-interactive-hover);
+      }
+      &.p-highlight:hover {
+        background: rgba(51, 137, 224, 0.28);
+        color: var(--flowx-interactive-hover);
       }
     }
   }

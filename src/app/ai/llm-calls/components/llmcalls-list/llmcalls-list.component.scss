@@ -41,7 +41,7 @@ $gold-light: rgba(0, 107, 216, 0.1);
 ::ng-deep .llm-table {
   // Table Header
   .p-datatable-thead > tr > th {
-    background: var(--surface-100) !important;
+    background: transparent !important;
     color: var(--text-color) !important;
     font-weight: 600 !important;
     font-size: 0.75rem;

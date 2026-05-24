@@ -19,7 +19,7 @@
             [rounded]="true"
             [outlined]="false"
             severity="primary"
-            styleClass="h-2rem w-2rem"
+            styleClass="execution-details-close"
           ></p-button>
           <span class="font-semibold text-xl">Execution Detail</span>
           @if (selectedExecution) {
@@ -311,32 +311,32 @@
                     </div>
 
                     <!-- Metrics -->
-                    <div class="flex gap-4 flex-wrap" style="margin-bottom: 1rem">
-                      <div style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Prompt Tokens</div>
-                        <div class="text-xl font-bold">{{ selectedRun.data.prompt_tokens || 0 }}</div>
+                    <div class="metric-tiles">
+                      <div class="metric-tile">
+                        <span class="metric-tile__label">Prompt Tokens</span>
+                        <span class="metric-tile__value">{{ selectedRun.data.prompt_tokens || 0 }}</span>
                       </div>
-                      <div style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Completion Tokens</div>
-                        <div class="text-xl font-bold">{{ selectedRun.data.completion_tokens || 0 }}</div>
+                      <div class="metric-tile">
+                        <span class="metric-tile__label">Completion Tokens</span>
+                        <span class="metric-tile__value">{{ selectedRun.data.completion_tokens || 0 }}</span>
                       </div>
-                      <div style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Total Tokens</div>
-                        <div class="text-xl font-bold">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</div>
+                      <div class="metric-tile">
+                        <span class="metric-tile__label">Total Tokens</span>
+                        <span class="metric-tile__value">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</span>
                       </div>
-                      <div style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Duration</div>
-                        <div class="text-xl font-bold">{{ selectedRun.data.duration ?? '-' }}s</div>
+                      <div class="metric-tile">
+                        <span class="metric-tile__label">Duration</span>
+                        <span class="metric-tile__value">{{ selectedRun.data.duration ?? '-' }}s</span>
                       </div>
                       <div
-                        style="border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem 1rem; text-align: center; flex: 1; min-width: 100px"
+                        class="metric-tile"
                         [style.cursor]="selectedRun.data.type === 'llm' ? 'help' : 'default'"
                         [pTooltip]="selectedRun.data.type === 'llm' ? getCostBreakdownTooltip(selectedRun.data) : ''"
                         tooltipPosition="bottom"
                         [escape]="false"
                       >
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Cost</div>
-                        <div class="text-xl font-bold">{{ formatCost(selectedRun.data.cost) }}</div>
+                        <span class="metric-tile__label">Cost</span>
+                        <span class="metric-tile__value">{{ formatCost(selectedRun.data.cost) }}</span>
                       </div>
                     </div>
 
@@ -434,18 +434,18 @@
               <p-tabpanel value="metadata">
                 <div style="padding: 1rem">
                   @if (selectedExecution) {
-                    <div class="flex gap-4 flex-wrap" style="margin-bottom: 1rem">
-                      <div style="flex: 1; min-width: 200px; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Workspace ID</div>
-                        <div class="text-sm font-medium">{{ selectedExecution.workspace_id || '-' }}</div>
+                    <div class="metric-tiles">
+                      <div class="metric-tile metric-tile--id">
+                        <span class="metric-tile__label">Workspace ID</span>
+                        <span class="metric-tile__value">{{ selectedExecution.workspace_id || '-' }}</span>
                       </div>
-                      <div style="flex: 1; min-width: 200px; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Application ID</div>
-                        <div class="text-sm font-medium">{{ selectedExecution.application_id || '-' }}</div>
+                      <div class="metric-tile metric-tile--id">
+                        <span class="metric-tile__label">Application ID</span>
+                        <span class="metric-tile__value">{{ selectedExecution.application_id || '-' }}</span>
                       </div>
-                      <div style="flex: 1; min-width: 200px; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem">
-                        <div class="text-sm" style="color: var(--text-color-secondary); margin-bottom: 0.25rem">Workflow ID</div>
-                        <div class="text-sm font-medium">{{ selectedExecution.workflow_id || '-' }}</div>
+                      <div class="metric-tile metric-tile--id">
+                        <span class="metric-tile__label">Workflow ID</span>
+                        <span class="metric-tile__value">{{ selectedExecution.workflow_id || '-' }}</span>
                       </div>
                     </div>
                   }
@@ -455,14 +455,14 @@
                   }
                   @if (selectedRun?.data) {
                     <h5 style="margin-top: 1rem">Run IDs</h5>
-                    <div class="flex gap-4">
-                      <div class="flex-1">
-                        <div class="text-sm" style="color: var(--text-color-secondary)">Run ID</div>
-                        <div class="text-sm">{{ selectedRun.data.id }}</div>
+                    <div class="metric-tiles">
+                      <div class="metric-tile metric-tile--id">
+                        <span class="metric-tile__label">Run ID</span>
+                        <span class="metric-tile__value">{{ selectedRun.data.id }}</span>
                       </div>
-                      <div class="flex-1">
-                        <div class="text-sm" style="color: var(--text-color-secondary)">Request ID</div>
-                        <div class="text-sm">{{ selectedRun.data.request_id }}</div>
+                      <div class="metric-tile metric-tile--id">
+                        <span class="metric-tile__label">Request ID</span>
+                        <span class="metric-tile__value">{{ selectedRun.data.request_id }}</span>
                       </div>
                     </div>
                   }
