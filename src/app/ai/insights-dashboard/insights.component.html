@@ -16,6 +16,15 @@
       <h1 class="page-header__title">Agent Evaluations</h1>
       <p class="page-header__subtitle">Performance metrics and quality insights</p>
     </div>
+    <div class="page-header__right">
+      <p-selectButton
+        [options]="environmentOptions"
+        [(ngModel)]="selectedEnvironment"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="environmentChanged()"
+      ></p-selectButton>
+    </div>
   </header>
 
   <div class="filters-bar">
@@ -76,16 +85,6 @@
           optionValue="value"
           (onChange)="periodChanged()"
         ></p-select>
-      </div>
-      <div class="filter-group">
-        <label class="filter-group__label">Environment</label>
-        <p-selectButton
-          [options]="environmentOptions"
-          [(ngModel)]="selectedEnvironment"
-          optionLabel="label"
-          optionValue="value"
-          (onChange)="environmentChanged()"
-        ></p-selectButton>
       </div>
     </div>
     <div style="margin-left:auto;">
@@ -163,19 +162,25 @@
           <!-- KPI Stats -->
           <div class="kpi-row">
             <div class="eval-kpi">
-              <i class="eval-kpi__icon pi pi-clock"></i>
+              <span class="eval-kpi__label">
+                <i class="eval-kpi__icon pi pi-clock"></i>
+                Avg Latency
+              </span>
               <span class="eval-kpi__value">{{ formatLatency(summary.avg_latency_ms) }}</span>
-              <span class="eval-kpi__label">Avg Latency</span>
             </div>
             <div class="eval-kpi">
-              <i class="eval-kpi__icon pi pi-hashtag"></i>
+              <span class="eval-kpi__label">
+                <i class="eval-kpi__icon pi pi-hashtag"></i>
+                Avg Tokens
+              </span>
               <span class="eval-kpi__value">{{ formatTokens(summary.avg_tokens) }}</span>
-              <span class="eval-kpi__label">Avg Tokens</span>
             </div>
             <div class="eval-kpi">
-              <i class="eval-kpi__icon pi pi-list"></i>
+              <span class="eval-kpi__label">
+                <i class="eval-kpi__icon pi pi-list"></i>
+                Agent Executions
+              </span>
               <span class="eval-kpi__value">{{ summary.executions || 0 }}</span>
-              <span class="eval-kpi__label">Agent Executions</span>
             </div>
           </div>
         </div>
