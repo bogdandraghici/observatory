@@ -146,17 +146,6 @@
     box-shadow: 0 2px 8px rgba(22, 52, 98, 0.06);
   }
 
-  &__rail {
-    width: 4px;
-    flex: 0 0 auto;
-    background: #a6b0be;
-  }
-  &__rail--minimal  { background: #008060; }
-  &__rail--limited  { background: #006bd8; }
-  &__rail--high     { background: #fd6b1c; }
-  &__rail--critical { background: #e62200; }
-  &__rail--neutral  { background: #a6b0be; }
-
   &__body {
     flex: 1;
     min-width: 0;
@@ -418,11 +407,6 @@
     background: rgba(51, 137, 224, 0.18);
     color: #8abbed;
   }
-
-  &__rail--minimal  { background: #4a9985; }
-  &__rail--limited  { background: #3389e0; }
-  &__rail--high     { background: #fd6b1c; }
-  &__rail--critical { background: #ee6b54; }
 
   &__risk-chip {
     &--minimal {
