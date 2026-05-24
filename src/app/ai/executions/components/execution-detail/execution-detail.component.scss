@@ -1,3 +1,69 @@
+// Execution tree panel — tighten the gap between the "Execution Tree"
+// title and the first tree row, and align the root-level rows to the
+// same left edge as the title (PrimeNG indents every .p-treenode-content
+// by default for the toggler chevron — we collapse that on the top row
+// so it reads as a flush left list under the heading).
+.execution-tree-panel {
+  &__title {
+    margin: 0 0 0.25rem;
+  }
+
+  // PrimeNG 21 tree structure:
+  //   .p-tree
+  //     .p-tree-root            (div wrapper)
+  //       .p-tree-root-children (ul — the root list, gets browser <ul>
+  //                              default padding-left ~40px)
+  //         .p-tree-node        (li per node)
+  //           .p-tree-node-content        (row — hover/highlight surface)
+  //             .p-tree-node-toggle-button (chevron)
+  //             .p-tree-node-label         (our template renders here)
+  //           .p-tree-node-children       (ul for descendants)
+  ::ng-deep .p-tree {
+    background: transparent;
+    border: none;
+    padding: 0;
+
+    .p-tree-root {
+      padding: 0;
+    }
+
+    // Zero the browser's default <ul> padding so the root list starts
+    // at the panel's left edge (aligned with the title).
+    .p-tree-root-children {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    // Internal padding between the row's icon and the hover/highlight
+    // box edge — 24px each side.
+    .p-tree-node-content {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      gap: var(--flowx-space-4);
+    }
+
+    // PrimeNG renders a .p-tree-node-toggle-button BEFORE every row's
+    // label — even leaf nodes get one (invisible but width-reserving).
+    // Collapse it to zero width so the icon sits flush against the
+    // 24px padding above (no surprise extra gap).
+    .p-tree-node-toggle-button {
+      width: 0;
+      min-width: 0;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+    }
+
+    // Tighten the nested-list indent so descendants don't get pushed
+    // far right by the browser's default <ul> padding (~40px).
+    .p-tree-node-children {
+      padding-left: var(--flowx-space-16, 16px);
+    }
+  }
+}
+
 // Drawer header close button (X in blue circle) — center the icon by
 // zeroing PrimeNG's empty `.p-button-label` span (`&nbsp;`) that
 // otherwise pushes the icon off-center, and lay the icon out via

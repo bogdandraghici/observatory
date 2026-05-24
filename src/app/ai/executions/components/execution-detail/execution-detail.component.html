@@ -65,8 +65,8 @@
       <!-- Body -->
       <div class="flex flex-1 overflow-hidden">
         <!-- Left Panel: Tree -->
-        <div style="min-width: 350px; width: 350px; border-right: 1px solid var(--surface-border); overflow: auto; padding: 1rem">
-          <h4 style="margin-top: 0; margin-bottom: 1rem">Execution Tree</h4>
+        <div class="execution-tree-panel" style="min-width: 350px; width: 350px; border-right: 1px solid var(--surface-border); overflow: auto; padding: 1rem">
+          <h4 class="execution-tree-panel__title">Execution Tree</h4>
           @if (runs && runs.length > 0) {
             <p-tree
               [value]="runs"

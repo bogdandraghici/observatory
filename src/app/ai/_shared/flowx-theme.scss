@@ -1404,6 +1404,45 @@
     }
   }
 
+  // Messages / empty states — the light-mode `.p-message-info` paints
+  // a pale `--flowx-blue-50` pastel with `--flowx-blue-700` (dark) text.
+  // Palette tokens keep their foundation values in dark mode, so the
+  // light-mode rule paints a near-white card with dark text on the dark
+  // slate. Mirror the dark-mode datatable highlight: translucent
+  // semantic-color fill + a slightly stronger border + lifted text.
+  .p-message,
+  .p-message-info,
+  .p-message-success,
+  .p-message-warn,
+  .p-message-error {
+    .p-message-icon,
+    .p-message-text { color: inherit; }
+  }
+  .p-message.p-message-info,
+  .p-message-info {
+    background: rgba(51, 137, 224, 0.18);
+    border-color: rgba(51, 137, 224, 0.40);
+    color: #b0d1f3;
+  }
+  .p-message.p-message-success,
+  .p-message-success {
+    background: rgba(0, 128, 96, 0.22);
+    border-color: rgba(84, 170, 148, 0.45);
+    color: var(--flowx-green-300, #54aa94);
+  }
+  .p-message.p-message-warn,
+  .p-message-warn {
+    background: rgba(254, 185, 19, 0.18);
+    border-color: rgba(254, 185, 19, 0.45);
+    color: var(--flowx-yellow-300, #fed968);
+  }
+  .p-message.p-message-error,
+  .p-message-error {
+    background: rgba(238, 107, 84, 0.18);
+    border-color: rgba(238, 107, 84, 0.45);
+    color: var(--flowx-red-300, #f8867a);
+  }
+
   // Cards / stat cards
   .stat-card,
   .card,
