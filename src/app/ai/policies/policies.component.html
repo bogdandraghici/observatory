@@ -417,29 +417,60 @@
 </p-dialog>
 
 <!-- Evaluation Results Dialog -->
-<p-dialog [(visible)]="evalDialogVisible" header="Evaluation Results" [modal]="true" [style]="{width: '42rem'}">
-  <div class="flex flex-col gap-3 pt-2">
-    @for (ev of evalResults; track ev.id) {
-      <div class="stat-card stat-card--stacked">
-        <div class="flex items-center justify-between mb-2">
-          <span class="font-semibold">{{ getPolicyName(ev.policy_id) }}</span>
-          <p-tag [value]="ev.overall_pass ? 'PASS' : 'FAIL'" [severity]="ev.overall_pass ? 'success' : 'danger'"></p-tag>
-        </div>
-        <div class="mb-3">Score: {{ (ev.score * 100).toFixed(1) }}%</div>
-        @for (r of ev.rule_results; track r.rule_id) {
-          <div class="flex items-center gap-2 mb-1">
-            <i [class]="r.passed ? 'pi pi-check-circle text-green-500' : 'pi pi-times-circle text-red-500'"></i>
-            <span>{{ r.name || r.metric }}: {{ r.metric }} {{ r.operator }} {{ r.threshold }}</span>
-            @if (r.actual_value !== null && r.actual_value !== undefined) {
-              <span>(actual: {{ r.actual_value }})</span>
-            }
+<p-dialog
+  [(visible)]="evalDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Evaluation Results</h2>
+    </div>
+  </ng-template>
+
+  <div class="flowx-modal__body ev-panel">
+    <div class="ev-panel__body">
+      @for (ev of evalResults; track ev.id) {
+        <div class="vc-item">
+          <div class="vc-item__title">{{ getPolicyName(ev.policy_id) }}</div>
+          <div class="vc-item__status">
+            <span class="ev-score ev-score--md">Score: {{ (ev.score * 100).toFixed(1) }}%</span>
+            <span class="ev-pill" [class.ev-pill--fail]="!ev.overall_pass">
+              <i [class]="ev.overall_pass ? 'pi pi-check' : 'pi pi-times'" class="ev-pill__glyph"></i>
+              {{ ev.overall_pass ? 'Pass' : 'Fail' }}
+            </span>
           </div>
-        }
-      </div>
-    }
-    @if (evalResults.length === 0) {
-      <div class="text-center p-6">No evaluation results</div>
-    }
+          @if (ev.rule_results?.length) {
+            <div class="vc-item__assertions">
+              @for (r of ev.rule_results; track r.rule_id) {
+                <div class="vc-assert" [class.vc-assert--fail]="!r.passed">
+                  <span class="vc-assert__key">{{ r.name || r.metric }}</span>
+                  <span class="vc-assert__expr">
+                    <span class="vc-assert__field">{{ r.metric }}</span>
+                    <span class="vc-assert__op">{{ r.operator }}</span>
+                    <span class="vc-assert__val">{{ r.threshold }}</span>
+                    @if (r.actual_value !== null && r.actual_value !== undefined) {
+                      <span class="vc-assert__actual">actual: {{ r.actual_value }}</span>
+                    }
+                  </span>
+                  <span class="vc-assert__check">
+                    <i [class]="r.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+      @if (evalResults.length === 0) {
+        <div class="text-center p-6">No evaluation results</div>
+      }
+    </div>
   </div>
 </p-dialog>
 
