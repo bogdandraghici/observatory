@@ -11,6 +11,13 @@ $table-row-hover: rgba(255, 255, 255, 0.02);
 $code-bg: rgba(255, 255, 255, 0.05);
 
 ::ng-deep {
+  .p-datatable .p-datatable-header,
+  .p-datatable.p-datatable-sm .p-datatable-header {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 0 0.75rem 0 !important;
+  }
+
   .details-table {
     .p-datatable,
     .p-button,
