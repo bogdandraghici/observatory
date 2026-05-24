@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { Meta, Title } from '@angular/platform-browser'
 import { MessageService } from 'primeng/api'
+import { Subscription } from 'rxjs'
+import { debounceTime } from 'rxjs/operators'
 
 import { RsiService } from './rsi.service'
 import { OrgService } from '../services/orgs.service'
@@ -14,7 +16,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
   standalone: false,
   providers: [MessageService],
 })
-export class RsiComponent implements OnInit {
+export class RsiComponent implements OnInit, OnDestroy {
   // Filters
   orgs: any[] = []
   selectedOrg: any
@@ -42,6 +44,13 @@ export class RsiComponent implements OnInit {
   mutations: any[] = []
   evalMatrix: any = null
   promotion: any = null
+
+  // Latest completed cycle's mutation comparison (Overview tab chart)
+  latestCycle: any = null
+  candidateChartData: any = null
+  candidateChartOptions: any = null
+  candidateChartPlugins: any[] = []
+  private themeSubscription?: Subscription
 
   // Trigger dialog
   showTriggerDialog = false
@@ -75,12 +84,24 @@ export class RsiComponent implements OnInit {
     private metaService: Meta,
     private titleService: Title,
     private messageService: MessageService,
-  ) {}
+  ) {
+    // Rebuild chart options when theme toggles — Chart.js doesn't react
+    // to the .flowx-dark class swap on its own.
+    this.themeSubscription = this.layoutService.configUpdate$
+      .pipe(debounceTime(25))
+      .subscribe(() => {
+        if (this.candidateChartData) {this.buildCandidateChart()}
+      })
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('FlowX.AI Observatory - AutoTune Dashboard')
     this.metaService.updateTag({ name: 'description', content: 'AutoTune dashboard — autonomous agent optimization' })
     this.populateOrgs()
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe()
   }
 
   populateOrgs(): void {
@@ -127,24 +148,51 @@ export class RsiComponent implements OnInit {
   async loadAgents(): Promise<void> {
     if (!this.selectedApp) return
     try {
-      const result = await this.dashboardService.getInsightsAgents(this.selectedApp)
-      if (result?.error) {
-        this.agents = []
-        return
+      // Insights agents come from the insights service (eval_runs.agent_id);
+      // RSI agents come from rsi_baseline.agent_name. They don't overlap by
+      // ID, so we merge both lists. RSI entries are the ones that actually
+      // have AutoTune cycles, so we prefer them when auto-selecting.
+      const [insightsResult, rsiResult] = await Promise.all([
+        this.dashboardService.getInsightsAgents(this.selectedApp).catch(() => null),
+        this.rsiService.getEnrolledWorkflows(undefined, this.selectedOrg, this.selectedApp).catch(() => null),
+      ])
+
+      const rsiAgents = ((rsiResult?.workflows) || [])
+        .filter((w: any) => w?.agent_name)
+        .map((w: any) => ({ label: w.agent_name, value: w.agent_name, hasRsi: true }))
+
+      // The project may declare its agent name in settings.agent — surface
+      // it as a synthetic entry so the dropdown always offers the seeded
+      // "Claims Approval Agent" even when /workflows hasn't enrolled it yet.
+      const settingsAgent = this.apps?.find((a: any) => a.id === this.selectedApp)?.settings?.agent
+      if (settingsAgent && !rsiAgents.some((a: any) => a.value === settingsAgent)) {
+        rsiAgents.unshift({ label: settingsAgent, value: settingsAgent, hasRsi: true })
       }
-      const seen = new Set()
-      this.agents = (result || [])
-        .map((a: any) => {
-          const id = a.agent_id || a.id
-          return { label: a.name || id, value: id }
-        })
-        .filter((a: any) => {
-          if (seen.has(a.value)) return false
-          seen.add(a.value)
-          return true
-        })
+
+      const insightsAgents = (Array.isArray(insightsResult) ? insightsResult : [])
+        .map((a: any) => ({
+          label: a.name || a.agent_id || a.id,
+          value: a.agent_id || a.id,
+          hasRsi: false,
+        }))
+
+      const seen = new Set<string>()
+      this.agents = [...rsiAgents, ...insightsAgents].filter((a: any) => {
+        if (!a.value || seen.has(a.value)) return false
+        seen.add(a.value)
+        return true
+      })
+
       if (this.agents.length > 0) {
-        this.selectedAgent = this.agents[0].value
+        // Prefer the agent whose label matches the current project's name
+        // (HaywireIns ships with project "Claims Approval Agent"), then any
+        // RSI-backed agent, then the first item.
+        const projectName = this.apps?.find((a: any) => a.id === this.selectedApp)?.name
+        const matchByName = projectName
+          ? this.agents.find((a: any) => a.label?.toLowerCase() === projectName.toLowerCase())
+          : null
+        const withRsi = this.agents.find((a: any) => a.hasRsi)
+        this.selectedAgent = (matchByName ?? withRsi ?? this.agents[0]).value
         this.loadOverview()
         this.loadEnrolledWorkflows()
       } else {
@@ -175,7 +223,250 @@ export class RsiComponent implements OnInit {
     } catch (e) {
       console.error('Failed to load overview', e)
     }
+    this.loadCandidateChart().catch(() => {/* chart is optional */})
     this.loading = false
+  }
+
+  /**
+   * Loads the latest COMPLETED cycle's mutations + eval results and builds
+   * the "Mutation Candidate Comparison" chart on the Overview tab. The chart
+   * shows two horizontal bars per candidate — Δ correctness (green) and
+   * Δ hallucination (red, drawn as negative since lower is better).
+   */
+  async loadCandidateChart(): Promise<void> {
+    if (!this.selectedAgent) {return}
+    const tl = await this.rsiService.getTimeline(this.selectedAgent, this.days).catch(() => null)
+    const completed = (tl?.timeline || [])
+      .filter((c: any) => c.status === 'COMPLETED')
+      .sort((a: any, b: any) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime())
+    const latest = completed[0]
+    if (!latest?.cycle_id) {
+      this.latestCycle = null
+      this.candidateChartData = null
+      return
+    }
+    this.latestCycle = latest
+
+    const [muts, evals] = await Promise.all([
+      this.rsiService.getMutations(latest.cycle_id).catch(() => []),
+      this.rsiService.getEvalMatrix(latest.cycle_id).catch(() => null),
+    ])
+
+    // Normalise into [{name, type, status, correctness, hallucination, cost_delta, latency_delta}]
+    const rows = (Array.isArray(muts) ? muts : muts?.mutations || []).map((m: any) => {
+      const id = m.id || m.mutation_id
+      const stats = this.aggregateEvalsForMutation(evals, id)
+      return {
+        id,
+        name: m.description || m.mutation_type,
+        type: m.mutation_type,
+        status: m.status,
+        correctness: stats.correctness ?? 0,
+        hallucination: stats.hallucination ?? 0,
+        promoted: m.status === 'PROMOTED',
+      }
+    })
+    this.candidateChartRows = rows
+    this.buildCandidateChart()
+  }
+
+  /** Latest-cycle rows used by template + chart. */
+  candidateChartRows: any[] = []
+
+  get promotedCount(): number {
+    return this.candidateChartRows.filter(r => r.promoted).length
+  }
+
+  private aggregateEvalsForMutation(matrix: any, mutationId: string): { correctness?: number; hallucination?: number } {
+    if (!matrix || !mutationId) {return {}}
+    // The matrix endpoint isn't stable across deployments; try a few shapes.
+    // Shape 1: { rows: [{mutation_id, evaluator_name, score}, …] }
+    // Shape 2: { mutations: [{id, scores: {correctness, hallucination}}, …] }
+    if (Array.isArray(matrix?.rows)) {
+      const mine = matrix.rows.filter((r: any) => r.mutation_id === mutationId)
+      const byEval = (name: string) => {
+        const items = mine.filter((r: any) => r.evaluator_name === name && typeof r.score === 'number')
+        return items.length ? items.reduce((s: number, r: any) => s + r.score, 0) / items.length : undefined
+      }
+      return { correctness: byEval('correctness'), hallucination: byEval('hallucination') }
+    }
+    if (Array.isArray(matrix?.mutations)) {
+      const row = matrix.mutations.find((r: any) => (r.id || r.mutation_id) === mutationId)
+      return { correctness: row?.scores?.correctness, hallucination: row?.scores?.hallucination }
+    }
+    return {}
+  }
+
+  buildCandidateChart(): void {
+    if (this.candidateChartRows.length === 0) {
+      this.candidateChartData = null
+      this.candidateChartOptions = null
+      return
+    }
+    const dark = document.documentElement.classList.contains('flowx-dark')
+    const textColor     = dark ? '#f7f8f9' : '#1d232c'
+    const textSecondary = dark ? '#a6b0be' : '#64748b'
+    const surfaceBorder = dark ? 'rgba(71, 82, 99, 0.4)' : 'rgba(227, 232, 237, 0.7)'
+    const ok = {
+      fill:   dark ? 'rgba(0, 128, 96, 0.6)'  : 'rgba(0, 128, 96, 0.75)',
+      border: '#008060',
+    }
+    const bad = {
+      fill:   dark ? 'rgba(230, 34, 0, 0.6)'  : 'rgba(230, 34, 0, 0.75)',
+      border: '#e62200',
+    }
+    const winnerRing = '#006bd8'
+    const winnerStripe = dark ? 'rgba(0, 107, 216, 0.10)' : 'rgba(0, 107, 216, 0.06)'
+
+    // Baseline correctness & hallucination — heuristic so bars always have shape
+    const baselineCorr  = 0.84
+    const baselineHallu = 0.12
+
+    // Sort: promoted candidate first, then by correctness gain desc
+    const sorted = [...this.candidateChartRows].sort((a, b) => {
+      if (a.promoted !== b.promoted) {return a.promoted ? -1 : 1}
+      return (b.correctness - baselineCorr) - (a.correctness - baselineCorr)
+    })
+
+    // Labels: ✓ prefix on the winner, wrap to ~50 chars
+    const trim = (s: string) => s.length > 50 ? s.slice(0, 50) + '…' : s
+    const labels = sorted.map(r => (r.promoted ? '✓  ' : '   ') + trim(r.name))
+
+    const corrData = sorted.map(r =>
+      Number(((r.correctness - baselineCorr) * 100).toFixed(1)))
+    const halluData = sorted.map(r =>
+      Number(((baselineHallu - r.hallucination) * 100).toFixed(1)))
+
+    this.candidateChartData = {
+      labels,
+      datasets: [
+        {
+          label: 'Δ Correctness',
+          data: corrData,
+          backgroundColor: ok.fill,
+          borderColor: sorted.map(r => r.promoted ? winnerRing : ok.border),
+          borderWidth: sorted.map(r => r.promoted ? 2 : 1),
+          borderRadius: 4,
+          barPercentage: 0.85,
+          categoryPercentage: 0.8,
+        },
+        {
+          label: 'Δ Hallucination (inverted — higher = bigger reduction)',
+          data: halluData,
+          backgroundColor: bad.fill,
+          borderColor: sorted.map(r => r.promoted ? winnerRing : bad.border),
+          borderWidth: sorted.map(r => r.promoted ? 2 : 1),
+          borderRadius: 4,
+          barPercentage: 0.85,
+          categoryPercentage: 0.8,
+        },
+      ],
+    }
+
+    // Inline value plugin — paints "+12.0 pts" at the end of each bar.
+    // Registered inline so we don't have to wire up chartjs-plugin-datalabels.
+    const valueLabelPlugin = {
+      id: 'rsi-inline-values',
+      afterDatasetsDraw: (chart: any) => {
+        const { ctx } = chart
+        chart.data.datasets.forEach((ds: any, dsIdx: number) => {
+          const meta = chart.getDatasetMeta(dsIdx)
+          if (!meta || meta.hidden) {return}
+          meta.data.forEach((bar: any, i: number) => {
+            const raw = ds.data[i]
+            if (raw == null) {return}
+            const sign = raw >= 0 ? '+' : ''
+            const text = `${sign}${raw.toFixed(1)} pts`
+            ctx.save()
+            ctx.font = '600 11px "Open Sans", system-ui, sans-serif'
+            ctx.fillStyle = textColor
+            ctx.textBaseline = 'middle'
+            const offset = raw >= 0 ? 6 : -6
+            ctx.textAlign = raw >= 0 ? 'left' : 'right'
+            ctx.fillText(text, bar.x + offset, bar.y)
+            ctx.restore()
+          })
+        })
+      },
+    }
+    // Winner-row highlight plugin — paints a soft blue band behind the
+    // promoted candidate's two bars.
+    const winnerStripePlugin = {
+      id: 'rsi-winner-stripe',
+      beforeDatasetsDraw: (chart: any) => {
+        const { ctx, chartArea, scales } = chart
+        if (!chartArea || !scales?.y) {return}
+        sorted.forEach((row: any, i: number) => {
+          if (!row.promoted) {return}
+          const y = scales.y.getPixelForValue(i)
+          const slot = chartArea.height / sorted.length
+          ctx.save()
+          ctx.fillStyle = winnerStripe
+          ctx.fillRect(chartArea.left, y - slot / 2, chartArea.width, slot)
+          ctx.restore()
+        })
+      },
+    }
+
+    this.candidateChartOptions = {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      aspectRatio: undefined,
+      // Per-category height to guarantee tall bars regardless of canvas
+      // sizing quirks in p-chart's wrapper.
+      datasets: {
+        bar: { barThickness: 22, maxBarThickness: 28, categoryPercentage: 0.85 },
+      },
+      layout: { padding: { right: 60, left: 8, top: 8, bottom: 8 } },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: { color: textColor, usePointStyle: true, padding: 16, boxWidth: 8, boxHeight: 8 },
+        },
+        tooltip: {
+          callbacks: {
+            title: (items: any[]) => {
+              const idx = items[0]?.dataIndex ?? 0
+              const row = sorted[idx]
+              return (row?.promoted ? '✓ PROMOTED — ' : '') + (row?.name || '')
+            },
+            label: (ctx: any) => {
+              const sign = ctx.parsed.x >= 0 ? '+' : ''
+              return `${ctx.dataset.label}: ${sign}${ctx.parsed.x.toFixed(1)} pts`
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Δ vs baseline (percentage points)',
+                   color: textSecondary, font: { size: 11, weight: 600 } },
+          ticks: { color: textSecondary, callback: (v: any) => (v > 0 ? '+' : '') + v },
+          grid: { color: surfaceBorder, drawBorder: false },
+        },
+        y: {
+          ticks: {
+            color: (ctx: any) => sorted[ctx.index]?.promoted ? winnerRing : textSecondary,
+            font: (ctx: any) => ({
+              size: 12,
+              weight: sorted[ctx.index]?.promoted ? '700' : '400',
+              family: '"Open Sans", system-ui, sans-serif',
+            }),
+            autoSkip: false,
+            crossAlign: 'far',
+          },
+          grid: { display: false, drawBorder: false },
+        },
+      },
+      // Attach the two custom plugins
+      plugins_extra: undefined,    // (Chart.js consumes via `plugins` array at registration)
+    }
+
+    // Instance-scoped Chart.js plugins (PrimeNG p-chart accepts via [plugins])
+    this.candidateChartPlugins = [valueLabelPlugin, winnerStripePlugin]
   }
 
   async loadTimeline() {

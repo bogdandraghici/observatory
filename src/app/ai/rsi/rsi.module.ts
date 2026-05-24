@@ -16,6 +16,7 @@ import { ProgressBarModule } from 'primeng/progressbar'
 import { TimelineModule } from 'primeng/timeline'
 import { ChipModule } from 'primeng/chip'
 import { InputTextModule } from 'primeng/inputtext'
+import { ChartModule } from 'primeng/chart'
 
 import { RsiRoutingModule } from './rsi-routing.module'
 import { RsiComponent } from './rsi.component'
@@ -35,6 +36,7 @@ const PRIME_NG = [
   TimelineModule,
   ChipModule,
   InputTextModule,
+  ChartModule,
 ]
 
 @NgModule({
