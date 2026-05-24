@@ -59,7 +59,13 @@
 }
 
 // ── Score Overview ───────────────────────────────────────────
+// Card is a flex column so the KPI tile row sits flush against the
+// bottom even when the card stretches to match the Health Status panel
+// next to it in the grid.
 .score-overview {
+  display: flex;
+  flex-direction: column;
+
   .score-gauges {
     display: flex;
     justify-content: center;
@@ -78,8 +84,13 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
     padding-top: 1.25rem;
-    border-top: 1px solid var(--surface-border);
+    margin-top: auto;
+    border-top: 1px solid var(--flowx-neutrals-50);
   }
+}
+
+:host-context(.flowx-dark) .score-overview .kpi-row {
+  border-top-color: var(--flowx-border-default);
 }
 
 // ── Gauge ────────────────────────────────────────────────────
@@ -90,8 +101,8 @@
   justify-content: center;
 
   &--md {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
   }
 
   &__svg {
@@ -126,46 +137,82 @@
   &__value {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-color);
-    line-height: 1.1;
+    color: var(--flowx-text-primary, var(--text-color));
+    line-height: 1;
   }
 
+  // Label mirrors the metric-tile label style (Avg Latency tiles): 10px
+  // uppercase with the same 0.08em letter-spacing. Sits flush under the
+  // value so the centered stack reads as one unit instead of two
+  // floating spans.
   &__label {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    color: var(--text-color-secondary);
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
+    color: var(--flowx-text-secondary, var(--text-color-secondary));
+    margin-top: 8px;
   }
 }
 
 // ── KPI ──────────────────────────────────────────────────────
+// Tile chrome mirrors the execution-detail `.metric-tile` (Prompt
+// Tokens / Total Tokens / etc.) so the score-overview KPIs read as
+// first-class FlowX tiles. Icon is preserved from the original design
+// and sits inline with the uppercase label.
 .eval-kpi {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 0.75rem;
+  flex: 1;
+  min-width: 120px;
+  padding: 16px 18px;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-50);
+  border-radius: var(--flowx-radius-16, 16px);
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  &__icon {
-    font-size: 0.875rem;
-    color: var(--text-color-secondary);
-    margin-bottom: 0.25rem;
-  }
-
-  &__value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-color);
-    line-height: 1.2;
+  &:hover {
+    border-color: var(--flowx-neutrals-200);
   }
 
   &__label {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    color: var(--text-color-secondary);
-    margin-top: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__icon {
+    font-size: 10px;
+    line-height: 1;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__value {
+    margin-top: 8px;
+    font-size: 22px;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+:host-context(.flowx-dark) .eval-kpi {
+  border-color: var(--flowx-border-default);
+
+  &:hover {
+    border-color: var(--flowx-border-strong);
   }
 }
 
