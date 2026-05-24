@@ -123,32 +123,34 @@
               <!-- VOU KPI Cards -->
               @if (vouGroups.length > 0) {
                 <div class="col-12">
-                  <div class="stat-cards-grid">
+                  <div class="vou-cards-grid">
                     @for (group of vouGroups; track group.group) {
-                      <div class="stat-card stat-card--stacked">
-                        <div class="flex items-center gap-2 mb-2">
-                          <div class="stat-card__icon stat-card__icon--blue" style="width:2rem; height:2rem; font-size:0.85rem;">
-                            <i class="pi pi-bookmark"></i>
+                      <div class="vou-card">
+                        <div class="vou-card__left">
+                          <div class="vou-card__header">
+                            <div class="vou-card__icon">
+                              <i class="pi pi-bookmark"></i>
+                            </div>
+                            <span class="vou-card__title">{{ group.group }}</span>
                           </div>
-                          <span class="font-semibold text-sm">{{ group.group }}</span>
+                          <div class="vou-card__stats">
+                            <div class="vou-card__stat">
+                              <div class="vou-card__stat-label">Agents</div>
+                              <div class="vou-card__stat-value">{{ group.agents.length }}</div>
+                            </div>
+                            <div class="vou-card__stat">
+                              <div class="vou-card__stat-label">Runs</div>
+                              <div class="vou-card__stat-value">{{ group.totals.runs | number }}</div>
+                            </div>
+                            <div class="vou-card__stat">
+                              <div class="vou-card__stat-label">LLM Cost</div>
+                              <div class="vou-card__stat-value vou-card__stat-value--cost">{{ formatCurrency(group.totals.llm_cost) }}</div>
+                            </div>
+                          </div>
                         </div>
-                        <div class="flex justify-between gap-3 mt-1">
-                          <div class="text-center">
-                            <div class="text-xs" style="color: var(--text-color-secondary);">Agents</div>
-                            <div class="font-bold">{{ group.agents.length }}</div>
-                          </div>
-                          <div class="text-center">
-                            <div class="text-xs" style="color: var(--text-color-secondary);">Runs</div>
-                            <div class="font-bold">{{ group.totals.runs | number }}</div>
-                          </div>
-                          <div class="text-center">
-                            <div class="text-xs" style="color: var(--text-color-secondary);">LLM Cost</div>
-                            <div class="font-bold" style="color:var(--flowx-error, #e62200);">{{ formatCurrency(group.totals.llm_cost) }}</div>
-                          </div>
-                          <div class="text-center">
-                            <div class="text-xs" style="color: var(--text-color-secondary);">Net ROI</div>
-                            <div class="font-bold" [style.color]="group.totals.net_contribution >= 0 ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">{{ formatCurrency(group.totals.net_contribution) }}</div>
-                          </div>
+                        <div class="vou-card__hero">
+                          <div class="vou-card__hero-label">Net ROI</div>
+                          <div class="vou-card__hero-value" [class.vou-card__hero-value--neg]="group.totals.net_contribution < 0">{{ formatCurrency(group.totals.net_contribution) }}</div>
                         </div>
                       </div>
                     }
