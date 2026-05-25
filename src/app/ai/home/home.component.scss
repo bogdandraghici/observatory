@@ -1,312 +1,450 @@
 // Home Dashboard — FlowX Design System
 // Tokens come from layout-wrapper scope (src/app/ai/_shared/flowx-theme.scss).
+//
+// Structure: one rounded panel wraps the hero band, API key, KPI strip and
+// docs footer. The Projects section sits outside the panel.
 
-// ── API Key Card ─────────────────────────────────────────────
-.api-key-card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--flowx-space-16, 16px);
-  padding: var(--flowx-space-16, 16px) var(--flowx-space-24, 24px);
-  margin-top: var(--flowx-space-24, 24px);
-  margin-bottom: var(--flowx-space-24, 24px);
-  border-radius: var(--flowx-radius-12, 12px);
+// ── Welcome Panel container ─────────────────────────────────────
+.welcome-panel {
   background: var(--flowx-surface-primary);
   border: none;
+  border-radius: var(--flowx-radius-24, 24px);
   box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
 
-  &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--flowx-radius-8, 8px);
-    background: var(--flowx-blue-50);
-    color: var(--flowx-blue-600);
-    font-size: 18px;
+// ── Hero band — radial blue gradients, title left, selectors right
+// Grid keeps the selectors block anchored to the right column edge regardless
+// of how wide the title text gets; the right padding (40px) matches the
+// .welcome-panel__section below so the selectors line up with the API key bar.
+.welcome-panel__hero {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  background:
+    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
+    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.welcome-panel__hero-text {
+  min-width: 0;
+}
+
+.welcome-panel__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+  max-width: 620px;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
   }
 
-  &__content {
-    flex: 1;
-    min-width: 200px;
-  }
+  .text-accent { color: var(--flowx-interactive); }
+}
 
-  &__label {
-    display: block;
-    font-size: 10px;
-    line-height: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--flowx-text-secondary);
-    margin-bottom: var(--flowx-space-4, 4px);
-  }
+.welcome-panel__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+}
 
-  &__value-wrapper {
-    display: flex;
-    align-items: center;
-    gap: var(--flowx-space-8, 8px);
-  }
+// Selectors block — pinned to the right grid edge so the rightmost element
+// (Workspace p-select / "+" button) aligns vertically with the API key bar's
+// right border below.
+.welcome-panel__selectors {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  justify-self: end;
 
-  &__value {
-    font-family: var(--flowx-font-monospace, "JetBrains Mono"), monospace;
-    font-size: 12px;
-    line-height: 16px;
-    padding: var(--flowx-space-4, 4px) var(--flowx-space-8, 8px);
-    background: var(--flowx-surface-tertiary);
-    border-radius: var(--flowx-radius-4, 4px);
-    color: var(--flowx-text-primary);
-  }
-
-  &__copy {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border: none;
-    border-radius: var(--flowx-radius-6, 6px);
-    background: transparent;
-    color: var(--flowx-text-secondary);
-    cursor: pointer;
-    transition: background-color 150ms ease, color 150ms ease;
-
-    &:hover {
-      background: var(--flowx-blue-50);
-      color: var(--flowx-interactive);
-    }
-  }
-
-  &__hint {
-    display: flex;
-    align-items: center;
-    gap: var(--flowx-space-6, 6px);
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--flowx-text-secondary);
+  @media (max-width: 768px) {
+    justify-self: stretch;
+    flex-wrap: wrap;
     width: 100%;
-    margin-top: var(--flowx-space-8, 8px);
-
-    @media (min-width: 1024px) {
-      width: auto;
-      margin-top: 0;
-      margin-left: auto;
-    }
-
-    code {
-      font-family: var(--flowx-font-monospace, "JetBrains Mono"), monospace;
-      font-size: 11px;
-      line-height: 14px;
-      padding: 2px var(--flowx-space-6, 6px);
-      background: var(--flowx-surface-tertiary);
-      border-radius: var(--flowx-radius-4, 4px);
-    }
   }
 }
 
-// ── Quick Stats ──────────────────────────────────────────────
-.quick-stats {
-  margin-bottom: var(--flowx-space-32, 32px);
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--flowx-space-16, 16px);
-
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+.welcome-panel__select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 168px;
 }
 
-// ── Stat card (home) ─────────────────────────────────────────
-// The shared `.stat-card` rules from flowx-theme.scss already define
-// base layout — these blocks add the home-specific icon variants.
-.stat-card {
+.welcome-panel__select-label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--flowx-text-secondary);
+}
+
+.welcome-panel__select-row {
   display: flex;
   align-items: center;
-  gap: var(--flowx-space-16, 16px);
-  padding: var(--flowx-space-24, 24px);
-  border-radius: var(--flowx-radius-12, 12px);
-  background: var(--flowx-surface-primary);
-  border: none;
-  box-shadow: var(--flowx-shadow-xs);
-  transition: box-shadow 200ms ease, transform 200ms ease;
+  gap: 8px;
+}
 
-  &:hover {
-    box-shadow: var(--flowx-shadow-m);
-    transform: translateY(-2px);
+// ── Section wrapper — same horizontal padding as hero, vertical rhythm
+.welcome-panel__section {
+  padding: 24px 40px 0;
+
+  @media (max-width: 768px) {
+    padding: 20px 24px 0;
   }
 
-  &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--flowx-radius-8, 8px);
-    font-size: 18px;
-    flex-shrink: 0;
-
-    &--projects { background: var(--flowx-blue-50);          color: var(--flowx-blue-600); }
-    &--runs     { background: var(--flowx-green-50);         color: var(--flowx-green-600); }
-    &--datasets { background: var(--flowx-blue-50);          color: var(--flowx-blue-600); }
-    &--agents   { background: rgba(254, 185, 19, 0.15);      color: var(--flowx-yellow-600); }
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__value {
-    font-size: 24px;
-    line-height: 38px;
-    font-weight: 700;
-    color: var(--flowx-text-primary);
-  }
-
-  &__label {
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--flowx-text-secondary);
+  & + .welcome-panel__section {
+    padding-top: 16px;
   }
 }
 
-// ── Getting Started ──────────────────────────────────────────
-.getting-started {
-  margin-bottom: var(--flowx-space-32, 32px);
+.welcome-panel__overline {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--flowx-text-secondary);
+  margin-bottom: 10px;
+}
 
-  &__card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--flowx-space-16, 16px);
-    padding: var(--flowx-space-24, 24px);
-    border-radius: var(--flowx-radius-12, 12px);
-    background: var(--flowx-surface-primary);
-    border: none;
-    box-shadow: var(--flowx-shadow-xs);
+// ── API key inline bar
+.welcome-panel__keybar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 56px;
+  padding: 0 6px 0 18px;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 12px;
 
-    @media (min-width: 640px) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px;
+    gap: 10px;
   }
+}
 
-  &__content {
-    display: flex;
-    align-items: center;
-    gap: var(--flowx-space-16, 16px);
-  }
+.welcome-panel__keybar-glyph {
+  font-size: 18px;
+  color: var(--flowx-interactive);
+  flex: 0 0 auto;
+}
 
-  &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--flowx-radius-8, 8px);
-    background: var(--flowx-blue-50);
-    color: var(--flowx-blue-600);
-    font-size: 18px;
-  }
+.welcome-panel__keybar-value {
+  font-family: var(--flowx-font-monospace, ui-monospace, monospace);
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--flowx-text-primary);
+  letter-spacing: 0.02em;
+  flex: 1;
+  min-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  &__text {
-    h3 {
-      font-size: 14px;
-      line-height: 24px;
-      font-weight: 700;
-      margin: 0 0 2px;
-      color: var(--flowx-text-primary);
-    }
+.welcome-panel__keybar-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--flowx-text-secondary);
 
-    p {
-      font-size: 14px;
-      line-height: 24px;
-      margin: 0;
-      color: var(--flowx-text-secondary);
-    }
-  }
-
-  // Mirrors the FlowX Brand → Primary → Medium button spec so this <a>
-  // visually matches a <p-button> rendered with the same intent.
-  &__btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--flowx-space-6, 6px);
-    padding: var(--flowx-space-6, 6px) var(--flowx-space-12, 12px);
-    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
-    font-size: 14px;
-    line-height: 24px;
+  code {
+    font-family: var(--flowx-font-monospace, ui-monospace, monospace);
+    font-size: 11px;
     font-weight: 600;
-    color: #ffffff;
-    background: var(--flowx-blue-500);
-    border: 1px solid var(--flowx-blue-500);
-    border-radius: var(--flowx-radius-8, 8px);
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 150ms ease, border-color 150ms ease;
-    white-space: nowrap;
-
-    i { font-size: 16px; line-height: 1; }
-
-    &:hover {
-      background: var(--flowx-blue-600);
-      border-color: var(--flowx-blue-600);
-    }
-    &:active {
-      background: var(--flowx-blue-700);
-      border-color: var(--flowx-blue-700);
-    }
+    color: var(--flowx-text-primary);
+    background: var(--flowx-surface-primary);
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: 4px;
+    padding: 3px 6px;
   }
 }
 
-// View Docs button — dark-mode brand-primary palette per button.json
-// (blue-400 default → blue-500 hover → blue-600 pressed).
-:host-context(.flowx-dark) .getting-started__btn {
-  background: var(--flowx-blue-400);
-  border-color: var(--flowx-blue-400);
+.welcome-panel__keybar-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  background: var(--flowx-surface-primary);
+  color: var(--flowx-text-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 8px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  flex: 0 0 auto;
+
+  i { font-size: 14px; line-height: 1; }
 
   &:hover {
-    background: var(--flowx-blue-500);
-    border-color: var(--flowx-blue-500);
+    background: var(--flowx-blue-50);
+    border-color: var(--flowx-interactive);
+    color: var(--flowx-interactive);
   }
-  &:active {
+}
+
+// ── KPI strip — three white tiles inside the panel
+.welcome-panel__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.welcome-stat {
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.welcome-stat__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-stat__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  &--projects { background: var(--flowx-blue-50);   color: var(--flowx-blue-600); }
+  &--agents   { background: var(--flowx-yellow-50); color: var(--flowx-yellow-600); }
+  &--runs     { background: var(--flowx-green-50);  color: var(--flowx-green-600); }
+}
+
+.welcome-stat__label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--flowx-text-secondary);
+}
+
+.welcome-stat__value {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--flowx-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+// ── Footer band — docs row on the panel's tinted ground
+.welcome-panel__footer {
+  padding: 16px 40px 32px;
+
+  @media (max-width: 768px) {
+    padding: 16px 24px 24px;
+  }
+}
+
+.welcome-panel__docs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 14px;
+  padding: 18px 20px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.welcome-panel__docs-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--flowx-surface-primary);
+  color: var(--flowx-interactive);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.welcome-panel__docs-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.welcome-panel__docs-title {
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--flowx-text-primary);
+}
+
+.welcome-panel__docs-subtitle {
+  font-size: 13px;
+  color: var(--flowx-text-secondary);
+}
+
+.welcome-panel__docs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--flowx-blue-500);
+  border: 1px solid var(--flowx-blue-500);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+
+  i { font-size: 16px; line-height: 1; }
+
+  &:hover {
     background: var(--flowx-blue-600);
     border-color: var(--flowx-blue-600);
   }
+  &:active {
+    background: var(--flowx-blue-700);
+    border-color: var(--flowx-blue-700);
+  }
 }
 
-// Icon tiles & chips — light pastels (*-50) wash out on the dark slate.
-// Match the project-card avatar treatment: translucent saturated step
-// + lifted text color. Blue for identity tiles; green for the runs tile.
+// ── Dark mode overrides for the welcome panel ────────────────
+// Per CLAUDE.md: rebuild the hero gradient on the dark slate, keep
+// pastels translucent so they don't read gray, lift the blue accent.
 :host-context(.flowx-dark) {
-  .api-key-card__icon,
-  .stat-card__icon--projects,
-  .getting-started__icon {
-    background: rgba(51, 137, 224, 0.18);
+  .welcome-panel {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .welcome-panel__hero {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+  }
+
+  .welcome-panel__keybar {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .welcome-panel__keybar-glyph { color: var(--flowx-blue-300); }
+
+  .welcome-panel__keybar-hint code {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.10);
+    color: var(--flowx-text-primary);
+  }
+
+  .welcome-panel__keybar-copy {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.10);
+    color: var(--flowx-text-primary);
+
+    &:hover {
+      background: rgba(51, 137, 224, 0.18);
+      border-color: var(--flowx-blue-400);
+      color: var(--flowx-blue-300);
+    }
+  }
+
+  .welcome-stat {
+    background: var(--flowx-surface-primary);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .welcome-stat__icon {
+    &--projects { background: rgba(51, 137, 224, 0.20);   color: var(--flowx-blue-300); }
+    &--agents   { background: rgba(254, 185, 19, 0.18);   color: var(--flowx-yellow-400); }
+    &--runs     { background: rgba(0, 128, 96, 0.25);     color: var(--flowx-green-300); }
+  }
+
+  .welcome-panel__docs {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .welcome-panel__docs-icon {
+    background: var(--flowx-surface-primary);
     color: var(--flowx-blue-300);
   }
 
-  .stat-card__icon--runs {
-    background: rgba(0, 128, 96, 0.20);
-    color: var(--flowx-green-300);
-  }
+  // Brand-primary lift for the dark Docs CTA (matches FlowX button spec).
+  .welcome-panel__docs-btn {
+    background: var(--flowx-blue-400);
+    border-color: var(--flowx-blue-400);
 
-  .section-header__count {
-    background: rgba(51, 137, 224, 0.18);
-    color: var(--flowx-blue-300);
+    &:hover {
+      background: var(--flowx-blue-500);
+      border-color: var(--flowx-blue-500);
+    }
+    &:active {
+      background: var(--flowx-blue-600);
+      border-color: var(--flowx-blue-600);
+    }
   }
 }
 
-// ── Section Header ───────────────────────────────────────────
+// Text accent (kept for the welcome title)
+.text-accent { color: var(--flowx-interactive); }
+
+// ── Section header (Projects) ────────────────────────────────
 .section-header {
   display: flex;
   flex-direction: column;
-  gap: var(--flowx-space-12, 12px);
-  margin-bottom: var(--flowx-space-16, 16px);
+  gap: 12px;
+  margin-bottom: 16px;
 
   @media (min-width: 640px) {
     flex-direction: row;
@@ -317,47 +455,57 @@
   &__left {
     display: flex;
     align-items: center;
-    gap: var(--flowx-space-12, 12px);
+    gap: 12px;
   }
 
   &__title {
     display: flex;
     align-items: center;
-    gap: var(--flowx-space-8, 8px);
-    font-size: 18px;
-    line-height: 28px;
-    font-weight: 700;
+    gap: 10px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.01em;
     margin: 0;
     color: var(--flowx-text-primary);
 
-    i { color: var(--flowx-interactive); }
+    i {
+      color: var(--flowx-text-secondary);
+      font-size: 18px;
+    }
   }
 
   &__count {
     font-size: 12px;
-    line-height: 16px;
+    line-height: 1;
     font-weight: 600;
-    padding: var(--flowx-space-2, 2px) var(--flowx-space-8, 8px);
+    padding: 4px 10px;
     background: var(--flowx-blue-50);
-    color: var(--flowx-blue-700);
-    border-radius: var(--flowx-radius-24, 24px);
+    color: var(--flowx-blue-600);
+    border-radius: 999px;
   }
 }
 
-// ── Buttons ──────────────────────────────────────────────────
+:host-context(.flowx-dark) .section-header__count {
+  background: rgba(51, 137, 224, 0.18);
+  color: var(--flowx-blue-300);
+}
+
+// ── Buttons (kept as-is) ─────────────────────────────────────
 .btn-add {
   display: inline-flex;
   align-items: center;
-  gap: var(--flowx-space-8, 8px);
-  padding: var(--flowx-space-8, 8px) var(--flowx-space-16, 16px);
+  gap: 8px;
+  padding: 8px 16px;
   font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
   font-size: 14px;
   line-height: 24px;
   font-weight: 600;
   color: var(--flowx-interactive);
-  background: transparent;
+  background: var(--flowx-surface-primary);
   border: 1px solid var(--flowx-border-default);
-  border-radius: var(--flowx-radius-8, 8px);
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
@@ -379,29 +527,59 @@
   }
 }
 
-// ── Text accent (wordmark accent on the welcome banner) ──────
-.text-accent { color: var(--flowx-interactive); }
+:host-context(.flowx-dark) .btn-add:hover {
+  background: rgba(51, 137, 224, 0.18);
+  border-color: var(--flowx-blue-400);
+}
 
-// ── Grids ────────────────────────────────────────────────────
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--flowx-border-default);
+  border-radius: 8px;
+  background: var(--flowx-surface-primary);
+  color: var(--flowx-text-secondary);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: var(--flowx-interactive);
+    color: var(--flowx-interactive);
+    background: var(--flowx-blue-50);
+  }
+
+  i { font-size: 14px; }
+}
+
+:host-context(.flowx-dark) .btn-icon:hover {
+  background: rgba(51, 137, 224, 0.18);
+}
+
+// ── Projects grid + empty state ──────────────────────────────
 .projects-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--flowx-space-16, 16px);
+  gap: 16px;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-// ── Empty State ──────────────────────────────────────────────
+.section-projects { margin-bottom: 32px; }
+
 .empty-state {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--flowx-space-48, 48px) var(--flowx-space-32, 32px);
-  border-radius: var(--flowx-radius-12, 12px);
+  padding: 48px 32px;
+  border-radius: 12px;
   text-align: center;
   background: var(--flowx-surface-primary);
   border: 1px dashed var(--flowx-border-default);
@@ -412,8 +590,8 @@
     justify-content: center;
     width: 56px;
     height: 56px;
-    margin-bottom: var(--flowx-space-16, 16px);
-    border-radius: var(--flowx-radius-12, 12px);
+    margin-bottom: 16px;
+    border-radius: 12px;
     background: var(--flowx-neutrals-100);
     color: var(--flowx-text-secondary);
     font-size: 24px;
@@ -423,7 +601,7 @@
     font-size: 18px;
     line-height: 28px;
     font-weight: 700;
-    margin: 0 0 var(--flowx-space-8, 8px);
+    margin: 0 0 8px;
     color: var(--flowx-text-primary);
   }
 
@@ -431,20 +609,27 @@
     font-size: 14px;
     line-height: 24px;
     color: var(--flowx-text-secondary);
-    margin: 0 0 var(--flowx-space-24, 24px);
+    margin: 0 0 24px;
     max-width: 320px;
   }
 }
 
-// ── Sections ─────────────────────────────────────────────────
-.section-projects { margin-bottom: var(--flowx-space-32, 32px); }
+:host-context(.flowx-dark) .empty-state__icon {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.section-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
 // ── Dialogs ──────────────────────────────────────────────────
 ::ng-deep .create-dialog,
 ::ng-deep .integrate-dialog {
   .p-dialog {
     border: 1px solid var(--flowx-border-default);
-    border-radius: var(--flowx-radius-16, 16px);
+    border-radius: 16px;
     background: var(--flowx-surface-primary);
     box-shadow: var(--flowx-shadow-xl);
   }
@@ -454,14 +639,14 @@
   .p-dialog-footer { background: transparent; }
 
   .p-dialog-header {
-    padding: var(--flowx-space-16, 16px) var(--flowx-space-24, 24px);
+    padding: 16px 24px;
     border-bottom: 1px solid var(--flowx-border-default);
   }
 
-  .p-dialog-content { padding: var(--flowx-space-24, 24px); }
+  .p-dialog-content { padding: 24px; }
 
   .p-dialog-footer {
-    padding: var(--flowx-space-16, 16px) var(--flowx-space-24, 24px);
+    padding: 16px 24px;
     border-top: 1px solid var(--flowx-border-default);
   }
 }
@@ -474,7 +659,7 @@
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: var(--flowx-space-12, 12px);
+  gap: 12px;
   font-size: 18px;
   line-height: 28px;
   font-weight: 700;
@@ -491,7 +676,7 @@
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--flowx-space-12, 12px);
+  gap: 12px;
 }
 
 .form-field {
@@ -500,82 +685,23 @@
     font-size: 14px;
     line-height: 24px;
     font-weight: 600;
-    margin-bottom: var(--flowx-space-8, 8px);
+    margin-bottom: 8px;
     color: var(--flowx-text-primary);
   }
 }
 
 .form-input { width: 100%; }
 
-// ── Filter row (select + button) ─────────────────────────────
-.filter-group__row {
-  display: flex;
-  align-items: center;
-  gap: var(--flowx-space-8, 8px);
-}
-
-.btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--flowx-border-default);
-  border-radius: var(--flowx-radius-8, 8px);
-  background: var(--flowx-surface-primary);
-  color: var(--flowx-text-secondary);
-  cursor: pointer;
-  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
-  flex-shrink: 0;
-
-  &:hover {
-    border-color: var(--flowx-interactive);
-    color: var(--flowx-interactive);
-    background: var(--flowx-blue-50);
-  }
-
-  i { font-size: 12px; }
-}
-
-.section-header__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--flowx-space-12, 12px);
-}
-
-// ── Integrate button & dialog content ────────────────────────
-.btn-integrate {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--flowx-space-8, 8px);
-  padding: var(--flowx-space-8, 8px) var(--flowx-space-16, 16px);
-  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 24px;
-  font-weight: 600;
-  color: #ffffff;
-  background: var(--flowx-interactive);
-  border: 1px solid var(--flowx-interactive);
-  border-radius: var(--flowx-radius-8, 8px);
-  cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease;
-
-  &:hover {
-    background: var(--flowx-interactive-hover);
-    border-color: var(--flowx-interactive-hover);
-  }
-}
-
 .integrate-content {
   display: flex;
   flex-direction: column;
-  gap: var(--flowx-space-24, 24px);
+  gap: 24px;
 }
 
 .integrate-selectors {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--flowx-space-16, 16px);
+  gap: 16px;
 
   .form-field label {
     display: block;
@@ -584,7 +710,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: var(--flowx-space-6, 6px);
+    margin-bottom: 6px;
     color: var(--flowx-text-secondary);
   }
 }
@@ -599,22 +725,22 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: var(--flowx-space-8, 8px);
+    margin-bottom: 8px;
     color: var(--flowx-text-secondary);
   }
 
   &__grid {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--flowx-space-8, 8px);
+    gap: 8px;
   }
 }
 
 .integrate-method-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--flowx-space-6, 6px);
-  padding: var(--flowx-space-6, 6px) var(--flowx-space-12, 12px);
+  gap: 6px;
+  padding: 6px 12px;
   font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
   font-size: 12px;
   line-height: 16px;
@@ -622,7 +748,7 @@
   color: var(--flowx-text-secondary);
   background: var(--flowx-surface-primary);
   border: 1px solid var(--flowx-border-default);
-  border-radius: var(--flowx-radius-6, 6px);
+  border-radius: 6px;
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 
@@ -647,7 +773,7 @@
 }
 
 .integrate-code {
-  border-radius: var(--flowx-radius-8, 8px);
+  border-radius: 8px;
   border: 1px solid var(--flowx-border-default);
   overflow: hidden;
   background: var(--flowx-surface-primary);
@@ -656,7 +782,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px);
+    padding: 8px 12px;
     background: var(--flowx-neutrals-100);
     border-bottom: 1px solid var(--flowx-border-default);
   }
@@ -673,15 +799,15 @@
   &__copy {
     display: inline-flex;
     align-items: center;
-    gap: var(--flowx-space-6, 6px);
-    padding: var(--flowx-space-4, 4px) var(--flowx-space-8, 8px);
+    gap: 6px;
+    padding: 4px 8px;
     font-size: 12px;
     line-height: 16px;
     font-weight: 600;
     color: var(--flowx-text-secondary);
     background: transparent;
     border: 1px solid var(--flowx-border-default);
-    border-radius: var(--flowx-radius-4, 4px);
+    border-radius: 4px;
     cursor: pointer;
     transition: background-color 150ms ease, color 150ms ease;
 
@@ -693,7 +819,7 @@
 
   &__block {
     margin: 0;
-    padding: var(--flowx-space-16, 16px);
+    padding: 16px;
     background: var(--flowx-surface-primary);
     overflow-x: auto;
     max-height: 320px;
@@ -707,4 +833,8 @@
       white-space: pre;
     }
   }
+}
+
+:host-context(.flowx-dark) .integrate-code__header {
+  background: rgba(255, 255, 255, 0.04);
 }

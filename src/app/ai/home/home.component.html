@@ -1,143 +1,144 @@
 <div class="home-page">
-  <!-- Header Section -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">
-        Welcome to <span class="text-accent">Observatory</span>
-      </h1>
-      <p class="page-header__subtitle">
-        Monitor, debug, and optimize your AI applications
-      </p>
-    </div>
-</header>
-
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
-      <div class="filter-group">
-        <label class="filter-group__label">Organization</label>
-        <p-select
-          [options]="orgs"
-          [(ngModel)]="selectedOrg"
-          optionLabel="name"
-          optionValue="id"
-          [showClear]="false"
-          (onChange)="orgChanged($event)"
-          placeholder="Select Organization"
-          size="small"
-        ></p-select>
+  <!-- Welcome Panel — hero band + API key + KPI strip + docs footer -->
+  <section class="welcome-panel">
+    <!-- Hero band -->
+    <div class="welcome-panel__hero">
+      <div class="welcome-panel__hero-text">
+        <h1 class="welcome-panel__title">
+          Welcome to <span class="text-accent">Observatory</span>
+        </h1>
+        <p class="welcome-panel__subtitle">
+          Monitor, debug, and optimize your AI applications.
+        </p>
       </div>
-      <div class="filter-group">
-        <label class="filter-group__label">Workspace</label>
-        <div class="filter-group__row">
+
+      <div class="welcome-panel__selectors">
+        <div class="welcome-panel__select">
+          <label class="welcome-panel__select-label">Organization</label>
           <p-select
-            [options]="workspaces"
-            [(ngModel)]="selectedWorkspace"
+            [options]="orgs"
+            [(ngModel)]="selectedOrg"
             optionLabel="name"
             optionValue="id"
-            [showClear]="true"
-            (onChange)="workspaceChanged($event)"
-            placeholder="All Workspaces"
-            size="small"
+            [showClear]="false"
+            (onChange)="orgChanged($event)"
+            placeholder="Select Organization"
+            appendTo="body"
           ></p-select>
-          @if (isDefaultOrg()) {
-            <button class="btn-icon" (click)="showDialogWorkspace()" pTooltip="Create Workspace">
-              <i class="pi pi-plus"></i>
-            </button>
-          }
+        </div>
+        <div class="welcome-panel__select">
+          <label class="welcome-panel__select-label">Workspace</label>
+          <div class="welcome-panel__select-row">
+            <p-select
+              [options]="workspaces"
+              [(ngModel)]="selectedWorkspace"
+              optionLabel="name"
+              optionValue="id"
+              [showClear]="true"
+              (onChange)="workspaceChanged($event)"
+              placeholder="All Workspaces"
+              appendTo="body"
+            ></p-select>
+            @if (isDefaultOrg()) {
+              <button
+                class="btn-icon"
+                (click)="showDialogWorkspace()"
+                pTooltip="Create Workspace"
+              >
+                <i class="pi pi-plus"></i>
+              </button>
+            }
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-
-    <!-- API Key Card -->
+    <!-- API key inline bar -->
     @if (getAPIKeys(selectedOrg)?.length > 0) {
-      <div class="api-key-card">
-        <div class="api-key-card__icon">
-          <i class="pi pi-key"></i>
-        </div>
-        <div class="api-key-card__content">
-          <span class="api-key-card__label">API Key</span>
-          @for (key of getAPIKeys(selectedOrg); track key) {
-            <div class="api-key-card__value-wrapper">
-              <code class="api-key-card__value">{{ key.value }}</code>
-              <button
-                class="api-key-card__copy"
-                (click)="copyToClipboard($event, key.value)"
-                pTooltip="Copy API key to clipboard"
-              >
-                <i class="pi pi-copy"></i>
-              </button>
+      <div class="welcome-panel__section">
+        <div class="welcome-panel__overline">API key</div>
+        @for (key of getAPIKeys(selectedOrg); track key) {
+          <div class="welcome-panel__keybar">
+            <i class="pi pi-key welcome-panel__keybar-glyph"></i>
+            <code class="welcome-panel__keybar-value">{{ key.value }}</code>
+            <span class="welcome-panel__keybar-hint">
+              Set as
+              <code>FLOWX_OBSERVATORY_API_KEY</code>
+              environment variable
+            </span>
+            <button
+              class="welcome-panel__keybar-copy"
+              (click)="copyToClipboard($event, key.value)"
+              pTooltip="Copy API key to clipboard"
+            >
+              <i class="pi pi-copy"></i>
+              <span>Copy</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- KPI strip -->
+    @if (apps?.length > 0) {
+      <div class="welcome-panel__section">
+        <div class="welcome-panel__stats">
+          <div class="welcome-stat">
+            <div class="welcome-stat__head">
+              <span class="welcome-stat__icon welcome-stat__icon--projects">
+                <i class="pi pi-folder"></i>
+              </span>
+              <span class="welcome-stat__label">Active projects</span>
             </div>
-          }
-        </div>
-        <div class="api-key-card__hint">
-          <i class="pi pi-info-circle"></i>
-          Set as <code>FLOWX_OBSERVATORY_API_KEY</code> environment variable
+            <div class="welcome-stat__value">{{ apps?.length || 0 }}</div>
+          </div>
+          <div class="welcome-stat">
+            <div class="welcome-stat__head">
+              <span class="welcome-stat__icon welcome-stat__icon--agents">
+                <i class="pi pi-android"></i>
+              </span>
+              <span class="welcome-stat__label">Agents</span>
+            </div>
+            <div class="welcome-stat__value">{{ getTotalAgents() }}</div>
+          </div>
+          <div class="welcome-stat">
+            <div class="welcome-stat__head">
+              <span class="welcome-stat__icon welcome-stat__icon--runs">
+                <i class="pi pi-play"></i>
+              </span>
+              <span class="welcome-stat__label">Total runs (7D)</span>
+            </div>
+            <div class="welcome-stat__value">{{ getTotalRuns() }}</div>
+          </div>
         </div>
       </div>
     }
 
-  <!-- Quick Stats Overview -->
-  @if (apps?.length > 0) {
-    <section class="quick-stats">
-      <div class="quick-stats__grid grid-cols-12">
-        <div class="stat-card">
-          <div class="stat-card__icon stat-card__icon--projects">
-            <i class="pi pi-folder"></i>
-          </div>
-          <div class="stat-card__content">
-            <span class="stat-card__value">{{ apps?.length || 0 }}</span>
-            <span class="stat-card__label">Active Projects</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__icon stat-card__icon--agents">
-            <i class="pi pi-android"></i>
-          </div>
-          <div class="stat-card__content">
-            <span class="stat-card__value">{{ getTotalAgents() }}</span>
-            <span class="stat-card__label">Agents</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__icon stat-card__icon--runs">
-            <i class="pi pi-play"></i>
-          </div>
-          <div class="stat-card__content">
-            <span class="stat-card__value">{{ getTotalRuns() }}</span>
-            <span class="stat-card__label">Total Runs (7D)</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  }
-
-  <!-- Getting Started / Documentation -->
-  <section class="getting-started">
-    <div class="getting-started__card">
-      <div class="getting-started__content">
-        <div class="getting-started__icon">
+    <!-- Docs footer band -->
+    <div class="welcome-panel__footer">
+      <div class="welcome-panel__docs">
+        <div class="welcome-panel__docs-icon">
           <i class="pi pi-book"></i>
         </div>
-        <div class="getting-started__text">
-          <h3>Documentation</h3>
-          <p>Learn how to integrate Observatory into your AI applications</p>
+        <div class="welcome-panel__docs-text">
+          <span class="welcome-panel__docs-title">Documentation</span>
+          <span class="welcome-panel__docs-subtitle">
+            Learn how to integrate Observatory into your AI applications.
+          </span>
         </div>
+        <a
+          href="https://observatory-docs.theta.flowxai.dev"
+          target="_blank"
+          class="welcome-panel__docs-btn"
+        >
+          View Docs
+          <i class="pi pi-arrow-right"></i>
+        </a>
       </div>
-      <a
-        href="https://observatory-docs.theta.flowxai.dev"
-        target="_blank"
-        class="getting-started__btn"
-      >
-        View Docs
-        <i class="pi pi-arrow-right"></i>
-      </a>
     </div>
   </section>
 
-  <!-- Projects Section -->
+  <!-- Projects -->
   <section class="section-projects">
     <div class="section-header">
       <div class="section-header__left">
@@ -145,7 +146,9 @@
           <i class="pi pi-folder"></i>
           Projects
         </h2>
-        <span class="section-header__count">{{ apps?.length || 0 }} projects</span>
+        <span class="section-header__count">
+          {{ apps?.length || 0 }} project{{ apps?.length === 1 ? '' : 's' }}
+        </span>
       </div>
       <div class="section-header__actions">
         @if (isDefaultOrg()) {
@@ -189,7 +192,6 @@
     </div>
   </section>
 
-  <!-- Toast for notifications -->
   <p-toast></p-toast>
 </div>
 

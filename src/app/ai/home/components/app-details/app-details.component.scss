@@ -1,6 +1,6 @@
-// Project Card — V1 Symmetric KPI grid
-// Tight identity header (title + ID + last-run meta + actions), divider,
-// and a 3×2 metric grid with internal-only borders.
+// Project Card — discrete KPI tiles on the card ground
+// Header (folder avatar + name + meta + actions), then a 3×2 grid of
+// individually-bordered tiles sitting on the card's surface.
 
 :host {
   display: block;
@@ -27,7 +27,7 @@
 .project-card {
   display: flex;
   flex-direction: column;
-  border-radius: var(--flowx-radius-16, 16px);
+  border-radius: 20px;
   background: var(--flowx-surface-primary);
   border: none;
   box-shadow: var(--flowx-shadow-xs);
@@ -45,26 +45,26 @@
 // Identity header
 // ─────────────────────────────────────────────
 .project-card__header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--flowx-neutrals-50);
+  padding: 24px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
 }
 
 .project-card__identity {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
 }
 
-// Avatar tile — mirrors `.getting-started__icon` (44×44, blue-50/blue-600)
+// Avatar tile (40×40, blue-50 / blue-500)
 .project-card__avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--flowx-radius-8, 8px);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   background: var(--flowx-blue-50);
-  color: var(--flowx-blue-600);
+  color: var(--flowx-blue-500);
   font-size: 18px;
   flex-shrink: 0;
 
@@ -88,9 +88,10 @@
 }
 
 .project-card__name {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
   font-size: 18px;
-  line-height: 28px;
-  font-weight: 700;
+  line-height: 1.2;
+  font-weight: 800;
   color: var(--flowx-text-primary);
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -121,14 +122,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 6px;
   flex-wrap: wrap;
 }
 
 .project-card__id {
-  font-family: var(--flowx-font-mono, ui-monospace, monospace);
+  font-family: var(--flowx-font-monospace, ui-monospace, monospace);
   font-size: 12px;
   line-height: 16px;
+  font-weight: 600;
   color: var(--flowx-text-secondary);
   background: transparent;
   padding: 0;
@@ -145,7 +147,7 @@
   width: 20px;
   height: 20px;
   border: none;
-  border-radius: var(--flowx-radius-4, 4px);
+  border-radius: 4px;
   background: transparent;
   color: var(--flowx-text-secondary);
   cursor: pointer;
@@ -153,7 +155,7 @@
   flex-shrink: 0;
 
   &:hover {
-    background: var(--flowx-neutrals-50);
+    background: var(--flowx-blue-50);
     color: var(--flowx-interactive);
   }
 
@@ -167,6 +169,8 @@
   line-height: 16px;
   color: var(--flowx-text-secondary);
   white-space: nowrap;
+  margin-top: 8px;
+  flex-basis: 100%;
 }
 
 .project-card__actions {
@@ -179,28 +183,25 @@
 }
 
 // ─────────────────────────────────────────────
-// KPI grid — 3 columns × 2 rows, internal borders only
+// KPI grid — discrete tiles on the card ground
 // ─────────────────────────────────────────────
 .project-card__kpis {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 24px;
   flex: 1;
 }
 
 .kpi-tile {
-  padding: 16px 18px;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 12px 14px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   position: relative;
-
-  // Internal borders only — right border on cols 1,2; bottom border on row 1.
-  &:not(:nth-child(3n)) {
-    border-right: 1px solid var(--flowx-neutrals-50);
-  }
-  &:nth-child(-n + 3) {
-    border-bottom: 1px solid var(--flowx-neutrals-50);
-  }
 
   &__label {
     font-size: 10px;
@@ -209,29 +210,30 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--flowx-text-secondary);
+    margin-bottom: 10px;
   }
 
   &__value-row {
     display: flex;
     align-items: baseline;
-    gap: 4px;
-    margin-top: 8px;
+    gap: 6px;
     min-width: 0;
   }
 
   &__icon {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--flowx-text-secondary);
     align-self: center;
     margin-right: 2px;
   }
 
   &__value {
-    font-size: 28px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 22px;
     line-height: 1;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--flowx-text-primary);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -239,7 +241,7 @@
   }
 
   &__unit {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1;
     font-weight: 600;
     color: var(--flowx-text-secondary);
@@ -249,7 +251,7 @@
     font-size: 11px;
     line-height: 14px;
     color: var(--flowx-text-secondary);
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
   // Tone — "good" colors value, unit, and icon green.
@@ -281,21 +283,10 @@
   }
 }
 
-// Two-column fallback at narrow widths (e.g. single-column projects-grid on mobile)
+// Two-column fallback at narrow widths
 @media (max-width: 480px) {
   .project-card__kpis {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .kpi-tile {
-    border-right: none !important;
-    border-bottom: 1px solid var(--flowx-neutrals-50);
-
-    &:not(:nth-child(2n)) {
-      border-right: 1px solid var(--flowx-neutrals-50) !important;
-    }
-    &:nth-last-child(-n + 2) {
-      border-bottom: none;
-    }
   }
 }
 
@@ -324,7 +315,7 @@
 }
 
 // ─────────────────────────────────────────────
-// Action button overrides — keep them quiet so they don't fight the header
+// Action button overrides — keep them quiet
 // ─────────────────────────────────────────────
 ::ng-deep {
   .project-card__actions {
@@ -336,7 +327,7 @@
       background: transparent;
       border: none;
       color: var(--flowx-text-secondary);
-      border-radius: var(--flowx-radius-8, 8px);
+      border-radius: 8px;
       transition: background-color 120ms ease, color 120ms ease;
       display: grid !important;
       place-items: center !important;
@@ -353,15 +344,12 @@
         display: block;
       }
 
-      // PrimeNG ships an empty label span (`&nbsp;`) for icon-only buttons —
-      // it nudges the icon off-center even with display: none losing the
-      // specificity battle. Force it out.
       .p-button-label {
         display: none !important;
       }
 
       &:hover {
-        background: var(--flowx-neutrals-50);
+        background: var(--flowx-blue-50);
         color: var(--flowx-interactive);
       }
 
@@ -370,9 +358,7 @@
         color: var(--flowx-red-500);
       }
 
-      // Trash button — keep it as a bare icon with no background box or
-      // border ring (the global .p-button-secondary rule paints a 1px ring;
-      // we have to !important past it). Only the icon color shifts on hover.
+      // Trash button — bare icon
       &:has(.pi-trash) {
         background: transparent !important;
         border: none !important;
@@ -406,23 +392,22 @@
     }
   }
 
-  // neutrals-50 (#f7f8f9) reads as stark white on the dark card —
-  // swap for a faint white tint that mirrors the same "barely there" feel.
-  .project-card__header,
-  .kpi-tile {
-    border-color: rgba(255, 255, 255, 0.06) !important;
-  }
+  .project-card__header { border-bottom-color: rgba(255, 255, 255, 0.06); }
 
   .project-card__avatar {
-    background: rgba(51, 137, 224, 0.18);
+    background: rgba(51, 137, 224, 0.20);
     color: var(--flowx-blue-300);
   }
 
   .project-card__copy-btn:hover {
     background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-blue-300);
   }
 
   .kpi-tile {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+
     &--good {
       .kpi-tile__value,
       .kpi-tile__unit,
