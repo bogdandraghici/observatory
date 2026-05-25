@@ -9,6 +9,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './drift.component.html',
+    styleUrl: './drift.component.scss',
     standalone: false,
     providers: [MessageService],
 })

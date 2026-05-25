@@ -1,5 +1,175 @@
 @use '../_shared/ai-design-tokens' as tokens;
 
+// ── Eval Hero Panel ──────────────────────────────────────────
+// Mirrors the home page's `.welcome-panel`: one rounded outer panel
+// (no border, soft shadow) containing a blue-gradient hero band on top
+// and the filters band below, separated by a subtle divider.
+.eval-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.eval-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  background:
+    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
+    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.eval-hero__text { min-width: 0; }
+
+.eval-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+
+  .text-accent { color: var(--flowx-interactive); }
+}
+
+.eval-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+}
+
+.eval-hero__scope {
+  justify-self: end;
+
+  @media (max-width: 768px) {
+    justify-self: stretch;
+  }
+}
+
+// PrimeNG selectButton (environment) — match the segmented control feel
+// from the inspiration. Live ::ng-deep into the rendered markup.
+::ng-deep .eval-hero__scope .p-selectbutton {
+  display: inline-flex;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+
+  .p-togglebutton,
+  .p-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--flowx-text-secondary) !important;
+    padding: 0 16px !important;
+    height: 32px !important;
+    border-radius: 7px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background-color 120ms ease, color 120ms ease;
+
+    &.p-togglebutton-checked,
+    &.p-highlight {
+      background: var(--flowx-blue-500) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+// Filters band — sits below the hero band inside the same panel.
+.eval-hero__filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 20px 32px;
+
+  @media (max-width: 1024px) {
+    flex-wrap: wrap;
+    padding: 20px 24px;
+  }
+}
+
+.eval-hero__filters-left {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.eval-hero__run {
+  flex: 0 0 auto;
+}
+
+// Dark mode — translucent blue glow, lifted accent
+:host-context(.flowx-dark) {
+  .eval-hero {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .eval-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .eval-hero__scope .p-selectbutton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+
+  .p-togglebutton.p-togglebutton-checked,
+  .p-button.p-highlight {
+    background: var(--flowx-blue-400) !important;
+  }
+}
+
 // ── Loading overlay ──────────────────────────────────────────
 .loading-overlay {
   position: sticky;
@@ -27,23 +197,28 @@
 }
 
 // ── Eval Card base ───────────────────────────────────────────
+// Matches the home page's sub-card sizing (radius 20, no border, shadow,
+// uniform 24px content padding on every side).
 .eval-card {
   @include tokens.card-base;
-  padding: 1.5rem;
+  padding: 24px;
+  border-radius: var(--flowx-radius-20, 20px);
 }
 
 .card-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 1.25rem;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--flowx-text-primary, var(--text-color));
+  margin-bottom: 24px;
 
   i {
-    font-size: 1.125rem;
-    color: var(--text-color-secondary);
+    font-size: 18px;
+    color: var(--flowx-text-secondary, var(--text-color-secondary));
   }
 }
 
@@ -66,11 +241,16 @@
   display: flex;
   flex-direction: column;
 
+  // Gauges sit centered in the slack between the card title above and the
+  // KPI tile row below. Both `auto` margins on the gauges consume the
+  // remaining vertical space equally, so the visual distance from title→
+  // gauges matches gauges→KPI row when the card stretches in its grid row.
   .score-gauges {
     display: flex;
     justify-content: center;
-    gap: 2.5rem;
-    margin-bottom: 1.5rem;
+    gap: 40px;
+    margin-top: auto;
+    margin-bottom: auto;
   }
 
   .score-gauge-wrapper {
@@ -79,18 +259,15 @@
     align-items: center;
   }
 
+  // 24px margin-top here mirrors the card title's 24px margin-bottom so
+  // the gauges' auto-margins split the slack into visually equal gaps
+  // above and below the donuts.
   .kpi-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    padding-top: 1.25rem;
-    margin-top: auto;
-    border-top: 1px solid var(--flowx-neutrals-50);
+    gap: 12px;
+    margin-top: 24px;
   }
-}
-
-:host-context(.flowx-dark) .score-overview .kpi-row {
-  border-top-color: var(--flowx-border-default);
 }
 
 // ── Gauge ────────────────────────────────────────────────────
@@ -101,8 +278,8 @@
   justify-content: center;
 
   &--md {
-    width: 160px;
-    height: 160px;
+    width: 168px;
+    height: 168px;
   }
 
   &__svg {
@@ -112,13 +289,13 @@
 
   &__bg {
     fill: none;
-    stroke: var(--surface-border);
-    stroke-width: 10;
+    stroke: var(--flowx-neutrals-100);
+    stroke-width: 14;
   }
 
   &__fill {
     fill: none;
-    stroke-width: 10;
+    stroke-width: 14;
     stroke-linecap: round;
     transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -132,13 +309,17 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 4px;
   }
 
   &__value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--flowx-text-primary, var(--text-color));
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 28px;
     line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--flowx-text-primary, var(--text-color));
+    font-variant-numeric: tabular-nums;
   }
 
   // Label mirrors the metric-tile label style (Avg Latency tiles): 10px
@@ -152,8 +333,13 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--flowx-text-secondary, var(--text-color-secondary));
-    margin-top: 8px;
+    margin-top: 4px;
+    max-width: 100px;
   }
+}
+
+:host-context(.flowx-dark) .eval-gauge__bg {
+  stroke: rgba(255, 255, 255, 0.08);
 }
 
 // ── KPI ──────────────────────────────────────────────────────
@@ -166,10 +352,10 @@
   flex-direction: column;
   flex: 1;
   min-width: 120px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-neutrals-50);
-  border-radius: var(--flowx-radius-16, 16px);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: var(--flowx-radius-12, 12px);
   transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
 
   &:hover {
@@ -179,7 +365,7 @@
   &__label {
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: 8px;
     font-size: 10px;
     line-height: 12px;
     font-weight: 700;
@@ -189,18 +375,19 @@
   }
 
   &__icon {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1;
-    color: var(--flowx-text-secondary);
+    color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
   }
 
   &__value {
-    margin-top: 8px;
+    margin-top: 10px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
     font-size: 22px;
-    line-height: 1.25;
-    font-weight: 700;
+    line-height: 1;
+    font-weight: 800;
     color: var(--flowx-text-primary);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -218,22 +405,26 @@
 
 // ── Health Panel ─────────────────────────────────────────────
 .health-panel {
+  display: flex;
+  flex-direction: column;
+
   .health-summary {
     display: flex;
-    gap: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--surface-border);
+    gap: 18px;
+    padding: 14px 0 0;
+    margin-top: auto;
+    border-top: 1px solid var(--flowx-neutrals-100);
 
     &__stat {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8125rem;
-      color: var(--text-color-secondary);
+      gap: 6px;
+      font-size: 12px;
+      color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
 
       i {
-        font-size: 1rem;
-        color: var(--text-color-secondary);
+        font-size: 13px;
+        color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
       }
     }
   }
@@ -242,33 +433,30 @@
 .eval-health {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: 10px;
+  margin-bottom: 16px;
 
   &__item {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
-    padding: 0.75rem 0.875rem;
-    border-radius: 0.625rem;
-    background: var(--surface-ground);
-    transition: background 0.2s ease;
-
-    &:hover {
-      background: var(--surface-hover);
-    }
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: 12px;
+    background: var(--flowx-surface-primary);
+    transition: border-color 160ms ease;
   }
 
   &__row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 12px;
     min-width: 0;
   }
 
   &__track {
     width: 100%;
-    height: 4px;
+    height: 6px;
     background: var(--flowx-neutrals-100);
     border-radius: 9999px;
     overflow: hidden;
@@ -289,38 +477,47 @@
 
     &--good {
       background: var(--flowx-success, #008060);
-      box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.2);
+      box-shadow: 0 0 0 4px rgba(0, 128, 96, 0.18);
     }
 
     &--warning {
       background: var(--flowx-warning, #feb913);
-      box-shadow: 0 0 0 3px rgba(254, 185, 19, 0.2);
+      box-shadow: 0 0 0 4px rgba(254, 185, 19, 0.20);
     }
 
     &--danger {
       background: var(--flowx-error, #e62200);
-      box-shadow: 0 0 0 3px rgba(230, 34, 0, 0.2);
+      box-shadow: 0 0 0 4px rgba(230, 34, 0, 0.18);
     }
   }
 
   &__icon {
-    font-size: 1rem;
-    color: var(--text-color-secondary);
+    font-size: 15px;
+    color: var(--flowx-text-secondary);
   }
 
   &__label {
     flex: 1;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
   }
 
+  // Status badge — tint comes from inline color binding (`h.color`).
+  // Drop the chip background so the colored text reads cleanly next to
+  // the track below.
   &__value {
-    font-size: 0.8125rem;
+    font-size: 13px;
+    line-height: 1;
     font-weight: 600;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
+    background: transparent !important;
+    padding: 0;
   }
+}
+
+:host-context(.flowx-dark) .eval-health__item {
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 // ── Trends Section ───────────────────────────────────────────
@@ -329,7 +526,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    gap: 16px;
+    margin-bottom: 24px;
 
     .card-title {
       margin-bottom: 0;
@@ -339,7 +537,104 @@
   .chart-container {
     position: relative;
     height: 280px;
-    margin-top: 1rem;
+    margin-top: 16px;
+  }
+}
+
+// Granularity selector — same segmented-control treatment as the
+// environment scope in the hero.
+::ng-deep .trends-header .p-selectbutton {
+  display: inline-flex;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+
+  .p-togglebutton,
+  .p-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--flowx-text-secondary) !important;
+    padding: 0 12px !important;
+    height: 28px !important;
+    border-radius: 7px !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background-color 120ms ease, color 120ms ease;
+
+    &.p-togglebutton-checked,
+    &.p-highlight {
+      background: var(--flowx-blue-500) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .trends-header .p-selectbutton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+
+  .p-togglebutton.p-togglebutton-checked,
+  .p-button.p-highlight {
+    background: var(--flowx-blue-400) !important;
+  }
+}
+
+// Trends metric tabs (Quality / Safety / Performance / Cost) — flat
+// underline style matching the inspiration. Selected tab uses the
+// brand blue with a 2px bottom rule.
+::ng-deep .trends-section .p-tabs {
+  margin: 4px 0 8px;
+
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover {
+      color: var(--flowx-text-primary);
+    }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar {
+    display: none;
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .trends-section .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
   }
 }
 
@@ -357,44 +652,60 @@
 
 // ── Quality Metrics ──────────────────────────────────────────
 .metrics-breakdown {
+  display: flex;
+  flex-direction: column;
+
   .metrics-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 18px;
+    flex: 1;
   }
 
   .metric-item {
     &__header {
       display: flex;
+      align-items: baseline;
       justify-content: space-between;
-      margin-bottom: 0.25rem;
+      margin-bottom: 8px;
     }
 
     &__label {
-      font-size: 0.8125rem;
-      color: var(--text-color-secondary);
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      color: var(--flowx-neutrals-500);
       text-transform: capitalize;
     }
 
     &__value {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
     }
 
     &__bar {
       width: 100%;
-      height: 8px;
-      background: var(--surface-ground);
-      border-radius: 4px;
+      height: 6px;
+      background: var(--flowx-neutrals-100);
+      border-radius: 9999px;
       overflow: hidden;
     }
 
     &__fill {
       height: 100%;
-      border-radius: 4px;
+      border-radius: 9999px;
       transition: width 0.4s ease;
     }
   }
+}
+
+:host-context(.flowx-dark) .metrics-breakdown {
+  .metric-item__bar { background: rgba(255, 255, 255, 0.06); }
+  // neutrals-500 reads dim on the dark slate — lift to neutrals-300 for
+  // the same secondary-rank feel (mirrors --flowx-text-secondary in dark).
+  .metric-item__label { color: var(--flowx-neutrals-300); }
 }
 
 // ── Alerts Panel ─────────────────────────────────────────────
@@ -406,7 +717,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
+    margin-bottom: 24px;
 
     .card-title {
       margin-bottom: 0;
@@ -417,7 +728,7 @@
 .eval-alerts {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 10px;
   flex: 1;
   overflow-y: auto;
 
@@ -432,10 +743,12 @@
 
   &__item {
     display: flex;
-    gap: 0.75rem;
-    padding: 0.875rem 1rem;
-    border-radius: 0.625rem;
-    border-left: 4px solid;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: 10px;
+    border-left-width: 4px;
     transition: transform 0.15s ease;
 
     &:hover {
@@ -443,43 +756,43 @@
     }
 
     &--critical {
-      background: rgba(230, 34, 0, 0.08);
+      background: var(--flowx-red-50, rgba(230, 34, 0, 0.08));
       border-left-color: var(--flowx-error, #e62200);
     }
 
     &--warning {
-      background: rgba(254, 185, 19, 0.08);
+      background: var(--flowx-yellow-50, rgba(254, 185, 19, 0.08));
       border-left-color: var(--flowx-warning, #feb913);
     }
 
     &--info {
-      background: rgba(0, 107, 216, 0.08);
+      background: var(--flowx-blue-50, rgba(0, 107, 216, 0.08));
       border-left-color: var(--flowx-interactive, #006bd8);
     }
   }
 
   &__icon-wrap {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: 10px;
+    font-size: 16px;
     flex-shrink: 0;
 
     &--critical {
-      background: rgba(230, 34, 0, 0.15);
+      background: rgba(230, 34, 0, 0.18);
       color: var(--flowx-error, #e62200);
     }
 
     &--warning {
-      background: rgba(254, 185, 19, 0.15);
+      background: rgba(254, 185, 19, 0.22);
       color: var(--flowx-warning, #feb913);
     }
 
     &--info {
-      background: rgba(0, 107, 216, 0.15);
+      background: rgba(0, 107, 216, 0.18);
       color: var(--flowx-interactive, #006bd8);
     }
   }
@@ -491,23 +804,32 @@
 
   &__title {
     display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 2px;
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    margin-bottom: 4px;
   }
 
   &__meta {
     display: block;
-    font-size: 0.75rem;
-    color: var(--text-color-secondary);
+    font-size: 13px;
+    color: var(--flowx-text-secondary);
   }
 
   &__details {
-    font-size: 0.75rem;
-    color: var(--text-color-secondary);
-    margin-top: 0.375rem;
+    font-size: 12px;
+    color: var(--flowx-text-secondary);
+    margin-top: 6px;
   }
+}
+
+:host-context(.flowx-dark) .eval-alerts__item {
+  border-color: rgba(255, 255, 255, 0.06);
+
+  &--critical { background: rgba(230, 34, 0, 0.12); }
+  &--warning  { background: rgba(254, 185, 19, 0.12); }
+  &--info     { background: rgba(0, 107, 216, 0.14); }
 }
 
 // All Alerts Dialog
@@ -567,7 +889,7 @@
   .cost-cards {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
+    gap: 12px;
 
     @media (max-width: 1200px) {
       grid-template-columns: repeat(3, 1fr);
@@ -579,18 +901,15 @@
   }
 }
 
-/* Cost forecast tile — mirrors the framework-meta / projected-impact
- * tile aesthetic from the ROI page (bordered card, uppercase label,
- * 22px tabular value). Adds a small descriptor line below the value
- * since each forecast tile carries an extra hint ("Per execution",
- * "Projected", etc.) — preserved from the original. */
+/* Cost forecast tile — mirrors the home-page KPI rhythm (22px extrabold
+ * value, 10px uppercase label, 12px tertiary description). */
 .cost-card {
   display: flex;
   flex-direction: column;
-  padding: 16px 18px;
+  padding: 14px 16px;
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-neutrals-50);
-  border-radius: var(--flowx-radius-16);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 14px;
   min-width: 0;
   transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -608,12 +927,13 @@
   }
 
   &__value {
-    margin-top: 8px;
+    margin-top: 10px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
     font-size: 22px;
-    line-height: 1.25;
-    font-weight: 700;
+    line-height: 1;
+    font-weight: 800;
     color: var(--flowx-text-primary);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -621,10 +941,10 @@
   }
 
   &__desc {
-    margin-top: 4px;
-    font-size: 11px;
-    line-height: 14px;
-    color: var(--flowx-text-secondary);
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
   }
 }
 
@@ -660,34 +980,56 @@
 }
 
 // ── Score badge ──────────────────────────────────────────────
+// Pill that mirrors the inspiration's ScorePill — rounded 999, 13/bold,
+// tinted bg + text + 1px border in the same tint family.
 .eval-score-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.75rem;
-  // Font style mirrors the `.p-tag` status chips (flowx-theme.scss) so
-  // the score chip and the status chip in the next column read as the
-  // same typographic family.
-  font-family: var(--flowx-font-primary);
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
-  min-width: 2.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  min-width: 48px;
+  font-variant-numeric: tabular-nums;
 
   &--high {
-    background: rgba(0, 128, 96, 0.12);
-    color: var(--flowx-success, #008060);
+    background: var(--flowx-green-50);
+    color: var(--flowx-green-700, #005b44);
+    border-color: var(--flowx-green-100);
   }
 
   &--medium {
-    background: rgba(254, 185, 19, 0.12);
-    color: var(--flowx-warning, #feb913);
+    background: var(--flowx-yellow-50);
+    color: var(--flowx-yellow-700, #b4830d);
+    border-color: var(--flowx-yellow-200);
   }
 
   &--low {
-    background: rgba(230, 34, 0, 0.12);
-    color: var(--flowx-error, #e62200);
+    background: var(--flowx-red-50);
+    color: var(--flowx-red-600, #d11f00);
+    border-color: var(--flowx-red-100);
+  }
+}
+
+:host-context(.flowx-dark) .eval-score-badge {
+  &--high {
+    background: rgba(0, 128, 96, 0.20);
+    color: var(--flowx-green-300);
+    border-color: rgba(0, 128, 96, 0.30);
+  }
+  &--medium {
+    background: rgba(254, 185, 19, 0.18);
+    color: var(--flowx-yellow-300, #fed968);
+    border-color: rgba(254, 185, 19, 0.28);
+  }
+  &--low {
+    background: rgba(230, 34, 0, 0.20);
+    color: var(--flowx-red-300);
+    border-color: rgba(230, 34, 0, 0.30);
   }
 }
 
