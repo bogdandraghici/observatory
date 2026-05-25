@@ -10,10 +10,10 @@ export const environment = {
   production: false,
   // Pointed at dev-cls1 / dev-pr2127.
   // To go back to local docker compose, restore:
-  baseUrl: 'http://localhost:8091',
-  platformUrl: 'http://localhost:8092',
-  // baseUrl: 'https://services.cloud.pr2127.dev1.flowxai.dev/ai-observatory',
-  // platformUrl: 'https://services.cloud.pr2127.dev1.flowxai.dev/ai-platform',
+  // baseUrl: 'http://localhost:8091',
+  // platformUrl: 'http://localhost:8092',
+  baseUrl: 'https://services.cloud.pr2127.dev1.flowxai.dev/ai-observatory',
+  platformUrl: 'https://services.cloud.pr2127.dev1.flowxai.dev/ai-platform',
   playgroundUrl: '',
   defaultNamespace: 'default',
   keycloak: {
