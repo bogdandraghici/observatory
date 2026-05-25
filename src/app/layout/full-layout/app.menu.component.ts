@@ -67,11 +67,6 @@ export class AppMenuComponent implements OnInit {
               icon: 'pi pi-fw pi-code',
               routerLink: ['/ai/developer-executions'],
             },
-            {
-              label: 'Users',
-              icon: 'pi pi-fw pi-users',
-              routerLink: ['/ai/users'],
-            },
           ],
         },
         {
@@ -176,6 +171,11 @@ export class AppMenuComponent implements OnInit {
               label: 'Audit Trail',
               icon: 'pi pi-fw pi-history',
               routerLink: ['/ai/audit'],
+            },
+            {
+              label: 'Users',
+              icon: 'pi pi-fw pi-users',
+              routerLink: ['/ai/users'],
             },
             {
               label: 'Access Control',
