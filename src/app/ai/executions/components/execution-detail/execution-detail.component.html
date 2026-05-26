@@ -2,143 +2,163 @@
   #sidebarRef
   [(visible)]="detailVisible"
   position="right"
-  [style]="{ width: '85vw' }"
+  [style]="{ width: '92vw' }"
   [modal]="true"
   [blockScroll]="true"
   styleClass="execution-detail-drawer"
 >
   <ng-template pTemplate="headless">
-    <div class="flex flex-col h-full">
-      <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--surface-border)">
-        <div class="flex items-center gap-4">
-          <p-button
-            type="button"
-            (click)="closeCallback($event)"
-            icon="pi pi-times"
-            [rounded]="true"
-            [outlined]="false"
-            severity="primary"
-            styleClass="execution-details-close"
-          ></p-button>
-          <span class="font-semibold text-xl">Execution Detail</span>
+    <div class="trace-drawer">
+      <!-- ── Header band ── -->
+      <header class="trace-drawer__header">
+        <p-button
+          type="button"
+          (click)="closeCallback($event)"
+          icon="pi pi-times"
+          [rounded]="true"
+          [outlined]="false"
+          severity="primary"
+          styleClass="execution-details-close"
+        ></p-button>
+
+        <div class="trace-drawer__header-text">
           @if (selectedExecution) {
-            <p-tag [value]="selectedExecution.agent" severity="info" [rounded]="true"></p-tag>
-            <span class="text-sm" style="color: var(--text-color-secondary)">{{ formatTime(selectedExecution.time) }}</span>
+            <div class="trace-drawer__eyebrow">
+              <span class="trace-drawer__eyebrow-tag">Execution detail</span>
+              @if (selectedExecution.request_id) {
+                <span class="trace-drawer__eyebrow-dot">•</span>
+                <span class="trace-drawer__eyebrow-id">{{ selectedExecution.request_id }}</span>
+              }
+            </div>
+            <h1 class="trace-drawer__title">
+              <span class="trace-drawer__title-time">{{ formatTime(selectedExecution.time) }}</span>
+              <span class="trace-drawer__title-sep">·</span>
+              <span class="trace-drawer__title-agent">{{ selectedExecution.agent || 'Execution' }}</span>
+            </h1>
+          } @else {
+            <h1 class="trace-drawer__title">Execution detail</h1>
           }
         </div>
-      </div>
+      </header>
 
-      <!-- Summary Bar -->
+      <!-- ── Summary band — 4 KPI tiles + count pills ── -->
       @if (dataRuns.length > 0) {
-        <div class="flex items-center gap-6 px-6 py-2" style="border-bottom: 1px solid var(--surface-border)">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-list" style="color: var(--text-color-secondary)"></i>
-            <span class="text-sm font-medium">{{ dataRuns.length }} nodes</span>
+        <section class="trace-drawer__summary">
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-list"></i>Nodes</span>
+            <span class="trace-kpi__value">{{ dataRuns.length }}</span>
           </div>
-          <div class="flex items-center gap-2">
-            <i class="pi pi-clock" style="color: var(--text-color-secondary)"></i>
-            <span class="text-sm font-medium">{{ getTotalDuration() }}s</span>
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-clock"></i>Duration</span>
+            <span class="trace-kpi__value trace-kpi__value--green">{{ getTotalDuration() }}s</span>
           </div>
-          <div class="flex items-center gap-2">
-            <i class="pi pi-bolt" style="color: var(--text-color-secondary)"></i>
-            <span class="text-sm font-medium">{{ getTotalTokens() }} tokens</span>
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Total tokens</span>
+            <span class="trace-kpi__value">{{ getTotalTokens() }}</span>
           </div>
           @if (getTotalCost() > 0) {
-            <div class="flex items-center gap-2">
-              <i class="pi pi-dollar" style="color: var(--text-color-secondary)"></i>
-              <span class="text-sm font-medium">{{ formatCost(getTotalCost()) }}</span>
+            <div class="trace-kpi">
+              <span class="trace-kpi__label"><i class="pi pi-dollar"></i>Total cost</span>
+              <span class="trace-kpi__value trace-kpi__value--blue">{{ formatCost(getTotalCost()) }}</span>
             </div>
           }
-          <div class="flex items-center gap-1">
+
+          <div class="trace-drawer__count-pills">
             @for (typeStat of getTypeStats(); track typeStat.type) {
-              <p-tag
-                [value]="typeStat.type + ' (' + typeStat.count + ')'"
-                [severity]="typeStat.type === 'llm' ? 'warn' : typeStat.type === 'tool' ? 'info' : 'secondary'"
-                [style]="{ 'font-size': '0.7rem' }"
-              ></p-tag>
+              <span class="count-pill" [class]="'count-pill--' + typeStat.type">
+                {{ typeStat.type }}
+                <span class="count-pill__count">{{ typeStat.count }}</span>
+              </span>
             }
           </div>
-        </div>
+        </section>
       }
 
-      <!-- Body -->
-      <div class="flex flex-1 overflow-hidden">
-        <!-- Left Panel: Tree -->
-        <div class="execution-tree-panel" style="min-width: 350px; width: 350px; border-right: 1px solid var(--surface-border); overflow: auto; padding: 1rem">
-          <h4 class="execution-tree-panel__title">Execution Tree</h4>
-          @if (runs && runs.length > 0) {
-            <p-tree
-              [value]="runs"
-              selectionMode="single"
-              [(selection)]="selectedRun"
-              (onNodeSelect)="onNodeSelect($event)"
-              class="w-full"
-            >
-              <ng-template let-node pTemplate="default">
-                <div class="flex flex-col gap-1 py-1">
-                  <div class="flex items-center gap-2">
-                    <ng-icon
-                      [name]="getNodeIcon(node.data?.type)"
-                      size="14"
-                    ></ng-icon>
-                    <span class="text-sm font-medium">{{ node.label }}</span>
-                  </div>
-                  <div class="flex items-center gap-2 flex-wrap" style="margin-left: 1.25rem">
-                    @if (node.data?.type) {
-                      <p-tag
-                        [value]="node.data.type"
-                        [severity]="getTypeSeverity(node.data.type)"
-                        [style]="{ 'font-size': '0.65rem' }"
-                      ></p-tag>
-                    }
-                    <p-tag
-                      [value]="node.data?.status"
-                      [severity]="node.data?.status === 'success' ? 'success' : node.data?.status === 'error' ? 'danger' : 'warn'"
-                      [style]="{ 'font-size': '0.65rem' }"
-                    ></p-tag>
-                    @if (node.data?.duration != null) {
-                      <span class="text-xs" style="color: var(--text-color-secondary)">
-                        <i class="pi pi-clock" style="font-size: 0.65rem"></i>
-                        {{ node.data.duration }}s
+      <!-- ── Body grid — Execution tree rail (left) + content card (right) ── -->
+      <div class="trace-drawer__body">
+        <!-- Left: tree sidebar wrapped in a card -->
+        <aside class="trace-drawer__rail">
+          <div class="trace-drawer__rail-head">
+            <i class="pi pi-sitemap"></i>
+            <span class="trace-drawer__rail-title">Execution tree</span>
+            <span class="trace-drawer__rail-count">{{ dataRuns.length }} nodes</span>
+          </div>
+          <div class="trace-drawer__rail-body">
+            @if (runs && runs.length > 0) {
+              <p-tree
+                [value]="runs"
+                selectionMode="single"
+                [(selection)]="selectedRun"
+                (onNodeSelect)="onNodeSelect($event)"
+                class="w-full"
+              >
+                <ng-template let-node pTemplate="default">
+                  <div class="trace-node">
+                    <div class="trace-node__head">
+                      <span class="trace-node__icon" [class.trace-node__icon--llm]="node.data?.type === 'llm'" [class.trace-node__icon--chain]="node.data?.type === 'chain' || node.data?.type === 'agent'" [class.trace-node__icon--tool]="node.data?.type === 'tool'" [class.trace-node__icon--retriever]="node.data?.type === 'retriever'" [class.trace-node__icon--node]="node.data?.type === 'node'">
+                        <ng-icon [name]="getNodeIcon(node.data?.type)" size="13"></ng-icon>
                       </span>
-                    }
+                      <span class="trace-node__title">{{ node.label }}</span>
+                    </div>
+                    <div class="trace-node__pills">
+                      @if (node.data?.type) {
+                        <span class="kind-pill" [class]="'kind-pill--' + node.data.type">{{ node.data.type }}</span>
+                      }
+                      <span class="status-pill" [class]="'status-pill--' + (node.data?.status === 'success' ? 'success' : node.data?.status === 'error' ? 'error' : 'warn')">
+                        <span class="status-pill__dot"></span>
+                        {{ node.data?.status }}
+                      </span>
+                      @if (node.data?.duration != null) {
+                        <span class="duration-pill">
+                          <i class="pi pi-clock"></i>
+                          {{ node.data.duration }}s
+                        </span>
+                      }
+                    </div>
                     @if (node.data?.node_type) {
-                      <span
-                        class="text-xs font-medium rounded"
-                        style="padding: 0 0.25rem"
-                        [style]="{ 'background-color': getNodeTypeColor(node.data.node_type) + '20', 'color': getNodeTypeColor(node.data.node_type), 'font-size': '0.6rem' }"
-                      >{{ node.data.node_type }}</span>
+                      <div class="trace-node__type">
+                        <span
+                          class="trace-node__type-tag"
+                          [style]="{ 'background-color': getNodeTypeColor(node.data.node_type) + '20', 'color': getNodeTypeColor(node.data.node_type) }"
+                        >{{ node.data.node_type }}</span>
+                      </div>
                     }
-                    @if (node.data?.prompt_tokens || node.data?.completion_tokens) {
-                      <span class="text-xs" style="color: var(--text-color-secondary)">
-                        <i class="pi pi-bolt" style="font-size: 0.65rem"></i>
-                        {{ (node.data?.prompt_tokens || 0) + (node.data?.completion_tokens || 0) }}
-                      </span>
-                    }
-                    @if (node.data?.cost > 0) {
-                      <span
-                        class="text-xs"
-                        style="color: var(--text-color-secondary)"
-                        [style.cursor]="node.data.type === 'llm' ? 'help' : 'default'"
-                        [pTooltip]="node.data.type === 'llm' ? getCostBreakdownTooltip(node.data) : ''"
-                        tooltipPosition="right"
-                        [escape]="false"
-                      >
-                        {{ formatCost(node.data.cost) }}
-                      </span>
+                    @if (node.data?.prompt_tokens || node.data?.completion_tokens || node.data?.cost > 0) {
+                      <div class="trace-node__meta">
+                        @if (node.data?.prompt_tokens || node.data?.completion_tokens) {
+                          <span class="trace-node__meta-item">
+                            <i class="pi pi-bolt"></i>
+                            {{ (node.data?.prompt_tokens || 0) + (node.data?.completion_tokens || 0) }}
+                          </span>
+                        }
+                        @if (node.data?.cost > 0) {
+                          <span
+                            class="trace-node__meta-item"
+                            [style.cursor]="node.data.type === 'llm' ? 'help' : 'default'"
+                            [pTooltip]="node.data.type === 'llm' ? getCostBreakdownTooltip(node.data) : ''"
+                            tooltipPosition="right"
+                            [escape]="false"
+                          >
+                            <i class="pi pi-dollar"></i>
+                            {{ formatCost(node.data.cost) }}
+                          </span>
+                        }
+                      </div>
                     }
                   </div>
-                </div>
-              </ng-template>
-            </p-tree>
-          } @else {
-            <p-message severity="info" text="Loading execution data..."></p-message>
-          }
-        </div>
+                </ng-template>
+              </p-tree>
+            } @else {
+              <div class="trace-empty">
+                <i class="pi pi-spin pi-spinner"></i>
+                <span>Loading execution data…</span>
+              </div>
+            }
+          </div>
+        </aside>
 
-        <!-- Right Panel: Tabs -->
-        <div class="flex-1 overflow-auto" style="padding: 1rem">
+        <!-- Right: content card with tabs -->
+        <div class="trace-drawer__content">
           <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
             <p-tablist>
               <p-tab value="overview">Overview</p-tab>
@@ -149,227 +169,273 @@
               <p-tab value="metadata">Metadata</p-tab>
             </p-tablist>
             <p-tabpanels>
+
               <!-- Overview Tab: Flat runs table -->
               <p-tabpanel value="overview">
-                <div style="padding: 1rem">
-                  @if (dataRuns.length > 0) {
-                    <p-table
-                      [value]="dataRuns"
-                      [tableStyle]="{ 'min-width': '40rem' }"
-                      selectionMode="single"
-                      [(selection)]="selectedTableRun"
-                      (onRowSelect)="onTableRowSelect($event)"
-                      dataKey="id"
-                      styleClass="p-datatable-sm"
-                    >
-                      <ng-template pTemplate="header">
-                        <tr>
-                          <th style="width: 3rem"></th>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Node Type</th>
-                          <th>Status</th>
-                          <th>Duration</th>
-                          <th>Prompt Tokens</th>
-                          <th>Completion Tokens</th>
-                          <th>Cost</th>
-                          <th>Parent</th>
-                        </tr>
-                      </ng-template>
-                      <ng-template pTemplate="body" let-run>
-                        <tr [pSelectableRow]="run">
-                          <td>
-                            <ng-icon [name]="getNodeIcon(run.type)" size="14"></ng-icon>
-                          </td>
-                          <td class="font-medium">{{ run.name }}</td>
-                          <td>
-                            <p-tag
-                              [value]="run.type"
-                              [severity]="getTypeSeverity(run.type)"
-                              [style]="{ 'font-size': '0.75rem' }"
-                            ></p-tag>
-                          </td>
-                          <td>
-                            @if (run.node_type) {
+                <div class="trace-pane">
+                  <div class="trace-section">
+                    <div class="trace-section__label">
+                      <span class="trace-section__icon"><i class="pi pi-table"></i></span>
+                      <span class="trace-section__title">All runs</span>
+                      <span class="trace-section__count">{{ dataRuns.length }}</span>
+                    </div>
+                    @if (dataRuns.length > 0) {
+                      <p-table
+                        [value]="dataRuns"
+                        [tableStyle]="{ 'min-width': '40rem' }"
+                        selectionMode="single"
+                        [(selection)]="selectedTableRun"
+                        (onRowSelect)="onTableRowSelect($event)"
+                        dataKey="id"
+                        styleClass="p-datatable-sm trace-runs-table"
+                      >
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th style="width: 3rem"></th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Node<br />Type</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                            <th>Prompt<br />Tokens</th>
+                            <th>Completion<br />Tokens</th>
+                            <th>Cost</th>
+                            <th>Parent</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-run>
+                          <tr [pSelectableRow]="run">
+                            <td>
+                              <ng-icon [name]="getNodeIcon(run.type)" size="14"></ng-icon>
+                            </td>
+                            <td class="font-medium">{{ run.name }}</td>
+                            <td>
+                              <span class="kind-pill" [class]="'kind-pill--' + run.type">{{ run.type }}</span>
+                            </td>
+                            <td>
+                              @if (run.node_type) {
+                                <span
+                                  class="trace-node__type-tag"
+                                  [style]="{ 'background-color': getNodeTypeColor(run.node_type) + '20', 'color': getNodeTypeColor(run.node_type) }"
+                                >{{ run.node_type }}</span>
+                              }
+                            </td>
+                            <td>
+                              <span class="status-pill" [class]="'status-pill--' + (run.status === 'success' ? 'success' : run.status === 'error' ? 'error' : 'warn')">
+                                <span class="status-pill__dot"></span>
+                                {{ run.status }}
+                              </span>
+                            </td>
+                            <td>
+                              @if (run.duration != null) {
+                                <span>{{ run.duration }}s</span>
+                              }
+                            </td>
+                            <td>{{ run.prompt_tokens || 0 }}</td>
+                            <td>{{ run.completion_tokens || 0 }}</td>
+                            <td>
                               <span
-                                class="text-xs font-medium rounded"
-                                style="padding: 0.15rem 0.5rem"
-                                [style]="{ 'background-color': getNodeTypeColor(run.node_type) + '20', 'color': getNodeTypeColor(run.node_type) }"
-                              >{{ run.node_type }}</span>
-                            }
-                          </td>
-                          <td>
-                            <p-tag
-                              [value]="run.status"
-                              [severity]="run.status === 'success' ? 'success' : run.status === 'error' ? 'danger' : 'warn'"
-                            ></p-tag>
-                          </td>
-                          <td>
-                            @if (run.duration != null) {
-                              <span>{{ run.duration }}s</span>
-                            }
-                          </td>
-                          <td>{{ run.prompt_tokens || 0 }}</td>
-                          <td>{{ run.completion_tokens || 0 }}</td>
-                          <td>
-                            <span
-                              [pTooltip]="run.type === 'llm' && run.cost ? getCostBreakdownTooltip(run) : null"
-                              tooltipPosition="top"
-                              [escape]="false"
-                              [style.cursor]="run.type === 'llm' && run.cost ? 'help' : 'default'"
-                              [style.border-bottom]="run.type === 'llm' && run.cost ? '1px dashed var(--primary-color)' : 'none'"
-                            >{{ formatCost(run.cost) }}</span>
-                          </td>
-                          <td>
-                            @if (!run.parent_run) {
-                              <p-tag value="root" severity="contrast" [style]="{ 'font-size': '0.7rem' }"></p-tag>
-                            } @else {
-                              <span class="text-xs" style="color: var(--text-color-secondary)">{{ getParentName(run.parent_run) }}</span>
-                            }
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </p-table>
-                  } @else {
-                    <p-message severity="info" text="No runs found."></p-message>
-                  }
+                                [pTooltip]="run.type === 'llm' && run.cost ? getCostBreakdownTooltip(run) : null"
+                                tooltipPosition="top"
+                                [escape]="false"
+                                [style.cursor]="run.type === 'llm' && run.cost ? 'help' : 'default'"
+                                [style.border-bottom]="run.type === 'llm' && run.cost ? '1px dashed var(--flowx-blue-500)' : 'none'"
+                              >{{ formatCost(run.cost) }}</span>
+                            </td>
+                            <td>
+                              @if (!run.parent_run) {
+                                <span class="trace-root-pill">root</span>
+                              } @else {
+                                <span class="trace-parent-name">{{ getParentName(run.parent_run) }}</span>
+                              }
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    } @else {
+                      <div class="trace-empty">
+                        <i class="pi pi-database"></i>
+                        <span>No runs found.</span>
+                      </div>
+                    }
+                  </div>
                 </div>
               </p-tabpanel>
 
               <!-- Timeline Tab: Waterfall -->
               <p-tabpanel value="timeline">
-                <div style="padding: 1rem">
-                  @if (waterfallData.length > 0) {
-                    <div class="flex flex-col gap-1">
-                      @for (item of waterfallData; track item.id) {
-                        <div
-                          class="flex items-center gap-2 py-1 cursor-pointer"
-                          [style]="{ 'padding-left': (item.depth * 16) + 'px' }"
-                          [pTooltip]="item.name + ' — ' + (item.durationMs / 1000).toFixed(2) + 's' + (item.cost ? ' — ' + formatCost(item.cost) : '')"
-                          tooltipPosition="top"
-                        >
-                          <div class="text-xs font-medium text-right" style="min-width: 140px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-                            {{ item.name }}
-                          </div>
-                          <div class="flex-1" style="position: relative; height: 20px; background-color: var(--surface-ground); border-radius: 4px; overflow: hidden">
-                            <div
-                              style="position: absolute; top: 2px; bottom: 2px; border-radius: 3px; min-width: 4px"
-                              [style.left.%]="item.leftPct"
-                              [style.width.%]="item.widthPct"
-                              [style.background-color]="item.color"
-                            ></div>
-                          </div>
-                          <div class="text-xs" style="min-width: 50px; color: var(--text-color-secondary)">
-                            {{ (item.durationMs / 1000).toFixed(2) }}s
-                          </div>
-                        </div>
-                      }
+                <div class="trace-pane">
+                  <div class="trace-section">
+                    <div class="trace-section__label">
+                      <span class="trace-section__icon"><i class="pi pi-chart-bar"></i></span>
+                      <span class="trace-section__title">Timeline</span>
                     </div>
-                    <!-- Legend -->
-                    <div class="flex items-center gap-4 mt-3 pt-3" style="border-top: 1px solid var(--surface-border)">
-                      @for (item of getWaterfallLegend(); track item.type) {
-                        <div class="flex items-center gap-1">
-                          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px" [style.background-color]="item.color"></span>
-                          <span class="text-xs" style="color: var(--text-color-secondary); text-transform: capitalize">{{ item.type }}</span>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <p-message severity="info" text="No timing data available."></p-message>
-                  }
+                    @if (waterfallData.length > 0) {
+                      <div class="trace-waterfall">
+                        @for (item of waterfallData; track item.id) {
+                          <div
+                            class="trace-waterfall__row"
+                            [style]="{ 'padding-left': (item.depth * 16) + 'px' }"
+                            [pTooltip]="item.name + ' — ' + (item.durationMs / 1000).toFixed(2) + 's' + (item.cost ? ' — ' + formatCost(item.cost) : '')"
+                            tooltipPosition="top"
+                          >
+                            <div class="trace-waterfall__name">{{ item.name }}</div>
+                            <div class="trace-waterfall__track">
+                              <div
+                                class="trace-waterfall__bar"
+                                [style.left.%]="item.leftPct"
+                                [style.width.%]="item.widthPct"
+                                [style.background-color]="item.color"
+                              ></div>
+                            </div>
+                            <div class="trace-waterfall__duration">{{ (item.durationMs / 1000).toFixed(2) }}s</div>
+                          </div>
+                        }
+                      </div>
+                      <div class="trace-waterfall__legend">
+                        @for (item of getWaterfallLegend(); track item.type) {
+                          <div class="trace-waterfall__legend-item">
+                            <span class="trace-waterfall__legend-swatch" [style.background-color]="item.color"></span>
+                            <span>{{ item.type }}</span>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <div class="trace-empty">
+                        <i class="pi pi-clock"></i>
+                        <span>No timing data available.</span>
+                      </div>
+                    }
+                  </div>
                 </div>
               </p-tabpanel>
 
               <!-- Node Detail Tab -->
               <p-tabpanel value="detail">
-                <div style="padding: 1rem">
+                <div class="trace-pane run-tab">
                   @if (selectedRun?.data) {
-                    <!-- Node info header -->
-                    <div class="flex items-center gap-4 flex-wrap" style="margin-bottom: 1rem">
-                      <ng-icon [name]="getNodeIcon(selectedRun.data.type)" size="18"></ng-icon>
-                      <span class="text-lg font-semibold">{{ selectedRun.data.name }}</span>
-                      <p-tag
-                        [value]="selectedRun.data.type"
-                        [severity]="getTypeSeverity(selectedRun.data.type)"
-                      ></p-tag>
+                    <!-- Node header -->
+                    <div class="trace-node-header">
+                      <span class="trace-node-header__icon" [class.trace-node__icon--llm]="selectedRun.data.type === 'llm'" [class.trace-node__icon--chain]="selectedRun.data.type === 'chain' || selectedRun.data.type === 'agent'" [class.trace-node__icon--tool]="selectedRun.data.type === 'tool'" [class.trace-node__icon--retriever]="selectedRun.data.type === 'retriever'" [class.trace-node__icon--node]="selectedRun.data.type === 'node'">
+                        <ng-icon [name]="getNodeIcon(selectedRun.data.type)" size="17"></ng-icon>
+                      </span>
+                      <span class="trace-node-header__title">{{ selectedRun.data.name }}</span>
+                      <span class="kind-pill" [class]="'kind-pill--' + selectedRun.data.type">{{ selectedRun.data.type }}</span>
                       @if (selectedRun.data.node_type) {
                         <span
-                          class="text-xs font-medium rounded"
-                          style="padding: 0.15rem 0.5rem"
+                          class="trace-node__type-tag"
                           [style]="{ 'background-color': getNodeTypeColor(selectedRun.data.node_type) + '20', 'color': getNodeTypeColor(selectedRun.data.node_type) }"
                         >{{ selectedRun.data.node_type }}</span>
                       }
-                      <p-tag
-                        [value]="selectedRun.data.status"
-                        [severity]="selectedRun.data.status === 'success' ? 'success' : selectedRun.data.status === 'error' ? 'danger' : 'warn'"
-                      ></p-tag>
+                      <span class="status-pill" [class]="'status-pill--' + (selectedRun.data.status === 'success' ? 'success' : selectedRun.data.status === 'error' ? 'error' : 'warn')">
+                        <span class="status-pill__dot"></span>
+                        {{ selectedRun.data.status }}
+                      </span>
                       @if (selectedRun.data.duration != null) {
-                        <span class="text-sm" style="color: var(--text-color-secondary)">
-                          <i class="pi pi-clock"></i> {{ selectedRun.data.duration }}s
+                        <span class="duration-pill">
+                          <i class="pi pi-clock"></i>
+                          {{ selectedRun.data.duration }}s
                         </span>
                       }
                     </div>
 
-                    <!-- Metrics -->
-                    <div class="metric-tiles">
-                      <div class="metric-tile">
-                        <span class="metric-tile__label">Prompt Tokens</span>
-                        <span class="metric-tile__value">{{ selectedRun.data.prompt_tokens || 0 }}</span>
+                    <!-- KPI grid -->
+                    <div class="trace-kpi-grid">
+                      <div class="trace-kpi">
+                        <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Prompt tokens</span>
+                        <span class="trace-kpi__value">{{ selectedRun.data.prompt_tokens || 0 }}</span>
                       </div>
-                      <div class="metric-tile">
-                        <span class="metric-tile__label">Completion Tokens</span>
-                        <span class="metric-tile__value">{{ selectedRun.data.completion_tokens || 0 }}</span>
+                      <div class="trace-kpi">
+                        <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Completion tokens</span>
+                        <span class="trace-kpi__value">{{ selectedRun.data.completion_tokens || 0 }}</span>
                       </div>
-                      <div class="metric-tile">
-                        <span class="metric-tile__label">Total Tokens</span>
-                        <span class="metric-tile__value">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</span>
+                      <div class="trace-kpi">
+                        <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Total tokens</span>
+                        <span class="trace-kpi__value trace-kpi__value--blue">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</span>
                       </div>
-                      <div class="metric-tile">
-                        <span class="metric-tile__label">Duration</span>
-                        <span class="metric-tile__value">{{ selectedRun.data.duration ?? '-' }}s</span>
+                      <div class="trace-kpi">
+                        <span class="trace-kpi__label"><i class="pi pi-clock"></i>Duration</span>
+                        <span class="trace-kpi__value trace-kpi__value--green">{{ selectedRun.data.duration ?? '-' }}s</span>
                       </div>
                       <div
-                        class="metric-tile"
+                        class="trace-kpi"
                         [style.cursor]="selectedRun.data.type === 'llm' ? 'help' : 'default'"
                         [pTooltip]="selectedRun.data.type === 'llm' ? getCostBreakdownTooltip(selectedRun.data) : ''"
                         tooltipPosition="bottom"
                         [escape]="false"
                       >
-                        <span class="metric-tile__label">Cost</span>
-                        <span class="metric-tile__value">{{ formatCost(selectedRun.data.cost) }}</span>
-                      </div>
-                    </div>
-
-                    <!-- Input / Output -->
-                    <div class="flex gap-4">
-                      <div class="flex-1">
-                        <h5>Input</h5>
-                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-word">{{ selectedRun.data.input | json }}</pre>
-                      </div>
-                      <div class="flex-1">
-                        <h5>Output</h5>
-                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-word">{{ selectedRun.data.output | json }}</pre>
+                        <span class="trace-kpi__label"><i class="pi pi-dollar"></i>Cost</span>
+                        <span class="trace-kpi__value trace-kpi__value--blue">{{ formatCost(selectedRun.data.cost) }}</span>
                       </div>
                     </div>
 
                     <!-- Error -->
                     @if (selectedRun.data.error) {
-                      <div style="margin-top: 1rem">
-                        <h5 style="color: var(--flowx-error, #e62200)">Error</h5>
-                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 200px; overflow: auto; white-space: pre-wrap; color: var(--flowx-error, #e62200)">{{ selectedRun.data.error | json }}</pre>
+                      <div class="trace-section">
+                        <div class="trace-section__label">
+                          <span class="trace-section__icon trace-section__icon--danger"><i class="pi pi-exclamation-triangle"></i></span>
+                          <span class="trace-section__title">Error</span>
+                        </div>
+                        <div class="code-panel code-panel--danger">
+                          <div class="code-panel__head">
+                            <span class="code-panel__dot code-panel__dot--danger"></span>
+                            <span class="code-panel__label">Stack trace</span>
+                          </div>
+                          <pre class="code-preview">{{ selectedRun.data.error | json }}</pre>
+                        </div>
                       </div>
                     }
 
+                    <!-- Input -->
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-sign-in"></i></span>
+                        <span class="trace-section__title">Input</span>
+                      </div>
+                      <div class="code-panel">
+                        <div class="code-panel__head">
+                          <span class="code-panel__dot"></span>
+                          <span class="code-panel__label">Input</span>
+                        </div>
+                        <pre class="code-preview">{{ selectedRun.data.input | json }}</pre>
+                      </div>
+                    </div>
+
+                    <!-- Output -->
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-sign-out"></i></span>
+                        <span class="trace-section__title">Output</span>
+                      </div>
+                      <div class="code-panel">
+                        <div class="code-panel__head">
+                          <span class="code-panel__dot"></span>
+                          <span class="code-panel__label">Output</span>
+                        </div>
+                        <pre class="code-preview">{{ selectedRun.data.output | json }}</pre>
+                      </div>
+                    </div>
+
                     <!-- Params -->
                     @if (selectedRun.data.params) {
-                      <div style="margin-top: 1rem">
-                        <h5>Parameters</h5>
-                        <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 300px; overflow: auto; white-space: pre-wrap; word-break: break-word">{{ selectedRun.data.params | json }}</pre>
+                      <div class="trace-section">
+                        <div class="trace-section__label">
+                          <span class="trace-section__icon"><i class="pi pi-cog"></i></span>
+                          <span class="trace-section__title">Parameters</span>
+                        </div>
+                        <div class="code-panel">
+                          <div class="code-panel__head">
+                            <span class="code-panel__dot"></span>
+                            <span class="code-panel__label">Params</span>
+                          </div>
+                          <pre class="code-preview">{{ selectedRun.data.params | json }}</pre>
+                        </div>
                       </div>
                     }
                   } @else {
-                    <div class="flex items-center justify-center" style="min-height: 200px">
-                      <p-message severity="info" text="Select a node from the tree to view details."></p-message>
+                    <div class="trace-empty">
+                      <i class="pi pi-info-circle"></i>
+                      <span>Select a node from the tree to view details.</span>
                     </div>
                   }
                 </div>
@@ -377,92 +443,137 @@
 
               <!-- Graph Tab -->
               <p-tabpanel value="graph">
-                <div style="padding: 1rem">
-                  @if (getGraphData()) {
-                    <div #mermaidEl style="text-align: center; resize: both; overflow: auto; max-height: 80vh; border: 1px solid var(--surface-border); border-radius: 6px; padding: 1rem"></div>
-                  } @else {
-                    <p-message severity="info" text="No graph available for this execution."></p-message>
-                  }
+                <div class="trace-pane">
+                  <div class="trace-section">
+                    <div class="trace-section__label">
+                      <span class="trace-section__icon"><i class="pi pi-share-alt"></i></span>
+                      <span class="trace-section__title">Graph</span>
+                    </div>
+                    @if (getGraphData()) {
+                      <div class="graph-panel">
+                        <div #mermaidEl class="mermaid-container"></div>
+                      </div>
+                    } @else {
+                      <div class="trace-empty">
+                        <i class="pi pi-share-alt"></i>
+                        <span>No graph available for this execution.</span>
+                      </div>
+                    }
+                  </div>
                 </div>
               </p-tabpanel>
 
               <!-- Evaluations Tab -->
               <p-tabpanel value="evaluations">
-                <div style="padding: 1rem">
-                  @if (selectedRun?.data?.type === 'llm' && evaluationResults.length > 0) {
-                    <p-table [value]="evaluationResults" styleClass="p-datatable-sm">
-                      <ng-template pTemplate="header">
-                        <tr>
-                          <th style="width: 3rem">Pass</th>
-                          <th>Evaluator</th>
-                          <th>Score</th>
-                          <th>Comment</th>
-                          <th>Evaluated At</th>
-                        </tr>
-                      </ng-template>
-                      <ng-template pTemplate="body" let-result>
-                        <tr>
-                          <td>
-                            @if (result.passed === true) {
-                              <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
-                            } @else if (result.passed === false) {
-                              <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
-                            } @else {
-                              -
-                            }
-                          </td>
-                          <td>
-                            <p-tag [value]="result.evaluator_name || 'Unknown'" severity="info" [rounded]="true"></p-tag>
-                          </td>
-                          <td class="font-bold">{{ result.score !== null && result.score !== undefined ? (result.score | number:'1.2-2') : '-' }}</td>
-                          <td>
-                            <span class="text-sm" style="max-width: 400px; display: inline-block; white-space: pre-wrap; word-break: break-word">{{ result.comment || '-' }}</span>
-                          </td>
-                          <td>{{ formatTime(result.created_at) }}</td>
-                        </tr>
-                      </ng-template>
-                    </p-table>
-                  } @else if (selectedRun?.data?.type === 'llm') {
-                    <p-message severity="info" text="No evaluation results for this LLM call. Configure evaluators in the project settings."></p-message>
-                  } @else {
-                    <p-message severity="info" text="Select an LLM node to view its evaluation results."></p-message>
-                  }
+                <div class="trace-pane">
+                  <div class="trace-section">
+                    <div class="trace-section__label">
+                      <span class="trace-section__icon"><i class="pi pi-verified"></i></span>
+                      <span class="trace-section__title">Evaluations</span>
+                    </div>
+                    @if (selectedRun?.data?.type === 'llm' && evaluationResults.length > 0) {
+                      <p-table [value]="evaluationResults" styleClass="p-datatable-sm trace-runs-table">
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th style="width: 3rem">Pass</th>
+                            <th>Evaluator</th>
+                            <th>Score</th>
+                            <th>Comment</th>
+                            <th>Evaluated At</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-result>
+                          <tr>
+                            <td>
+                              @if (result.passed === true) {
+                                <i class="pi pi-check-circle" style="color: var(--flowx-green-300, #54aa94)"></i>
+                              } @else if (result.passed === false) {
+                                <i class="pi pi-times-circle" style="color: var(--flowx-red-400, #ee6b54)"></i>
+                              } @else {
+                                <span>—</span>
+                              }
+                            </td>
+                            <td>
+                              <span class="kind-pill kind-pill--chain">{{ result.evaluator_name || 'Unknown' }}</span>
+                            </td>
+                            <td class="font-bold">{{ result.score !== null && result.score !== undefined ? (result.score | number:'1.2-2') : '—' }}</td>
+                            <td>
+                              <span class="text-sm" style="max-width: 400px; display: inline-block; white-space: pre-wrap; word-break: break-word">{{ result.comment || '—' }}</span>
+                            </td>
+                            <td>{{ formatTime(result.created_at) }}</td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    } @else if (selectedRun?.data?.type === 'llm') {
+                      <div class="trace-empty">
+                        <i class="pi pi-verified"></i>
+                        <span>No evaluation results for this LLM call. Configure evaluators in the project settings.</span>
+                      </div>
+                    } @else {
+                      <div class="trace-empty">
+                        <i class="pi pi-verified"></i>
+                        <span>Select an LLM node to view its evaluation results.</span>
+                      </div>
+                    }
+                  </div>
                 </div>
               </p-tabpanel>
 
               <!-- Metadata Tab -->
               <p-tabpanel value="metadata">
-                <div style="padding: 1rem">
+                <div class="trace-pane">
                   @if (selectedExecution) {
-                    <div class="metric-tiles">
-                      <div class="metric-tile metric-tile--id">
-                        <span class="metric-tile__label">Workspace ID</span>
-                        <span class="metric-tile__value">{{ selectedExecution.workspace_id || '-' }}</span>
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-id-card"></i></span>
+                        <span class="trace-section__title">Execution IDs</span>
                       </div>
-                      <div class="metric-tile metric-tile--id">
-                        <span class="metric-tile__label">Application ID</span>
-                        <span class="metric-tile__value">{{ selectedExecution.application_id || '-' }}</span>
+                      <div class="trace-id-grid">
+                        <div class="trace-id-tile">
+                          <span class="trace-id-tile__label">Workspace ID</span>
+                          <span class="trace-id-tile__value">{{ selectedExecution.workspace_id || '—' }}</span>
+                        </div>
+                        <div class="trace-id-tile">
+                          <span class="trace-id-tile__label">Application ID</span>
+                          <span class="trace-id-tile__value">{{ selectedExecution.application_id || '—' }}</span>
+                        </div>
+                        <div class="trace-id-tile">
+                          <span class="trace-id-tile__label">Workflow ID</span>
+                          <span class="trace-id-tile__value">{{ selectedExecution.workflow_id || '—' }}</span>
+                        </div>
                       </div>
-                      <div class="metric-tile metric-tile--id">
-                        <span class="metric-tile__label">Workflow ID</span>
-                        <span class="metric-tile__value">{{ selectedExecution.workflow_id || '-' }}</span>
+                    </div>
+                  }
+                  @if (selectedRun?.data) {
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-hashtag"></i></span>
+                        <span class="trace-section__title">Run IDs</span>
+                      </div>
+                      <div class="trace-id-grid">
+                        <div class="trace-id-tile">
+                          <span class="trace-id-tile__label">Run ID</span>
+                          <span class="trace-id-tile__value">{{ selectedRun.data.id }}</span>
+                        </div>
+                        <div class="trace-id-tile">
+                          <span class="trace-id-tile__label">Request ID</span>
+                          <span class="trace-id-tile__value">{{ selectedRun.data.request_id }}</span>
+                        </div>
                       </div>
                     </div>
                   }
                   @if (selectedRun?.data?.environment) {
-                    <h5>Environment</h5>
-                    <pre class="text-sm" style="margin: 0; background-color: var(--surface-ground); border-radius: 6px; padding: 0.75rem; max-height: 300px; overflow: auto; white-space: pre-wrap; word-break: break-word">{{ selectedRun.data.environment | json }}</pre>
-                  }
-                  @if (selectedRun?.data) {
-                    <h5 style="margin-top: 1rem">Run IDs</h5>
-                    <div class="metric-tiles">
-                      <div class="metric-tile metric-tile--id">
-                        <span class="metric-tile__label">Run ID</span>
-                        <span class="metric-tile__value">{{ selectedRun.data.id }}</span>
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-server"></i></span>
+                        <span class="trace-section__title">Environment</span>
                       </div>
-                      <div class="metric-tile metric-tile--id">
-                        <span class="metric-tile__label">Request ID</span>
-                        <span class="metric-tile__value">{{ selectedRun.data.request_id }}</span>
+                      <div class="code-panel">
+                        <div class="code-panel__head">
+                          <span class="code-panel__dot"></span>
+                          <span class="code-panel__label">Environment</span>
+                        </div>
+                        <pre class="code-preview">{{ selectedRun.data.environment | json }}</pre>
                       </div>
                     </div>
                   }
@@ -472,6 +583,12 @@
           </p-tabs>
         </div>
       </div>
+
+      <!-- ── Footer ── -->
+      <footer class="trace-drawer__footer">
+        <i class="pi pi-info-circle"></i>
+        <span>Press <kbd>Esc</kbd> to close · click any node above to inspect its run</span>
+      </footer>
     </div>
   </ng-template>
 </p-drawer>
