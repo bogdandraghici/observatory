@@ -1,45 +1,57 @@
 <div class="ai-page">
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Projects</h1>
-      <p class="page-header__subtitle">Browse and manage your AI projects</p>
-    </div>
-  </header>
+  <!-- A. Hero Panel — title + selectors anchored to the right edge -->
+  <section class="projects-hero">
+    <div class="projects-hero__band">
+      <div class="projects-hero__text">
+        <h1 class="projects-hero__title">Projects</h1>
+        <p class="projects-hero__subtitle">Browse and manage your AI projects.</p>
+      </div>
 
-  <div class="filters-bar">
-    <div class="filters-bar__left">
-      <div class="filter-group">
-        <label class="filter-group__label">Organization</label>
-        <p-select
-          [options]="orgs"
-          [(ngModel)]="selectedOrg"
-          optionLabel="name"
-          optionValue="id"
-          [showClear]="false"
-          (onChange)="orgChanged($event)"
-          placeholder="Select Organization"
-        ></p-select>
+      <div class="projects-hero__selectors">
+        <div class="projects-hero__select">
+          <label class="projects-hero__select-label">Organization</label>
+          <p-select
+            [options]="orgs"
+            [(ngModel)]="selectedOrg"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            (onChange)="orgChanged($event)"
+            placeholder="Select Organization"
+            appendTo="body"
+          ></p-select>
+        </div>
+        <div class="projects-hero__select">
+          <label class="projects-hero__select-label">Workspace</label>
+          <p-select
+            [options]="workspaces"
+            [(ngModel)]="selectedWorkspace"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="true"
+            (onChange)="workspaceChanged($event)"
+            placeholder="All Workspaces"
+            appendTo="body"
+          ></p-select>
+        </div>
       </div>
-      <div class="filter-group">
-        <label class="filter-group__label">Workspace</label>
-        <p-select
-          [options]="workspaces"
-          [(ngModel)]="selectedWorkspace"
-          optionLabel="name"
-          optionValue="id"
-          [showClear]="true"
-          (onChange)="workspaceChanged($event)"
-          placeholder="All Workspaces"
-        ></p-select>
-      </div>
+    </div>
+  </section>
+
+  <!-- B. Section header — mirrors the Home dashboard pattern -->
+  <div class="section-header">
+    <div class="section-header__left">
+      <h2 class="section-header__title">
+        <i class="pi pi-folder"></i>
+        Projects
+      </h2>
+      <span class="section-header__count">
+        {{ apps?.length || 0 }} project{{ apps?.length === 1 ? '' : 's' }}
+      </span>
     </div>
   </div>
 
-  <div class="flex items-center gap-2 mb-4">
-    <i class="pi pi-folder" style="color: var(--primary-color)"></i>
-    <span class="text-lg font-semibold">{{ apps?.length || 0 }} projects</span>
-  </div>
-
+  <!-- C. Project rows -->
   <div class="projects-list">
     @for (app of apps; track app.id) {
       <div class="project-row" (click)="openProject(app)">
