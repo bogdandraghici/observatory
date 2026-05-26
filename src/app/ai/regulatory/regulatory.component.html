@@ -451,11 +451,9 @@
 
                   <div class="flex flex-col gap-2">
                     @for (req of tier.items; track req.requirement_id) {
-                      <div class="gap-row gap-row--{{ tier.tone }} flex items-center gap-3 rounded p-3" [style.border-left]="'4px solid ' + tier.color">
+                      <div class="gap-row gap-row--{{ tier.tone }} flex items-center gap-3">
                         <!-- Code -->
-                        <div style="min-width: 100px">
-                          <strong>{{ req.requirement_code }}</strong>
-                        </div>
+                        <span class="gap-row__code gap-row__code--{{ tier.tone }}">{{ req.requirement_code }}</span>
 
                         <!-- Title + Category -->
                         <div class="flex-1">
