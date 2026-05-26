@@ -1,25 +1,25 @@
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">API Calls</h1>
-      <p class="page-header__subtitle">Platform-wide API usage and performance</p>
-    </div>
-    <div class="page-header__right">
-      <p-selectButton
-        [options]="periods"
-        [(ngModel)]="selectedPeriod"
-        [multiple]="false"
-        (onChange)="periodChanged($event)"
-        optionLabel="name"
-        optionValue="value"
-      ></p-selectButton>
-    </div>
-  </header>
+<div class="ai-page analytics-page">
+  <!-- A. Hero panel — title band (with period segmented control) + filters band -->
+  <section class="analytics-hero">
+    <div class="analytics-hero__band">
+      <div class="analytics-hero__text">
+        <h1 class="analytics-hero__title">API Calls</h1>
+        <p class="analytics-hero__subtitle">Platform-wide API usage and performance.</p>
+      </div>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+      <div class="analytics-hero__scope">
+        <p-selectButton
+          [options]="periods"
+          [(ngModel)]="selectedPeriod"
+          [multiple]="false"
+          (onChange)="periodChanged($event)"
+          optionLabel="name"
+          optionValue="value"
+        ></p-selectButton>
+      </div>
+    </div>
+
+    <div class="analytics-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Service</label>
         <p-select
@@ -30,12 +30,13 @@
           [showClear]="true"
           (onChange)="agentChanged($event)"
           placeholder="All Services"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Widgets -->
+  <!-- B. Widgets grid (unchanged) -->
   <div class="grid grid-cols-12 items-stretch gap-4">
     @if (allMetrics?.length > 0) {
       <div
