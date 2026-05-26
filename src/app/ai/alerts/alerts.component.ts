@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './alerts.component.html',
+    styleUrl: './alerts.component.scss',
     standalone: false,
     providers: [MessageService],
 })

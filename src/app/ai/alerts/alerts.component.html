@@ -1,21 +1,21 @@
 <p-toast></p-toast>
 
 <div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Alerts & SLA Tracking</h1>
-      <p class="page-header__subtitle">Configure alert rules and monitor SLA compliance</p>
-    </div>
-    <div class="page-header__right">
-      <p-button label="Evaluate Now" icon="pi pi-play" severity="primary" [outlined]="true" (click)="evaluateNow()"></p-button>
-      <p-button label="Create Rule" icon="pi pi-plus" (click)="createRule()"></p-button>
-    </div>
-  </header>
+  <!-- A. Hero panel — title band (with action buttons) + 4-up filters band -->
+  <section class="alerts-hero">
+    <div class="alerts-hero__band">
+      <div class="alerts-hero__text">
+        <h1 class="alerts-hero__title">Alerts & SLA Tracking</h1>
+        <p class="alerts-hero__subtitle">Configure alert rules and monitor SLA compliance.</p>
+      </div>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+      <div class="alerts-hero__actions">
+        <p-button label="Evaluate Now" icon="pi pi-play" severity="primary" [outlined]="true" (click)="evaluateNow()"></p-button>
+        <p-button label="Create Rule" icon="pi pi-plus" (click)="createRule()"></p-button>
+      </div>
+    </div>
+
+    <div class="alerts-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -25,6 +25,7 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged()"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -37,6 +38,7 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -49,6 +51,7 @@
           placeholder="All Projects"
           [showClear]="true"
           (onChange)="appChanged()"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -59,60 +62,57 @@
           optionLabel="label"
           optionValue="value"
           (onChange)="periodChanged()"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- KPI Cards -->
-  <div class="stat-cards-grid mb-4">
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--blue">
+  <!-- KPI strip — mirrors the Risk Dashboard's `.risk-kpi-card` pattern -->
+  <div class="alerts-kpis">
+    <div class="alerts-kpi-card">
+      <div class="alerts-kpi-card__icon alerts-kpi-card__icon--blue">
         <i class="pi pi-list-check"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Active Rules</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ activeRules }}</span>
+      <div class="alerts-kpi-card__body">
+        <span class="alerts-kpi-card__label">Active Rules</span>
+        <span class="alerts-kpi-card__value alerts-kpi-card__value--blue">{{ activeRules }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--amber">
+    <div class="alerts-kpi-card">
+      <div class="alerts-kpi-card__icon alerts-kpi-card__icon--yellow">
         <i class="pi pi-bell"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Alerts in Period</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ alertsToday }}</span>
+      <div class="alerts-kpi-card__body">
+        <span class="alerts-kpi-card__label">Alerts in Period</span>
+        <span class="alerts-kpi-card__value alerts-kpi-card__value--yellow">{{ alertsToday }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(249, 115, 22, 0.1); color: var(--flowx-orange-500, #fd6b1c);">
+    <div class="alerts-kpi-card">
+      <div class="alerts-kpi-card__icon alerts-kpi-card__icon--orange">
         <i class="pi pi-exclamation-circle"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Unacknowledged</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-orange-500, #fd6b1c)">{{ unacknowledged }}</span>
+      <div class="alerts-kpi-card__body">
+        <span class="alerts-kpi-card__label">Unacknowledged</span>
+        <span class="alerts-kpi-card__value alerts-kpi-card__value--orange">{{ unacknowledged }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+    <div class="alerts-kpi-card">
+      <div class="alerts-kpi-card__icon alerts-kpi-card__icon--red">
         <i class="pi pi-exclamation-triangle"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Critical</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ criticalCount }}</span>
+      <div class="alerts-kpi-card__body">
+        <span class="alerts-kpi-card__label">Critical</span>
+        <span class="alerts-kpi-card__value alerts-kpi-card__value--red">{{ criticalCount }}</span>
       </div>
     </div>
   </div>
 
   <!-- Alert Rules Table -->
-  <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-    <div class="flex items-center justify-between mb-3 w-full">
-      <div class="flex items-center gap-2">
-        <div class="stat-card__icon">
-          <i class="pi pi-list-check"></i>
-        </div>
-        <span class="stat-card__title">Alert Rules</span>
-      </div>
+  <div class="stat-card stat-card--stacked alerts-table-card mb-4">
+    <div class="card-title">
+      <i class="pi pi-list-check"></i>
+      Alert Rules
     </div>
     <p-table [value]="rules" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
       <ng-template pTemplate="header">
@@ -153,12 +153,10 @@
   </div>
 
   <!-- Alert History Table -->
-  <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-    <div class="flex items-center gap-2 mb-3">
-      <div class="stat-card__icon">
-        <i class="pi pi-history"></i>
-      </div>
-      <span class="stat-card__title">Alert History</span>
+  <div class="stat-card stat-card--stacked alerts-table-card mb-4">
+    <div class="card-title">
+      <i class="pi pi-history"></i>
+      Alert History
     </div>
     <p-table [value]="history" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
       <ng-template pTemplate="header">
@@ -202,25 +200,34 @@
 
   <!-- SLA Compliance -->
   @if (selectedApp && slaStatus.length > 0) {
-    <div class="flex items-center gap-2 mb-3">
-      <div class="stat-card__icon">
+    <div class="stat-card stat-card--stacked alerts-table-card alerts-sla-card mb-4">
+      <div class="card-title">
         <i class="pi pi-shield"></i>
+        SLA Compliance
       </div>
-      <span class="stat-card__title">SLA Compliance</span>
-    </div>
-    <div class="stat-cards-grid" style="grid-template-columns: repeat(3, 1fr);">
-      @for (sla of slaStatus; track sla.rule_id) {
-        <div class="stat-card stat-card--stacked">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-semibold">{{ sla.rule_name }}</span>
+      <div class="alerts-sla-list">
+        @for (sla of slaStatus; track sla.rule_id) {
+          <div class="alerts-sla-row">
+            <div class="alerts-sla-row__name">
+              <span class="alerts-sla-row__dot" [class.alerts-sla-row__dot--breach]="!sla.compliant"></span>
+              <i class="pi pi-shield alerts-sla-row__icon"></i>
+              <span class="alerts-sla-row__label">{{ sla.rule_name }}</span>
+            </div>
+            <div class="alerts-sla-row__meta">
+              <code>{{ sla.metric }}</code>
+              <span class="alerts-sla-row__sep">·</span>
+              <span>actual <strong>{{ sla.actual_value != null ? (sla.actual_value | number:'1.2-2') : 'N/A' }}</strong></span>
+              <span class="alerts-sla-row__sep">·</span>
+              <span>threshold <strong>{{ getOperatorLabel(sla.operator) }} {{ sla.threshold }}</strong></span>
+            </div>
             <p-tag
               [value]="sla.compliant ? 'Compliant' : 'Breached'"
               [severity]="sla.compliant ? 'success' : 'danger'"
+              [rounded]="true"
             ></p-tag>
           </div>
-          <span class="stat-card__label">{{ getMetricLabel(sla.metric) }}: {{ sla.actual_value != null ? (sla.actual_value | number:'1.2-2') : 'N/A' }} {{ getOperatorLabel(sla.operator) }} {{ sla.threshold }}</span>
-        </div>
-      }
+        }
+      </div>
     </div>
   }
 </div>
