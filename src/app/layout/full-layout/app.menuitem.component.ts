@@ -13,9 +13,12 @@ import { LayoutService } from './service/app.layout.service'
 		<ng-container>
       @if (root && item.visible !== false) {
         <div class="layout-menuitem-root-text" (click)="itemClick($event)">
+          <i class="pi layout-root-toggler" [ngClass]="active ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
           <i [ngClass]="item.icon" class="layout-menuitem-root-icon"></i>
-          {{item.label}}
-          <i class="pi layout-root-toggler" [ngClass]="active ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+          <span class="layout-menuitem-root-label">{{item.label}}</span>
+          @if (item.items) {
+            <span class="layout-menuitem-root-count">{{item.items.length}}</span>
+          }
         </div>
       }
       @if ((!item.routerLink || item.items) && item.visible !== false) {

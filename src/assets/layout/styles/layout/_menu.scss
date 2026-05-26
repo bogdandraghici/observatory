@@ -21,13 +21,10 @@ $sidebar-collapsed-width: 0px;
     padding: 0;
     font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
 
-    &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb {
-        background: var(--flowx-neutrals-200, #cbd1db);
-        border-radius: var(--flowx-radius-4, 4px);
-    }
-    &::-webkit-scrollbar-thumb:hover { background: var(--flowx-neutrals-400, #8390a2); }
+    // Scroll stays functional, scrollbar hidden
+    scrollbar-width: none;          // Firefox
+    -ms-overflow-style: none;       // IE / old Edge
+    &::-webkit-scrollbar { width: 0; height: 0; display: none; }
 }
 
 .layout-static-inactive {
@@ -36,61 +33,87 @@ $sidebar-collapsed-width: 0px;
     .layout-footer { left: 0 !important; }
 }
 
+// Tree / outline ("V12") menu — collapsible folder-style group headers,
+// items indented under a vertical guide line with connector ticks.
 .layout-menu {
     margin: 0;
-    padding: 0;
+    padding: var(--flowx-space-8, 8px) var(--flowx-space-8, 8px) var(--flowx-space-20, 20px);
     list-style-type: none;
     display: flex;
     flex-direction: column;
     gap: 0;
 
+    // ── Group header — folder row: caret + glyph + label + count
     .layout-root-menuitem {
-        padding: 0 0 var(--flowx-space-8, 8px);
+        padding: 0;
+        margin-top: 6px;
 
-        &:not(:first-child) {
-            border-top: 1px solid var(--flowx-neutrals-100, #e3e8ed);
-            margin-top: var(--flowx-space-4, 4px);
-        }
+        &:first-child { margin-top: 0; }
 
         > .layout-menuitem-root-text {
             display: flex;
             align-items: center;
-            gap: var(--flowx-space-12, 12px);
-            padding: var(--flowx-space-16, 16px) 14px var(--flowx-space-10, 10px);
+            gap: 6px;
+            padding: 7px 8px;
             margin: 0;
-            font-size: 14px;
-            line-height: 1.4;
-            font-weight: 700;
-            letter-spacing: -0.005em;
+            font-size: 13px;
+            line-height: 1;
+            font-weight: 600;
+            letter-spacing: 0;
             text-transform: none;
             color: var(--flowx-text-primary, #1d232c);
             cursor: pointer;
             user-select: none;
+            border-radius: var(--flowx-radius-6, 6px);
+            transition: background-color 120ms ease;
+
+            &:hover { background: var(--flowx-neutrals-50, #f7f8f9); }
         }
 
         > a { display: none; }
 
+        // Folder caret (moved to the left, rotates via icon class swap)
+        .layout-root-toggler {
+            flex: 0 0 auto;
+            width: 12px;
+            margin-left: 0;
+            font-size: 10px;
+            text-align: center;
+            color: var(--flowx-text-secondary, #64748b);
+        }
+
+        // Plain inline glyph — the boxed blue tile is gone
         .layout-menuitem-root-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: var(--flowx-radius-8, 8px);
-            background: var(--flowx-blue-50, #e6f0fb);
-            border: 1px solid var(--flowx-blue-100, #b0d1f3);
-            color: var(--flowx-blue-500, #006bd8);
+            flex: 0 0 auto;
+            width: auto;
+            height: auto;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            color: var(--flowx-text-secondary, #64748b);
+            font-size: 14px;
+            font-weight: 400;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            margin-right: 0;
-            flex: 0 0 auto;
         }
 
-        .layout-root-toggler {
-            margin-left: auto;
+        .layout-menuitem-root-label {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .layout-menuitem-root-count {
+            flex: 0 0 auto;
+            font-family: ui-monospace, "SF Mono", "Roboto Mono", "Menlo", monospace;
             font-size: 11px;
+            font-weight: 400;
             color: var(--flowx-text-secondary, #64748b);
-            transition: transform 200ms ease;
+            font-variant-numeric: tabular-nums;
         }
     }
 
@@ -102,29 +125,38 @@ $sidebar-collapsed-width: 0px;
 
     li.active-menuitem > a .layout-submenu-toggler { transform: rotate(-180deg); }
 
-    ul {
-        margin: 0;
-        padding: 0;
+    // ── Items container — indented, with the vertical tree guide
+    .layout-root-menuitem > ul {
+        position: relative;
+        margin: 2px 0 2px 22px;
+        padding: 0 0 0 14px;
+        border-left: 1px solid var(--flowx-neutrals-100, #e3e8ed);
         list-style-type: none;
         display: flex;
         flex-direction: column;
         gap: 1px;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
 
         a {
             position: relative;
             display: flex;
             align-items: center;
-            gap: var(--flowx-space-12, 12px);
+            gap: 8px;
             outline: 0 none;
             color: var(--flowx-text-primary, #1d232c);
             cursor: pointer;
-            height: 36px;
-            margin: 1px 10px 1px 14px;
-            padding: 0 var(--flowx-space-12, 12px);
-            border-radius: var(--flowx-radius-8, 8px);
+            height: 30px;
+            margin: 0;
+            padding: 0 8px;
+            border-radius: var(--flowx-radius-4, 4px);
             font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
-            font-size: 14px;
-            line-height: 20px;
+            font-size: 13px;
+            line-height: 1;
             font-weight: 400;
             transition: background-color 120ms cubic-bezier(.2,0,.2,1), color 120ms ease;
             border: none;
@@ -132,7 +164,7 @@ $sidebar-collapsed-width: 0px;
 
             .layout-menuitem-icon {
                 margin-right: 0;
-                font-size: 18px;
+                font-size: 15px;
                 color: var(--flowx-text-secondary, #64748b);
                 transition: color 120ms ease;
                 flex-shrink: 0;
@@ -140,10 +172,11 @@ $sidebar-collapsed-width: 0px;
 
             .layout-menuitem-text {
                 flex: 1;
+                min-width: 0;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                line-height: 20px;
+                line-height: 1.4;
             }
 
             .layout-submenu-toggler {
@@ -155,21 +188,10 @@ $sidebar-collapsed-width: 0px;
 
             &.active-route {
                 background: var(--flowx-blue-50, #e6f0fb);
-                color: var(--flowx-blue-600, #005fc0);
+                color: var(--flowx-blue-700, #004c99);
                 font-weight: 600;
 
                 .layout-menuitem-icon { color: var(--flowx-blue-500, #006bd8); }
-
-                &::before {
-                    content: "";
-                    position: absolute;
-                    left: -14px;
-                    top: 4px;
-                    bottom: 4px;
-                    width: 3px;
-                    border-radius: 0 3px 3px 0;
-                    background: var(--flowx-blue-500, #006bd8);
-                }
             }
 
             &:hover:not(.active-route) {
@@ -184,19 +206,17 @@ $sidebar-collapsed-width: 0px;
                 outline-offset: 2px;
             }
         }
+    }
 
-        // Deeper nesting (if any sub-item ever gains children): flatten — no left-border indent
-        ul {
-            overflow: hidden;
-            padding-left: 0;
-            border-left: none;
-            margin-left: 0;
-
-            li a {
-                font-size: 13px;
-                line-height: 20px;
-            }
-        }
+    // Connector tick joining each item to the vertical guide
+    .layout-root-menuitem > ul > li > a::before {
+        content: "";
+        position: absolute;
+        left: -14px;
+        top: 50%;
+        width: 8px;
+        height: 1px;
+        background: var(--flowx-neutrals-100, #e3e8ed);
     }
 }
 
@@ -248,24 +268,21 @@ $sidebar-collapsed-width: 0px;
 
     .layout-menu {
         .layout-root-menuitem {
-            &:not(:first-child) {
-                border-top-color: rgba(255, 255, 255, 0.06);
-            }
-
             > .layout-menuitem-root-text {
                 color: var(--flowx-neutrals-50, #f7f8f9);
+
+                &:hover { background: var(--flowx-neutrals-800, #2a313a); }
             }
 
-            .layout-menuitem-root-icon {
-                background: rgba(51, 137, 224, 0.18);
-                border-color: rgba(51, 137, 224, 0.30);
-                color: var(--flowx-blue-300, #549ce5);
-            }
-
-            .layout-root-toggler {
+            .layout-root-toggler,
+            .layout-menuitem-root-icon,
+            .layout-menuitem-root-count {
                 color: var(--flowx-neutrals-400, #8390a2);
             }
         }
+
+        .layout-root-menuitem > ul { border-left-color: rgba(255, 255, 255, 0.08); }
+        .layout-root-menuitem > ul > li > a::before { background: rgba(255, 255, 255, 0.08); }
 
         ul a {
             color: var(--flowx-neutrals-200, #cbd1db);
@@ -277,8 +294,6 @@ $sidebar-collapsed-width: 0px;
                 color: var(--flowx-blue-300, #549ce5);
 
                 .layout-menuitem-icon { color: var(--flowx-blue-300, #549ce5); }
-
-                &::before { background: var(--flowx-blue-400, #3389e0); }
             }
 
             &:hover:not(.active-route) {
