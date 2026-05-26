@@ -72,7 +72,7 @@ below.
 | Element | `h1` |
 | Font | Open Sans 42/1.05/800, letter-spacing `-0.02em` |
 | Color | `var(--flowx-text-primary)` |
-| Accent | The second word wrapped in `<span class="text-accent">` (color `var(--flowx-interactive)`) — `Welcome to <span>Observatory</span>`, `Agent <span>Evaluations</span>` |
+| Accent | None — the full title stays in `var(--flowx-text-primary)`. Do not wrap any word in `<span class="text-accent">`; the gradient band alone carries the brand color. |
 | Mobile | Drop to 32px under 768px |
 
 **Subtitle**
