@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-assessments',
   templateUrl: './assessments.component.html',
+  styleUrls: ['./assessments.component.scss'],
   providers: [MessageService],
   standalone: false,
 })

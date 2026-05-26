@@ -1,18 +1,19 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Experiments</h1>
-      <p class="page-header__subtitle">Run evaluations on datasets to measure AI extraction accuracy</p>
+<div class="ai-page experiments-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="experiments-hero">
+    <div class="experiments-hero__band">
+      <div class="experiments-hero__text">
+        <h1 class="experiments-hero__title">Experiments</h1>
+        <p class="experiments-hero__subtitle">Run evaluations on datasets to measure extraction accuracy across models and evaluator sets.</p>
+      </div>
     </div>
-  </header>
 
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="experiments-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
-        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Workspace</label>
@@ -24,77 +25,88 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <p-tabs [(value)]="activeTab">
-    <p-tablist>
-      <p-tab value="0">Experiments</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <p-tabpanel value="0">
-        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-chart-bar"></i>
+  <!-- B. Tabs — flat underline navigation at the page level -->
+  <div class="experiments-tabs">
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        <p-tab value="0">Experiments</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-chart-bar"></i>
+                  Experiments
+                </div>
+                <p-button label="Create Experiment" icon="pi pi-plus" severity="primary" (click)="openCreateDialog()"></p-button>
               </div>
-              <span class="stat-card__title">Experiments</span>
+              <p-table [value]="experiments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowHover]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Dataset</th>
+                    <th>Provider / Model</th>
+                    <th>Evaluators</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th style="width: 10rem">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-exp>
+                  <tr>
+                    <td class="font-semibold">{{ exp.name }}</td>
+                    <td><p-tag [value]="exp.experiment_type" severity="info"></p-tag></td>
+                    <td>{{ getDatasetName(exp.dataset_id) }}</td>
+                    <td>{{ exp.llm_provider }} / {{ exp.llm_name }}</td>
+                    <td>
+                      @for (ev of exp.associated_evaluators; track ev) {
+                        <p-tag [value]="ev" severity="secondary" styleClass="mr-1 mb-1"></p-tag>
+                      }
+                    </td>
+                    <td><p-tag [value]="exp.status" [severity]="getStatusSeverity(exp.status)"></p-tag></td>
+                    <td>{{ exp.created_at | date:'short' }}</td>
+                    <td>
+                      <div class="flex gap-1">
+                        @if (exp.status === 'CREATED' || exp.status === 'FAILED') {
+                          <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" styleClass="action-chip action-chip--success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
+                        }
+                        @if (exp.status === 'RUNNING') {
+                          <i class="pi pi-spin pi-spinner" style="font-size: 1.2rem; padding: 0.5rem;"></i>
+                        }
+                        @if (exp.status === 'COMPLETED') {
+                          <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
+                        }
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">
+                      <div class="table-empty">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>No experiments found. Click "Create Experiment" to get started.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </div>
-            <p-button label="Create Experiment" icon="pi pi-plus" (click)="openCreateDialog()"></p-button>
           </div>
-          <p-table [value]="experiments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Dataset</th>
-                <th>Provider / Model</th>
-                <th>Evaluators</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th style="width: 10rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-exp>
-              <tr>
-                <td class="font-semibold">{{ exp.name }}</td>
-                <td><p-tag [value]="exp.experiment_type" severity="info"></p-tag></td>
-                <td>{{ getDatasetName(exp.dataset_id) }}</td>
-                <td>{{ exp.llm_provider }} / {{ exp.llm_name }}</td>
-                <td>
-                  @for (ev of exp.associated_evaluators; track ev) {
-                    <p-tag [value]="ev" severity="secondary" styleClass="mr-1 mb-1"></p-tag>
-                  }
-                </td>
-                <td><p-tag [value]="exp.status" [severity]="getStatusSeverity(exp.status)"></p-tag></td>
-                <td>{{ exp.created_at | date:'short' }}</td>
-                <td>
-                  <div class="flex gap-1">
-                    @if (exp.status === 'CREATED' || exp.status === 'FAILED') {
-                      <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" styleClass="action-chip action-chip--success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
-                    }
-                    @if (exp.status === 'RUNNING') {
-                      <i class="pi pi-spin pi-spinner" style="font-size: 1.2rem; padding: 0.5rem;"></i>
-                    }
-                    @if (exp.status === 'COMPLETED') {
-                      <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
-                    }
-                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="8" class="text-center p-6">No experiments found. Click "Create Experiment" to get started.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>
 
 <!-- Create Experiment Dialog -->

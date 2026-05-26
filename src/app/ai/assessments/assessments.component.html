@@ -1,20 +1,19 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Assessment Engine</h1>
-      <p class="page-header__subtitle">Create templates and run compliance assessments</p>
+<div class="ai-page assessments-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="assessments-hero">
+    <div class="assessments-hero__band">
+      <div class="assessments-hero__text">
+        <h1 class="assessments-hero__title">Assessment Engine</h1>
+        <p class="assessments-hero__subtitle">Build reusable assessment templates and run them against projects to capture compliance answers.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="assessments-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
-        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()"></p-select>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" (onChange)="orgChanged()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Workspace</label>
@@ -26,141 +25,159 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <p-tabs [(value)]="activeTab">
-    <p-tablist>
-      <p-tab value="0">Templates</p-tab>
-      <p-tab value="1">Assessments</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <!-- Templates Tab -->
-      <p-tabpanel value="0">
-        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-file-edit"></i>
+  <!-- B. Tabs — flat underline navigation at the page level -->
+  <div class="assessments-tabs">
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        <p-tab value="0">Templates</p-tab>
+        <p-tab value="1">Assessments</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- Templates Tab -->
+        <p-tabpanel value="0">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-file-edit"></i>
+                  Templates
+                </div>
+                <div class="card-head__actions">
+                  <p-button label="Use Predefined" icon="pi pi-book" severity="primary" [outlined]="true" (click)="openPredefinedDialog()"></p-button>
+                  <p-button label="Create Template" icon="pi pi-plus" severity="primary" (click)="createTemplate()"></p-button>
+                </div>
               </div>
-              <span class="stat-card__title">Templates</span>
-            </div>
-            <div class="flex gap-2">
-              <p-button label="Use Predefined" icon="pi pi-book" severity="primary" [outlined]="true" (click)="openPredefinedDialog()"></p-button>
-              <p-button label="Create Template" icon="pi pi-plus" (click)="createTemplate()"></p-button>
+              <p-table [value]="templates" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowHover]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Questions</th>
+                    <th>Version</th>
+                    <th>Active</th>
+                    <th style="width: 7rem">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-t>
+                  <tr>
+                    <td class="font-semibold">{{ t.name }}</td>
+                    <td><p-tag [value]="t.category" severity="info"></p-tag></td>
+                    <td>{{ t.questions?.length || 0 }} questions</td>
+                    <td>v{{ t.version }}</td>
+                    <td><p-tag [value]="t.is_active ? 'Active' : 'Inactive'" [severity]="t.is_active ? 'success' : 'secondary'"></p-tag></td>
+                    <td>
+                      <div class="flex gap-1">
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editTemplate(t)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(t, 'template')"></p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6">
+                      <div class="table-empty">
+                        <i class="pi pi-file-edit"></i>
+                        <span>No templates found. Click "Create Template" to get started.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </div>
           </div>
-          <p-table [value]="templates" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Questions</th>
-                <th>Version</th>
-                <th>Active</th>
-                <th style="width: 7rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-t>
-              <tr>
-                <td class="font-semibold">{{ t.name }}</td>
-                <td><p-tag [value]="t.category" severity="info"></p-tag></td>
-                <td>{{ t.questions?.length || 0 }} questions</td>
-                <td>v{{ t.version }}</td>
-                <td><p-tag [value]="t.is_active ? 'Active' : 'Inactive'" [severity]="t.is_active ? 'success' : 'secondary'"></p-tag></td>
-                <td>
-                  <div class="flex gap-1">
-                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editTemplate(t)"></p-button>
-                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(t, 'template')"></p-button>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="6" class="text-center p-6">No templates found. Click "Create Template" to get started.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
+        </p-tabpanel>
 
-      <!-- Assessments Tab -->
-      <p-tabpanel value="1">
-        <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-check-square"></i>
+        <!-- Assessments Tab -->
+        <p-tabpanel value="1">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-check-square"></i>
+                  Assessments
+                </div>
+                <p-button label="Start Assessment" icon="pi pi-plus" severity="primary" (click)="createAssessment()"></p-button>
               </div>
-              <span class="stat-card__title">Assessments</span>
-            </div>
-            <p-button label="Start Assessment" icon="pi pi-plus" (click)="createAssessment()"></p-button>
-          </div>
-          <p-table [value]="assessments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Template</th>
-                <th>Project</th>
-                <th>Status</th>
-                <th>Score</th>
-                <th>Completed By</th>
-                <th>Created</th>
-                <th>Signature</th>
-                <th style="width: 7rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-a>
-              <tr>
-                <td class="font-semibold">{{ getTemplateName(a.template_id) }}</td>
-                <td>{{ getAppName(a.project_id) }}</td>
-                <td><p-tag [value]="a.status" [severity]="getStatusSeverity(a.status)"></p-tag></td>
-                <td>
-                  @if (a.score !== null && a.score !== undefined) {
-                    <div class="flex items-center gap-2">
-                      <p-progressBar [value]="a.score * 100" [showValue]="false" [style]="{height: '0.5rem', width: '5rem'}"></p-progressBar>
-                      <span>{{ (a.score * 100).toFixed(1) }}%</span>
-                    </div>
-                  } @else {
-                    <span>-</span>
-                  }
-                </td>
-                <td>{{ a.completed_by || '-' }}</td>
-                <td>{{ a.created_at | date:'short' }}</td>
-                <td>
-                  @if (a.status === 'completed') {
-                    @if (getSignatureStatus(a.id); as sig) {
-                      @if (sig.loading) {
-                        <i class="pi pi-spin pi-spinner"></i>
-                      } @else if (sig.valid) {
-                        <p-tag value="Valid" severity="success" icon="pi pi-check-circle"></p-tag>
+              <p-table [value]="assessments" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowHover]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Template</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Completed By</th>
+                    <th>Created</th>
+                    <th>Signature</th>
+                    <th style="width: 7rem">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-a>
+                  <tr>
+                    <td class="font-semibold">{{ getTemplateName(a.template_id) }}</td>
+                    <td>{{ getAppName(a.project_id) }}</td>
+                    <td><p-tag [value]="a.status" [severity]="getStatusSeverity(a.status)"></p-tag></td>
+                    <td>
+                      @if (a.score !== null && a.score !== undefined) {
+                        <div class="flex items-center gap-2">
+                          <p-progressBar [value]="a.score * 100" [showValue]="false" [style]="{height: '0.5rem', width: '5rem'}"></p-progressBar>
+                          <span>{{ (a.score * 100).toFixed(1) }}%</span>
+                        </div>
                       } @else {
-                        <p-tag value="Invalid" severity="danger" icon="pi pi-times-circle"></p-tag>
+                        <span>-</span>
                       }
-                    } @else {
-                      <p-button icon="pi pi-shield" label="Verify" [text]="true" size="small" pTooltip="Verify Signature" tooltipPosition="top" (click)="verifySignature(a)"></p-button>
-                    }
-                  } @else {
-                    <span style="color: var(--text-color-secondary)">-</span>
-                  }
-                </td>
-                <td>
-                  @if (a.status !== 'completed') {
-                    <p-button icon="pi pi-pencil" label="Take" [text]="true" pTooltip="Take Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
-                  } @else {
-                    <p-button icon="pi pi-eye" label="View" [text]="true" pTooltip="View Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
-                  }
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="8" class="text-center p-6">No assessments found. Click "Start Assessment" to begin.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+                    </td>
+                    <td>{{ a.completed_by || '-' }}</td>
+                    <td>{{ a.created_at | date:'short' }}</td>
+                    <td>
+                      @if (a.status === 'completed') {
+                        @if (getSignatureStatus(a.id); as sig) {
+                          @if (sig.loading) {
+                            <i class="pi pi-spin pi-spinner"></i>
+                          } @else if (sig.valid) {
+                            <p-tag value="Valid" severity="success" icon="pi pi-check-circle"></p-tag>
+                          } @else {
+                            <p-tag value="Invalid" severity="danger" icon="pi pi-times-circle"></p-tag>
+                          }
+                        } @else {
+                          <p-button icon="pi pi-shield" label="Verify" [text]="true" size="small" pTooltip="Verify Signature" tooltipPosition="top" (click)="verifySignature(a)"></p-button>
+                        }
+                      } @else {
+                        <span style="color: var(--text-color-secondary)">-</span>
+                      }
+                    </td>
+                    <td>
+                      @if (a.status !== 'completed') {
+                        <p-button icon="pi pi-pencil" label="Take" [text]="true" pTooltip="Take Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
+                      } @else {
+                        <p-button icon="pi pi-eye" label="View" [text]="true" pTooltip="View Assessment" tooltipPosition="top" (click)="takeAssessment(a)"></p-button>
+                      }
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">
+                      <div class="table-empty">
+                        <i class="pi pi-check-square"></i>
+                        <span>No assessments found. Click "Start Assessment" to begin.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>
 
 <!-- Template Dialog -->
