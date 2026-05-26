@@ -1,24 +1,23 @@
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Users</h1>
-      <p class="page-header__subtitle">Track user activity</p>
+<div class="ai-page users-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="users-hero">
+    <div class="users-hero__band">
+      <div class="users-hero__text">
+        <h1 class="users-hero__title">Users</h1>
+        <p class="users-hero__subtitle">See who is talking to your agents and how often.</p>
+      </div>
+      <div class="users-hero__scope">
+        <p-selectButton
+          [options]="periods"
+          [(ngModel)]="selectedPeriod"
+          [multiple]="false"
+          optionLabel="name"
+          optionValue="value"
+        ></p-selectButton>
+      </div>
     </div>
-    <div class="page-header__right">
-      <p-selectButton
-        [options]="periods"
-        [(ngModel)]="selectedPeriod"
-        [multiple]="false"
-        optionLabel="name"
-        optionValue="value"
-      ></p-selectButton>
-    </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="users-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -29,6 +28,7 @@
           [showClear]="false"
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -41,6 +41,7 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -53,12 +54,13 @@
           [showClear]="false"
           (onChange)="appChanged($event)"
           placeholder="Select Project"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Content -->
+  <!-- B. Content -->
   <users-list-widget
     [appId]="selectedApp"
     [hours]="selectedPeriod"

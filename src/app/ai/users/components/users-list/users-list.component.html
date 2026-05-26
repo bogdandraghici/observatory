@@ -1,12 +1,10 @@
-<div class="stat-card stat-card--stacked">
-  <div class="flex items-center justify-between mb-3 w-full">
-    <div class="flex items-center gap-2">
-      <div class="stat-card__icon">
-        <i class="pi pi-users"></i>
-      </div>
-      <span class="stat-card__title">Users</span>
+<div class="users-card stat-card stat-card--stacked">
+  <div class="card-head">
+    <div class="card-title">
+      <i class="pi pi-users"></i>
+      Users
     </div>
-    <div class="flex items-center gap-2">
+    <div class="users-card__controls">
       <p-select
         [options]="agents"
         [(ngModel)]="selectedAgent"
@@ -14,13 +12,15 @@
         [showClear]="true"
         (onChange)="filterByAgent($event)"
         placeholder="Filter by agent"
+        appendTo="body"
       ></p-select>
-      <span class="p-input-icon-left">
+      <span class="users-card__search">
+        <i class="pi pi-search"></i>
         <input
           pInputText
           type="text"
           (input)="dt.filterGlobal($event.target.value, 'contains')"
-          placeholder="Search by user email"
+          placeholder="Search by email"
         />
       </span>
       <p-button
@@ -45,7 +45,6 @@
       dataKey="user_id"
       [rows]="10"
       [totalRecords]="totalRecords"
-      styleClass="p-datatable-sm"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       [globalFilterFields]="['user_email']"
@@ -53,10 +52,10 @@
       <ng-template pTemplate="header">
         <tr>
           <th>User</th>
-          <th>Total Runs</th>
-          <th>Prompt Tokens</th>
-          <th>Completion Tokens</th>
-          <th>Feedbacks</th>
+          <th class="users-col-num">Total Runs</th>
+          <th class="users-col-num">Prompt Tokens</th>
+          <th class="users-col-num">Completion Tokens</th>
+          <th class="users-col-num">Feedbacks</th>
           <th>Latest Run</th>
         </tr>
       </ng-template>
@@ -64,29 +63,31 @@
       <ng-template pTemplate="body" let-user>
         <tr>
           <td>
-            <div class="flex items-center gap-2">
+            <div class="users-cell-identity">
               <p-avatar
                 [label]="user.user_email ? user.user_email[0].toUpperCase() : '?'"
                 size="normal"
                 shape="circle"
+                styleClass="users-avatar"
               ></p-avatar>
-              <span class="font-semibold">{{ user.user_email }}</span>
+              <span class="users-cell-identity__email">{{ user.user_email || '—' }}</span>
             </div>
           </td>
-          <td>
-            <span class="font-bold">{{ user.cnt_runs }}</span>
-          </td>
-          <td>{{ user.prompt_tokens || 0 }}</td>
-          <td>{{ user.completion_tokens || 0 }}</td>
-          <td>{{ user.cnt_feedbacks || 0 }}</td>
-          <td>{{ formatTime(user.latest_run) }}</td>
+          <td class="users-col-num users-col-num--strong">{{ user.cnt_runs }}</td>
+          <td class="users-col-num">{{ user.prompt_tokens || 0 }}</td>
+          <td class="users-col-num">{{ user.completion_tokens || 0 }}</td>
+          <td class="users-col-num">{{ user.cnt_feedbacks || 0 }}</td>
+          <td class="users-col-meta">{{ formatTime(user.latest_run) }}</td>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="6">
-            <empty-state-widget message="No users found."></empty-state-widget>
+            <div class="table-empty">
+              <i class="pi pi-users"></i>
+              <span>No users found in this period.</span>
+            </div>
           </td>
         </tr>
       </ng-template>
