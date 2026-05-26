@@ -1,4 +1,11 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .regulatory-drift {
+  height: 100%;
+
   .drift-pill {
     display: inline-flex;
     align-items: center;

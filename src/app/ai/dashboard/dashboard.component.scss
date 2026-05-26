@@ -66,6 +66,13 @@
  * spec and the Insights eval-hero__scope chrome. */
 ::ng-deep .dashboard-hero__scope .p-selectbutton {
   display: inline-flex;
+  align-items: center;
+  // Release the 36px container height set by the global .p-selectbutton
+  // rule (flowx-theme.scss). The 32px inner buttons + 4px×2 container
+  // padding need 40px of room; with the global 36px the buttons overflow
+  // the padding box and the active blue fill paints flush against the
+  // bottom edge.
+  height: auto;
   background: var(--flowx-surface-secondary);
   border: 1px solid var(--flowx-neutrals-100);
   border-radius: 10px;

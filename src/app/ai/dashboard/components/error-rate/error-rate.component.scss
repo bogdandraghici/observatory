@@ -1,6 +1,13 @@
 // Error Rate Component Styles
 // Theme-aware styling for dashboard widget
 
+:host {
+  display: block;
+  height: 100%;
+}
+
+.error-rate { height: 100%; }
+
 ::ng-deep {
   .error-rate {
     canvas {

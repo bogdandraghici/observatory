@@ -1,5 +1,12 @@
 // Correctness Overview Component Styles
 
+:host {
+  display: block;
+  height: 100%;
+}
+
+.correctness-overview { height: 100%; }
+
 .correctness-cards {
   display: flex;
   flex-direction: column;

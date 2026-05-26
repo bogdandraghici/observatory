@@ -1,6 +1,13 @@
 // Cost Trend Component Styles
 // Theme-aware styling for dashboard widget
 
+:host {
+  display: block;
+  height: 100%;
+}
+
+.cost-trend { height: 100%; }
+
 ::ng-deep {
   .cost-trend {
     canvas {

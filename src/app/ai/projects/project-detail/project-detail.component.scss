@@ -78,10 +78,11 @@
 .project-detail-hero__title {
   font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
   font-size: 42px;
-  line-height: 1.05;
+  line-height: 1.1;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0;
+  padding-bottom: 0.12em;
   color: var(--flowx-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
