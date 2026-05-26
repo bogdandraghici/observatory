@@ -384,37 +384,95 @@
     }
   }
 
-  // Dashboard widget chrome — when the .ai-page wrapper also carries
-  // .dashboard-page, every nested `.stat-card` (Angular widget root)
-  // lifts to the sub-card spec: 20px radius, drift-spec table chrome.
-  // The lift sits in the global theme so it pierces the widget
-  // components' view encapsulation without needing per-widget rules.
-  &.dashboard-page .stat-card,
-  &.dashboard-page .stat-card--stacked {
-    border-radius: var(--flowx-radius-20, 20px);
+  // Sub-card header row — pairs a `.card-title` on the left with
+  // an actions cluster on the right (Compute / Save / View All
+  // buttons, segmented controls, etc.). When `.card-title` lives
+  // inside `.card-head`, the title's own margin-bottom collapses
+  // because `.card-head` owns the 24px gap to the card body.
+  //
+  // Buttons inside the header are compact (32px tall, 13px label)
+  // so the row reads as a title with light-touch actions instead of
+  // a 40px CTA bar. Full-size CTAs belong in the card body or hero.
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    width: 100%;
+
+    > .card-title { margin-bottom: 0; }
+
+    &__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    // Compact buttons that DON'T inflate the row: same logical height
+    // (22px) as the title text, so `align-items: center` no longer
+    // pushes the title visually below the card's 24px top padding.
+    // Full-size CTAs belong in the card body or the hero band.
+    .p-button {
+      height: 22px;
+      min-height: 22px;
+      padding: 0 10px;
+      font-size: 12px;
+      line-height: 1;
+
+      .p-button-label { font-size: 12px; line-height: 1; }
+      .p-button-icon { font-size: 12px; }
+    }
   }
 
-  &.dashboard-page .p-datatable {
-    .p-datatable-thead > tr > th {
-      background: var(--flowx-surface-secondary);
-      font-size: 11px;
-      line-height: 1.2;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 700;
-      padding: 14px 20px;
+  // Redesigned page chrome — when the .ai-page wrapper carries one of
+  // the redesigned page modifiers (.dashboard-page, .roi-page,
+  // .risk-page, .registry-page), every nested `.stat-card` lifts to
+  // the sub-card spec: 20px radius, 24px uniform padding (design.md),
+  // zero flex gap (children manage their own spacing via .card-title
+  // / .card-head margins), and the drift-spec table chrome. Placing
+  // these rules globally lets them pierce Angular's emulated
+  // encapsulation so nested widget / component templates inherit the
+  // chrome without ::ng-deep hacks.
+  &.dashboard-page,
+  &.roi-page,
+  &.risk-page,
+  &.registry-page {
+    .stat-card,
+    .stat-card--stacked {
+      border-radius: var(--flowx-radius-20, 20px);
+      gap: 0;
+      padding: 24px;
     }
-    .p-datatable-tbody > tr {
-      cursor: default;
 
-      > td {
-        font-size: 14px;
+    .card-title { margin-bottom: 24px; }
+    .card-head { margin-bottom: 24px; }
+
+    .p-datatable {
+      .p-datatable-thead > tr > th {
+        background: var(--flowx-surface-secondary);
+        font-size: 11px;
         line-height: 1.2;
-        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
         padding: 14px 20px;
+        border-bottom: none;
       }
+      .p-datatable-tbody > tr {
+        cursor: default;
 
-      &:last-child > td { border-bottom: none; }
+        > td {
+          font-size: 14px;
+          line-height: 1.2;
+          font-weight: 600;
+          padding: 14px 20px;
+        }
+
+        &:last-child > td { border-bottom: none; }
+      }
     }
   }
 
@@ -439,31 +497,6 @@
     box-shadow: var(--flowx-shadow-xs);
     padding: var(--flowx-space-24);
   }
-
-  // ── Card head (in-card header bar — composes from card primitive) ──
-  .card-head {
-    padding: var(--flowx-space-24);
-    border-bottom: 1px solid var(--flowx-neutrals-100);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--flowx-space-12);
-
-    h3 {
-      margin: 0;
-      font-size: 14px;
-      line-height: 24px;
-      font-weight: 700;
-      color: var(--flowx-text-primary);
-    }
-
-    .meta {
-      font-size: 12px;
-      line-height: 16px;
-      color: var(--flowx-text-secondary);
-    }
-  }
-  .card-body { padding: 0; }
 
   // ── KPI card — borderless, eyebrow + big tabular value ──
   .kpi-card {
