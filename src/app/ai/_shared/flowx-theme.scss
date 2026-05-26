@@ -426,7 +426,8 @@
   &.roi-page,
   &.risk-page,
   &.registry-page,
-  &.analytics-page {
+  &.analytics-page,
+  &.rsi-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);

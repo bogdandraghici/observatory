@@ -1,6 +1,6 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
+<div class="ai-page rsi-page">
   <!-- A. Hero panel — title band (with action buttons) + 5-up filters band -->
   <section class="rsi-hero">
     <div class="rsi-hero__band">
@@ -39,257 +39,273 @@
     </div>
   </section>
 
-  <!-- Tabs -->
-  <div class="flex gap-2 mb-4 mt-4">
-    <p-button label="Overview" severity="primary" [outlined]="activeTab !== 'overview'" (click)="onTabChange('overview')" size="small"></p-button>
-    <p-button label="Timeline" severity="primary" [outlined]="activeTab !== 'timeline'" (click)="onTabChange('timeline')" size="small"></p-button>
-    <p-button label="Workflows" severity="primary" [outlined]="activeTab !== 'workflows'" (click)="onTabChange('workflows')" size="small"></p-button>
-    <p-button label="Versions" severity="primary" [outlined]="activeTab !== 'versions'" (click)="onTabChange('versions')" size="small"></p-button>
-  </div>
+  <!-- Tabs — flat underline navigation at the page level -->
+  <div class="rsi-tabs">
+    <p-tabs [(value)]="activeTab" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab value="overview">Overview</p-tab>
+        <p-tab value="timeline">Timeline</p-tab>
+        <p-tab value="workflows">Workflows</p-tab>
+        <p-tab value="versions">Versions</p-tab>
+      </p-tablist>
 
-  <!-- ═══ OVERVIEW TAB ═══ -->
-  @if (activeTab === 'overview' && overview) {
-    <div class="stat-cards-grid mb-4">
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-sync"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Cycles</span>
-          <span class="stat-card__value stat-card__value--lg">{{ overview.total_cycles }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-check-circle"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Promotions</span>
-          <span class="stat-card__value stat-card__value--lg">{{ overview.promotions }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-chart-line"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Avg Improvement</span>
-          <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.avg_improvement) }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--amber"><i class="pi pi-exclamation-triangle"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Active Canaries</span>
-          <span class="stat-card__value stat-card__value--lg">{{ overview.active_canaries }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-dollar"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Budget Spent</span>
-          <span class="stat-card__value stat-card__value--lg">${{ overview.total_budget_spent?.toFixed(2) }}</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-percentage"></i></div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Promotion Rate</span>
-          <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.promotion_rate) }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Status breakdown -->
-    @if (overview.cycles_by_status) {
-      <div class="flex gap-2 mb-4 flex-wrap">
-        <p-chip [label]="'Completed: ' + overview.cycles_by_status.completed" icon="pi pi-check" styleClass="bg-green-100 text-green-800"></p-chip>
-        <p-chip [label]="'Awaiting: ' + overview.cycles_by_status.awaiting_approval" icon="pi pi-clock" styleClass="bg-yellow-100 text-yellow-800"></p-chip>
-        <p-chip [label]="'Running: ' + overview.cycles_by_status.running" icon="pi pi-spin pi-spinner" styleClass="bg-blue-100 text-blue-800"></p-chip>
-        <p-chip [label]="'Failed: ' + overview.cycles_by_status.failed" icon="pi pi-times" styleClass="bg-red-100 text-red-800"></p-chip>
-      </div>
-    }
-
-    <!-- ═══ Mutation Candidate Comparison (latest completed cycle) ═══ -->
-    @if (candidateChartData && latestCycle) {
-      <div class="rsi-table-card mb-4">
-        <div class="card-head">
-          <div class="rsi-candidates-title">
-            <div class="card-title">
-              <i class="pi pi-chart-bar"></i>
-              Mutation Candidates — latest completed cycle
-            </div>
-            <span class="rsi-candidates-meta">
-              {{ latestCycle.trigger || '—' }} ·
-              {{ latestCycle.started_at | date:'MMM d, HH:mm' }} ·
-              {{ candidateChartRows.length }} candidates ·
-              <span style="color:var(--flowx-interactive);font-weight:600;">
-                ✓ {{ promotedCount }} promoted
-              </span>
-            </span>
-          </div>
-          <p-button label="View full cycle" icon="pi pi-arrow-right" iconPos="right"
-                    size="small" [outlined]="true" severity="primary"
-                    (click)="viewCycle(latestCycle.cycle_id)"></p-button>
-        </div>
-
-        <div style="height:480px;">
-          <p-chart type="bar"
-                   [data]="candidateChartData"
-                   [options]="candidateChartOptions"
-                   [plugins]="candidateChartPlugins"
-                   [style]="{ width: '100%', height: '100%' }"></p-chart>
-        </div>
-
-        <div class="flex gap-2 mt-3 flex-wrap" style="font-size:12px;color:var(--flowx-text-secondary);">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#006bd8;border-radius:2px;vertical-align:middle;margin-right:6px;"></span> promoted candidate (3px outline)</span>
-          <span style="margin-left:16px;">Δ values are percentage-point deltas vs the cycle's baseline.</span>
-        </div>
-      </div>
-    }
-  }
-
-  <!-- ═══ TIMELINE TAB ═══ -->
-  @if (activeTab === 'timeline') {
-    <div class="rsi-table-card">
-      <div class="card-title">
-        <i class="pi pi-history"></i>
-        Cycle Timeline
-      </div>
-      <p-table [value]="timeline" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true"
-               [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Status</th>
-            <th>Trigger</th>
-            <th>Mutations</th>
-            <th>Winner</th>
-            <th>Improvement</th>
-            <th>Budget</th>
-            <th>Duration</th>
-            <th>Started</th>
-            <th>Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-cycle>
-          <tr>
-            <td><p-tag [value]="cycle.status" [severity]="getStatusSeverity(cycle.status)"></p-tag></td>
-            <td>{{ cycle.trigger || '-' }}</td>
-            <td>{{ cycle.mutations_generated }}</td>
-            <td>{{ cycle.promotion?.winning_mutation_type || '-' }}</td>
-            <td>
-              @if (cycle.promotion?.improvement) {
-                <span class="text-green-600 font-semibold">+{{ formatPercent(cycle.promotion.improvement) }}</span>
-              } @else {
-                -
-              }
-            </td>
-            <td>${{ cycle.budget_spent?.toFixed(3) }}</td>
-            <td>{{ formatDuration(cycle.duration_seconds) }}</td>
-            <td>{{ cycle.started_at ? (cycle.started_at | date:'short') : '-' }}</td>
-            <td>
-              <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (click)="viewCycle(cycle.cycle_id)" pTooltip="View details"></p-button>
-              @if (cycle.status === 'AWAITING_APPROVAL') {
-                <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="promoteCycle(cycle.cycle_id)" pTooltip="Promote"></p-button>
-              }
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr><td colspan="9" class="text-center py-8" style="color:var(--text-color-secondary);">No AutoTune cycles found. Create a baseline and trigger a cycle to get started.</td></tr>
-        </ng-template>
-      </p-table>
-    </div>
-  }
-
-  <!-- ═══ WORKFLOWS TAB ═══ -->
-  @if (activeTab === 'workflows') {
-    <div class="rsi-table-card">
-      <div class="card-title">
-        <i class="pi pi-sitemap"></i>
-        Enrolled Workflows
-      </div>
-      <p-table [value]="enrolledWorkflows" styleClass="p-datatable-sm" [rowHover]="true">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Baseline Version</th>
-            <th>Total Cycles</th>
-            <th>Promotions</th>
-            <th>Latest Status</th>
-            <th>Last Cycle</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-wf>
-          <tr>
-            <td>v{{ wf.baseline_version }}</td>
-            <td>{{ wf.total_cycles }}</td>
-            <td>{{ wf.total_promotions }}</td>
-            <td>
-              @if (wf.latest_cycle_status) {
-                <p-tag [value]="wf.latest_cycle_status" [severity]="getStatusSeverity(wf.latest_cycle_status)"></p-tag>
-              } @else {
-                <span style="color:var(--text-color-secondary);">-</span>
-              }
-            </td>
-            <td>{{ wf.latest_cycle_at ? (wf.latest_cycle_at | date:'short') : 'Never' }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr><td colspan="5" class="text-center py-8" style="color:var(--text-color-secondary);">No workflows enrolled. Select an app and create a baseline to start.</td></tr>
-        </ng-template>
-      </p-table>
-    </div>
-  }
-
-  <!-- ═══ VERSIONS TAB ═══ -->
-  @if (activeTab === 'versions') {
-    <div class="rsi-table-card">
-      <div class="card-title">
-        <i class="pi pi-clock"></i>
-        Version History
-      </div>
-    <p-table [value]="versionHistory" styleClass="p-datatable-sm" [rowHover]="true">
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width:8%">Version</th>
-          <th style="width:12%">Source</th>
-          <th style="width:10%">Status</th>
-          <th style="width:30%">Mutation Info</th>
-          <th style="width:20%">Created</th>
-          <th style="width:10%">Created By</th>
-          <th style="width:10%">Actions</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-ver>
-        <tr>
-          <td class="font-bold">v{{ ver.version }}</td>
-          <td>
-            <p-tag [value]="ver.source || 'manual'" [severity]="getSourceSeverity(ver.source)" [rounded]="true"></p-tag>
-          </td>
-          <td>
-            @if (ver.is_current) {
-              <p-tag value="Current" severity="success"></p-tag>
-            }
-          </td>
-          <td>
-            @if (ver.mutation) {
-              <div>
-                <span class="text-sm font-medium">{{ ver.mutation.mutation_type }}</span>
-                <p class="text-xs mt-1" style="color:var(--text-color-secondary);">{{ ver.mutation.description }}</p>
+      <p-tabpanels>
+        <!-- ═══ OVERVIEW TAB ═══ -->
+        <p-tabpanel value="overview">
+          <div class="tab-stack">
+            @if (overview) {
+              <div class="stat-cards-grid">
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-sync"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Total Cycles</span>
+                    <span class="stat-card__value stat-card__value--lg">{{ overview.total_cycles }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-check-circle"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Promotions</span>
+                    <span class="stat-card__value stat-card__value--lg">{{ overview.promotions }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-chart-line"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Avg Improvement</span>
+                    <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.avg_improvement) }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--amber"><i class="pi pi-exclamation-triangle"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Active Canaries</span>
+                    <span class="stat-card__value stat-card__value--lg">{{ overview.active_canaries }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--blue"><i class="pi pi-dollar"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Budget Spent</span>
+                    <span class="stat-card__value stat-card__value--lg">${{ overview.total_budget_spent?.toFixed(2) }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card__icon stat-card__icon--green"><i class="pi pi-percentage"></i></div>
+                  <div class="stat-card__content">
+                    <span class="stat-card__label">Promotion Rate</span>
+                    <span class="stat-card__value stat-card__value--lg">{{ formatPercent(overview.promotion_rate) }}</span>
+                  </div>
+                </div>
               </div>
-            } @else {
-              <span style="color:var(--text-color-secondary);">-</span>
+
+              <!-- Status breakdown -->
+              @if (overview.cycles_by_status) {
+                <div class="flex gap-2 flex-wrap">
+                  <p-chip [label]="'Completed: ' + overview.cycles_by_status.completed" icon="pi pi-check" styleClass="bg-green-100 text-green-800"></p-chip>
+                  <p-chip [label]="'Awaiting: ' + overview.cycles_by_status.awaiting_approval" icon="pi pi-clock" styleClass="bg-yellow-100 text-yellow-800"></p-chip>
+                  <p-chip [label]="'Running: ' + overview.cycles_by_status.running" icon="pi pi-spin pi-spinner" styleClass="bg-blue-100 text-blue-800"></p-chip>
+                  <p-chip [label]="'Failed: ' + overview.cycles_by_status.failed" icon="pi pi-times" styleClass="bg-red-100 text-red-800"></p-chip>
+                </div>
+              }
+
+              <!-- ═══ Mutation Candidate Comparison (latest completed cycle) ═══ -->
+              @if (candidateChartData && latestCycle) {
+                <div class="rsi-table-card">
+                  <div class="card-head">
+                    <div class="rsi-candidates-title">
+                      <div class="card-title">
+                        <i class="pi pi-chart-bar"></i>
+                        Mutation Candidates — latest completed cycle
+                      </div>
+                      <span class="rsi-candidates-meta">
+                        {{ latestCycle.trigger || '—' }} ·
+                        {{ latestCycle.started_at | date:'MMM d, HH:mm' }} ·
+                        {{ candidateChartRows.length }} candidates ·
+                        <span style="color:var(--flowx-interactive);font-weight:600;">
+                          ✓ {{ promotedCount }} promoted
+                        </span>
+                      </span>
+                    </div>
+                    <p-button label="View full cycle" icon="pi pi-arrow-right" iconPos="right"
+                              size="small" [outlined]="true" severity="primary"
+                              (click)="viewCycle(latestCycle.cycle_id)"></p-button>
+                  </div>
+
+                  <div style="height:480px;">
+                    <p-chart type="bar"
+                             [data]="candidateChartData"
+                             [options]="candidateChartOptions"
+                             [plugins]="candidateChartPlugins"
+                             [style]="{ width: '100%', height: '100%' }"></p-chart>
+                  </div>
+
+                  <div class="flex gap-2 mt-3 flex-wrap" style="font-size:12px;color:var(--flowx-text-secondary);">
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#006bd8;border-radius:2px;vertical-align:middle;margin-right:6px;"></span> promoted candidate (3px outline)</span>
+                    <span style="margin-left:16px;">Δ values are percentage-point deltas vs the cycle's baseline.</span>
+                  </div>
+                </div>
+              }
             }
-          </td>
-          <td>{{ ver.created_at | date:'medium' }}</td>
-          <td class="text-xs">{{ ver.created_by?.email || '-' }}</td>
-          <td>
-            @if (!ver.is_current) {
-              <p-button icon="pi pi-history" [rounded]="true" [text]="true" severity="warn" (click)="restoreVersion(ver.version)" pTooltip="Restore this version"></p-button>
-            }
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr><td colspan="7" class="text-center py-8" style="color:var(--text-color-secondary);">No version history available. Create a baseline to start tracking versions.</td></tr>
-      </ng-template>
-    </p-table>
-    </div>
-  }
+          </div>
+        </p-tabpanel>
+
+        <!-- ═══ TIMELINE TAB ═══ -->
+        <p-tabpanel value="timeline">
+          <div class="tab-stack">
+            <div class="rsi-table-card">
+              <div class="card-title">
+                <i class="pi pi-history"></i>
+                Cycle Timeline
+              </div>
+              <p-table [value]="timeline" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true"
+                       [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Status</th>
+                    <th>Trigger</th>
+                    <th>Mutations</th>
+                    <th>Winner</th>
+                    <th>Improvement</th>
+                    <th>Budget</th>
+                    <th>Duration</th>
+                    <th>Started</th>
+                    <th>Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-cycle>
+                  <tr>
+                    <td><p-tag [value]="cycle.status" [severity]="getStatusSeverity(cycle.status)"></p-tag></td>
+                    <td>{{ cycle.trigger || '-' }}</td>
+                    <td>{{ cycle.mutations_generated }}</td>
+                    <td>{{ cycle.promotion?.winning_mutation_type || '-' }}</td>
+                    <td>
+                      @if (cycle.promotion?.improvement) {
+                        <span class="text-green-600 font-semibold">+{{ formatPercent(cycle.promotion.improvement) }}</span>
+                      } @else {
+                        -
+                      }
+                    </td>
+                    <td>${{ cycle.budget_spent?.toFixed(3) }}</td>
+                    <td>{{ formatDuration(cycle.duration_seconds) }}</td>
+                    <td>{{ cycle.started_at ? (cycle.started_at | date:'short') : '-' }}</td>
+                    <td>
+                      <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (click)="viewCycle(cycle.cycle_id)" pTooltip="View details"></p-button>
+                      @if (cycle.status === 'AWAITING_APPROVAL') {
+                        <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="promoteCycle(cycle.cycle_id)" pTooltip="Promote"></p-button>
+                      }
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="9" class="text-center py-8" style="color:var(--text-color-secondary);">No AutoTune cycles found. Create a baseline and trigger a cycle to get started.</td></tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- ═══ WORKFLOWS TAB ═══ -->
+        <p-tabpanel value="workflows">
+          <div class="tab-stack">
+            <div class="rsi-table-card">
+              <div class="card-title">
+                <i class="pi pi-sitemap"></i>
+                Enrolled Workflows
+              </div>
+              <p-table [value]="enrolledWorkflows" styleClass="p-datatable-sm" [rowHover]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Baseline Version</th>
+                    <th>Total Cycles</th>
+                    <th>Promotions</th>
+                    <th>Latest Status</th>
+                    <th>Last Cycle</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-wf>
+                  <tr>
+                    <td>v{{ wf.baseline_version }}</td>
+                    <td>{{ wf.total_cycles }}</td>
+                    <td>{{ wf.total_promotions }}</td>
+                    <td>
+                      @if (wf.latest_cycle_status) {
+                        <p-tag [value]="wf.latest_cycle_status" [severity]="getStatusSeverity(wf.latest_cycle_status)"></p-tag>
+                      } @else {
+                        <span style="color:var(--text-color-secondary);">-</span>
+                      }
+                    </td>
+                    <td>{{ wf.latest_cycle_at ? (wf.latest_cycle_at | date:'short') : 'Never' }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="5" class="text-center py-8" style="color:var(--text-color-secondary);">No workflows enrolled. Select an app and create a baseline to start.</td></tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- ═══ VERSIONS TAB ═══ -->
+        <p-tabpanel value="versions">
+          <div class="tab-stack">
+            <div class="rsi-table-card">
+              <div class="card-title">
+                <i class="pi pi-clock"></i>
+                Version History
+              </div>
+              <p-table [value]="versionHistory" styleClass="p-datatable-sm" [rowHover]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width:8%">Version</th>
+                    <th style="width:12%">Source</th>
+                    <th style="width:10%">Status</th>
+                    <th style="width:30%">Mutation Info</th>
+                    <th style="width:20%">Created</th>
+                    <th style="width:10%">Created By</th>
+                    <th style="width:10%">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-ver>
+                  <tr>
+                    <td class="font-bold">v{{ ver.version }}</td>
+                    <td>
+                      <p-tag [value]="ver.source || 'manual'" [severity]="getSourceSeverity(ver.source)" [rounded]="true"></p-tag>
+                    </td>
+                    <td>
+                      @if (ver.is_current) {
+                        <p-tag value="Current" severity="success"></p-tag>
+                      }
+                    </td>
+                    <td>
+                      @if (ver.mutation) {
+                        <div>
+                          <span class="text-sm font-medium">{{ ver.mutation.mutation_type }}</span>
+                          <p class="text-xs mt-1" style="color:var(--text-color-secondary);">{{ ver.mutation.description }}</p>
+                        </div>
+                      } @else {
+                        <span style="color:var(--text-color-secondary);">-</span>
+                      }
+                    </td>
+                    <td>{{ ver.created_at | date:'medium' }}</td>
+                    <td class="text-xs">{{ ver.created_by?.email || '-' }}</td>
+                    <td>
+                      @if (!ver.is_current) {
+                        <p-button icon="pi pi-history" [rounded]="true" [text]="true" severity="warn" (click)="restoreVersion(ver.version)" pTooltip="Restore this version"></p-button>
+                      }
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="7" class="text-center py-8" style="color:var(--text-color-secondary);">No version history available. Create a baseline to start tracking versions.</td></tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>
 
 <!-- ═══ CYCLE DETAIL DIALOG ═══ -->
