@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-policies',
   templateUrl: './policies.component.html',
+  styleUrls: ['./policies.component.scss'],
   providers: [MessageService],
   standalone: false,
 })
