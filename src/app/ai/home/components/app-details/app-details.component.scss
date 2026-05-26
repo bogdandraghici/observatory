@@ -110,10 +110,28 @@
   display: flex;
   align-items: center;
   gap: 8px;
+
+  // Both action buttons share one row as equal-size rounded squares,
+  // matching the card's other icon buttons (32px, 8px radius).
+  ::ng-deep .p-button {
+    flex: none;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    &::after { display: none !important; }
+    .p-button-label { display: none !important; }
+  }
 }
 
 .project-card__edit-input {
-  flex: 1;
+  flex: 0 1 240px;
+  max-width: 100%;
   font-size: 14px;
 }
 
