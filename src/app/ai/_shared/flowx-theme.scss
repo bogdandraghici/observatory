@@ -389,10 +389,8 @@
   // buttons, segmented controls, etc.). When `.card-title` lives
   // inside `.card-head`, the title's own margin-bottom collapses
   // because `.card-head` owns the 24px gap to the card body.
-  //
-  // Buttons inside the header are compact (32px tall, 13px label)
-  // so the row reads as a title with light-touch actions instead of
-  // a 40px CTA bar. Full-size CTAs belong in the card body or hero.
+  // Buttons inside inherit the default FlowX `.p-button` chrome
+  // (matches "Run Evaluation" on Agent Evaluations).
   .card-head {
     display: flex;
     align-items: center;
@@ -409,21 +407,6 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-    }
-
-    // Compact buttons that DON'T inflate the row: same logical height
-    // (22px) as the title text, so `align-items: center` no longer
-    // pushes the title visually below the card's 24px top padding.
-    // Full-size CTAs belong in the card body or the hero band.
-    .p-button {
-      height: 22px;
-      min-height: 22px;
-      padding: 0 10px;
-      font-size: 12px;
-      line-height: 1;
-
-      .p-button-label { font-size: 12px; line-height: 1; }
-      .p-button-icon { font-size: 12px; }
     }
   }
 
