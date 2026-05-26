@@ -496,11 +496,12 @@ export class RsiComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onTabChange(tab: string) {
-    this.activeTab = tab
-    if (tab === 'timeline') { await this.loadTimeline() }
-    if (tab === 'workflows') { await this.loadEnrolledWorkflows() }
-    if (tab === 'versions') { await this.loadVersionHistory() }
+  async onTabChange(tab: string | number) {
+    const value = String(tab)
+    this.activeTab = value
+    if (value === 'timeline') { await this.loadTimeline() }
+    if (value === 'workflows') { await this.loadEnrolledWorkflows() }
+    if (value === 'versions') { await this.loadVersionHistory() }
   }
 
   // ── Cycle operations ──────────────────────────────────────────────

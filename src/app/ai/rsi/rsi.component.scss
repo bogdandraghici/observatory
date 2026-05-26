@@ -184,6 +184,69 @@
   background: tokens.$table-header-bg;
 }
 
+// ── Tabs — flat underline navigation at the page level ──────
+// Mirrors the ROI / insights-dashboard `.trends-section` p-tabs
+// treatment. Scoped to .rsi-page so the styling doesn't leak to
+// other pages' p-tabs instances.
+.rsi-tabs {
+  margin-top: var(--flowx-space-16, 16px);
+  margin-bottom: 0;
+}
+
+::ng-deep .rsi-page .rsi-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  // Tab body — pad the top so the first sub-card sits 32px below
+  // the underline rule. Inner panels carry no padding.
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+// ── Tab content stack — vertical flex with 32px gap, matches
+// the spec spacing rhythm between sub-card sections.
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
 // ── Dark mode ────────────────────────────────────────────────
 :host-context(.flowx-dark) {
   .rsi-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
@@ -193,5 +256,16 @@
       radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
       radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
     border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .rsi-page .rsi-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
   }
 }
