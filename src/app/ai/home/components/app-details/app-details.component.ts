@@ -33,6 +33,20 @@ export class AppDetailsComponent {
     private clipboard: Clipboard
   ) {}
 
+  private originalName = ''
+
+  onEditActivate(): void {
+    this.originalName = this.app?.name ?? ''
+  }
+
+  cancelEdit(inplace: any): void {
+    if (this.app) {
+      this.app.name = this.originalName
+    }
+    this.activeProjectEdit = false
+    inplace.deactivate()
+  }
+
   async saveItem(event: any, inplace: any, item: any): Promise<any> {
     const updatedApp = await this.appService.updateApp(item)
     if (updatedApp) {

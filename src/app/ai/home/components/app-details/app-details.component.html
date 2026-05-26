@@ -8,8 +8,9 @@
       <div class="project-card__title-section">
         <p-inplace
           #projectName
-          [closable]="true"
+          [closable]="false"
           [active]="activeProjectEdit"
+          (onActivate)="onEditActivate()"
           pTooltip="Click to edit project name"
         >
           <ng-template pTemplate="display">
@@ -30,9 +31,16 @@
               <p-button
                 icon="pi pi-check"
                 (onClick)="saveItem($event, projectName, app)"
-                [rounded]="true"
                 severity="success"
                 size="small"
+                pTooltip="Save"
+              ></p-button>
+              <p-button
+                icon="pi pi-times"
+                (onClick)="cancelEdit(projectName)"
+                severity="danger"
+                size="small"
+                pTooltip="Discard"
               ></p-button>
             </div>
           </ng-template>
