@@ -7,6 +7,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './audit-trail.component.html',
+    styleUrls: ['./audit-trail.component.scss'],
     standalone: false
 })
 export class AuditTrailComponent implements OnInit {
@@ -102,10 +103,10 @@ export class AuditTrailComponent implements OnInit {
     this.detailDialogVisible = true
   }
 
-  getActionSeverity(action: string): string {
+  getActionTone(action: string): string {
     if (action?.includes('deleted')) {return 'danger'}
     if (action?.includes('created')) {return 'success'}
     if (action?.includes('updated')) {return 'info'}
-    return 'secondary'
+    return 'neutral'
   }
 }

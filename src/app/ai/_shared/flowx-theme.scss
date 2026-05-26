@@ -435,7 +435,9 @@
   &.experiments-page,
   &.platform-page,
   &.prompts-page,
-  &.datasets-page {
+  &.datasets-page,
+  &.audit-page,
+  &.settings-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);
