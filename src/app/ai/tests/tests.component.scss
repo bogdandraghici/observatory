@@ -1,25 +1,113 @@
 @use '../_shared/ai-design-tokens' as tokens;
 
-// Reuse eval-card / card-title from insights (global styles or re-declare)
-.eval-card {
-  @include tokens.card-base;
-  padding: 1.5rem;
+// ── A. Hero panel ────────────────────────────────────────────
+// Mirrors the Insights / Drift / Dashboard hero pattern.
+.tests-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
 }
 
-.card-title {
-  display: flex;
+.tests-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 1.25rem;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
 
-  i {
-    font-size: 1.125rem;
-    color: var(--text-color-secondary);
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
   }
 }
+
+.tests-hero__text { min-width: 0; }
+
+.tests-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.tests-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 720px;
+}
+
+.tests-hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-self: end;
+
+  @media (max-width: 768px) { justify-self: stretch; }
+}
+
+// Filters band — up to 5 selects depending on whether a dataset is
+// selected. The 5-column grid degrades to 3/2/1 columns on narrower
+// viewports.
+.tests-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 20px 24px;
+  }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── B. Sub-card chrome ──────────────────────────────────────
+// Bump to radius-20 + 24px uniform padding so the Test Cases / Test
+// Runs / empty-state wrappers match the sub-card spec from design.md.
+.eval-card {
+  @include tokens.card-base;
+  padding: 24px;
+  border-radius: var(--flowx-radius-20, 20px);
+}
+
+// `.card-title` is provided globally by flowx-theme.scss (16/1.2/700,
+// 18px secondary-color icon, 8px gap, 24px margin-bottom). The
+// previous per-page redefinition (0.9375rem/600/0.5rem) is removed so
+// the global primitive wins.
 
 .eval-empty {
   display: flex;
@@ -138,4 +226,16 @@
 // Table styling
 :host {
   @include tokens.table-modern;
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .tests-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .tests-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
 }
