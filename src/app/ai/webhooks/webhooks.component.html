@@ -1,17 +1,16 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Webhooks</h1>
-      <p class="page-header__subtitle">Configure webhook integrations for event notifications</p>
+<div class="ai-page webhooks-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="webhooks-hero">
+    <div class="webhooks-hero__band">
+      <div class="webhooks-hero__text">
+        <h1 class="webhooks-hero__title">Webhooks</h1>
+        <p class="webhooks-hero__subtitle">Forward events to Slack, Teams, or any HTTPS endpoint.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="webhooks-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -21,23 +20,22 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged($event)"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Webhooks Table -->
-  <div class="stat-card stat-card--stacked">
-    <div class="flex items-center justify-between mb-3 w-full">
-      <div class="flex items-center gap-2">
-        <div class="stat-card__icon">
-          <i class="pi pi-link"></i>
-        </div>
-        <span class="stat-card__title">Webhooks</span>
+  <!-- B. Webhooks card -->
+  <div class="webhooks-card stat-card stat-card--stacked">
+    <div class="card-head">
+      <div class="card-title">
+        <i class="pi pi-link"></i>
+        Webhooks
       </div>
       <p-button label="Create Webhook" icon="pi pi-plus" (click)="showCreateWebhook()"></p-button>
     </div>
-    <p-table [value]="webhooks" styleClass="p-datatable-sm">
+    <p-table [value]="webhooks">
       <ng-template pTemplate="header">
         <tr>
           <th>Name</th>
@@ -45,34 +43,52 @@
           <th>URL</th>
           <th>Events</th>
           <th>Status</th>
-          <th style="width: 14rem">Actions</th>
+          <th style="width: 12rem"></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-hook>
         <tr>
-          <td class="font-semibold">{{ hook.name }}</td>
+          <td class="webhooks-cell-strong">{{ hook.name }}</td>
           <td>
             @if (hook.webhook_type === 'slack') {
-              <p-tag value="Slack" severity="info" icon="pi pi-slack"></p-tag>
+              <span class="webhooks-type webhooks-type--slack">
+                <i class="pi pi-slack"></i>
+                Slack
+              </span>
             } @else if (hook.webhook_type === 'teams') {
-              <p-tag value="Teams" severity="contrast" icon="pi pi-microsoft"></p-tag>
+              <span class="webhooks-type webhooks-type--teams">
+                <i class="pi pi-microsoft"></i>
+                Teams
+              </span>
             } @else {
-              <p-tag value="Generic" severity="secondary"></p-tag>
+              <span class="webhooks-type webhooks-type--generic">
+                <i class="pi pi-globe"></i>
+                Generic
+              </span>
             }
           </td>
-          <td class="text-ellipsis overflow-hidden" style="max-width: 18rem">{{ hook.url }}</td>
+          <td class="webhooks-cell-url">{{ hook.url }}</td>
           <td>
-            <div class="flex gap-1 flex-wrap">
+            <div class="webhooks-events">
               @for (ev of hook.events; track ev) {
-                <p-tag [value]="ev" severity="secondary" [style]="{'font-size': '0.75rem'}"></p-tag>
+                <span class="webhooks-event-chip">{{ ev }}</span>
+              }
+              @if (!hook.events?.length) {
+                <span class="webhooks-cell-meta">—</span>
               }
             </div>
           </td>
           <td>
             @if (hook.is_active) {
-              <p-tag value="Active" severity="success"></p-tag>
+              <span class="webhooks-status webhooks-status--active">
+                <span class="webhooks-status__dot"></span>
+                Active
+              </span>
             } @else {
-              <p-tag value="Inactive" severity="warn"></p-tag>
+              <span class="webhooks-status webhooks-status--inactive">
+                <span class="webhooks-status__dot"></span>
+                Inactive
+              </span>
             }
           </td>
           <td>
@@ -87,7 +103,12 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center p-6">No webhooks configured.</td>
+          <td colspan="6">
+            <div class="table-empty">
+              <i class="pi pi-link"></i>
+              <span>No webhooks configured. Create one to forward events to an external endpoint.</span>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>
@@ -135,10 +156,10 @@
       <input type="text" pInputText pSize="small" [(ngModel)]="webhookForm.url"
         [placeholder]="webhookForm.webhook_type === 'slack' ? 'https://hooks.slack.com/services/...' : webhookForm.webhook_type === 'teams' ? 'https://outlook.office.com/webhook/...' : 'https://...'" />
       @if (webhookForm.webhook_type === 'slack') {
-        <small class="text-color-secondary">Create an Incoming Webhook in your Slack workspace settings</small>
+        <small class="webhooks-form-hint">Create an Incoming Webhook in your Slack workspace settings</small>
       }
       @if (webhookForm.webhook_type === 'teams') {
-        <small class="text-color-secondary">Create an Incoming Webhook connector in your Teams channel</small>
+        <small class="webhooks-form-hint">Create an Incoming Webhook connector in your Teams channel</small>
       }
     </div>
 
@@ -160,9 +181,9 @@
       ></p-multiselect>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="webhooks-form-toggle">
       <p-toggleswitch [(ngModel)]="webhookForm.is_active"></p-toggleswitch>
-      <span class="flowx-modal__field-label">Active</span>
+      <span class="webhooks-form-toggle__label">Active</span>
     </div>
   </div>
 
@@ -175,8 +196,25 @@
 </p-dialog>
 
 <!-- Delivery History Dialog -->
-<p-dialog [(visible)]="deliveryDialogVisible" [header]="'Deliveries: ' + deliveryWebhookName" [modal]="true" [style]="{width: '42rem'}" [maximizable]="true">
-  <p-table [value]="deliveries" styleClass="p-datatable-sm" [scrollable]="true" scrollHeight="400px">
+<p-dialog
+  [(visible)]="deliveryDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--l"
+  [style]="{width: '720px'}"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">Delivery history</h2>
+      <p class="flowx-modal__subtitle">{{ deliveryWebhookName }}</p>
+    </div>
+  </ng-template>
+
+  <p-table [value]="deliveries" [scrollable]="true" scrollHeight="400px">
     <ng-template pTemplate="header">
       <tr>
         <th>Timestamp</th>
@@ -187,21 +225,32 @@
     </ng-template>
     <ng-template pTemplate="body" let-d>
       <tr>
-        <td>{{ d.created_at | date:'short' }}</td>
+        <td class="webhooks-cell-meta">{{ d.created_at | date:'short' }}</td>
         <td>{{ d.event }}</td>
-        <td>{{ d.response_status || '-' }}</td>
+        <td class="webhooks-cell-mono">{{ d.response_status || '—' }}</td>
         <td>
           @if (d.success) {
-            <p-tag value="OK" severity="success"></p-tag>
+            <span class="webhooks-status webhooks-status--active">
+              <span class="webhooks-status__dot"></span>
+              OK
+            </span>
           } @else {
-            <p-tag value="Failed" severity="danger"></p-tag>
+            <span class="webhooks-status webhooks-status--failed">
+              <span class="webhooks-status__dot"></span>
+              Failed
+            </span>
           }
         </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="4" class="text-center p-6">No deliveries yet.</td>
+        <td colspan="4">
+          <div class="table-empty">
+            <i class="pi pi-history"></i>
+            <span>No deliveries yet.</span>
+          </div>
+        </td>
       </tr>
     </ng-template>
   </p-table>

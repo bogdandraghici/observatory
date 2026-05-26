@@ -1,0 +1,301 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+:host { display: block; }
+
+// ── A. Hero panel ────────────────────────────────────────────
+.webhooks-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.webhooks-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.webhooks-hero__text { min-width: 0; }
+
+.webhooks-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.webhooks-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+}
+
+// Single-filter band — left aligned.
+.webhooks-hero__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) { padding: 20px 24px; }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 240px;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  ::ng-deep .p-select { width: 100%; }
+}
+
+// ── B. Cells ─────────────────────────────────────────────────
+.webhooks-cell-strong {
+  font-weight: 700 !important;
+  color: var(--flowx-text-primary) !important;
+}
+
+.webhooks-cell-meta {
+  color: var(--flowx-text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+.webhooks-cell-url {
+  font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--flowx-text-secondary) !important;
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.webhooks-cell-mono {
+  font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+// ── Type chip (Slack / Teams / Generic) ──────────────────────
+.webhooks-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  i { font-size: 12px; }
+
+  &--slack {
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-600);
+    border-color: var(--flowx-blue-100, rgba(0, 107, 216, 0.20));
+  }
+
+  &--teams {
+    background: rgba(79, 70, 229, 0.10);
+    color: rgb(79, 70, 229);
+    border-color: rgba(79, 70, 229, 0.25);
+  }
+
+  &--generic {
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-text-secondary);
+    border-color: var(--flowx-neutrals-100);
+  }
+}
+
+// ── Event chips ──────────────────────────────────────────────
+.webhooks-events {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 22rem;
+}
+
+.webhooks-event-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--flowx-text-secondary);
+  white-space: nowrap;
+}
+
+// ── Status pill (Active / Inactive / OK / Failed) ────────────
+.webhooks-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.webhooks-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.webhooks-status--active {
+  background: var(--flowx-green-50);
+  color: var(--flowx-green-600);
+  border-color: var(--flowx-green-100, rgba(0, 128, 96, 0.20));
+}
+
+.webhooks-status--inactive {
+  background: var(--flowx-neutrals-50);
+  color: var(--flowx-text-secondary);
+  border-color: var(--flowx-neutrals-100);
+}
+
+.webhooks-status--failed {
+  background: var(--flowx-red-50);
+  color: var(--flowx-red-600);
+  border-color: var(--flowx-red-100, rgba(230, 34, 0, 0.20));
+}
+
+// ── Form bits (inside the create/edit dialog) ────────────────
+.webhooks-form-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--flowx-text-secondary);
+}
+
+.webhooks-form-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.webhooks-form-toggle__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--flowx-text-primary);
+}
+
+// ── Empty state ──────────────────────────────────────────────
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 2.5rem 1rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 28px;
+    color: var(--flowx-neutrals-300, var(--flowx-text-secondary));
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .webhooks-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .webhooks-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .webhooks-type--slack {
+    background: rgba(51, 137, 224, 0.20);
+    color: var(--flowx-blue-300, #549ce5);
+    border-color: rgba(51, 137, 224, 0.35);
+  }
+
+  .webhooks-type--teams {
+    background: rgba(129, 140, 248, 0.20);
+    color: rgb(165, 180, 252);
+    border-color: rgba(129, 140, 248, 0.35);
+  }
+
+  .webhooks-type--generic {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+
+  .webhooks-event-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .webhooks-status--active {
+    background: rgba(0, 128, 96, 0.22);
+    color: var(--flowx-green-300, #4ec5a8);
+    border-color: rgba(0, 128, 96, 0.35);
+  }
+
+  .webhooks-status--inactive {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+
+  .webhooks-status--failed {
+    background: rgba(230, 34, 0, 0.20);
+    color: var(--flowx-red-300, #f08272);
+    border-color: rgba(230, 34, 0, 0.35);
+  }
+
+  .table-empty i { color: rgba(255, 255, 255, 0.35); }
+}

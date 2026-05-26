@@ -1,17 +1,16 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Access Control</h1>
-      <p class="page-header__subtitle">Manage members, roles, and permissions</p>
+<div class="ai-page access-control-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="access-control-hero">
+    <div class="access-control-hero__band">
+      <div class="access-control-hero__text">
+        <h1 class="access-control-hero__title">Access Control</h1>
+        <p class="access-control-hero__subtitle">Manage members, roles, and the permissions that gate them.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="access-control-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -21,142 +20,159 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged($event)"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
+  </section>
+
+  <!-- B. Tabs -->
+  <div class="access-control-tabs">
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Members</p-tab>
+        <p-tab value="1">Roles</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- Members Tab -->
+        <p-tabpanel value="0">
+          <div class="tab-stack">
+            <div class="access-control-card stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-users"></i>
+                  Members
+                </div>
+                <p-button label="Add Member" icon="pi pi-plus" (click)="showInviteDialog()"></p-button>
+              </div>
+              <p-table [value]="members">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th style="width: 6rem"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-member>
+                  <tr>
+                    <td class="access-control-cell-mono">{{ member.user_id }}</td>
+                    <td>{{ member.user_email || '—' }}</td>
+                    <td>
+                      <p-select
+                        [options]="roles"
+                        [ngModel]="member.role_id"
+                        optionLabel="name"
+                        optionValue="id"
+                        (onChange)="changeMemberRole(member, $event.value)"
+                        appendTo="body"
+                        [style]="{'min-width': '10rem'}"
+                      ></p-select>
+                    </td>
+                    <td class="access-control-cell-meta">{{ member.created_at | date:'shortDate' }}</td>
+                    <td>
+                      <p-button
+                        icon="pi pi-trash"
+                        [rounded]="true"
+                        [text]="true"
+                        severity="danger"
+                        pTooltip="Remove"
+                        tooltipPosition="top"
+                        (click)="removeMember(member)"
+                      ></p-button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="5">
+                      <div class="table-empty">
+                        <i class="pi pi-users"></i>
+                        <span>No members yet. Invite teammates to grant them access.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- Roles Tab -->
+        <p-tabpanel value="1">
+          <div class="tab-stack">
+            <div class="access-control-card stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-shield"></i>
+                  Roles
+                </div>
+                <p-button label="Create Role" icon="pi pi-plus" (click)="showCreateRole()"></p-button>
+              </div>
+              <p-table [value]="roles">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Permissions</th>
+                    <th>System</th>
+                    <th style="width: 8rem"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-role>
+                  <tr>
+                    <td class="access-control-cell-strong">{{ role.name }}</td>
+                    <td class="access-control-cell-meta">{{ role.permissions?.length || 0 }} permission{{ role.permissions?.length === 1 ? '' : 's' }}</td>
+                    <td>
+                      @if (role.is_system) {
+                        <span class="access-control-pill access-control-pill--info">System</span>
+                      } @else {
+                        <span class="access-control-cell-meta">—</span>
+                      }
+                    </td>
+                    <td>
+                      <div class="flex gap-1">
+                        <p-button
+                          icon="pi pi-pencil"
+                          [rounded]="true"
+                          [text]="true"
+                          severity="secondary"
+                          pTooltip="Edit"
+                          tooltipPosition="top"
+                          (click)="editRole(role)"
+                          [disabled]="role.is_system"
+                        ></p-button>
+                        <p-button
+                          icon="pi pi-trash"
+                          [rounded]="true"
+                          [text]="true"
+                          severity="danger"
+                          pTooltip="Delete"
+                          tooltipPosition="top"
+                          (click)="deleteRole(role)"
+                          [disabled]="role.is_system"
+                        ></p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4">
+                      <div class="table-empty">
+                        <i class="pi pi-shield"></i>
+                        <span>No roles yet. Create one to start granting permissions.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   </div>
-
-  <p-tabs value="0">
-    <p-tablist>
-      <p-tab value="0">Members</p-tab>
-      <p-tab value="1">Roles</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <!-- Members Tab -->
-      <p-tabpanel value="0">
-        <div class="stat-card stat-card--stacked">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-users"></i>
-              </div>
-              <span class="stat-card__title">Members</span>
-            </div>
-            <p-button label="Add Member" icon="pi pi-plus" (click)="showInviteDialog()"></p-button>
-          </div>
-          <p-table [value]="members" styleClass="p-datatable-sm">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>User ID</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th style="width: 8rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-member>
-              <tr>
-                <td>{{ member.user_id }}</td>
-                <td>{{ member.user_email || '-' }}</td>
-                <td>
-                  <p-select
-                    [options]="roles"
-                    [ngModel]="member.role_id"
-                    optionLabel="name"
-                    optionValue="id"
-                    (onChange)="changeMemberRole(member, $event.value)"
-                    [style]="{'min-width': '8rem'}"
-                  ></p-select>
-                </td>
-                <td>{{ member.created_at | date:'shortDate' }}</td>
-                <td>
-                  <p-button
-                    icon="pi pi-trash"
-                    [rounded]="true"
-                    [text]="true"
-                    severity="danger"
-                    pTooltip="Remove"
-                    tooltipPosition="top"
-                    (click)="removeMember(member)"
-                  ></p-button>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="5" class="text-center p-6">No members found.</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-
-      <!-- Roles Tab -->
-      <p-tabpanel value="1">
-        <div class="stat-card stat-card--stacked">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-shield"></i>
-              </div>
-              <span class="stat-card__title">Roles</span>
-            </div>
-            <p-button label="Create Role" icon="pi pi-plus" (click)="showCreateRole()"></p-button>
-          </div>
-          <p-table [value]="roles" styleClass="p-datatable-sm">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Name</th>
-                <th>Permissions</th>
-                <th>System</th>
-                <th style="width: 10rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-role>
-              <tr>
-                <td class="font-semibold">{{ role.name }}</td>
-                <td>{{ role.permissions?.length || 0 }} permissions</td>
-                <td>
-                  @if (role.is_system) {
-                    <p-tag value="System" severity="info"></p-tag>
-                  }
-                </td>
-                <td>
-                  <div class="flex gap-1">
-                    <p-button
-                      icon="pi pi-pencil"
-                      [rounded]="true"
-                      [text]="true"
-                      severity="secondary"
-                      pTooltip="Edit"
-                      tooltipPosition="top"
-                      (click)="editRole(role)"
-                      [disabled]="role.is_system"
-                    ></p-button>
-                    <p-button
-                      icon="pi pi-trash"
-                      [rounded]="true"
-                      [text]="true"
-                      severity="danger"
-                      pTooltip="Delete"
-                      tooltipPosition="top"
-                      (click)="deleteRole(role)"
-                      [disabled]="role.is_system"
-                    ></p-button>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="4" class="text-center p-6">No roles found.</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
 </div>
 
 <!-- Invite Member Dialog -->
@@ -209,30 +225,49 @@
 </p-dialog>
 
 <!-- Role Edit Dialog -->
-<p-dialog [(visible)]="roleDialogVisible" [header]="editingRole ? 'Edit Role' : 'New Role'" [modal]="true" [style]="{width: '36rem'}">
-  <div class="flex flex-col gap-4 pt-2">
-    <div>
-      <label class="font-semibold block mb-1">Role Name</label>
-      <input type="text" pInputText [(ngModel)]="newRole.name" class="w-full" [disabled]="editingRole?.is_system" />
+<p-dialog
+  [(visible)]="roleDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="flowx-modal flowx-modal--s"
+  [style]="{width: '600px'}"
+>
+  <ng-template pTemplate="header">
+    <div class="flowx-modal__header-stack">
+      <h2 class="flowx-modal__title">{{ editingRole ? 'Edit Role' : 'New Role' }}</h2>
+      <p class="flowx-modal__subtitle">Choose which permissions members of this role can use</p>
     </div>
-    <div>
-      <label class="font-semibold block mb-2">Permissions</label>
-      <div class="flex flex-col gap-2">
+  </ng-template>
+
+  <div class="flowx-modal__body">
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Role Name</span>
+      <input type="text" pInputText pSize="small" [(ngModel)]="newRole.name" [disabled]="editingRole?.is_system" />
+    </div>
+    <div class="flowx-modal__field">
+      <span class="flowx-modal__field-label">Permissions</span>
+      <div class="access-control-permissions">
         @for (perm of allPermissions; track perm) {
-          <div class="flex items-center gap-2">
+          <label class="access-control-permissions__item">
             <p-checkbox
               [binary]="true"
               [ngModel]="hasPermission(perm)"
               (onChange)="togglePermission(perm)"
             ></p-checkbox>
-            <span class="text-sm">{{ perm }}</span>
-          </div>
+            <span>{{ perm }}</span>
+          </label>
         }
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" severity="secondary" (click)="roleDialogVisible = false"></p-button>
-    <p-button label="Save" icon="pi pi-check" (click)="saveRole()"></p-button>
+    <div class="flowx-modal__footer-actions">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="roleDialogVisible = false"></p-button>
+      <p-button label="Save" (click)="saveRole()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>

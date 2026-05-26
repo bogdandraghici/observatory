@@ -438,7 +438,9 @@
   &.datasets-page,
   &.audit-page,
   &.settings-page,
-  &.users-page {
+  &.users-page,
+  &.access-control-page,
+  &.webhooks-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);
