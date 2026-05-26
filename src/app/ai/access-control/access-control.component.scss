@@ -1,0 +1,256 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+:host { display: block; }
+
+// ── A. Hero panel ────────────────────────────────────────────
+.access-control-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.access-control-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.access-control-hero__text { min-width: 0; }
+
+.access-control-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.access-control-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+}
+
+// Filters band — only one filter (Org), kept left-aligned with a
+// fixed width so it doesn't stretch across the whole band.
+.access-control-hero__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) { padding: 20px 24px; }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 240px;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  ::ng-deep .p-select { width: 100%; }
+}
+
+// ── B. Tabs — flat underline navigation at the page level ────
+.access-control-tabs { margin-top: 0; margin-bottom: 0; }
+
+::ng-deep .access-control-page .access-control-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
+// ── C. Table cell helpers ────────────────────────────────────
+.access-control-cell-mono {
+  font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--flowx-text-secondary) !important;
+}
+
+.access-control-cell-strong {
+  font-weight: 700 !important;
+  color: var(--flowx-text-primary) !important;
+}
+
+.access-control-cell-meta {
+  color: var(--flowx-text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+// ── Pill chip ────────────────────────────────────────────────
+.access-control-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  &--info {
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-600);
+    border-color: var(--flowx-blue-100, rgba(0, 107, 216, 0.20));
+  }
+}
+
+// ── Permissions checklist (in dialog) ────────────────────────
+.access-control-permissions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.access-control-permissions__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--flowx-text-primary);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+
+  &:hover { border-color: var(--flowx-neutrals-200); }
+}
+
+// ── Empty state ──────────────────────────────────────────────
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 2.5rem 1rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 28px;
+    color: var(--flowx-neutrals-300, var(--flowx-text-secondary));
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .access-control-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .access-control-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .access-control-pill--info {
+    background: rgba(51, 137, 224, 0.20);
+    color: var(--flowx-blue-300, #549ce5);
+    border-color: rgba(51, 137, 224, 0.35);
+  }
+
+  .access-control-permissions__item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+
+    &:hover { border-color: rgba(255, 255, 255, 0.16); }
+  }
+
+  .table-empty i { color: rgba(255, 255, 255, 0.35); }
+}
+
+:host-context(.flowx-dark) ::ng-deep .access-control-page .access-control-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
+  }
+}

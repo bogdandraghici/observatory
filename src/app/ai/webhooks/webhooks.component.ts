@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './webhooks.component.html',
+    styleUrls: ['./webhooks.component.scss'],
     providers: [MessageService],
     standalone: false
 })

@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './access-control.component.html',
+    styleUrls: ['./access-control.component.scss'],
     providers: [MessageService],
     standalone: false
 })
