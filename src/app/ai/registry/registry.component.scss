@@ -18,9 +18,6 @@
 .registry-hero__band {
   position: relative;
   padding: 36px 40px 32px;
-  background:
-    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
-    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
   border-bottom: 1px solid var(--flowx-neutrals-100);
 
   @media (max-width: 768px) {
