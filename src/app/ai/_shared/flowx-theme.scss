@@ -440,7 +440,8 @@
   &.settings-page,
   &.users-page,
   &.access-control-page,
-  &.webhooks-page {
+  &.webhooks-page,
+  &.project-detail-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);

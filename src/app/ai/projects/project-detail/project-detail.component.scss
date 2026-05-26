@@ -1,0 +1,628 @@
+/* ============================================================
+ * Project Detail — Hero panel + KPI strip + tabs
+ *
+ * Follows design.md > hero-panel system. The page is a detail
+ * view (back nav, name, description, period scope) followed by
+ * 6 KPI tiles and four tabs (Overview / Executions / Agents /
+ * Evaluators). Modeled after the canonical four — hero from
+ * insights / risk, KPI tiles from risk, tabs from policies.
+ * ============================================================ */
+
+.project-detail-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.project-detail-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.project-detail-hero__text {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Back button — circular ghost on the soft gradient. Lives next to
+ * the title so the navigation cue is anchored against the h1 instead
+ * of floating up against the topbar. */
+.project-detail-hero__back {
+  flex-shrink: 0;
+  margin-top: 4px;
+
+  ::ng-deep .p-button {
+    width: 36px;
+    height: 36px;
+    background: var(--flowx-surface-primary) !important;
+    border: 1px solid var(--flowx-neutrals-100) !important;
+    color: var(--flowx-text-primary) !important;
+    box-shadow: var(--flowx-shadow-xs);
+
+    &:hover {
+      background: var(--flowx-surface-secondary) !important;
+      border-color: var(--flowx-neutrals-200) !important;
+    }
+
+    .p-button-icon { font-size: 14px; }
+  }
+}
+
+.project-detail-hero__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.project-detail-hero__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.project-detail-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+/* Edit pencil — text button so it doesn't compete with the title. */
+.project-detail-hero__edit {
+  flex-shrink: 0;
+
+  ::ng-deep .p-button {
+    color: var(--flowx-text-secondary) !important;
+    width: 32px;
+    height: 32px;
+
+    &:hover {
+      background: rgba(0, 107, 216, 0.08) !important;
+      color: var(--flowx-blue-500) !important;
+    }
+  }
+}
+
+.project-detail-hero__meta {
+  margin: 8px 0 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--flowx-text-secondary);
+}
+
+.project-detail-hero__id {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--flowx-text-secondary);
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.project-detail-hero__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    font-size: 11px;
+    color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
+  }
+}
+
+.project-detail-hero__subtitle {
+  margin: 10px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 720px;
+}
+
+.project-detail-hero__scope {
+  justify-self: end;
+
+  @media (max-width: 768px) {
+    justify-self: stretch;
+  }
+}
+
+/* Segmented period control — same chrome as the insights hero scope. */
+::ng-deep .project-detail-page .project-detail-hero__scope .p-selectbutton {
+  display: inline-flex;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+  flex-wrap: nowrap;
+
+  .p-togglebutton,
+  .p-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--flowx-text-secondary) !important;
+    padding: 0 14px !important;
+    height: 32px !important;
+    border-radius: 7px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background-color 120ms ease, color 120ms ease;
+    white-space: nowrap;
+
+    &.p-togglebutton-checked,
+    &.p-highlight {
+      background: var(--flowx-blue-500) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+/* ============================================================
+ * KPI strip — 6 tonal cards. The four canonical pages stop at 4
+ * tiles; this page has six (Run / Agents / Error / Tokens / P50 /
+ * P90) because the metrics are page-level scope. Same shape, same
+ * tones, just six columns instead of four — collapses to 3 then 2.
+ * ============================================================ */
+.project-detail-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: var(--flowx-space-32, 32px);
+
+  @media (max-width: 1440px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+}
+
+.project-detail-kpi-card {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-16, 16px);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  min-width: 0;
+
+  &:hover {
+    box-shadow: var(--flowx-shadow-m);
+    transform: translateY(-2px);
+  }
+}
+
+.project-detail-kpi-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--flowx-neutrals-100);
+  color: var(--flowx-neutrals-500);
+
+  &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-500); }
+  &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600, #006a4f); }
+  &--red    { background: var(--flowx-red-50);    color: var(--flowx-red-500); }
+  &--yellow { background: var(--flowx-yellow-50); color: var(--flowx-yellow-600); }
+  &--purple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+  &--teal   { background: rgba(20, 184, 166, 0.12); color: #0d9488; }
+}
+
+.project-detail-kpi-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.project-detail-kpi-card__label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--flowx-text-secondary);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-detail-kpi-card__value {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--flowx-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--blue   { color: var(--flowx-blue-500); }
+  &--green  { color: var(--flowx-green-600, #006a4f); }
+  &--red    { color: var(--flowx-red-500); }
+  &--yellow { color: var(--flowx-yellow-600); }
+  &--purple { color: #8b5cf6; }
+  &--teal   { color: #0d9488; }
+}
+
+/* ============================================================
+ * Tabs — flat underline navigation (policies / RSI pattern).
+ * Lives below the KPI strip; the tab body re-stacks 32px gaps
+ * between sub-cards via .tab-stack.
+ * ============================================================ */
+.project-detail-tabs {
+  margin-top: 0;
+}
+
+::ng-deep .project-detail-page .project-detail-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
+/* ============================================================
+ * Overview tab — Project Info grid
+ * Mirrors the home-page in-hero info pattern: uppercase overline
+ * label + 14/600 primary value, three columns on desktop, one on
+ * mobile. Tags row at the bottom uses pill chips matching the
+ * design.md spec (4×10 padding, 13/1/700, 999 radius).
+ * ============================================================ */
+.project-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 32px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+.project-info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  &__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
+
+  &__value {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--flowx-text-primary);
+    word-break: break-word;
+
+    &--muted {
+      color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
+      font-weight: 500;
+    }
+  }
+}
+
+.project-info-divider {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--flowx-neutrals-100);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.project-info-description {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--flowx-text-primary);
+  margin: 0;
+}
+
+.project-info-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  &__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+    margin-right: 4px;
+  }
+}
+
+.project-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--flowx-blue-50);
+  color: var(--flowx-blue-600, #0058b3);
+  border: 1px solid var(--flowx-blue-100);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+ * Latency pill — replaces the loud p-tag with severity styling on
+ * P50 / P90 KPI tiles (handled inline via __value tone) and inside
+ * the executions table (kept as the original p-tag).
+ *
+ * Status badge inside Executions stays as a p-tag, but the rounded
+ * pill chip used for "Configured" / "Not Set" baseline status keeps
+ * its native p-tag chrome — already harmonized by FlowX defaults.
+ * ============================================================ */
+
+/* ============================================================
+ * Evaluators empty-state notice — when no evaluators exist, the
+ * page used to show an inline blue-stripe panel. Promote it to a
+ * full-card empty state that matches the insights `.eval-empty`
+ * pattern (icon, title, description).
+ * ============================================================ */
+.evaluators-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-500);
+    border-radius: 50%;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--flowx-text-primary);
+    margin: 0 0 6px;
+  }
+
+  &__desc {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--flowx-text-secondary);
+    max-width: 520px;
+    margin: 0;
+  }
+}
+
+/* ============================================================
+ * Table empty-state — icon + line of copy. Per design.md, this
+ * rule must live in the component's SCSS scope since the markup
+ * is inside the host template.
+ * ============================================================ */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  span { font-size: 0.875rem; }
+}
+
+/* ============================================================
+ * Inline filter (Evaluators header — Agent dropdown). The card-head
+ * is a flex row; the right-side cluster needs a label-above-select
+ * mini-group that doesn't blow up the row height. Mirrors the
+ * approach from RSI / ROI per design.md.
+ * ============================================================ */
+.card-head__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-group--inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+    white-space: nowrap;
+  }
+}
+
+/* ============================================================
+ * Dark mode — hero gradient, KPI tonal swatches, tab underline,
+ * evaluators intro tile, info-card divider, back-button chrome.
+ * ============================================================ */
+:host-context(.flowx-dark) {
+  .project-detail-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .project-detail-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+  }
+
+  .project-detail-hero__id {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-secondary);
+  }
+
+  .project-detail-hero__back ::ng-deep .p-button {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+  }
+
+  .project-detail-kpi-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30); }
+
+  .project-detail-kpi-card__icon {
+    background: rgba(255, 255, 255, 0.04);
+
+    &--blue   { background: rgba(51, 137, 224, 0.20); color: var(--flowx-blue-300); }
+    &--green  { background: rgba(0, 128, 96, 0.22);   color: var(--flowx-green-300, #4dbb9a); }
+    &--red    { background: rgba(230, 34, 0, 0.20);   color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { background: rgba(254, 185, 19, 0.20); color: var(--flowx-yellow-400, #fec742); }
+    &--purple { background: rgba(139, 92, 246, 0.22); color: #b794f6; }
+    &--teal   { background: rgba(20, 184, 166, 0.22); color: #5eead4; }
+  }
+
+  .project-detail-kpi-card__value {
+    &--blue   { color: var(--flowx-blue-300); }
+    &--green  { color: var(--flowx-green-300, #4dbb9a); }
+    &--red    { color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { color: var(--flowx-yellow-400, #fec742); }
+    &--purple { color: #b794f6; }
+    &--teal   { color: #5eead4; }
+  }
+
+  .project-info-divider {
+    border-top-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .project-tag {
+    background: rgba(51, 137, 224, 0.18);
+    color: var(--flowx-blue-300);
+    border-color: rgba(51, 137, 224, 0.30);
+  }
+
+  .evaluators-intro__icon {
+    background: rgba(51, 137, 224, 0.20);
+    color: var(--flowx-blue-300);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .project-detail-page .project-detail-hero__scope .p-selectbutton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+
+  .p-togglebutton.p-togglebutton-checked,
+  .p-button.p-highlight {
+    background: var(--flowx-blue-400) !important;
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .project-detail-page .project-detail-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
+  }
+}
