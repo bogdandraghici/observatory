@@ -1,34 +1,490 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+/* ============================================================
+ * ROI Hero Panel — mirrors the Drift Monitor / Home / Agent
+ * Evaluations hero pattern (see design.md): one rounded outer
+ * panel containing a gradient title band on top and a filters
+ * content band below, separated by a hairline neutrals-100
+ * divider. No border on the panel itself; elevation comes from
+ * shadow-xs.
+ * ============================================================ */
+.roi-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.roi-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  background:
+    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
+    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    padding: 24px 24px 20px;
+  }
+}
+
+.roi-hero__text { min-width: 0; }
+
+.roi-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+
+  .text-accent { color: var(--flowx-interactive); }
+}
+
+.roi-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 760px;
+}
+
+.roi-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+
+  @media (max-width: 1280px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 20px 24px;
+  }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+/* Date input chrome matches PrimeNG p-select inside the hero filters. */
+.roi-date-input {
+  height: 38px;
+  padding: 0 12px;
+  background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 6px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--flowx-text-primary);
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+
+  &:hover { border-color: var(--flowx-neutrals-200); }
+  &:focus {
+    outline: none;
+    border-color: var(--flowx-interactive);
+    box-shadow: 0 0 0 3px rgba(0, 107, 216, 0.12);
+  }
+}
+
+:host-context(.flowx-dark) {
+  .roi-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .roi-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .roi-date-input {
+    background: var(--flowx-surface-secondary);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--flowx-text-primary);
+    color-scheme: dark;
+
+    &:hover { border-color: rgba(255, 255, 255, 0.12); }
+    &:focus {
+      border-color: var(--flowx-blue-400);
+      box-shadow: 0 0 0 3px rgba(51, 137, 224, 0.16);
+    }
+  }
+}
+
+/* ============================================================
+ * KPI strip — four standalone cards sitting on the page canvas
+ * directly below the hero. Each card carries the KPI's tone on
+ * both the icon tile and the value text. Conditional pos/neg
+ * coloring is driven by .roi-kpi-card__value--green/--red.
+ * ============================================================ */
+.roi-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: var(--flowx-space-32, 32px);
+
+  @media (max-width: 1280px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+.roi-kpi-card {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-16, 16px);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+
+  &:hover {
+    box-shadow: var(--flowx-shadow-m);
+    transform: translateY(-2px);
+  }
+}
+
+.roi-kpi-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  background: var(--flowx-neutrals-100);
+  color: var(--flowx-neutrals-500);
+
+  &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-500); }
+  &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600); }
+  &--red    { background: var(--flowx-red-50);    color: var(--flowx-red-500); }
+  &--purple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+}
+
+.roi-kpi-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.roi-kpi-card__label {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--flowx-text-secondary);
+  margin-bottom: 8px;
+}
+
+.roi-kpi-card__value {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--flowx-text-primary);
+
+  &--blue  { color: var(--flowx-blue-500); }
+  &--green { color: var(--flowx-green-600); }
+  &--red   { color: var(--flowx-red-500); }
+}
+
+:host-context(.flowx-dark) {
+  .roi-kpi-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30); }
+
+  .roi-kpi-card__icon {
+    background: rgba(255, 255, 255, 0.04);
+
+    &--blue   { background: rgba(51, 137, 224, 0.20); color: var(--flowx-blue-300); }
+    &--green  { background: rgba(0, 128, 96, 0.25);   color: var(--flowx-green-300); }
+    &--red    { background: rgba(230, 34, 0, 0.20);   color: var(--flowx-red-300, #ee6b54); }
+    &--purple { background: rgba(139, 92, 246, 0.22); color: #b794f6; }
+  }
+
+  .roi-kpi-card__value {
+    &--blue  { color: var(--flowx-blue-300); }
+    &--green { color: var(--flowx-green-300); }
+    &--red   { color: var(--flowx-red-300, #ee6b54); }
+  }
+}
+
+/* ============================================================
+ * Tabs — flat underline navigation at the page level. Mirrors
+ * the insights-dashboard `.trends-section` p-tabs treatment.
+ * Scoped to .roi-page so the styling doesn't leak to other
+ * pages' p-tabs instances.
+ * ============================================================ */
+.roi-tabs {
+  margin-bottom: 0;
+}
+
+::ng-deep .roi-page .roi-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  /* Tab body — pad the top so the first sub-card sits 32px below
+   * the underline rule. Inner panels carry no padding. */
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+:host-context(.flowx-dark) ::ng-deep .roi-page .roi-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
+  }
+}
+
+/* ============================================================
+ * Tab content stack — replaces the PrimeFlex `.grid mt-2` row.
+ * Vertical flex with 32px gap matches the spec spacing rhythm
+ * between sub-card sections.
+ * ============================================================ */
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
+/* Inline button rows inside a tab (Compute / Save / etc.) don't
+ * need the full 32px stack gap on top of them — the previous
+ * stack item already provides separation. */
+.tab-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: calc(var(--flowx-space-32, 32px) * -0.5);
+}
+
+/* ============================================================
+ * Sub-card overrides (page-scoped) — design.md mandates radius-20
+ * for sub-cards. The global .stat-card uses radius-12; lift it
+ * inside .roi-page so the entire ROI dashboard reads as the same
+ * hero-panel family as Home / Drift / Evaluations.
+ * ============================================================ */
+.roi-page .stat-card,
+.roi-page .stat-card--stacked {
+  border-radius: var(--flowx-radius-20, 20px);
+}
+
+/* ============================================================
+ * Table chrome inside ROI sub-cards — drift spec (see design.md):
+ * 11/0.08em uppercase header tinted with surface-secondary, 14×20
+ * cell padding, 14/1 semibold body. Scoped via ::ng-deep because
+ * PrimeNG renders <th>/<td> outside the component's view
+ * encapsulation, so non-deep selectors silently match nothing.
+ * ============================================================ */
+::ng-deep .roi-page .stat-card .p-datatable,
+::ng-deep .roi-page .stat-card--stacked .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: var(--flowx-surface-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 14px 20px;
+  }
+
+  .p-datatable-tbody > tr {
+    cursor: default;
+
+    > td {
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 14px 20px;
+    }
+
+    &:last-child > td { border-bottom: none; }
+  }
+
+  .p-datatable-tfoot > tr > td {
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 700;
+    padding: 14px 20px;
+    background: var(--flowx-surface-secondary);
+  }
+}
+
+/* Per-Agent Breakdown — plain <table> (not p-table) because it
+ * has interleaved group-header rows and subtotals. Styled to match
+ * the p-table chrome above. */
+.roi-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  thead > tr > th {
+    background: var(--flowx-surface-secondary);
+    color: var(--flowx-text-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+  }
+
+  tbody > tr {
+    > td {
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--flowx-neutrals-100);
+      color: var(--flowx-text-primary);
+    }
+
+    &.roi-breakdown-table__group > td {
+      background: var(--flowx-blue-50);
+      color: var(--flowx-blue-600);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 10px 20px;
+
+      i { margin-right: 8px; font-size: 11px; }
+    }
+
+    &.roi-breakdown-table__subtotal > td {
+      background: var(--flowx-surface-secondary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+  }
+
+  tfoot > tr > td {
+    font-size: 13px;
+    font-weight: 800;
+    padding: 14px 20px;
+    background: var(--flowx-surface-secondary);
+    border-top: 1px solid var(--flowx-neutrals-100);
+  }
+}
+
+:host-context(.flowx-dark) .roi-breakdown-table {
+  thead > tr > th,
+  tbody > tr.roi-breakdown-table__subtotal > td,
+  tfoot > tr > td {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  tbody > tr.roi-breakdown-table__group > td {
+    background: rgba(51, 137, 224, 0.18);
+    color: var(--flowx-blue-300);
+  }
+
+  tbody > tr > td,
+  thead > tr > th,
+  tfoot > tr > td {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* ============================================================
+ * Conditional color helpers — apply via [class.roi-pos] /
+ * [class.roi-neg] bindings on values, badges, and table cells
+ * that depend on data sign. Mirrors the existing
+ * var(--flowx-success/error) inline pattern but keeps templates
+ * readable.
+ * ============================================================ */
+.roi-pos { color: var(--flowx-success, #008060) !important; }
+.roi-neg { color: var(--flowx-error,   #e62200) !important; }
+.roi-accent { color: var(--flowx-interactive) !important; }
+
 /* ============================================================
  * VOU card — ROI hero on the right rail. Renders one card per
  * Value Outcome Unit (e.g. "claim") in the Value Outcomes tab.
- * Three small stats (Agents / Runs / LLM Cost) sit on the left
- * column, separated from a Net ROI hero on the right by a hairline
- * divider. The grid uses auto-fill / minmax(420px) so a single VOU
- * stretches wide enough for the hero layout, while multiple VOUs
- * wrap into a multi-column grid.
- *
- * Font sizes mirror neighbouring ROI dashboard tiles: 10px / 12px
- * uppercase labels match `.grand-total__label`; the 14px / 22px
- * title matches `.stat-card__title`. The Net ROI hero sits one
- * notch above the page's 22px tile value (28px / weight 800).
+ * Sits on the page canvas as a sub-card, so radius lifts to 20
+ * to match design.md. Three small stats sit on the left column,
+ * separated from a Net ROI hero on the right by a hairline
+ * neutrals-100 divider.
  * ============================================================ */
 .vou-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 20px;
 }
 
 .vou-card {
   background: var(--flowx-surface-primary);
   border: none;
-  border-radius: var(--flowx-radius-12);
+  border-radius: var(--flowx-radius-20, 20px);
   box-shadow: var(--flowx-shadow-xs);
-  padding: var(--flowx-space-24);
+  padding: 24px;
   transition: box-shadow 200ms ease, transform 200ms ease;
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2rem;
+  gap: 24px;
   align-items: center;
 
   &:hover {
@@ -41,33 +497,34 @@
   &__header {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    margin-bottom: 1.25rem;
+    gap: 10px;
+    margin-bottom: 20px;
   }
 
   &__icon {
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--flowx-blue-50);
     color: var(--flowx-blue-600);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
     flex-shrink: 0;
   }
 
   &__title {
-    font-size: 14px;
-    line-height: 22px;
-    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.005em;
     color: var(--flowx-text-primary);
   }
 
   &__stats {
     display: flex;
-    gap: 1.5rem;
+    gap: 24px;
     flex-wrap: wrap;
   }
 
@@ -78,7 +535,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--flowx-text-secondary);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   &__stat-value {
@@ -93,8 +550,8 @@
 
   &__hero {
     text-align: right;
-    padding-left: 2rem;
-    border-left: 1px solid var(--flowx-neutrals-50);
+    padding-left: 24px;
+    border-left: 1px solid var(--flowx-neutrals-100);
   }
 
   &__hero-label {
@@ -104,7 +561,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--flowx-text-secondary);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   &__hero-value {
@@ -118,43 +575,39 @@
     &--neg { color: var(--flowx-error, #e62200); }
   }
 
-  /* On narrow screens the right rail collapses underneath; the
-   * separator flips from a left border to a top border so the
-   * hairline still reads as a divider, not a stray rule. */
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 16px;
 
     &__hero {
       text-align: left;
       padding-left: 0;
-      padding-top: 1rem;
+      padding-top: 16px;
       border-left: none;
-      border-top: 1px solid var(--flowx-neutrals-50);
+      border-top: 1px solid var(--flowx-neutrals-100);
     }
   }
 }
 
-:host-context(.flowx-dark) .vou-card__hero {
-  border-left-color: var(--flowx-border-default);
+:host-context(.flowx-dark) {
+  .vou-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30); }
 
-  @media (max-width: 600px) {
-    border-left-color: transparent;
-    border-top-color: var(--flowx-border-default);
+  .vou-card__hero {
+    border-left-color: rgba(255, 255, 255, 0.06);
+
+    @media (max-width: 600px) {
+      border-left-color: transparent;
+      border-top-color: rgba(255, 255, 255, 0.06);
+    }
   }
 }
 
 /* ============================================================
- * ROI KPI tiles — mirrors the framework-meta tile pattern from
- * the regulatory page: bordered card, 10px uppercase label, 22px
- * tabular value, optional inline icon before the value.
- *
- * Shared by Grand Total (Value Outcomes tab), Projected Impact
- * (Financial ROI tab), 5-Year TCO and the AI Monthly Cost stamp
- * on the AI vs Alternatives card (Alternative Comparison tab).
- *
- * Dark mode lifts the border to default token so the tile outline
- * remains visible against the dark surface.
+ * Internal tiles — Grand Total, Projected Impact, 5-Year TCO,
+ * Simulation Results, AI Monthly Cost stamp. These all live
+ * INSIDE a sub-card. design.md requires neutrals-100 borders
+ * (neutrals-50 disappears against the page background), 12px
+ * radius for standard internal tiles, surface-primary fill.
  * ============================================================ */
 .grand-total,
 .projected-impact,
@@ -168,8 +621,6 @@
   @media (max-width: 640px)  { grid-template-columns: 1fr; }
 }
 
-/* 5-Year TCO and Simulation Results have 3 tiles — keep the 3-up
- * rhythm at desktop. */
 .tco-comparison,
 .simulation-results {
   grid-template-columns: repeat(3, 1fr);
@@ -183,13 +634,13 @@
 .tco-comparison__tile,
 .simulation-results__tile,
 .ai-monthly-tile {
-  padding: 16px 18px;
+  padding: 14px 16px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-neutrals-50);
-  border-radius: 16px;
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 12px;
 }
 
 .grand-total__label,
@@ -236,9 +687,9 @@
 .ai-monthly-tile__value {
   font-size: 22px;
   line-height: 1.25;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--flowx-text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -246,13 +697,7 @@
   min-width: 0;
 }
 
-/* Grand Total tiles render the value directly on the tile (no
- * value-row wrapper, since there's no inline icon) — give the value
- * its own margin-top so it sits 8px below the label, matching the
- * value-row offset used by the other sections. */
-.grand-total__tile > .grand-total__value {
-  margin-top: 8px;
-}
+.grand-total__tile > .grand-total__value { margin-top: 8px; }
 
 :host-context(.flowx-dark) {
   .grand-total__tile,
@@ -260,42 +705,40 @@
   .tco-comparison__tile,
   .simulation-results__tile,
   .ai-monthly-tile {
-    border-color: var(--flowx-border-default);
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
   }
 }
 
 /* ============================================================
- * Financial ROI — configuration cards (V1: Refined Classic).
- *
- * Four cards in a row across the top of the Financial ROI tab:
- * Agent Baselines (read-only with status pill) + Project Baseline,
- * Compliance Risk, Cost & Benefits (clickable, opens edit dialog).
- *
- * Header: 28×28 icon chip, 15px bold title, trailing element on the
- * right (status pill or pencil affordance). Body: row pairs with a
- * 13px secondary label and a 13px tabular value. Positive monetary
- * values get green-600; the Project Baseline empty placeholder ("-")
- * dims to neutrals-300.
+ * Financial ROI — configuration cards. Four cards across the top
+ * of the Financial ROI tab: Agent Baselines (read-only with
+ * status pill) + Project Baseline, Compliance Risk, Cost &
+ * Benefits (clickable, opens edit dialog). Per design.md, sub-
+ * cards have NO border — elevation comes from shadow-xs. The
+ * hover state lifts the shadow instead of changing border color.
+ * Two-card variant (Tab 2 audit) uses the same chrome with a
+ * 2-column grid override on the parent .stat-cards-grid.
  * ============================================================ */
 .config-card {
   background: var(--flowx-surface-primary);
-  border: 1px solid var(--flowx-neutrals-100);
-  border-radius: var(--flowx-radius-16);
-  padding: 20px 22px 22px;
+  border: none;
+  border-radius: var(--flowx-radius-20, 20px);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: 22px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   font-family: var(--flowx-font-primary);
   min-width: 0;
-  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: box-shadow 200ms ease, transform 200ms ease;
 
   &--clickable {
     cursor: pointer;
 
     &:hover {
-      border-color: var(--flowx-neutrals-200);
-      box-shadow: 0 2px 8px rgba(22, 52, 98, 0.06);
+      box-shadow: var(--flowx-shadow-m);
+      transform: translateY(-2px);
     }
   }
 
@@ -318,9 +761,9 @@
   &__icon {
     width: 28px;
     height: 28px;
-    border-radius: var(--flowx-radius-8);
-    background: var(--flowx-neutrals-50);
-    color: var(--flowx-neutrals-500);
+    border-radius: 8px;
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-600);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -329,8 +772,8 @@
   }
 
   &__title {
-    font-size: 15px;
-    line-height: 22px;
+    font-size: 16px;
+    line-height: 1.2;
     font-weight: 700;
     color: var(--flowx-text-primary);
     letter-spacing: -0.005em;
@@ -382,20 +825,15 @@
   &__rows {
     display: flex;
     flex-direction: column;
+    padding-top: 4px;
+    border-top: 1px solid var(--flowx-neutrals-100);
 
-    /* Used by the Agent Baselines body to separate the dynamic list
-     * from the header with a hairline divider. */
-    &--dashed-top {
-      padding-top: 4px;
-      border-top: 1px dashed var(--flowx-neutrals-100);
-    }
-
-    /* 2-up grid for dynamic lists (e.g. Parameter Ranges) — keeps the
-     * card compact when many short label/value pairs are present. */
     &--cols-2 {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: 16px;
+      padding-top: 4px;
+      border-top: 1px solid var(--flowx-neutrals-100);
 
       @media (max-width: 900px) { grid-template-columns: 1fr; }
     }
@@ -406,7 +844,7 @@
     justify-content: space-between;
     align-items: baseline;
     gap: 12px;
-    padding: 4px 0;
+    padding: 6px 0;
     min-width: 0;
   }
 
@@ -436,7 +874,7 @@
     max-width: 60%;
 
     &--green { color: var(--flowx-green-600); }
-    &--dim   { color: var(--flowx-neutrals-300); }
+    &--dim   { color: var(--flowx-neutrals-400); }
     &--mono  {
       font-family: var(--flowx-font-monospace);
       font-size: 12.5px;
@@ -444,8 +882,8 @@
   }
 
   &__empty {
-    padding-top: 4px;
-    border-top: 1px dashed var(--flowx-neutrals-100);
+    padding-top: 8px;
+    border-top: 1px solid var(--flowx-neutrals-100);
     font-size: 13px;
     line-height: 20px;
     color: var(--flowx-text-secondary);
@@ -453,16 +891,11 @@
 }
 
 :host-context(.flowx-dark) .config-card {
-  border-color: var(--flowx-border-default);
-
-  &--clickable:hover {
-    border-color: var(--flowx-border-strong);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  }
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
 
   &__icon {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--flowx-text-secondary);
+    background: rgba(51, 137, 224, 0.20);
+    color: var(--flowx-blue-300);
   }
 
   &__pill--success {
@@ -475,10 +908,94 @@
     color: #f4c878;
   }
 
-  &__rows--dashed-top,
+  &__rows,
+  &__rows--cols-2,
   &__empty {
-    border-top-color: var(--flowx-border-default);
+    border-top-color: rgba(255, 255, 255, 0.06);
   }
 
-  &__value--dim { color: var(--flowx-neutrals-400); }
+  &__value--green { color: var(--flowx-green-300); }
+  &__value--dim   { color: var(--flowx-neutrals-500); }
+}
+
+/* ============================================================
+ * Per-tab grid layouts that lock the column count regardless of
+ * the global `.stat-cards-grid` responsive rules — used for the
+ * compliance audit's two summary cards, the financial 6-up KPI
+ * grid, and the compliance 9-up KPI grid. Page-scoped so we don't
+ * fight the global `.stat-cards-grid` declaration.
+ * ============================================================ */
+.roi-page {
+  .stat-cards-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-cards-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  @media (max-width: 900px) {
+    .stat-cards-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .stat-cards-grid--2,
+    .stat-cards-grid--3 { grid-template-columns: 1fr; }
+  }
+
+  /* Stat-card __value--lg inside this page reads at the design.md
+   * sub-card KPI spec (22/1/800), not the global 24/38/700.
+   * Keeps the financial ROI / compliance KPIs in scale with Home. */
+  .stat-card__value--lg {
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ============================================================
+ * Chart wrapper — gives p-chart a stable height & responsive box.
+ * Kept identical to the inline `<div class="chart-container">`
+ * pattern used throughout the page; the class is shared.
+ * ============================================================ */
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+}
+
+/* ============================================================
+ * Scenario buttons (Sensitivity tab) — the three Conservative /
+ * Base / Optimistic toggles. PrimeNG outlined buttons inherit the
+ * FlowX theme, so we only set the row layout here.
+ * ============================================================ */
+.roi-scenario-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* ============================================================
+ * Multi-project comparison controls (Tab 5) — keeps the select
+ * + Compare button on a single baseline-aligned row.
+ * ============================================================ */
+.roi-compare-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 280px;
+  }
+
+  &__field-label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--flowx-text-secondary);
+  }
 }
