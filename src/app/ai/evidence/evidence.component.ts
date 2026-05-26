@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 @Component({
   selector: 'app-evidence',
   templateUrl: './evidence.component.html',
+  styleUrls: ['./evidence.component.scss'],
   providers: [MessageService],
   standalone: false,
 })
