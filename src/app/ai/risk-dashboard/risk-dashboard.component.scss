@@ -448,8 +448,11 @@
  * interactive controls, not transparent adornments.
  * ============================================================ */
 :host ::ng-deep .p-button.action-chip {
-  background-color: rgba(0, 107, 216, 0.12);
-  transition: background-color 150ms ease;
+  // Boxed FlowX secondary chrome, 2rem square, icon centered.
+  background: #ffffff;
+  border: 1px solid var(--flowx-neutrals-100);
+  color: var(--flowx-text-primary);
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
   display: inline-flex !important;
   align-items: center !important;
@@ -481,17 +484,27 @@
     justify-content: center !important;
   }
 
+  &::after { display: none !important; }
+
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
-    background-color: rgba(0, 107, 216, 0.22);
+    background: var(--flowx-neutrals-50);
+    border-color: var(--flowx-neutrals-100);
+    color: var(--flowx-text-primary);
   }
+}
 
-  &.action-chip--primary {
-    background-color: rgba(0, 107, 216, 0.12);
+// Dark counterpart — FlowX dark secondary (button.json):
+// fill transparent, stroke #5b6a7e, icon #ffffff, hover fill #475263.
+:host-context(.flowx-dark) ::ng-deep .p-button.action-chip {
+  background: transparent;
+  border-color: #5b6a7e;
+  color: #ffffff;
 
-    &:hover:not(:disabled),
-    &:focus-visible:not(:disabled) {
-      background-color: rgba(0, 107, 216, 0.22);
-    }
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: #475263;
+    border-color: #5b6a7e;
+    color: #ffffff;
   }
 }

@@ -59,17 +59,12 @@
       <div class="project-card__actions">
         <p-button
           icon="pi pi-code"
-          [rounded]="true"
-          [text]="true"
-          severity="primary"
+          severity="secondary"
           (click)="integrate.emit(app)"
           pTooltip="Integrate"
-          size="small"
         ></p-button>
         <p-button
           [icon]="app.is_default ? 'pi pi-star-fill' : 'pi pi-star'"
-          [rounded]="true"
-          [text]="true"
           [severity]="app.is_default ? 'warning' : 'secondary'"
           (click)="setDefault($event)"
           [pTooltip]="
@@ -77,16 +72,12 @@
               ? 'Default project'
               : 'Set as default'
           "
-          size="small"
         ></p-button>
         <p-button
           icon="pi pi-trash"
-          [rounded]="true"
-          [text]="true"
           severity="secondary"
           (click)="confirmDelete($event)"
           pTooltip="Archive project"
-          size="small"
         ></p-button>
       </div>
     </div>

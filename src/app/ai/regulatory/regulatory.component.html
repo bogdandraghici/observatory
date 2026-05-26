@@ -13,7 +13,7 @@
       <div class="regulatory-hero__actions">
         <p-button label="Auto-Map" icon="pi pi-sync" severity="primary" [outlined]="true" (onClick)="autoMap()" [loading]="loading"></p-button>
         <p-button label="Generate Report" icon="pi pi-file" severity="primary" [outlined]="true" (onClick)="generateReport()"></p-button>
-        <p-button label="Export PDF" icon="pi pi-file-pdf" severity="primary" [outlined]="true" (onClick)="exportPDF()" [disabled]="!report"></p-button>
+        <p-button icon="pi pi-file-pdf" severity="primary" [outlined]="true" (onClick)="exportPDF()" [disabled]="!report" pTooltip="Export PDF" tooltipPosition="bottom"></p-button>
         <p-button label="New Framework" icon="pi pi-plus" severity="primary" (onClick)="openNewFrameworkForm()"></p-button>
       </div>
     </div>
