@@ -1,17 +1,16 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Prompts</h1>
-      <p class="page-header__subtitle">Manage and track system prompts across your agents</p>
+<div class="ai-page prompts-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="prompts-hero">
+    <div class="prompts-hero__band">
+      <div class="prompts-hero__text">
+        <h1 class="prompts-hero__title">Prompts</h1>
+        <p class="prompts-hero__subtitle">Manage and track system prompts across your agents — versions, ownership, and usage stats in one place.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="prompts-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -21,6 +20,7 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged()"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -33,6 +33,7 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -45,28 +46,29 @@
           placeholder="Select Project"
           [showClear]="true"
           (onChange)="appChanged()"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Tabs -->
-  <p-tabs [(value)]="activeTab">
-    <p-tablist>
-      <p-tab value="0">Detected Prompts</p-tab>
-      <p-tab value="1">Managed Prompts</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <!-- Tab 1: Detected Prompts -->
-      <p-tabpanel value="0">
-        <div class="stat-card mt-3" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-eye"></i>
-            </div>
-            <span class="stat-card__title">Auto-Detected System Prompts</span>
-          </div>
-          <p-table [value]="detectedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+  <!-- B. Tabs — flat underline navigation at the page level -->
+  <div class="prompts-tabs">
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        <p-tab value="0">Detected Prompts</p-tab>
+        <p-tab value="1">Managed Prompts</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- Tab 1: Detected Prompts -->
+        <p-tabpanel value="0">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="card-title">
+                <i class="pi pi-eye"></i>
+                Auto-Detected System Prompts
+              </div>
+              <p-table [value]="detectedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowHover]="true">
             <ng-template pTemplate="header">
               <tr>
                 <th>Agent</th>
@@ -97,26 +99,33 @@
                 </td>
               </tr>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="9" class="text-center p-6">No detected prompts yet. System prompts will appear here automatically when LLM runs contain system messages.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-
-      <!-- Tab 2: Managed Prompts -->
-      <p-tabpanel value="1">
-        <div class="stat-card mt-3" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-file-edit"></i>
-              </div>
-              <span class="stat-card__title">Managed Prompts</span>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="9">
+                      <div class="table-empty">
+                        <i class="pi pi-eye"></i>
+                        <span>No detected prompts yet. System prompts appear here automatically when LLM runs contain system messages.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </div>
-            <p-button label="Create Prompt" icon="pi pi-plus" (click)="createPrompt()"></p-button>
           </div>
-          <p-table [value]="managedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10">
+        </p-tabpanel>
+
+        <!-- Tab 2: Managed Prompts -->
+        <p-tabpanel value="1">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="card-head">
+                <div class="card-title">
+                  <i class="pi pi-file-edit"></i>
+                  Managed Prompts
+                </div>
+                <p-button label="Create Prompt" icon="pi pi-plus" severity="primary" (click)="createPrompt()"></p-button>
+              </div>
+              <p-table [value]="managedPrompts" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowHover]="true">
             <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
@@ -168,14 +177,23 @@
                 </td>
               </tr>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="11" class="text-center p-6">No managed prompts. Click "Create Prompt" to get started.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="11">
+                      <div class="table-empty">
+                        <i class="pi pi-file-edit"></i>
+                        <span>No managed prompts. Click "Create Prompt" to get started.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>
 
 <!-- Create / Edit Prompt Dialog -->

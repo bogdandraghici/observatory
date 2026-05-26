@@ -1,1 +1,98 @@
-// Datasets page styles
+@use '../_shared/ai-design-tokens' as tokens;
+
+:host {
+  display: block;
+}
+
+// ── A. Hero panel ────────────────────────────────────────────
+// Rounded outer panel with a title band and a filters band below,
+// separated by a hairline neutrals-100 divider. Mirrors every other
+// redesigned page in this family.
+.datasets-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.datasets-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.datasets-hero__text { min-width: 0; }
+
+.datasets-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.datasets-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  white-space: nowrap;
+
+  @media (max-width: 768px) { white-space: normal; }
+}
+
+.datasets-hero__filters {
+  padding: 24px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 200px;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .datasets-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .datasets-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}

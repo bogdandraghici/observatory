@@ -1,94 +1,92 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Deployment Overview</h1>
-      <p class="page-header__subtitle">Real-time cluster observability — pods, nodes, deployments, events and logs</p>
-    </div>
-    <div class="page-header__right">
-      <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" (onClick)="loadInitialData()" [loading]="loading"></p-button>
-    </div>
-  </header>
+<div class="ai-page platform-page">
+  <!-- A. Hero panel — title band (with refresh) + namespace filter -->
+  <section class="platform-hero">
+    <div class="platform-hero__band">
+      <div class="platform-hero__text">
+        <h1 class="platform-hero__title">Deployment Overview</h1>
+        <p class="platform-hero__subtitle">Real-time cluster observability — pods, nodes, deployments, events and logs.</p>
+      </div>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+      <div class="platform-hero__actions">
+        <p-button label="Refresh" icon="pi pi-refresh" severity="primary" [outlined]="true" (onClick)="loadInitialData()" [loading]="loading"></p-button>
+      </div>
+    </div>
+
+    <div class="platform-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Namespace</label>
         <p-select [options]="namespaceOptions" [(ngModel)]="selectedNamespace" optionLabel="label" optionValue="value"
-          placeholder="Select Namespace" (onChange)="onNamespaceChange()"></p-select>
+          placeholder="Select Namespace" (onChange)="onNamespaceChange()" appendTo="body"></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Connection Banner -->
   @if (health && !health.k8s_connected) {
-    <div class="mb-4 rounded p-4" style="background: rgba(239,68,68,0.08); border: 1px solid var(--flowx-error, #e62200)33">
-      <div class="flex items-center gap-2">
-        <i class="pi pi-exclamation-triangle" style="color: var(--flowx-error, #e62200)"></i>
-        <span class="font-semibold" style="color: var(--flowx-error, #e62200)">Cluster not connected</span>
-        <span class="text-sm" style="color: var(--text-color-secondary)">— Check observatory-platform configuration and cluster credentials.</span>
-      </div>
+    <div class="platform-banner platform-banner--danger">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span class="platform-banner__title">Cluster not connected</span>
+      <span class="platform-banner__hint">— Check observatory-platform configuration and cluster credentials.</span>
     </div>
   }
 
-  <!-- KPI Cards -->
+  <!-- B. KPI strip — 6-up tonal cards -->
   @if (cluster) {
-    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(6, 1fr);">
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue">
+    <div class="platform-kpis">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon platform-kpi-card__icon--blue">
           <i class="pi pi-server"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Cluster</span>
-          <span class="stat-card__value" style="color:var(--flowx-interactive, #006bd8)">{{ cluster.cluster_name }}</span>
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Cluster</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--text platform-kpi-card__value--blue">{{ cluster.cluster_name }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--green">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon platform-kpi-card__icon--green">
           <i class="pi pi-box"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Pods</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-success, #008060)">{{ cluster.pods_running }}<span class="text-sm font-normal" style="color: var(--text-color-secondary)"> / {{ cluster.pods_total }}</span></span>
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Pods</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--green">{{ cluster.pods_running }}<span class="platform-kpi-card__value-suffix"> / {{ cluster.pods_total }}</span></span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon platform-kpi-card__icon--purple">
           <i class="pi pi-microchip"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Nodes</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ cluster.nodes_ready }}<span class="text-sm font-normal" style="color: var(--text-color-secondary)"> / {{ cluster.nodes_total }}</span></span>
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Nodes</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--purple">{{ cluster.nodes_ready }}<span class="platform-kpi-card__value-suffix"> / {{ cluster.nodes_total }}</span></span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--blue">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon platform-kpi-card__icon--blue">
           <i class="pi pi-th-large"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Namespaces</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ cluster.namespaces_total }}</span>
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Namespaces</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--blue">{{ cluster.namespaces_total }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon stat-card__icon--amber">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon platform-kpi-card__icon--yellow">
           <i class="pi pi-clock"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Pending</span>
-          <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ cluster.pods_pending }}</span>
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Pending</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--yellow">{{ cluster.pods_pending }}</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__icon" [style.background]="cluster.healthy ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="cluster.healthy ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
+      <div class="platform-kpi-card">
+        <div class="platform-kpi-card__icon" [class.platform-kpi-card__icon--green]="cluster.healthy" [class.platform-kpi-card__icon--red]="!cluster.healthy">
           <i [class]="cluster.healthy ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Health</span>
-          <span class="stat-card__value stat-card__value--lg" [style.color]="cluster.healthy ? 'var(--flowx-success, #008060)' : 'var(--flowx-error, #e62200)'">
+        <div class="platform-kpi-card__body">
+          <span class="platform-kpi-card__label">Health</span>
+          <span class="platform-kpi-card__value platform-kpi-card__value--text" [class.platform-kpi-card__value--green]="cluster.healthy" [class.platform-kpi-card__value--red]="!cluster.healthy">
             {{ cluster.healthy ? 'Healthy' : 'Unhealthy' }}
           </span>
         </div>
@@ -96,8 +94,8 @@
     </div>
   }
 
-  <!-- Tabs -->
-  <div>
+  <!-- C. Tabs — flat underline navigation at the page level -->
+  <div class="platform-tabs">
     <p-tabs [(value)]="activeTab" (valueChange)="onTabChange()">
       <p-tablist>
         <p-tab value="0">Overview</p-tab>
@@ -110,14 +108,13 @@
 
         <!-- Tab 0: Overview (Namespaces) -->
         <p-tabpanel value="0">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="stat-card__icon">
-                <i class="pi pi-th-large"></i>
-              </div>
-              <span class="stat-card__title">Namespaces</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+            <div class="card-title">
+              <i class="pi pi-th-large"></i>
+              Namespaces
             </div>
-            <p-table [value]="namespaces" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+            <p-table [value]="namespaces" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Namespace</th>
@@ -141,31 +138,36 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="4" class="text-center p-6">No namespaces found.</td></tr>
+                <tr>
+                  <td colspan="4">
+                    <div class="table-empty">
+                      <i class="pi pi-th-large"></i>
+                      <span>No namespaces found.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 1: Pods -->
         <p-tabpanel value="1">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-            <div class="flex items-center justify-between mb-3 w-full">
-              <div class="flex items-center gap-2">
-                <div class="stat-card__icon">
-                  <i class="pi pi-box"></i>
-                </div>
-                <span class="stat-card__title">Pods</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+            <div class="card-head">
+              <div class="card-title">
+                <i class="pi pi-box"></i>
+                Pods
               </div>
-              <div class="flex items-center gap-3">
-                <div class="filter-group">
-                  <label class="filter-group__label">Status</label>
-                  <p-select [options]="podStatusOptions" [(ngModel)]="podStatusFilter" optionLabel="label" optionValue="value"
-                    placeholder="All" (onChange)="onPodStatusChange()"></p-select>
-                </div>
+              <div class="filter-group filter-group--inline">
+                <label class="filter-group__label">Status</label>
+                <p-select [options]="podStatusOptions" [(ngModel)]="podStatusFilter" optionLabel="label" optionValue="value"
+                  placeholder="All" (onChange)="onPodStatusChange()" appendTo="body"></p-select>
               </div>
             </div>
-            <p-table [value]="pods" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [scrollable]="true">
+            <p-table [value]="pods" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [scrollable]="true" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Name</th>
@@ -202,22 +204,29 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="9" class="text-center p-6">No pods found in this namespace.</td></tr>
+                <tr>
+                  <td colspan="9">
+                    <div class="table-empty">
+                      <i class="pi pi-box"></i>
+                      <span>No pods found in this namespace.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 2: Nodes -->
         <p-tabpanel value="2">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="stat-card__icon">
-                <i class="pi pi-microchip"></i>
-              </div>
-              <span class="stat-card__title">Nodes</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+            <div class="card-title">
+              <i class="pi pi-microchip"></i>
+              Nodes
             </div>
-            <p-table [value]="nodes" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+            <p-table [value]="nodes" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Name</th>
@@ -255,22 +264,29 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="10" class="text-center p-6">No nodes found. Connect to a cluster first.</td></tr>
+                <tr>
+                  <td colspan="10">
+                    <div class="table-empty">
+                      <i class="pi pi-microchip"></i>
+                      <span>No nodes found. Connect to a cluster first.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 3: Deployments -->
         <p-tabpanel value="3">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="stat-card__icon">
-                <i class="pi pi-objects-column"></i>
-              </div>
-              <span class="stat-card__title">Deployments</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+            <div class="card-title">
+              <i class="pi pi-objects-column"></i>
+              Deployments
             </div>
-            <p-table [value]="deployments" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+            <p-table [value]="deployments" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Name</th>
@@ -305,32 +321,39 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="7" class="text-center p-6">No deployments found in this namespace.</td></tr>
+                <tr>
+                  <td colspan="7">
+                    <div class="table-empty">
+                      <i class="pi pi-objects-column"></i>
+                      <span>No deployments found in this namespace.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 4: Events -->
         <p-tabpanel value="4">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-            <div class="flex items-center justify-between mb-3 w-full">
-              <div class="flex items-center gap-2">
-                <div class="stat-card__icon">
-                  <i class="pi pi-bolt"></i>
-                </div>
-                <span class="stat-card__title">Events</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+            <div class="card-head">
+              <div class="card-title">
+                <i class="pi pi-bolt"></i>
+                Events
               </div>
-              <div class="flex items-center gap-3">
-                <div class="filter-group">
+              <div class="card-head__actions">
+                <div class="filter-group filter-group--inline">
                   <label class="filter-group__label">Type</label>
                   <p-select [options]="eventTypeOptions" [(ngModel)]="eventTypeFilter" optionLabel="label" optionValue="value"
-                    placeholder="All" (onChange)="onEventTypeChange()"></p-select>
+                    placeholder="All" (onChange)="onEventTypeChange()" appendTo="body"></p-select>
                 </div>
-                <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="loadEvents()"></p-button>
+                <p-button label="Refresh" icon="pi pi-refresh" severity="primary" [outlined]="true" size="small" (onClick)="loadEvents()"></p-button>
               </div>
             </div>
-            <p-table [value]="events" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+            <p-table [value]="events" [paginator]="true" [rows]="20" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th style="width: 80px">Type</th>
@@ -356,9 +379,17 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="7" class="text-center p-6">No events found.</td></tr>
+                <tr>
+                  <td colspan="7">
+                    <div class="table-empty">
+                      <i class="pi pi-bolt"></i>
+                      <span>No events found.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
+          </div>
           </div>
         </p-tabpanel>
 

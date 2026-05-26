@@ -432,7 +432,10 @@
   &.evidence-page,
   &.regulatory-page,
   &.assessments-page,
-  &.experiments-page {
+  &.experiments-page,
+  &.platform-page,
+  &.prompts-page,
+  &.datasets-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);

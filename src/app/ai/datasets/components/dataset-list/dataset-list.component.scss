@@ -113,3 +113,22 @@ $code-bg: rgba(255, 255, 255, 0.05);
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+// Empty-state inside a table — icon + text, centered. Matches the
+// shared hero-panel `.table-empty` pattern used across redesigned
+// pages so an empty Datasets table reads as a deliberate state.
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  span { font-size: 0.875rem; }
+}
