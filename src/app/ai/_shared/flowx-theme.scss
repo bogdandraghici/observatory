@@ -429,7 +429,10 @@
   &.analytics-page,
   &.rsi-page,
   &.policies-page,
-  &.evidence-page {
+  &.evidence-page,
+  &.regulatory-page,
+  &.assessments-page,
+  &.experiments-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);

@@ -1,28 +1,28 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Regulatory Compliance</h1>
-      <p class="page-header__subtitle">Track compliance against EU AI Act, NIST AI RMF, ISO 42001 and custom frameworks</p>
-    </div>
-    <div class="page-header__right">
-      <p-button label="New Framework" icon="pi pi-plus" (onClick)="openNewFrameworkForm()"></p-button>
-      <p-button label="Auto-Map" icon="pi pi-sync" [outlined]="true" (onClick)="autoMap()" [loading]="loading"></p-button>
-      <p-button label="Generate Report" icon="pi pi-file" [outlined]="true" (onClick)="generateReport()"></p-button>
-      <p-button label="Export PDF" icon="pi pi-file-pdf" [outlined]="true" (onClick)="exportPDF()" [disabled]="!report"></p-button>
-    </div>
-  </header>
+<div class="ai-page regulatory-page">
+  <!-- A. Hero panel — title band (with action buttons) + 4-up filters band -->
+  <section class="regulatory-hero">
+    <div class="regulatory-hero__band">
+      <div class="regulatory-hero__text">
+        <h1 class="regulatory-hero__title">Regulatory Compliance</h1>
+        <p class="regulatory-hero__subtitle">Track compliance against EU AI Act, NIST AI RMF, ISO 42001 and custom frameworks.</p>
+      </div>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+      <div class="regulatory-hero__actions">
+        <p-button label="Auto-Map" icon="pi pi-sync" severity="primary" [outlined]="true" (onClick)="autoMap()" [loading]="loading"></p-button>
+        <p-button label="Generate Report" icon="pi pi-file" severity="primary" [outlined]="true" (onClick)="generateReport()"></p-button>
+        <p-button label="Export PDF" icon="pi pi-file-pdf" severity="primary" [outlined]="true" (onClick)="exportPDF()" [disabled]="!report"></p-button>
+        <p-button label="New Framework" icon="pi pi-plus" severity="primary" (onClick)="openNewFrameworkForm()"></p-button>
+      </div>
+    </div>
+
+    <div class="regulatory-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" placeholder="Select Org"
-          (onChange)="onOrgChange()"></p-select>
+          (onChange)="onOrgChange()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Workspace</label>
@@ -34,63 +34,64 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Project</label>
         <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" placeholder="Select Project"
-          (onChange)="onAppChange()"></p-select>
+          (onChange)="onAppChange()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Framework</label>
         <p-select [options]="frameworkOptions" [(ngModel)]="selectedFramework" optionLabel="label" optionValue="value"
-          placeholder="Select Framework" (onChange)="onFrameworkChange()"></p-select>
+          placeholder="Select Framework" (onChange)="onFrameworkChange()" appendTo="body"></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- KPI Cards -->
-  <div class="stat-cards-grid mb-4">
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--blue">
+  <!-- B. KPI strip -->
+  <div class="regulatory-kpis">
+    <div class="regulatory-kpi-card">
+      <div class="regulatory-kpi-card__icon regulatory-kpi-card__icon--blue">
         <i class="pi pi-book"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Total Frameworks</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalFrameworks }}</span>
+      <div class="regulatory-kpi-card__body">
+        <span class="regulatory-kpi-card__label">Total Frameworks</span>
+        <span class="regulatory-kpi-card__value regulatory-kpi-card__value--blue">{{ totalFrameworks }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--green">
+    <div class="regulatory-kpi-card">
+      <div class="regulatory-kpi-card__icon regulatory-kpi-card__icon--green">
         <i class="pi pi-shield"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Compliance %</span>
-        <span class="stat-card__value stat-card__value--lg" [style.color]="getComplianceColor(avgCompliance)">{{ avgCompliance | number:'1.1-1' }}%</span>
+      <div class="regulatory-kpi-card__body">
+        <span class="regulatory-kpi-card__label">Compliance %</span>
+        <span class="regulatory-kpi-card__value" [style.color]="getComplianceColor(avgCompliance)">{{ avgCompliance | number:'1.1-1' }}%</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--amber">
+    <div class="regulatory-kpi-card">
+      <div class="regulatory-kpi-card__icon regulatory-kpi-card__icon--yellow">
         <i class="pi pi-exclamation-triangle"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Gaps</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-warning, #feb913)">{{ gapCount }}</span>
+      <div class="regulatory-kpi-card__body">
+        <span class="regulatory-kpi-card__label">Gaps</span>
+        <span class="regulatory-kpi-card__value regulatory-kpi-card__value--yellow">{{ gapCount }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--blue">
+    <div class="regulatory-kpi-card">
+      <div class="regulatory-kpi-card__icon regulatory-kpi-card__icon--purple">
         <i class="pi pi-sitemap"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Projects Tracked</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ projectsTracked }}</span>
+      <div class="regulatory-kpi-card__body">
+        <span class="regulatory-kpi-card__label">Projects Tracked</span>
+        <span class="regulatory-kpi-card__value regulatory-kpi-card__value--purple">{{ projectsTracked }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div>
+  <!-- C. Tabs — flat underline navigation at the page level -->
+  <div class="regulatory-tabs">
     <p-tabs [(value)]="activeTab">
       <p-tablist>
         <p-tab value="0">Frameworks</p-tab>
@@ -103,14 +104,13 @@
 
         <!-- Tab 0: Frameworks -->
         <p-tabpanel value="0">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-book"></i>
-            </div>
-            <span class="stat-card__title">Frameworks</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+          <div class="card-title">
+            <i class="pi pi-book"></i>
+            Frameworks
           </div>
-          <p-table [value]="frameworks" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+          <p-table [value]="frameworks" [paginator]="true" [rows]="10" styleClass="p-datatable-sm" [rowHover]="true">
             <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
@@ -143,25 +143,35 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
-              <tr><td colspan="7" class="text-center p-6">No frameworks found. Click "New Framework" to create one or seed system frameworks via the API.</td></tr>
+              <tr>
+                <td colspan="7">
+                  <div class="table-empty">
+                    <i class="pi pi-book"></i>
+                    <span>No frameworks found. Click "New Framework" to create one or seed system frameworks via the API.</span>
+                  </div>
+                </td>
+              </tr>
             </ng-template>
           </p-table>
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 1: Requirements -->
         <p-tabpanel value="1">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-list"></i>
-            </div>
-            <span class="stat-card__title">Requirements</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+          <div class="card-title">
+            <i class="pi pi-list"></i>
+            Requirements
           </div>
           @if (!selectedFramework) {
-            <div class="text-center p-6" style="color: var(--text-color-secondary)">Select a framework to view requirements.</div>
+            <div class="table-empty">
+              <i class="pi pi-filter"></i>
+              <span>Select a framework above to view its requirements.</span>
+            </div>
           } @else {
-            <p-table [value]="requirements" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+            <p-table [value]="requirements" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th style="width: 100px">Code</th>
@@ -190,21 +200,28 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
-                <tr><td colspan="7" class="text-center p-6">No requirements found. Run Auto-Map first.</td></tr>
+                <tr>
+                  <td colspan="7">
+                    <div class="table-empty">
+                      <i class="pi pi-list"></i>
+                      <span>No requirements found. Run Auto-Map first.</span>
+                    </div>
+                  </td>
+                </tr>
               </ng-template>
             </p-table>
           }
+          </div>
           </div>
         </p-tabpanel>
 
         <!-- Tab 2: Compliance Report -->
         <p-tabpanel value="2">
-          <div class="stat-card report-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-chart-pie"></i>
-            </div>
-            <span class="stat-card__title">Compliance Report</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked report-card">
+          <div class="card-title">
+            <i class="pi pi-chart-pie"></i>
+            Compliance Report
           </div>
 
           @if (!report) {
@@ -349,21 +366,24 @@
             }
           }
           </div>
+          </div>
         </p-tabpanel>
 
         <!-- Tab 3: Org Overview -->
         <p-tabpanel value="3">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-sitemap"></i>
-            </div>
-            <span class="stat-card__title">Organization Overview</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+          <div class="card-title">
+            <i class="pi pi-sitemap"></i>
+            Organization Overview
           </div>
           @if (!overview || !overview.projects?.length) {
-            <div class="text-center p-6" style="color: var(--text-color-secondary)">No overview data. Run Auto-Map on projects first.</div>
+            <div class="table-empty">
+              <i class="pi pi-sitemap"></i>
+              <span>No overview data. Run Auto-Map on projects first.</span>
+            </div>
           } @else {
-            <p-table [value]="getOverviewProjects()" styleClass="p-datatable-sm">
+            <p-table [value]="getOverviewProjects()" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Project</th>
@@ -388,19 +408,22 @@
             </p-table>
           }
           </div>
+          </div>
         </p-tabpanel>
 
         <!-- Tab 4: Gap Analysis -->
         <p-tabpanel value="4">
-          <div class="stat-card mb-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="stat-card__icon">
-              <i class="pi pi-search"></i>
-            </div>
-            <span class="stat-card__title">Gap Analysis</span>
+          <div class="tab-stack">
+          <div class="stat-card stat-card--stacked">
+          <div class="card-title">
+            <i class="pi pi-search"></i>
+            Gap Analysis
           </div>
           @if (!report) {
-            <div class="text-center p-6" style="color: var(--text-color-secondary)">Generate a report first to see gap analysis.</div>
+            <div class="table-empty">
+              <i class="pi pi-file-edit"></i>
+              <span>Generate a report first to see gap analysis.</span>
+            </div>
           } @else {
             <!-- Summary tiles — colored fill + saturated border per tier -->
             <div class="framework-meta framework-meta--cols-3">
@@ -462,6 +485,7 @@
               }
             }
           }
+          </div>
           </div>
         </p-tabpanel>
 
