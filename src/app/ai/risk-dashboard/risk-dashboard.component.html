@@ -1,17 +1,20 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Risk Dashboard</h1>
-      <p class="page-header__subtitle">Assess and monitor AI application risk levels</p>
+<div class="ai-page risk-page">
+  <!-- Hero Panel — title band + filters band, single rounded card -->
+  <section class="risk-hero">
+    <div class="risk-hero__band">
+      <div class="risk-hero__text">
+        <h1 class="risk-hero__title">
+          Risk Dashboard
+        </h1>
+        <p class="risk-hero__subtitle">
+          Assess and monitor AI application risk across safety, quality, performance and compliance.
+        </p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="risk-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -21,6 +24,7 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged()"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -31,113 +35,116 @@
           optionLabel="label"
           optionValue="value"
           (onChange)="periodChanged()"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- KPI Cards -->
-  <div class="stat-cards-grid mb-4">
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--blue">
+  <!-- KPI strip -->
+  <div class="risk-kpis">
+    <div class="risk-kpi-card">
+      <div class="risk-kpi-card__icon risk-kpi-card__icon--blue">
         <i class="pi pi-folder"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Total Projects</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-interactive, #006bd8)">{{ totalProjects }}</span>
+      <div class="risk-kpi-card__body">
+        <span class="risk-kpi-card__label">Total Projects</span>
+        <span class="risk-kpi-card__value risk-kpi-card__value--blue">{{ totalProjects }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.1); color: var(--flowx-error, #e62200);">
+    <div class="risk-kpi-card">
+      <div class="risk-kpi-card__icon risk-kpi-card__icon--red">
         <i class="pi pi-exclamation-triangle"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">High Risk</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:var(--flowx-error, #e62200)">{{ highRiskCount }}</span>
+      <div class="risk-kpi-card__body">
+        <span class="risk-kpi-card__label">High Risk</span>
+        <span class="risk-kpi-card__value risk-kpi-card__value--red">{{ highRiskCount }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--amber">
+    <div class="risk-kpi-card">
+      <div class="risk-kpi-card__icon risk-kpi-card__icon--yellow">
         <i class="pi pi-chart-bar"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Avg Score</span>
-        <span class="stat-card__value stat-card__value--lg">{{ avgScore }}</span>
+      <div class="risk-kpi-card__body">
+        <span class="risk-kpi-card__label">Avg Score</span>
+        <span class="risk-kpi-card__value">{{ avgScore }}</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__icon stat-card__icon--blue">
+    <div class="risk-kpi-card">
+      <div class="risk-kpi-card__icon risk-kpi-card__icon--purple">
         <i class="pi pi-file-check"></i>
       </div>
-      <div class="stat-card__content">
-        <span class="stat-card__label">Assessments</span>
-        <span class="stat-card__value stat-card__value--lg" style="color:#8b5cf6">{{ assessmentCount }}</span>
+      <div class="risk-kpi-card__body">
+        <span class="risk-kpi-card__label">Assessments</span>
+        <span class="risk-kpi-card__value risk-kpi-card__value--purple">{{ assessmentCount }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Risk Heatmap — Project Cards -->
-  <div class="flex align-items-center gap-2 mb-3 items-center">
-    <div class="stat-card__icon">
-      <i class="pi pi-th-large"></i>
+  <!-- Risk Heatmap — project cards -->
+  <section class="risk-section">
+    <div class="section-header">
+      <div class="section-header__left">
+        <h2 class="section-header__title">
+          <i class="pi pi-th-large"></i>
+          Risk Heatmap
+        </h2>
+        <span class="section-header__count">
+          {{ heatmapData.length }} project{{ heatmapData.length === 1 ? '' : 's' }}
+        </span>
+      </div>
     </div>
-    <span class="stat-card__title">Risk Heatmap</span>
-  </div>
 
-  @if (heatmapData.length === 0) {
-    <div class="stat-card mb-4">
-      <div class="text-center text-color-secondary p-4 w-full">No risk data available. Compute risk for projects to populate.</div>
-    </div>
-  } @else {
-    <div class="stat-cards-grid mb-4" style="grid-template-columns: repeat(1, 1fr);">
-      @for (app of heatmapData; track app.project_id) {
-        <div class="stat-card stat-card--stacked">
-          <!-- Card Header -->
-          <div class="flex align-items-center justify-between mb-3 w-full">
-            <div class="flex align-items-center gap-2 items-center">
-              <div class="stat-card__icon">
+    @if (heatmapData.length === 0) {
+      <div class="stat-card stat-card--stacked">
+        <div class="risk-empty">No risk data available. Compute risk for projects to populate.</div>
+      </div>
+    } @else {
+      <div class="risk-heatmap">
+        @for (app of heatmapData; track app.project_id) {
+          <div class="stat-card stat-card--stacked">
+            <div class="risk-card-head">
+              <div class="card-title">
                 <i class="pi pi-folder"></i>
+                <span>{{ app.project_name }}</span>
+                @if (app.overall_risk) {
+                  <p-tag [value]="app.overall_risk" [severity]="getRiskSeverity(app.overall_risk)"></p-tag>
+                }
               </div>
-              <span class="stat-card__title">{{ app.project_name }}</span>
-              @if (app.overall_risk) {
-                <p-tag [value]="app.overall_risk" [severity]="getRiskSeverity(app.overall_risk)"></p-tag>
+              <div class="risk-card-head__actions">
+                <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Profile" tooltipPosition="top" (click)="showProfile(app)"></p-button>
+                <p-button icon="pi pi-refresh" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Compute Risk" tooltipPosition="top" (click)="computeRiskForApp(app.project_id)"></p-button>
+              </div>
+            </div>
+
+            <div class="risk-card__metrics">
+              @for (dim of dimensions; track dim) {
+                <div class="risk-card__metric">
+                  <div class="risk-card__metric-row">
+                    <span class="risk-card__metric-label">{{ dim }}</span>
+                    <span class="risk-card__metric-value" [style.color]="getCellColor(app[dim])">{{ getCellText(app[dim]) }}</span>
+                  </div>
+                  <div class="risk-card__metric-track">
+                    <div class="risk-card__metric-fill"
+                         [style.width.%]="(app[dim] || 0) * 100"
+                         [style.background]="getCellColor(app[dim])"></div>
+                  </div>
+                </div>
               }
             </div>
-            <div class="flex align-items-center gap-1">
-              <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" pTooltip="View Profile" tooltipPosition="top" (click)="showProfile(app)"></p-button>
-              <p-button icon="pi pi-refresh" [rounded]="true" [text]="true" severity="primary" pTooltip="Compute Risk" tooltipPosition="top" (click)="computeRiskForApp(app.project_id)"></p-button>
-            </div>
           </div>
-          <!-- Dimension Scores -->
-          <div class="risk-card__metrics">
-            @for (dim of dimensions; track dim) {
-              <div class="risk-card__metric">
-                <div class="risk-card__metric-row">
-                  <span class="risk-card__metric-label">{{ dim }}</span>
-                  <span class="risk-card__metric-value" [style.color]="getCellColor(app[dim])">{{ getCellText(app[dim]) }}</span>
-                </div>
-                <div class="risk-card__metric-track">
-                  <div class="risk-card__metric-fill"
-                       [style.width.%]="(app[dim] || 0) * 100"
-                       [style.background]="getCellColor(app[dim])"></div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
-  }
+        }
+      </div>
+    }
+  </section>
 
   <!-- Risk Ranking -->
   <div class="stat-card stat-card--stacked">
-    <div class="flex align-items-center gap-2 mb-3 items-center">
-      <div class="stat-card__icon">
-        <i class="pi pi-sort-amount-down"></i>
-      </div>
-      <span class="stat-card__title">Risk Ranking</span>
+    <div class="card-title" style="margin-bottom: 24px;">
+      <i class="pi pi-sort-amount-down"></i>
+      Risk Ranking
     </div>
-    <p-table [value]="ranking" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
+    <p-table [value]="ranking" [paginator]="true" [rows]="20">
       <ng-template pTemplate="header">
         <tr>
           <th>Project</th>
@@ -150,7 +157,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-item>
         <tr>
-          <td class="font-semibold">{{ item.project_name }}</td>
+          <td>{{ item.project_name }}</td>
           <td>
             @if (item.overall_risk) {
               <p-tag [value]="item.overall_risk" [severity]="getRiskSeverity(item.overall_risk)"></p-tag>
@@ -162,12 +169,12 @@
           <td>{{ item.quality != null ? (item.quality * 100).toFixed(0) + '%' : '-' }}</td>
           <td>{{ item.performance != null ? (item.performance * 100).toFixed(0) + '%' : '-' }}</td>
           <td>
-            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" pTooltip="View Profile" tooltipPosition="top" (click)="showProfile(item)"></p-button>
+            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Profile" tooltipPosition="top" (click)="showProfile(item)"></p-button>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="6" class="text-center p-6">No ranking data.</td></tr>
+        <tr><td colspan="6" class="risk-empty">No ranking data.</td></tr>
       </ng-template>
     </p-table>
   </div>
