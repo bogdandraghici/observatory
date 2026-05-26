@@ -1,15 +1,14 @@
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Datasets</h1>
-      <p class="page-header__subtitle">Test data for evaluations</p>
+<div class="ai-page datasets-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="datasets-hero">
+    <div class="datasets-hero__band">
+      <div class="datasets-hero__text">
+        <h1 class="datasets-hero__title">Datasets</h1>
+        <p class="datasets-hero__subtitle">Curated test data for evaluation runs — group records into named sets and reuse them across experiments.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="datasets-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -20,6 +19,7 @@
           [showClear]="false"
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -32,12 +32,13 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Content -->
+  <!-- B. Content -->
   <dataset-list-widget
     [orgId]="selectedOrg"
     (addDataset)="showDialogDataset()"

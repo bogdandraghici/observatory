@@ -1,0 +1,367 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+:host {
+  display: block;
+}
+
+// ── A. Hero panel ────────────────────────────────────────────
+.platform-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.platform-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.platform-hero__text { min-width: 0; }
+
+.platform-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.platform-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  white-space: nowrap;
+
+  @media (max-width: 768px) { white-space: normal; }
+}
+
+.platform-hero__actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    justify-self: stretch;
+    flex-wrap: wrap;
+  }
+}
+
+.platform-hero__filters {
+  padding: 24px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 200px;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── Connection banner — when the cluster is unreachable ─────
+// Surfacing operational state; floats on the gray canvas between the
+// hero and the KPI strip. Side-stripe + saturated -50 fill follows the
+// design.md alert-row convention.
+.platform-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--flowx-space-32, 32px);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+
+  i { font-size: 18px; flex-shrink: 0; }
+
+  &__title { font-weight: 700; }
+  &__hint { color: var(--flowx-text-secondary); }
+
+  &--danger {
+    background: var(--flowx-red-50);
+    border: 1px solid var(--flowx-red-100, #fbd2cb);
+    border-left: 4px solid var(--flowx-red-500);
+    color: var(--flowx-red-600);
+
+    .platform-banner__title { color: var(--flowx-red-600); }
+  }
+}
+
+:host-context(.flowx-dark) .platform-banner--danger {
+  background: rgba(230, 34, 0, 0.18);
+  border-color: rgba(230, 34, 0, 0.30);
+  border-left-color: var(--flowx-red-300, #ee6b54);
+  color: var(--flowx-red-300, #ee6b54);
+
+  .platform-banner__title { color: var(--flowx-red-300, #ee6b54); }
+  .platform-banner__hint { color: rgba(255, 255, 255, 0.65); }
+}
+
+// ── B. KPI strip — 6-up tonal cards ──────────────────────────
+// Mirrors the shared `.risk-kpi-card` / `.policies-kpi-card` family
+// but extends to a 6-column grid for the cluster overview. Each card
+// keeps the 44×44 tonal icon tile + 28/800 tabular-nums value.
+.platform-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: var(--flowx-space-32, 32px);
+
+  @media (max-width: 1440px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+}
+
+.platform-kpi-card {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-16, 16px);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  min-width: 0;
+
+  &:hover {
+    box-shadow: var(--flowx-shadow-m);
+    transform: translateY(-2px);
+  }
+}
+
+.platform-kpi-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--flowx-neutrals-100);
+  color: var(--flowx-neutrals-500);
+
+  &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-500); }
+  &--green  { background: var(--flowx-green-50);  color: var(--flowx-green-600, #008060); }
+  &--red    { background: var(--flowx-red-50);    color: var(--flowx-red-500); }
+  &--yellow { background: var(--flowx-yellow-50); color: var(--flowx-yellow-600); }
+  &--purple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+}
+
+.platform-kpi-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.platform-kpi-card__label {
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--flowx-text-secondary);
+  margin-bottom: 6px;
+}
+
+.platform-kpi-card__value {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--flowx-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  // Text-mode tiles (cluster name, health label) drop to 18px so
+  // multi-character strings fit comfortably in a 6-up grid column.
+  &--text { font-size: 18px; line-height: 1.2; }
+
+  &--blue   { color: var(--flowx-blue-500); }
+  &--green  { color: var(--flowx-green-600, #008060); }
+  &--red    { color: var(--flowx-red-500); }
+  &--yellow { color: var(--flowx-yellow-600); }
+  &--purple { color: #8b5cf6; }
+}
+
+.platform-kpi-card__value-suffix {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--flowx-text-secondary);
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+
+// ── C. Tabs — flat underline navigation at the page level ──
+.platform-tabs { margin-top: 0; }
+
+::ng-deep .platform-page .platform-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+// ── Tab content stack — 32px gap between sub-card sections.
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
+// ── Inline filter group inside a card header — uses a row layout
+// instead of the hero's column layout so a single label-over-select
+// pair tucks neatly next to the card title.
+.filter-group--inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+    white-space: nowrap;
+  }
+}
+
+// ── Empty-state inside a table — icon + text, centered.
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  span { font-size: 0.875rem; }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .platform-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .platform-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .platform-kpi-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30); }
+
+  .platform-kpi-card__icon {
+    background: rgba(255, 255, 255, 0.04);
+
+    &--blue   { background: rgba(51, 137, 224, 0.20); color: var(--flowx-blue-300); }
+    &--green  { background: rgba(0, 128, 96, 0.22);   color: var(--flowx-green-300, #4dbb9a); }
+    &--red    { background: rgba(230, 34, 0, 0.20);   color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { background: rgba(254, 185, 19, 0.20); color: var(--flowx-yellow-400, #fec742); }
+    &--purple { background: rgba(139, 92, 246, 0.22); color: #b794f6; }
+  }
+
+  .platform-kpi-card__value {
+    &--blue   { color: var(--flowx-blue-300); }
+    &--green  { color: var(--flowx-green-300, #4dbb9a); }
+    &--red    { color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { color: var(--flowx-yellow-400, #fec742); }
+    &--purple { color: #b794f6; }
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .platform-page .platform-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
+  }
+}

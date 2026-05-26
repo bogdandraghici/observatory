@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment'
 @Component({
   selector: 'app-platform',
   templateUrl: './platform.component.html',
+  styleUrls: ['./platform.component.scss'],
   providers: [MessageService],
   standalone: false,
 })

@@ -8,6 +8,7 @@ import { resolveDefaultAppOrg } from '../utils/default-app'
 
 @Component({
     templateUrl: './prompts.component.html',
+    styleUrls: ['./prompts.component.scss'],
     standalone: false,
     providers: [MessageService],
 })
