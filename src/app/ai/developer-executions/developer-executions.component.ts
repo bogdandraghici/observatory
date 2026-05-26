@@ -5,6 +5,7 @@ import { Meta, Title } from '@angular/platform-browser'
 
 @Component({
     templateUrl: './developer-executions.component.html',
+    styleUrl: './developer-executions.component.scss',
     standalone: false
 })
 export class DeveloperExecutionsComponent implements OnInit {
