@@ -1,26 +1,25 @@
 <div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">LLM Calls</h1>
-      <p class="page-header__subtitle">Monitor and analyze your LLM API calls</p>
+  <!-- A. Hero panel — title band (with period segmented control) + filters band -->
+  <section class="llm-hero">
+    <div class="llm-hero__band">
+      <div class="llm-hero__text">
+        <h1 class="llm-hero__title">LLM Calls</h1>
+        <p class="llm-hero__subtitle">Monitor and analyze your LLM API calls.</p>
+      </div>
+
+      <div class="llm-hero__scope">
+        <p-selectButton
+          [options]="periods"
+          [(ngModel)]="selectedPeriod"
+          [multiple]="false"
+          optionLabel="name"
+          optionValue="value"
+          styleClass="period-selector"
+        ></p-selectButton>
+      </div>
     </div>
 
-    <div class="page-header__right">
-      <p-selectButton
-        [options]="periods"
-        [(ngModel)]="selectedPeriod"
-        [multiple]="false"
-        optionLabel="name"
-        optionValue="value"
-        styleClass="period-selector"
-      ></p-selectButton>
-    </div>
-  </header>
-
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="llm-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -32,6 +31,7 @@
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
           styleClass="filter-dropdown"
+          appendTo="body"
         ></p-select>
       </div>
 
@@ -46,6 +46,7 @@
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
           styleClass="filter-dropdown"
+          appendTo="body"
         ></p-select>
       </div>
 
@@ -60,12 +61,13 @@
           (onChange)="appChanged($event)"
           placeholder="Select Project"
           styleClass="filter-dropdown"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- LLM Calls Table -->
+  <!-- B. LLM Calls table widget (unchanged) -->
   <llmcalls-list-widget
     [appId]="selectedApp"
     [hours]="selectedPeriod"

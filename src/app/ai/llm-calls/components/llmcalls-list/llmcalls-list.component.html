@@ -1,12 +1,10 @@
-<div class="stat-card stat-card--stacked">
-  <div class="flex items-center justify-between mb-3 w-full">
-    <div class="flex items-center gap-2">
-      <div class="stat-card__icon">
-        <i class="pi pi-bolt"></i>
-      </div>
-      <span class="stat-card__title">LLM Calls</span>
+<div class="stat-card stat-card--stacked llm-calls-card">
+  <div class="llm-calls-card__head">
+    <div class="card-title">
+      <i class="pi pi-bolt"></i>
+      LLM Calls
     </div>
-    <div class="flex items-center gap-2">
+    <div class="llm-calls-card__actions">
       <p-select
         [options]="agents"
         [(ngModel)]="selectedAgent"
@@ -14,6 +12,7 @@
         [showClear]="true"
         (onChange)="filterByAgent($event)"
         placeholder="Filter by agent"
+        appendTo="body"
       ></p-select>
       <span class="p-input-icon-left">
         <input
