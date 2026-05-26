@@ -958,7 +958,35 @@
 
 // ── Execution History ────────────────────────────────────────
 .executions-section {
-  @include tokens.table-modern;
+  // Table chrome — overrides the global `.ai-page .p-datatable` rules
+  // in flowx-theme.scss to match the drift design reference spec:
+  // bigger 14×20 padding, 14/1 semibold body, 11/0.08em uppercase
+  // header tinted with surface-secondary. Wrapped in `::ng-deep`
+  // because PrimeNG renders the table internals outside this
+  // component's view encapsulation scope — see design.md > PrimeNG >
+  // p-table. Rows stay `cursor: pointer` (inherited from the global
+  // rule) since clicking a row opens the evaluation detail drawer.
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      padding: 14px 20px;
+    }
+
+    .p-datatable-tbody > tr > td {
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      padding: 14px 20px;
+      // Keep numbers / dates / pills on a single line. The global rule
+      // doesn't set nowrap on body cells, but every column in this
+      // table is short text or a pill, so wrapping just leaves stray
+      // line breaks on long dates.
+      white-space: nowrap;
+    }
+  }
 
   .table-empty {
     display: flex;

@@ -368,9 +368,82 @@ Flat underline style.
 
 ### `<p-table>`
 
-Use the existing `tokens.table-modern` mixin from
-`_shared/ai-design-tokens.scss`. Don't add new table styling — only
-restyle row pills (score, status) via `.eval-score-badge`-style classes.
+**Base chrome (global).** `flowx-theme.scss` ships an `.ai-page
+.p-datatable` block (~line 1029) — the canonical "tight, denser list
+table" used everywhere: 10px/700/0.04em uppercase headers with
+transparent background, 12/18 body cells, 11×14 padding, `neutrals-100`
+hairline dividers, 60ms hover to `neutrals-50`, `cursor: pointer` rows,
+last-row drops its border, transparent paginator with a `neutrals-100`
+top rule. The `tokens.table-modern` mixin in
+`_shared/ai-design-tokens.scss` emits the same rules and exists so
+non-`.ai-page` surfaces can opt in. **Don't tweak the global block to
+re-skin a single page** — override per page (see below).
+
+**View-encapsulation gotcha.** Angular's emulated encapsulation appends
+`[_ngcontent-cXXX]` attribute selectors to component-scoped CSS, but
+PrimeNG renders the `<th>` / `<td>` cells from its own component
+context — those cells never get the host component's `_ngcontent`
+attribute. So a plain component-scoped rule (or even
+`@include tokens.table-modern` inside a component class) compiles fine
+but **silently matches nothing** — the global `.ai-page .p-datatable`
+rules keep winning.
+
+**Per-page override (when a page needs a different spec).** Wrap the
+overrides in `::ng-deep` and scope them to a local wrapper class so
+they only apply within that page's cards:
+
+```scss
+.{page}-card {
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      padding: 14px 20px;
+    }
+    .p-datatable-tbody > tr {
+      cursor: default;  // drop when rows aren't clickable
+      > td {
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 600;
+        padding: 14px 20px;
+      }
+    }
+  }
+}
+```
+
+The `.{page}-card` prefix scopes the rule to the page; `::ng-deep`
+breaks the encapsulation so it actually reaches the rendered cells.
+**Don't drop the local-wrapper scope** — without it the override
+bleeds globally and re-skins every table in the app.
+
+**Restyling pills inside cells** (score, status, severity badges)
+doesn't need `::ng-deep` because the pill markup lives inside
+`<ng-template pTemplate="body">` — that template content is host-template
+content, so it gets the `_ngcontent` attribute and ordinary
+component-scoped classes (`.eval-score-badge`, etc.) work fine.
+
+**Drift table spec** (used on the Drift Monitor page; matches the
+"Drift Monitor.html" design reference). Use these values when a page
+needs the bigger, more breathing table chrome:
+
+| Token | Value |
+|---|---|
+| Header font | 11/1.2 · 700 · uppercase · `0.08em` letter-spacing |
+| Header padding | `14px 20px` |
+| Header background | `var(--flowx-surface-secondary)` (tinted band) |
+| Body font | 14/1 · 600 (semibold) |
+| Body padding | `14px 20px` |
+| Cell border | `1px solid var(--flowx-neutrals-100)` (from the global rule) |
+| Last row | border-bottom drops off (from the global rule) |
+| Cursor | `default` if rows aren't clickable; otherwise inherit `pointer` |
+
+The denser **`.ai-page .p-datatable` default** (10/0.04em header, 12/18
+body, 11×14 padding, no header tint) is still right for any page that
+needs more rows on screen — leave it untouched there.
 
 ### `<p-dialog>`, `<p-drawer>`, `<p-toast>`
 

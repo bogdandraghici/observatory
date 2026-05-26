@@ -206,6 +206,36 @@
   border-radius: var(--flowx-radius-20, 20px);
   display: flex;
   flex-direction: column;
+
+  // Table chrome — overrides the global `.ai-page .p-datatable` rules in
+  // flowx-theme.scss to match the drift design reference: bigger 14×20
+  // padding, 14/1 semibold body, 11/0.08em uppercase header tinted with
+  // surface-secondary. Wrapped in `::ng-deep` because PrimeNG renders
+  // the table's <th>/<td> outside this component's view encapsulation
+  // scope, so non-deep rules never reach those elements.
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      padding: 14px 20px;
+    }
+
+    .p-datatable-tbody > tr {
+      // Drift table rows aren't clickable — undo the `cursor: pointer`
+      // the global rule sets (it assumes row click handlers like the
+      // Execution History table on Agent Evaluations).
+      cursor: default;
+
+      > td {
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 600;
+        padding: 14px 20px;
+      }
+    }
+  }
 }
 
 .drift-card__title {

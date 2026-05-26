@@ -125,7 +125,12 @@
   --flowx-font-monospace: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 
   // PrimeNG bridge (re-map existing surface/text vars to FlowX)
-  --surface-ground:          var(--flowx-surface-secondary);
+  // `--surface-ground` is the page canvas color (body, .layout-wrapper,
+  // .layout-main-container). Kept distinct from `--flowx-surface-secondary`
+  // (#f7f8f9) so the page bg sits a touch off-white while leaving the
+  // secondary surface tone untouched for cards (API key bar, docs band,
+  // table header tint, etc.).
+  --surface-ground:          #f5f6f8;
   --surface-section:         var(--flowx-surface-primary);
   --surface-card:            var(--flowx-surface-primary);
   --surface-overlay:         var(--flowx-surface-primary);
@@ -154,7 +159,11 @@
 // ── Layout body when an /ai page is active ──────────────────
 .layout-main-container:has(.ai-page),
 .layout-main-container:has(.home-page) {
-  background: var(--flowx-surface-secondary, #f7f8f9);
+  // Page canvas inherits `--surface-ground` (#fafbfc in light) so the
+  // page area, body, sidebar background, and layout wrapper all stay
+  // on the same tone. Cards on the page use `--flowx-surface-primary`
+  // (#ffffff), so they float against this slightly cooler canvas.
+  background: var(--surface-ground);
   // 40px gap on all sides between content and the chrome edges.
   // Top adds the 4rem fixed-topbar height so the visual gap below
   // the topbar is also 40px.
