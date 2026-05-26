@@ -5,613 +5,671 @@
   [dismissible]="false"
   [closeOnEscape]="true"
   [blockScroll]="true"
-  [style]="{ width: '75vw' }"
+  [style]="{ width: '92vw' }"
   position="right"
-  class="llm-details"
+  styleClass="llm-details"
   >
   <ng-template pTemplate="headless">
-    <div class="flex flex-col h-full">
-      <!-- Header bar (preserved) -->
-      <div
-        class="flex items-center justify-between px-6 p-4 shrink-0 llm-header"
-        >
-        <span class="inline-flex items-center gap-2">
-          <p-button
-            type="button"
-            (click)="closeCallback($event)"
-            icon="pi pi-times"
-            rounded="true"
-            [outlined]="false"
-            severity="primary"
-            styleClass="llm-details-close"
-          ></p-button>
-        </span>
-        @if (selectedLLMCall) {
-          <div
-            class="flex grow p-4 gap-2 items-center"
-            >
-            <span
-              ><b> {{ formatTime(selectedLLMCall?.time) }}</b></span
-              >
-              <p-tag
-                [value]="selectedLLMCall?.agent"
-                severity="info"
-                [rounded]="true"
-              ></p-tag>
-            </div>
-          }
-          <span class="flex items-center">
-            <p-button
-              label="Annotate"
-              icon="pi pi-file-edit"
-              [outlined]="false"
-              severity="secondary"
-              styleClass="ml-3"
-              (click)="annotate.toggle($event)"
-            ></p-button>
-            <p-popover #annotate>
-              <div style="min-width: 280px">
-                <h5 class="mt-0 mb-3">Correctness</h5>
-                <div class="flex gap-2">
-                  <p-button
-                    label="Neutral"
-                    icon="pi pi-minus"
-                    [severity]="selectedRun?.data?.correctness === -1 ? 'info' : 'contrast'"
-                    [text]="selectedRun?.data?.correctness !== -1"
-                    [outlined]="selectedRun?.data?.correctness === -1"
-                    pTooltip="Set the response neutral"
-                    (onClick)="setCorrectness($event, selectedRun, -1)"
-                  ></p-button>
-                  <p-button
-                    label="Bad"
-                    icon="pi pi-thumbs-down"
-                    [severity]="selectedRun?.data?.correctness === 0 ? 'danger' : 'contrast'"
-                    [text]="selectedRun?.data?.correctness !== 0"
-                    [outlined]="selectedRun?.data?.correctness === 0"
-                    pTooltip="Set the response bad"
-                    (onClick)="setCorrectness($event, selectedRun, 0)"
-                  ></p-button>
-                  <p-button
-                    label="Good"
-                    icon="pi pi-thumbs-up"
-                    [severity]="selectedRun?.data?.correctness === 1 ? 'success' : 'contrast'"
-                    [text]="selectedRun?.data?.correctness !== 1"
-                    [outlined]="selectedRun?.data?.correctness === 1"
-                    pTooltip="Set the response good"
-                    (onClick)="setCorrectness($event, selectedRun, 1)"
-                  ></p-button>
-                </div>
-                <p class="mt-3 mb-0 text-sm" style="color: var(--text-color-secondary)">
-                  Qualifying responses will help us generate and use RLHF to train our model.
-                </p>
-              </div>
-            </p-popover>
+    <div class="trace-drawer">
+      <!-- ── Header band — soft blue gradient wash, close + title + actions ── -->
+      <header class="trace-drawer__header">
+        <p-button
+          type="button"
+          (click)="closeCallback($event)"
+          icon="pi pi-times"
+          rounded="true"
+          [outlined]="false"
+          severity="primary"
+          styleClass="llm-details-close"
+        ></p-button>
 
-          </span>
+        <div class="trace-drawer__header-text">
+          @if (selectedLLMCall) {
+            <div class="trace-drawer__eyebrow">
+              <span class="trace-drawer__eyebrow-tag">Trace details</span>
+              <span class="trace-drawer__eyebrow-dot">•</span>
+              <span class="trace-drawer__eyebrow-id">{{ selectedLLMCall?.request_id }}</span>
+            </div>
+            <h1 class="trace-drawer__title">
+              <span class="trace-drawer__title-time">{{ formatTime(selectedLLMCall?.time) }}</span>
+              <span class="trace-drawer__title-sep">·</span>
+              <span class="trace-drawer__title-agent">{{ selectedLLMCall?.agent || 'Trace' }}</span>
+            </h1>
+          } @else {
+            <h1 class="trace-drawer__title">Trace details</h1>
+          }
         </div>
-        <p-toast position="bottom-left"></p-toast>
 
-        <!-- ### -->
-        <!-- VIEW TRACE -->
-        <!-- ### -->
-          <!-- Summary Bar -->
-          @if (dataRuns.length > 0) {
-            <div class="summary-bar">
-              <div class="flex items-center gap-2">
-                <i class="pi pi-list" style="color: var(--text-color-secondary)"></i>
-                <span class="text-sm font-medium">{{ dataRuns.length }} nodes</span>
+        <div class="trace-drawer__header-actions">
+          <p-button
+            label="Annotate"
+            icon="pi pi-file-edit"
+            severity="primary"
+            (click)="annotate.toggle($event)"
+            styleClass="trace-drawer__annotate-btn"
+          ></p-button>
+          <p-popover #annotate>
+            <div style="min-width: 280px">
+              <h5 class="mt-0 mb-3">Correctness</h5>
+              <div class="flex gap-2">
+                <p-button
+                  label="Neutral"
+                  icon="pi pi-minus"
+                  [severity]="selectedRun?.data?.correctness === -1 ? 'info' : 'contrast'"
+                  [text]="selectedRun?.data?.correctness !== -1"
+                  [outlined]="selectedRun?.data?.correctness === -1"
+                  pTooltip="Set the response neutral"
+                  (onClick)="setCorrectness($event, selectedRun, -1)"
+                ></p-button>
+                <p-button
+                  label="Bad"
+                  icon="pi pi-thumbs-down"
+                  [severity]="selectedRun?.data?.correctness === 0 ? 'danger' : 'contrast'"
+                  [text]="selectedRun?.data?.correctness !== 0"
+                  [outlined]="selectedRun?.data?.correctness === 0"
+                  pTooltip="Set the response bad"
+                  (onClick)="setCorrectness($event, selectedRun, 0)"
+                ></p-button>
+                <p-button
+                  label="Good"
+                  icon="pi pi-thumbs-up"
+                  [severity]="selectedRun?.data?.correctness === 1 ? 'success' : 'contrast'"
+                  [text]="selectedRun?.data?.correctness !== 1"
+                  [outlined]="selectedRun?.data?.correctness === 1"
+                  pTooltip="Set the response good"
+                  (onClick)="setCorrectness($event, selectedRun, 1)"
+                ></p-button>
               </div>
-              <div class="flex items-center gap-2">
-                <i class="pi pi-clock" style="color: var(--text-color-secondary)"></i>
-                <span class="text-sm font-medium">{{ getTotalDuration() }}s</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="pi pi-bolt" style="color: var(--text-color-secondary)"></i>
-                <span class="text-sm font-medium">{{ getTotalTokens() }} tokens</span>
-              </div>
-              @if (getTotalCost() > 0) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-dollar" style="color: var(--text-color-secondary)"></i>
-                  <span class="text-sm font-medium">{{ formatCost(getTotalCost()) }}</span>
-                </div>
-              }
-              <div class="flex items-center gap-1">
-                @for (typeStat of getTypeStats(); track typeStat.type) {
-                  <p-tag
-                    [value]="typeStat.type + ' (' + typeStat.count + ')'"
-                    [severity]="getTypeSeverity(typeStat.type)"
-                    [style]="{ 'font-size': '0.7rem' }"
-                  ></p-tag>
-                }
-              </div>
-              @if (getTraceOcrSummary()) {
-                <div class="flex items-center gap-2" style="border-left: 1px solid var(--surface-border); padding-left: 8px;">
-                  <i class="pi pi-file" style="color: var(--text-color-secondary)"></i>
-                  @if (getTraceOcrSummary().ocr_mean_score != null) {
-                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
-                      OCR {{ (getTraceOcrSummary().ocr_mean_score * 100).toFixed(0) }}%
-                    </span>
-                  }
-                  @if (getTraceOcrSummary().doc_confidence != null) {
-                    <span class="text-sm font-medium" [style.color]="getTraceOcrSummary().doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
-                      Conf {{ (getTraceOcrSummary().doc_confidence * 100).toFixed(0) }}%
-                    </span>
-                  }
-                  @if (getTraceOcrSummary().page_count != null) {
-                    <span class="text-sm font-medium">{{ getTraceOcrSummary().page_count }} pages</span>
-                  }
-                </div>
-              }
+              <p class="mt-3 mb-0 text-sm" style="color: var(--flowx-text-secondary)">
+                Qualifying responses will help us generate and use RLHF to train our model.
+              </p>
+            </div>
+          </p-popover>
+        </div>
+      </header>
+
+      <p-toast position="bottom-left"></p-toast>
+
+      <!-- ── Summary band — 4 KPI tiles + count pills ── -->
+      @if (dataRuns.length > 0) {
+        <section class="trace-drawer__summary">
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-list"></i>Nodes</span>
+            <span class="trace-kpi__value">{{ dataRuns.length }}</span>
+          </div>
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-clock"></i>Duration</span>
+            <span class="trace-kpi__value trace-kpi__value--green">{{ getTotalDuration() }}s</span>
+          </div>
+          <div class="trace-kpi">
+            <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Total tokens</span>
+            <span class="trace-kpi__value">{{ getTotalTokens() }}</span>
+          </div>
+          @if (getTotalCost() > 0) {
+            <div class="trace-kpi">
+              <span class="trace-kpi__label"><i class="pi pi-dollar"></i>Total cost</span>
+              <span class="trace-kpi__value trace-kpi__value--blue">{{ formatCost(getTotalCost()) }}</span>
             </div>
           }
 
-          <!-- Body: Tree + Tabs -->
-          <div class="flex flex-1 overflow-hidden">
-            <!-- Left: Enhanced Tree Sidebar -->
-            <div class="tree-sidebar">
-              <p-tree
-                [value]="runs"
-                class="w-full h-full"
-                selectionMode="single"
-                [(selection)]="selectedRun"
-                (onNodeSelect)="onNodeSelect($event)"
-                >
-                <ng-template let-node pTemplate="default">
-                  <div class="flex flex-col gap-1 py-1">
-                    <div class="flex items-center gap-2">
-                      <ng-icon
-                        [name]="getNodeIcon(node.data?.type)"
-                        size="14"
-                      ></ng-icon>
-                      <span class="text-sm font-medium">{{ node.label }}</span>
+          <div class="trace-drawer__count-pills">
+            @for (typeStat of getTypeStats(); track typeStat.type) {
+              <span class="count-pill" [class]="'count-pill--' + typeStat.type">
+                {{ typeStat.type }}
+                <span class="count-pill__count">{{ typeStat.count }}</span>
+              </span>
+            }
+          </div>
+
+          @if (getTraceOcrSummary()) {
+            <div class="trace-drawer__ocr">
+              <i class="pi pi-file"></i>
+              @if (getTraceOcrSummary().ocr_mean_score != null) {
+                <span class="trace-drawer__ocr-stat" [style.color]="getTraceOcrSummary().ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
+                  OCR {{ (getTraceOcrSummary().ocr_mean_score * 100).toFixed(0) }}%
+                </span>
+              }
+              @if (getTraceOcrSummary().doc_confidence != null) {
+                <span class="trace-drawer__ocr-stat" [style.color]="getTraceOcrSummary().doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-orange-500, #fd6b1c)'">
+                  Conf {{ (getTraceOcrSummary().doc_confidence * 100).toFixed(0) }}%
+                </span>
+              }
+              @if (getTraceOcrSummary().page_count != null) {
+                <span class="trace-drawer__ocr-stat">{{ getTraceOcrSummary().page_count }} pages</span>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      <!-- ── Body grid — Call sequence rail (left) + content card (right) ── -->
+      <div class="trace-drawer__body">
+        <!-- Left: tree sidebar wrapped in a card -->
+        <aside class="trace-drawer__rail">
+          <div class="trace-drawer__rail-head">
+            <i class="pi pi-sitemap"></i>
+            <span class="trace-drawer__rail-title">Call sequence</span>
+            <span class="trace-drawer__rail-count">{{ dataRuns.length }} nodes</span>
+          </div>
+          <div class="trace-drawer__rail-body">
+            <p-tree
+              [value]="runs"
+              class="w-full h-full"
+              selectionMode="single"
+              [(selection)]="selectedRun"
+              (onNodeSelect)="onNodeSelect($event)"
+              >
+              <ng-template let-node pTemplate="default">
+                <div class="trace-node">
+                  <div class="trace-node__head">
+                    <span class="trace-node__icon" [class.trace-node__icon--llm]="node.data?.type === 'llm'" [class.trace-node__icon--chain]="node.data?.type === 'chain' || node.data?.type === 'agent'" [class.trace-node__icon--tool]="node.data?.type === 'tool'" [class.trace-node__icon--retriever]="node.data?.type === 'retriever'" [class.trace-node__icon--node]="node.data?.type === 'node'">
+                      <ng-icon [name]="getNodeIcon(node.data?.type)" size="13"></ng-icon>
+                    </span>
+                    <span class="trace-node__title">{{ node.label }}</span>
+                  </div>
+                  <div class="trace-node__pills">
+                    @if (node.data?.type) {
+                      <span class="kind-pill" [class]="'kind-pill--' + node.data.type">{{ node.data.type }}</span>
+                    }
+                    <span class="status-pill" [class]="'status-pill--' + (node.data?.status === 'success' ? 'success' : node.data?.status === 'error' ? 'error' : 'warn')">
+                      <span class="status-pill__dot"></span>
+                      {{ node.data?.status }}
+                    </span>
+                    @if (node.data?.duration != null) {
+                      <span class="duration-pill">
+                        <i class="pi pi-clock"></i>
+                        {{ node.data.duration }}s
+                      </span>
+                    }
+                  </div>
+                  @if (node.data?.node_type) {
+                    <div class="trace-node__type">
+                      <span
+                        class="trace-node__type-tag"
+                        [style]="{ 'background-color': getNodeTypeColor(node.data.node_type) + '20', 'color': getNodeTypeColor(node.data.node_type) }"
+                      >{{ node.data.node_type }}</span>
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap ml-5">
-                      @if (node.data?.type) {
-                        <p-tag
-                          [value]="node.data.type"
-                          [severity]="getTypeSeverity(node.data.type)"
-                          [style]="{ 'font-size': '0.65rem' }"
-                        ></p-tag>
-                      }
-                      <p-tag
-                        [value]="node.data?.status"
-                        [severity]="node.data?.status === 'success' ? 'success' : node.data?.status === 'error' ? 'danger' : 'warn'"
-                        [style]="{ 'font-size': '0.65rem' }"
-                      ></p-tag>
-                      @if (node.data?.duration != null) {
-                        <span class="text-xs" style="color: var(--text-color-secondary)">
-                          <i class="pi pi-clock" style="font-size: 0.65rem"></i>
-                          {{ node.data.duration }}s
-                        </span>
-                      }
-                      @if (node.data?.node_type) {
-                        <span
-                          class="text-xs font-medium px-1 rounded"
-                          [style]="{ 'background-color': getNodeTypeColor(node.data.node_type) + '20', 'color': getNodeTypeColor(node.data.node_type), 'font-size': '0.6rem' }"
-                        >{{ node.data.node_type }}</span>
-                      }
+                  }
+                  @if (node.data?.prompt_tokens || node.data?.completion_tokens || node.data?.cost > 0) {
+                    <div class="trace-node__meta">
                       @if (node.data?.prompt_tokens || node.data?.completion_tokens) {
-                        <span class="text-xs" style="color: var(--text-color-secondary)">
-                          <i class="pi pi-bolt" style="font-size: 0.65rem"></i>
+                        <span class="trace-node__meta-item">
+                          <i class="pi pi-bolt"></i>
                           {{ (node.data?.prompt_tokens || 0) + (node.data?.completion_tokens || 0) }}
                         </span>
                       }
                       @if (node.data?.cost > 0) {
-                        <span class="text-xs" style="color: var(--text-color-secondary)">
+                        <span class="trace-node__meta-item">
+                          <i class="pi pi-dollar"></i>
                           {{ formatCost(node.data.cost) }}
                         </span>
                       }
-                      @for (tag of node.data?.tags; track tag) {
-                        <div class="tag">{{ tag }}</div>
+                    </div>
+                  }
+                  @if (node.data?.tags?.length) {
+                    <div class="trace-node__tags">
+                      @for (tag of node.data.tags; track tag) {
+                        <span class="trace-node__tag">{{ tag }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </ng-template>
+            </p-tree>
+          </div>
+        </aside>
+
+        <!-- Right: content card with tabs -->
+        @if (selectedRun) {
+          <div class="trace-drawer__content">
+            <p-tabs [value]="activeTab" (valueChange)="activeTab = $event; tabChanged($event)">
+              <p-tablist>
+                <p-tab value="overview">Overview</p-tab>
+                <p-tab value="timeline">Timeline</p-tab>
+                <p-tab value="run">Run</p-tab>
+                @if (selectedRun?.data?.graph) {
+                  <p-tab value="graph">Graph</p-tab>
+                }
+                <p-tab value="metadata">Metadata</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+
+                <!-- Overview Tab: Flat runs table -->
+                <p-tabpanel value="overview">
+                  <div class="trace-pane">
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-table"></i></span>
+                        <span class="trace-section__title">All runs</span>
+                        <span class="trace-section__count">{{ dataRuns.length }}</span>
+                      </div>
+                      @if (dataRuns.length > 0) {
+                        <p-table
+                          [value]="dataRuns"
+                          [tableStyle]="{ 'min-width': '40rem' }"
+                          selectionMode="single"
+                          [(selection)]="selectedTableRun"
+                          (onRowSelect)="onTableRowSelect($event)"
+                          dataKey="id"
+                          styleClass="p-datatable-sm trace-runs-table"
+                        >
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th style="width: 3rem"></th>
+                              <th>Name</th>
+                              <th>Type</th>
+                              <th>Node<br />Type</th>
+                              <th>Status</th>
+                              <th>Duration</th>
+                              <th>Prompt<br />Tokens</th>
+                              <th>Completion<br />Tokens</th>
+                              <th>Cost</th>
+                              <th>Parent</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-run>
+                            <tr [pSelectableRow]="run">
+                              <td>
+                                <ng-icon [name]="getNodeIcon(run.type)" size="14"></ng-icon>
+                              </td>
+                              <td class="font-medium">{{ run.name }}</td>
+                              <td>
+                                <span class="kind-pill" [class]="'kind-pill--' + run.type">{{ run.type }}</span>
+                              </td>
+                              <td>
+                                @if (run.node_type) {
+                                  <span
+                                    class="trace-node__type-tag"
+                                    [style]="{ 'background-color': getNodeTypeColor(run.node_type) + '20', 'color': getNodeTypeColor(run.node_type) }"
+                                  >{{ run.node_type }}</span>
+                                }
+                              </td>
+                              <td>
+                                <span class="status-pill" [class]="'status-pill--' + (run.status === 'success' ? 'success' : run.status === 'error' ? 'error' : 'warn')">
+                                  <span class="status-pill__dot"></span>
+                                  {{ run.status }}
+                                </span>
+                              </td>
+                              <td>
+                                @if (run.duration != null) {
+                                  <span>{{ run.duration }}s</span>
+                                }
+                              </td>
+                              <td>{{ run.prompt_tokens || 0 }}</td>
+                              <td>{{ run.completion_tokens || 0 }}</td>
+                              <td>{{ formatCost(run.cost) }}</td>
+                              <td>
+                                @if (!run.parent_run) {
+                                  <span class="trace-root-pill">root</span>
+                                } @else {
+                                  <span class="trace-parent-name">{{ getParentName(run.parent_run) }}</span>
+                                }
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      } @else {
+                        <div class="trace-empty">
+                          <i class="pi pi-database"></i>
+                          <span>No runs found.</span>
+                        </div>
                       }
                     </div>
                   </div>
-                </ng-template>
-              </p-tree>
-            </div>
+                </p-tabpanel>
 
-            <!-- Right: v19+ Tabs -->
-            @if (selectedRun) {
-              <div class="flex flex-col flex-1 overflow-auto">
-                <p-tabs [value]="activeTab" (valueChange)="activeTab = $event; tabChanged($event)">
-                  <p-tablist>
-                    <p-tab value="overview">Overview</p-tab>
-                    <p-tab value="timeline">Timeline</p-tab>
-                    <p-tab value="run">Run</p-tab>
-                    @if (selectedRun?.data?.graph) {
-                      <p-tab value="graph">Graph</p-tab>
-                    }
-                    <p-tab value="metadata">Metadata</p-tab>
-                  </p-tablist>
-                  <p-tabpanels>
-
-                    <!-- Overview Tab: Flat runs table -->
-                    <p-tabpanel value="overview">
-                      <div class="p-4">
-                        @if (dataRuns.length > 0) {
-                          <p-table
-                            [value]="dataRuns"
-                            [tableStyle]="{ 'min-width': '40rem' }"
-                            selectionMode="single"
-                            [(selection)]="selectedTableRun"
-                            (onRowSelect)="onTableRowSelect($event)"
-                            dataKey="id"
-                            styleClass="p-datatable-sm"
-                          >
-                            <ng-template pTemplate="header">
-                              <tr>
-                                <th style="width: 3rem"></th>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Node Type</th>
-                                <th>Status</th>
-                                <th>Duration</th>
-                                <th>Prompt Tokens</th>
-                                <th>Completion Tokens</th>
-                                <th>Cost</th>
-                                <th>Parent</th>
-                              </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-run>
-                              <tr [pSelectableRow]="run">
-                                <td>
-                                  <ng-icon [name]="getNodeIcon(run.type)" size="14"></ng-icon>
-                                </td>
-                                <td class="font-medium">{{ run.name }}</td>
-                                <td>
-                                  <p-tag
-                                    [value]="run.type"
-                                    [severity]="getTypeSeverity(run.type)"
-                                    [style]="{ 'font-size': '0.75rem' }"
-                                  ></p-tag>
-                                </td>
-                                <td>
-                                  @if (run.node_type) {
-                                    <span
-                                      class="text-xs font-medium px-2 py-1 rounded"
-                                      [style]="{ 'background-color': getNodeTypeColor(run.node_type) + '20', 'color': getNodeTypeColor(run.node_type) }"
-                                    >{{ run.node_type }}</span>
-                                  }
-                                </td>
-                                <td>
-                                  <p-tag
-                                    [value]="run.status"
-                                    [severity]="run.status === 'success' ? 'success' : run.status === 'error' ? 'danger' : 'warn'"
-                                  ></p-tag>
-                                </td>
-                                <td>
-                                  @if (run.duration != null) {
-                                    <span>{{ run.duration }}s</span>
-                                  }
-                                </td>
-                                <td>{{ run.prompt_tokens || 0 }}</td>
-                                <td>{{ run.completion_tokens || 0 }}</td>
-                                <td>{{ formatCost(run.cost) }}</td>
-                                <td>
-                                  @if (!run.parent_run) {
-                                    <p-tag value="root" severity="contrast" [style]="{ 'font-size': '0.7rem' }"></p-tag>
-                                  } @else {
-                                    <span class="text-xs" style="color: var(--text-color-secondary)">{{ getParentName(run.parent_run) }}</span>
-                                  }
-                                </td>
-                              </tr>
-                            </ng-template>
-                          </p-table>
-                        } @else {
-                          <p-message severity="info" text="No runs found."></p-message>
-                        }
+                <!-- Timeline Tab: Waterfall -->
+                <p-tabpanel value="timeline">
+                  <div class="trace-pane">
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-chart-bar"></i></span>
+                        <span class="trace-section__title">Timeline</span>
                       </div>
-                    </p-tabpanel>
-
-                    <!-- Timeline Tab: Waterfall -->
-                    <p-tabpanel value="timeline">
-                      <div class="p-4">
-                        @if (waterfallData.length > 0) {
-                          <div class="flex flex-col gap-1">
-                            @for (item of waterfallData; track item.id) {
-                              <div
-                                class="flex items-center gap-2 py-1 cursor-pointer waterfall-row"
-                                [style]="{ 'padding-left': (item.depth * 16) + 'px' }"
-                                [pTooltip]="item.name + ' — ' + (item.durationMs / 1000).toFixed(2) + 's' + (item.cost ? ' — ' + formatCost(item.cost) : '')"
-                                tooltipPosition="top"
-                              >
-                                <div class="text-xs font-medium text-right" style="min-width: 140px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-                                  {{ item.name }}
-                                </div>
-                                <div class="flex-1" style="position: relative; height: 20px; background-color: var(--surface-ground); border-radius: 4px; overflow: hidden">
-                                  <div
-                                    style="position: absolute; top: 2px; bottom: 2px; border-radius: 3px; min-width: 4px"
-                                    [style.left.%]="item.leftPct"
-                                    [style.width.%]="item.widthPct"
-                                    [style.background-color]="item.color"
-                                  ></div>
-                                </div>
-                                <div class="text-xs" style="min-width: 50px; color: var(--text-color-secondary)">
-                                  {{ (item.durationMs / 1000).toFixed(2) }}s
-                                </div>
+                      @if (waterfallData.length > 0) {
+                        <div class="trace-waterfall">
+                          @for (item of waterfallData; track item.id) {
+                            <div
+                              class="trace-waterfall__row"
+                              [style]="{ 'padding-left': (item.depth * 16) + 'px' }"
+                              [pTooltip]="item.name + ' — ' + (item.durationMs / 1000).toFixed(2) + 's' + (item.cost ? ' — ' + formatCost(item.cost) : '')"
+                              tooltipPosition="top"
+                            >
+                              <div class="trace-waterfall__name">{{ item.name }}</div>
+                              <div class="trace-waterfall__track">
+                                <div
+                                  class="trace-waterfall__bar"
+                                  [style.left.%]="item.leftPct"
+                                  [style.width.%]="item.widthPct"
+                                  [style.background-color]="item.color"
+                                ></div>
                               </div>
-                            }
-                          </div>
-                          <!-- Legend -->
-                          <div class="flex items-center gap-4 mt-3 pt-3" style="border-top: 1px solid var(--surface-border)">
-                            @for (item of getWaterfallLegend(); track item.type) {
-                              <div class="flex items-center gap-1">
-                                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px" [style.background-color]="item.color"></span>
-                                <span class="text-xs" style="color: var(--text-color-secondary); text-transform: capitalize">{{ item.type }}</span>
-                              </div>
-                            }
-                          </div>
-                        } @else {
-                          <p-message severity="info" text="No timing data available."></p-message>
+                              <div class="trace-waterfall__duration">{{ (item.durationMs / 1000).toFixed(2) }}s</div>
+                            </div>
+                          }
+                        </div>
+                        <div class="trace-waterfall__legend">
+                          @for (item of getWaterfallLegend(); track item.type) {
+                            <div class="trace-waterfall__legend-item">
+                              <span class="trace-waterfall__legend-swatch" [style.background-color]="item.color"></span>
+                              <span>{{ item.type }}</span>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <div class="trace-empty">
+                          <i class="pi pi-clock"></i>
+                          <span>No timing data available.</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </p-tabpanel>
+
+                <!-- Run Tab: Enhanced node detail -->
+                <p-tabpanel value="run">
+                  <div class="trace-pane run-tab">
+                    @if (selectedRun?.data) {
+                      <!-- Node header -->
+                      <div class="trace-node-header">
+                        <span class="trace-node-header__icon" [class.trace-node__icon--llm]="selectedRun.data.type === 'llm'" [class.trace-node__icon--chain]="selectedRun.data.type === 'chain' || selectedRun.data.type === 'agent'" [class.trace-node__icon--tool]="selectedRun.data.type === 'tool'" [class.trace-node__icon--retriever]="selectedRun.data.type === 'retriever'" [class.trace-node__icon--node]="selectedRun.data.type === 'node'">
+                          <ng-icon [name]="getNodeIcon(selectedRun.data.type)" size="17"></ng-icon>
+                        </span>
+                        <span class="trace-node-header__title">{{ selectedRun?.label }}</span>
+                        <span class="kind-pill" [class]="'kind-pill--' + selectedRun.data.type">{{ selectedRun.data.type }}</span>
+                        @if (selectedRun.data.node_type) {
+                          <span
+                            class="trace-node__type-tag"
+                            [style]="{ 'background-color': getNodeTypeColor(selectedRun.data.node_type) + '20', 'color': getNodeTypeColor(selectedRun.data.node_type) }"
+                          >{{ selectedRun.data.node_type }}</span>
+                        }
+                        <span class="status-pill" [class]="'status-pill--' + (selectedRun.data.status === 'success' ? 'success' : selectedRun.data.status === 'error' ? 'error' : 'warn')">
+                          <span class="status-pill__dot"></span>
+                          {{ selectedRun.data.status }}
+                        </span>
+                        @if (selectedRun.data.duration != null) {
+                          <span class="duration-pill">
+                            <i class="pi pi-clock"></i>
+                            {{ selectedRun.data.duration }}s
+                          </span>
                         }
                       </div>
-                    </p-tabpanel>
 
-                    <!-- Run Tab: Enhanced node detail -->
-                    <p-tabpanel value="run">
-                      <div class="p-4 run-tab">
-                        @if (selectedRun?.data) {
-                          <!-- Node info header -->
-                          <div class="flex items-center gap-4 mb-4 flex-wrap">
-                            <ng-icon [name]="getNodeIcon(selectedRun.data.type)" size="18"></ng-icon>
-                            <span class="text-lg font-semibold">{{ selectedRun?.label }}</span>
-                            <p-tag
-                              [value]="selectedRun.data.type"
-                              [severity]="getTypeSeverity(selectedRun.data.type)"
-                            ></p-tag>
-                            @if (selectedRun.data.node_type) {
-                              <span
-                                class="text-xs font-medium px-2 py-1 rounded"
-                                [style]="{ 'background-color': getNodeTypeColor(selectedRun.data.node_type) + '20', 'color': getNodeTypeColor(selectedRun.data.node_type) }"
-                              >{{ selectedRun.data.node_type }}</span>
-                            }
-                            <p-tag
-                              [value]="selectedRun.data.status"
-                              [severity]="selectedRun.data.status === 'success' ? 'success' : selectedRun.data.status === 'error' ? 'danger' : 'warn'"
-                            ></p-tag>
-                            @if (selectedRun.data.duration != null) {
-                              <span class="text-sm" style="color: var(--text-color-secondary)">
-                                <i class="pi pi-clock"></i> {{ selectedRun.data.duration }}s
-                              </span>
-                            }
-                          </div>
-
-                          <!-- Metric cards -->
-                          <div class="flex gap-4 mb-4 flex-wrap">
-                            <div class="metric-card">
-                              <div class="metric-label">Prompt Tokens</div>
-                              <div class="metric-value">{{ selectedRun.data.prompt_tokens || 0 }}</div>
-                            </div>
-                            <div class="metric-card">
-                              <div class="metric-label">Completion Tokens</div>
-                              <div class="metric-value">{{ selectedRun.data.completion_tokens || 0 }}</div>
-                            </div>
-                            <div class="metric-card">
-                              <div class="metric-label">Total Tokens</div>
-                              <div class="metric-value">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</div>
-                            </div>
-                            <div class="metric-card">
-                              <div class="metric-label">Duration</div>
-                              <div class="metric-value">{{ selectedRun.data.duration ?? '-' }}s</div>
-                            </div>
-                            <div class="metric-card">
-                              <div class="metric-label">Cost</div>
-                              <div class="metric-value">{{ formatCost(selectedRun.data.cost) }}</div>
-                            </div>
-                          </div>
-
-                          <!-- OCR / Document Quality metrics -->
-                          @if (getOcrData(selectedRun.data)) {
-                            <div class="flex gap-4 mb-4 flex-wrap">
-                              @if (getOcrData(selectedRun.data).ocr_mean_score != null) {
-                                <div class="metric-card">
-                                  <div class="metric-label">OCR Quality</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).ocr_mean_score >= 0.6 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
-                                    {{ (getOcrData(selectedRun.data).ocr_mean_score * 100).toFixed(1) }}%
-                                  </div>
-                                </div>
-                              }
-                              @if (getOcrData(selectedRun.data).doc_confidence != null) {
-                                <div class="metric-card">
-                                  <div class="metric-label">Doc Confidence</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).doc_confidence >= 0.5 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
-                                    {{ (getOcrData(selectedRun.data).doc_confidence * 100).toFixed(1) }}%
-                                  </div>
-                                </div>
-                              }
-                              @if (getOcrData(selectedRun.data).page_count != null) {
-                                <div class="metric-card">
-                                  <div class="metric-label">Page Count</div>
-                                  <div class="metric-value">{{ getOcrData(selectedRun.data).page_count }}</div>
-                                </div>
-                              }
-                              @if (getOcrData(selectedRun.data).ocr_low_score != null) {
-                                <div class="metric-card">
-                                  <div class="metric-label">OCR Low Score</div>
-                                  <div class="metric-value" [style.color]="getOcrData(selectedRun.data).ocr_low_score >= 0.6 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-red-400, #ee6b54)'">
-                                    {{ (getOcrData(selectedRun.data).ocr_low_score * 100).toFixed(1) }}%
-                                  </div>
-                                </div>
-                              }
-                            </div>
-                          }
-
-                          <!-- Error display -->
-                          @if (selectedRun.data.error) {
-                            <div class="mb-4">
-                              <h5 style="color: var(--flowx-error, #e62200)">Error</h5>
-                              <pre class="code-preview" style="color: var(--flowx-error, #e62200)">{{ getCodeModel(selectedRun.data.error) }}</pre>
-                            </div>
-                          }
-
-                          <!-- Input -->
-                          <h5>Input</h5>
-                          @if (selectedRun?.data.type === 'llm') {
-                            <div>
-                              <p-fieldset
-                                [toggleable]="true"
-                                [legend]="'SYSTEM + Human'"
-                                >
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.input_text
-                                  )
-                                }}</pre>
-                                @if (imagePreview) {
-                                  <p-button (onClick)="op.toggle($event)" icon="pi pi-image" label="View Image" />
-                                  <p-popover #op>
-                                    <img alt="preview" [src]="imagePreview" />
-                                  </p-popover>
-                                }
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'chain') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="'QUERY'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.input_text
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'retriever') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="'QUERY'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.input_text
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'node' || selectedRun?.data.type === 'tool') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="(selectedRun?.data?.node_type || selectedRun?.data?.type || 'NODE') + ' INPUT'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.input_text || selectedRun?.data?.input
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-
-                          <!-- Output -->
-                          <h5>Output</h5>
-                          @if (selectedRun?.data.type === 'llm') {
-                            <div>
-                              <p-fieldset
-                                [toggleable]="true"
-                                [legend]="selectedRun?.data?.output_text?.role?.toUpperCase()"
-                                >
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.output_text
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'chain') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="'RESPONSE'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.output_text
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'retriever') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="'DOCUMENTS'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.output_text
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-                          @if (selectedRun?.data.type === 'node' || selectedRun?.data.type === 'tool') {
-                            <div>
-                              <p-fieldset [toggleable]="true" [legend]="(selectedRun?.data?.node_type || selectedRun?.data?.type || 'NODE') + ' OUTPUT'">
-                                <pre class="code-preview" style="max-height: 30vh">{{
-                                  getCodeModel(
-                                  selectedRun?.data?.output_text || selectedRun?.data?.output
-                                  )
-                                }}</pre>
-                              </p-fieldset>
-                            </div>
-                          }
-
-                          <!-- Parameters -->
-                          @if (selectedRun.data.params) {
-                            <div class="mt-4">
-                              <h5>Parameters</h5>
-                              <pre class="code-preview">{{ getCodeModel(selectedRun.data.params) }}</pre>
-                            </div>
-                          }
-                        }
-                      </div>
-                    </p-tabpanel>
-
-                    <!-- Graph Tab -->
-                    <p-tabpanel value="graph">
-                      <div class="graph-panel">
-                        @if (selectedRun?.data?.graph) {
-                          <div #mermaid class="mermaid-container"></div>
-                        } @else {
-                          <p-message severity="info" text="No graph available. Select a node with graph data from the tree."></p-message>
-                        }
-                      </div>
-                    </p-tabpanel>
-
-                    <!-- Metadata Tab -->
-                    <p-tabpanel value="metadata">
-                      <div class="flex overflow-y-auto w-full h-full">
-                        <div class="run-details">
-                          <div class="run-content">
-                            <h5>Serialized</h5>
-                            <p-fieldset [toggleable]="true" [legend]="'SERIALIZED'">
-                              <pre class="code-preview">{{
-                                getCodeModel(selectedRun?.data.serialized)
-                              }}</pre>
-                            </p-fieldset>
-                            <h5>Extra</h5>
-                            <p-fieldset [toggleable]="true" [legend]="'EXTRA'">
-                              <pre class="code-preview">{{
-                                getCodeModel(selectedRun?.data.params)
-                              }}</pre>
-                            </p-fieldset>
-                            <h5>Environment</h5>
-                            <p-fieldset
-                              [toggleable]="true"
-                              [legend]="'ENVIRONMENT'"
-                              >
-                              <pre class="code-preview">{{
-                                getCodeModel(selectedRun?.data.environment)
-                              }}</pre>
-                            </p-fieldset>
-                          </div>
+                      <!-- KPI grid — 5 tiles -->
+                      <div class="trace-kpi-grid">
+                        <div class="trace-kpi">
+                          <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Prompt tokens</span>
+                          <span class="trace-kpi__value">{{ selectedRun.data.prompt_tokens || 0 }}</span>
+                        </div>
+                        <div class="trace-kpi">
+                          <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Completion tokens</span>
+                          <span class="trace-kpi__value">{{ selectedRun.data.completion_tokens || 0 }}</span>
+                        </div>
+                        <div class="trace-kpi">
+                          <span class="trace-kpi__label"><i class="pi pi-bolt"></i>Total tokens</span>
+                          <span class="trace-kpi__value trace-kpi__value--blue">{{ (selectedRun.data.prompt_tokens || 0) + (selectedRun.data.completion_tokens || 0) }}</span>
+                        </div>
+                        <div class="trace-kpi">
+                          <span class="trace-kpi__label"><i class="pi pi-clock"></i>Duration</span>
+                          <span class="trace-kpi__value trace-kpi__value--green">{{ selectedRun.data.duration ?? '-' }}s</span>
+                        </div>
+                        <div class="trace-kpi">
+                          <span class="trace-kpi__label"><i class="pi pi-dollar"></i>Cost</span>
+                          <span class="trace-kpi__value trace-kpi__value--blue">{{ formatCost(selectedRun.data.cost) }}</span>
                         </div>
                       </div>
-                    </p-tabpanel>
 
-                  </p-tabpanels>
-                </p-tabs>
-              </div>
-            }
+                      <!-- OCR / Document Quality metrics -->
+                      @if (getOcrData(selectedRun.data)) {
+                        <div class="trace-kpi-grid trace-kpi-grid--ocr">
+                          @if (getOcrData(selectedRun.data).ocr_mean_score != null) {
+                            <div class="trace-kpi">
+                              <span class="trace-kpi__label"><i class="pi pi-file"></i>OCR Quality</span>
+                              <span class="trace-kpi__value" [style.color]="getOcrData(selectedRun.data).ocr_mean_score >= 0.8 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).ocr_mean_score >= 0.6 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
+                                {{ (getOcrData(selectedRun.data).ocr_mean_score * 100).toFixed(1) }}%
+                              </span>
+                            </div>
+                          }
+                          @if (getOcrData(selectedRun.data).doc_confidence != null) {
+                            <div class="trace-kpi">
+                              <span class="trace-kpi__label"><i class="pi pi-shield"></i>Doc Confidence</span>
+                              <span class="trace-kpi__value" [style.color]="getOcrData(selectedRun.data).doc_confidence >= 0.75 ? 'var(--flowx-green-300, #54aa94)' : getOcrData(selectedRun.data).doc_confidence >= 0.5 ? 'var(--flowx-orange-500, #fd6b1c)' : 'var(--flowx-red-400, #ee6b54)'">
+                                {{ (getOcrData(selectedRun.data).doc_confidence * 100).toFixed(1) }}%
+                              </span>
+                            </div>
+                          }
+                          @if (getOcrData(selectedRun.data).page_count != null) {
+                            <div class="trace-kpi">
+                              <span class="trace-kpi__label"><i class="pi pi-copy"></i>Page Count</span>
+                              <span class="trace-kpi__value">{{ getOcrData(selectedRun.data).page_count }}</span>
+                            </div>
+                          }
+                          @if (getOcrData(selectedRun.data).ocr_low_score != null) {
+                            <div class="trace-kpi">
+                              <span class="trace-kpi__label"><i class="pi pi-exclamation-triangle"></i>OCR Low Score</span>
+                              <span class="trace-kpi__value" [style.color]="getOcrData(selectedRun.data).ocr_low_score >= 0.6 ? 'var(--flowx-green-300, #54aa94)' : 'var(--flowx-red-400, #ee6b54)'">
+                                {{ (getOcrData(selectedRun.data).ocr_low_score * 100).toFixed(1) }}%
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      <!-- Error display -->
+                      @if (selectedRun.data.error) {
+                        <div class="trace-section">
+                          <div class="trace-section__label">
+                            <span class="trace-section__icon trace-section__icon--danger"><i class="pi pi-exclamation-triangle"></i></span>
+                            <span class="trace-section__title">Error</span>
+                          </div>
+                          <div class="code-panel code-panel--danger">
+                            <div class="code-panel__head">
+                              <span class="code-panel__dot code-panel__dot--danger"></span>
+                              <span class="code-panel__label">Stack trace</span>
+                            </div>
+                            <pre class="code-preview">{{ getCodeModel(selectedRun.data.error) }}</pre>
+                          </div>
+                        </div>
+                      }
+
+                      <!-- Input -->
+                      <div class="trace-section">
+                        <div class="trace-section__label">
+                          <span class="trace-section__icon"><i class="pi pi-sign-in"></i></span>
+                          <span class="trace-section__title">Input</span>
+                        </div>
+                        @if (selectedRun?.data.type === 'llm') {
+                          <p-fieldset
+                            [toggleable]="true"
+                            [legend]="'SYSTEM + Human'"
+                            styleClass="code-fieldset"
+                            >
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.input_text
+                              )
+                            }}</pre>
+                            @if (imagePreview) {
+                              <p-button (onClick)="op.toggle($event)" icon="pi pi-image" label="View Image" />
+                              <p-popover #op>
+                                <img alt="preview" [src]="imagePreview" />
+                              </p-popover>
+                            }
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'chain') {
+                          <p-fieldset [toggleable]="true" [legend]="'QUERY'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.input_text
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'retriever') {
+                          <p-fieldset [toggleable]="true" [legend]="'QUERY'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.input_text
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'node' || selectedRun?.data.type === 'tool') {
+                          <p-fieldset [toggleable]="true" [legend]="(selectedRun?.data?.node_type || selectedRun?.data?.type || 'NODE') + ' INPUT'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.input_text || selectedRun?.data?.input
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                      </div>
+
+                      <!-- Output -->
+                      <div class="trace-section">
+                        <div class="trace-section__label">
+                          <span class="trace-section__icon"><i class="pi pi-sign-out"></i></span>
+                          <span class="trace-section__title">Output</span>
+                        </div>
+                        @if (selectedRun?.data.type === 'llm') {
+                          <p-fieldset
+                            [toggleable]="true"
+                            [legend]="selectedRun?.data?.output_text?.role?.toUpperCase()"
+                            styleClass="code-fieldset"
+                            >
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.output_text
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'chain') {
+                          <p-fieldset [toggleable]="true" [legend]="'RESPONSE'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.output_text
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'retriever') {
+                          <p-fieldset [toggleable]="true" [legend]="'DOCUMENTS'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.output_text
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                        @if (selectedRun?.data.type === 'node' || selectedRun?.data.type === 'tool') {
+                          <p-fieldset [toggleable]="true" [legend]="(selectedRun?.data?.node_type || selectedRun?.data?.type || 'NODE') + ' OUTPUT'" styleClass="code-fieldset">
+                            <pre class="code-preview" style="max-height: 30vh">{{
+                              getCodeModel(
+                              selectedRun?.data?.output_text || selectedRun?.data?.output
+                              )
+                            }}</pre>
+                          </p-fieldset>
+                        }
+                      </div>
+
+                      <!-- Parameters -->
+                      @if (selectedRun.data.params) {
+                        <div class="trace-section">
+                          <div class="trace-section__label">
+                            <span class="trace-section__icon"><i class="pi pi-cog"></i></span>
+                            <span class="trace-section__title">Parameters</span>
+                          </div>
+                          <p-fieldset [toggleable]="true" [legend]="'PARAMS'" styleClass="code-fieldset">
+                            <pre class="code-preview">{{ getCodeModel(selectedRun.data.params) }}</pre>
+                          </p-fieldset>
+                        </div>
+                      }
+                    }
+                  </div>
+                </p-tabpanel>
+
+                <!-- Graph Tab -->
+                <p-tabpanel value="graph">
+                  <div class="trace-pane">
+                    <div class="trace-section">
+                      <div class="trace-section__label">
+                        <span class="trace-section__icon"><i class="pi pi-share-alt"></i></span>
+                        <span class="trace-section__title">Graph</span>
+                      </div>
+                      @if (selectedRun?.data?.graph) {
+                        <div class="graph-panel">
+                          <div #mermaid class="mermaid-container"></div>
+                        </div>
+                      } @else {
+                        <div class="trace-empty">
+                          <i class="pi pi-share-alt"></i>
+                          <span>No graph available. Select a node with graph data from the tree.</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </p-tabpanel>
+
+                <!-- Metadata Tab -->
+                <p-tabpanel value="metadata">
+                  <div class="trace-pane">
+                    <div class="run-details">
+                      <div class="run-content">
+                        <div class="trace-section">
+                          <div class="trace-section__label">
+                            <span class="trace-section__icon"><i class="pi pi-code"></i></span>
+                            <span class="trace-section__title">Serialized</span>
+                          </div>
+                          <p-fieldset [toggleable]="true" [legend]="'SERIALIZED'" styleClass="code-fieldset">
+                            <pre class="code-preview">{{
+                              getCodeModel(selectedRun?.data.serialized)
+                            }}</pre>
+                          </p-fieldset>
+                        </div>
+                        <div class="trace-section">
+                          <div class="trace-section__label">
+                            <span class="trace-section__icon"><i class="pi pi-box"></i></span>
+                            <span class="trace-section__title">Extra</span>
+                          </div>
+                          <p-fieldset [toggleable]="true" [legend]="'EXTRA'" styleClass="code-fieldset">
+                            <pre class="code-preview">{{
+                              getCodeModel(selectedRun?.data.params)
+                            }}</pre>
+                          </p-fieldset>
+                        </div>
+                        <div class="trace-section">
+                          <div class="trace-section__label">
+                            <span class="trace-section__icon"><i class="pi pi-server"></i></span>
+                            <span class="trace-section__title">Environment</span>
+                          </div>
+                          <p-fieldset
+                            [toggleable]="true"
+                            [legend]="'ENVIRONMENT'"
+                            styleClass="code-fieldset"
+                            >
+                            <pre class="code-preview">{{
+                              getCodeModel(selectedRun?.data.environment)
+                            }}</pre>
+                          </p-fieldset>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </p-tabpanel>
+
+              </p-tabpanels>
+            </p-tabs>
           </div>
-                                <div class="mt-auto llm-footer">
-                                  <p>View details of the runs</p>
-                                </div>
-                              </div>
-                            </ng-template>
-                          </p-drawer>
+        }
+      </div>
 
+      <!-- ── Footer — keyboard hints ── -->
+      <footer class="trace-drawer__footer">
+        <i class="pi pi-info-circle"></i>
+        <span>Press <kbd>Esc</kbd> to close · click any node above to inspect its run</span>
+      </footer>
+    </div>
+  </ng-template>
+</p-drawer>
