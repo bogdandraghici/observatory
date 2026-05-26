@@ -117,10 +117,10 @@
             <td>
               <div class="flex gap-1">
                 @if (ev.status === 'collected') {
-                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" pTooltip="Review" (click)="reviewItem(ev)"></p-button>
+                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Review" (click)="reviewItem(ev)"></p-button>
                 }
                 @if (ev.status === 'collected' || ev.status === 'reviewed') {
-                  <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" severity="success" pTooltip="Approve" (click)="approveItem(ev)"></p-button>
+                  <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" styleClass="row-action row-action--success" pTooltip="Approve" (click)="approveItem(ev)"></p-button>
                 }
               </div>
             </td>

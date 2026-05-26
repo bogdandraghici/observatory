@@ -676,7 +676,7 @@
                       <td [class.roi-pos]="item.net_roi >= 0" [class.roi-neg]="item.net_roi < 0">{{ formatCurrency(item.net_roi) }}</td>
                       <td class="roi-pos">{{ formatCurrency(item.projected_annual_savings) }}</td>
                       <td>{{ item.payback_period_months != null ? (item.payback_period_months + ' mo') : '--' }}</td>
-                      <td><p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="deleteFinancial(item)"></p-button></td>
+                      <td><p-button icon="pi pi-trash" styleClass="row-action row-action--danger" [text]="true" (onClick)="deleteFinancial(item)"></p-button></td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -920,8 +920,8 @@
                     <td>{{ b.regulatory_approval_days }}d</td>
                     <td>{{ b.employee_satisfaction_impact }}</td>
                     <td style="white-space: nowrap;">
-                      <p-button icon="pi pi-pencil" [text]="true" (onClick)="openEditBenchmark(b)"></p-button>
-                      <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="confirmDeleteBenchmark(b, $event)"></p-button>
+                      <p-button icon="pi pi-pencil" styleClass="row-action" [text]="true" (onClick)="openEditBenchmark(b)"></p-button>
+                      <p-button icon="pi pi-trash" styleClass="row-action row-action--danger" [text]="true" (onClick)="confirmDeleteBenchmark(b, $event)"></p-button>
                     </td>
                   </tr>
                 </ng-template>

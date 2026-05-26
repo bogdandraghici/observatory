@@ -2502,3 +2502,112 @@
     border-color: rgba(230, 34, 0, 0.36);
   }
 }
+
+// ── Table row action buttons ────────────────────────────────
+// Standardized flat icon-only controls for table action columns.
+// The glyph carries the meaning: neutral by default, red for the
+// destructive (delete) action. No chip/box — just the icon plus a
+// subtle hover wash. Rules are !important so they win over PrimeNG
+// `severity` colors and any leftover text/rounded button chrome.
+.layout-wrapper .p-button.row-action,
+.ai-page .p-button.row-action {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--flowx-neutrals-500) !important;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  line-height: 1 !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  border-radius: var(--flowx-radius-8) !important;
+
+  .p-button-label {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .p-button-icon,
+  .p-icon-wrapper,
+  .pi,
+  svg {
+    color: inherit !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  &::after { display: none !important; }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: var(--flowx-neutrals-100) !important;
+    color: var(--flowx-neutrals-700) !important;
+  }
+
+  &.row-action--danger {
+    color: var(--flowx-red-500) !important;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background: var(--flowx-red-50) !important;
+      color: var(--flowx-red-500) !important;
+    }
+  }
+
+  &.row-action--success {
+    color: var(--flowx-green-500) !important;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background: var(--flowx-green-50) !important;
+      color: var(--flowx-green-500) !important;
+    }
+  }
+}
+
+// Dark counterpart — lift the neutral glyph one step (neutrals-400)
+// so it reads against the dark slate; delete keeps the saturated red
+// with a translucent red hover wash.
+.flowx-dark .layout-wrapper .p-button.row-action,
+.flowx-dark .ai-page .p-button.row-action {
+  color: var(--flowx-neutrals-400) !important;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: var(--flowx-neutrals-700) !important;
+    color: var(--flowx-neutrals-200) !important;
+  }
+
+  &.row-action--danger {
+    color: #ff8a73 !important;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background: rgba(230, 34, 0, 0.18) !important;
+      color: #ff8a73 !important;
+    }
+  }
+
+  &.row-action--success {
+    color: #6fd0ab !important;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background: rgba(51, 153, 128, 0.18) !important;
+      color: #6fd0ab !important;
+    }
+  }
+}

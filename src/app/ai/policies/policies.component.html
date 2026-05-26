@@ -122,8 +122,8 @@
                     <td><p-tag [value]="policy.is_active ? 'Active' : 'Inactive'" [severity]="policy.is_active ? 'success' : 'secondary'"></p-tag></td>
                     <td>
                       <div class="flex gap-1">
-                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPolicy(policy)"></p-button>
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(policy, 'policy')"></p-button>
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Edit" tooltipPosition="top" (click)="editPolicy(policy)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(policy, 'policy')"></p-button>
                       </div>
                     </td>
                   </tr>
@@ -177,8 +177,8 @@
                     <td><p-tag [value]="pack.is_active ? 'Active' : 'Inactive'" [severity]="pack.is_active ? 'success' : 'secondary'"></p-tag></td>
                     <td>
                       <div class="flex gap-1">
-                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPack(pack)"></p-button>
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(pack, 'pack')"></p-button>
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Edit" tooltipPosition="top" (click)="editPack(pack)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(pack, 'pack')"></p-button>
                       </div>
                     </td>
                   </tr>
@@ -228,7 +228,7 @@
                     <td><p-tag [value]="a.status" [severity]="a.status === 'active' ? 'success' : 'warn'"></p-tag></td>
                     <td>{{ a.created_at | date:'short' }}</td>
                     <td>
-                      <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(a, 'assignment')"></p-button>
+                      <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(a, 'assignment')"></p-button>
                     </td>
                   </tr>
                 </ng-template>

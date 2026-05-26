@@ -77,15 +77,15 @@
                     <td>
                       <div class="flex gap-1">
                         @if (exp.status === 'CREATED' || exp.status === 'FAILED') {
-                          <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" styleClass="action-chip action-chip--success" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
+                          <p-button icon="pi pi-play" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Run" tooltipPosition="top" (click)="runExperiment(exp)"></p-button>
                         }
                         @if (exp.status === 'RUNNING') {
                           <i class="pi pi-spin pi-spinner" style="font-size: 1.2rem; padding: 0.5rem;"></i>
                         }
                         @if (exp.status === 'COMPLETED') {
-                          <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
+                          <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="View Results" tooltipPosition="top" (click)="viewResults(exp)"></p-button>
                         }
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteExperiment(exp)"></p-button>
                       </div>
                     </td>
                   </tr>
