@@ -159,11 +159,14 @@
 // ── Layout body when an /ai page is active ──────────────────
 .layout-main-container:has(.ai-page),
 .layout-main-container:has(.home-page) {
-  // Page canvas inherits `--surface-ground` (#fafbfc in light) so the
-  // page area, body, sidebar background, and layout wrapper all stay
-  // on the same tone. Cards on the page use `--flowx-surface-primary`
-  // (#ffffff), so they float against this slightly cooler canvas.
-  background: var(--surface-ground);
+  // Blue blob corners — soft blue radials in the top-left and
+  // bottom-right corners over a near-white base. Cards on the page
+  // use `--flowx-surface-primary` (#ffffff) so they sit just above
+  // the base canvas tone.
+  background:
+    radial-gradient(1000px 1000px at 8% 12%, #edf2f8 0%, rgba(237, 242, 248, 0) 85%),
+    radial-gradient(1000px 1000px at 92% 88%, #eff3f8 0%, rgba(239, 243, 248, 0) 85%),
+    #fbfcfd;
   // 40px gap on all sides between content and the chrome edges.
   // Top adds the 4rem fixed-topbar height so the visual gap below
   // the topbar is also 40px.
