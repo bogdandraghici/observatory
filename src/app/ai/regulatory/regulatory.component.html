@@ -174,28 +174,28 @@
             <p-table [value]="requirements" [paginator]="true" [rows]="15" styleClass="p-datatable-sm" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
-                  <th style="width: 100px">Code</th>
+                  <th style="width: 130px">Code</th>
                   <th>Title</th>
                   <th>Category</th>
-                  <th style="width: 120px">Status</th>
+                  <th style="width: 140px">Status</th>
                   <th style="width: 80px">Evidence</th>
                   <th style="width: 80px">Evals</th>
-                  <th style="width: 100px">Actions</th>
+                  <th style="width: 112px">Actions</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-req>
                 <tr>
-                  <td><strong>{{ req.requirement_code }}</strong></td>
+                  <td style="white-space: nowrap"><strong>{{ req.requirement_code }}</strong></td>
                   <td class="cursor-pointer" (click)="openRequirementDetail(req)">{{ req.title }}</td>
                   <td>{{ req.category }}</td>
-                  <td>
+                  <td style="white-space: nowrap">
                     <p-tag [value]="getStatusLabel(req.status)" [severity]="getStatusSeverity(req.status)"></p-tag>
                   </td>
                   <td class="text-center">{{ req.evidence_count }}</td>
                   <td class="text-center">{{ req.evaluation_count }}</td>
-                  <td>
-                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openNotesEditor(req)" pTooltip="Edit mapping"></p-button>
-                    <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small" (onClick)="openRequirementDetail(req)" pTooltip="View details"></p-button>
+                  <td style="white-space: nowrap">
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" styleClass="row-action" (onClick)="openNotesEditor(req)" pTooltip="Edit mapping"></p-button>
+                    <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small" styleClass="row-action" (onClick)="openRequirementDetail(req)" pTooltip="View details"></p-button>
                   </td>
                 </tr>
               </ng-template>
