@@ -9,45 +9,45 @@
 }
 
 <div class="ai-page">
-  <!-- Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Test Cases</h1>
-      <p class="page-header__subtitle">Manage test datasets and run regression tests for AI agents</p>
-    </div>
-    <div class="page-header__right">
-      <p-button label="New Dataset" icon="pi pi-plus" severity="primary" [outlined]="true" (click)="showCreateDatasetDialog = true" class="mr-2"></p-button>
-      <p-button label="Run All Tests" icon="pi pi-play" severity="primary" [loading]="running" [disabled]="!selectedDataset" (click)="runAllTests()"></p-button>
-    </div>
-  </header>
+  <!-- A. Hero panel — title band (with action buttons) + filters band -->
+  <section class="tests-hero">
+    <div class="tests-hero__band">
+      <div class="tests-hero__text">
+        <h1 class="tests-hero__title">Test Cases</h1>
+        <p class="tests-hero__subtitle">Manage test datasets and run regression tests for AI agents.</p>
+      </div>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+      <div class="tests-hero__actions">
+        <p-button label="New Dataset" icon="pi pi-plus" severity="primary" [outlined]="true" (click)="showCreateDatasetDialog = true"></p-button>
+        <p-button label="Run All Tests" icon="pi pi-play" severity="primary" [loading]="running" [disabled]="!selectedDataset" (click)="runAllTests()"></p-button>
+      </div>
+    </div>
+
+    <div class="tests-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
-        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" placeholder="Select Organization" (onChange)="orgChanged()"></p-select>
+        <p-select [options]="orgs" [(ngModel)]="selectedOrg" optionLabel="name" optionValue="id" placeholder="Select Organization" (onChange)="orgChanged()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Workspace</label>
-        <p-select [options]="workspaces" [(ngModel)]="selectedWorkspace" optionLabel="name" optionValue="id" placeholder="Select Workspace" (onChange)="workspaceChanged()"></p-select>
+        <p-select [options]="workspaces" [(ngModel)]="selectedWorkspace" optionLabel="name" optionValue="id" placeholder="Select Workspace" (onChange)="workspaceChanged()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Project</label>
-        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" optionValue="id" placeholder="Select Project" (onChange)="appChanged()"></p-select>
+        <p-select [options]="apps" [(ngModel)]="selectedApp" optionLabel="name" optionValue="id" placeholder="Select Project" (onChange)="appChanged()" appendTo="body"></p-select>
       </div>
       <div class="filter-group">
         <label class="filter-group__label">Agent</label>
-        <p-select [options]="agents" [(ngModel)]="selectedAgent" optionLabel="label" optionValue="value" placeholder="Select Agent" (onChange)="agentChanged()"></p-select>
+        <p-select [options]="agents" [(ngModel)]="selectedAgent" optionLabel="label" optionValue="value" placeholder="Select Agent" (onChange)="agentChanged()" appendTo="body"></p-select>
       </div>
       @if (datasets.length > 0) {
         <div class="filter-group">
           <label class="filter-group__label">Dataset</label>
-          <p-select [options]="datasets" [(ngModel)]="selectedDataset" optionLabel="name" placeholder="Select Dataset" (onChange)="datasetChanged()"></p-select>
+          <p-select [options]="datasets" [(ngModel)]="selectedDataset" optionLabel="name" placeholder="Select Dataset" (onChange)="datasetChanged()" appendTo="body"></p-select>
         </div>
       }
     </div>
-  </div>
+  </section>
 
   @if (unavailable) {
     <div class="eval-card">
