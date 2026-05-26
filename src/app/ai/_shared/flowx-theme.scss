@@ -428,7 +428,8 @@
   &.registry-page,
   &.analytics-page,
   &.rsi-page,
-  &.policies-page {
+  &.policies-page,
+  &.evidence-page {
     .stat-card,
     .stat-card--stacked {
       border-radius: var(--flowx-radius-20, 20px);
