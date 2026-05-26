@@ -175,7 +175,7 @@
 }
 
 /* Card header row — title on the left, controls/actions on the right.
- * Always sit 24px above the table body to satisfy the design.md
+ * Always sits 24px above the table body to satisfy the design.md
  * "card title → first body element: 24px" rule. */
 .registry-card-head {
   display: flex;
@@ -186,18 +186,35 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
 
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
   &__controls {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+  }
+}
+
+/* Sub-card title — matches design.md and the insights-dashboard /
+ * Drift Monitor pattern: 16/1.2/700 text-primary label preceded by
+ * an 18px text-secondary icon, 8px gap between them. No chip
+ * background on the icon (the chip-style swatch reads as a button,
+ * not a title glyph). */
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--flowx-text-primary);
+  min-width: 0;
+
+  i {
+    font-size: 18px;
+    color: var(--flowx-text-secondary);
+    flex-shrink: 0;
   }
 }
 
