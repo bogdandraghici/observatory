@@ -1,1 +1,165 @@
-// Dashboard page styles
+@use '../_shared/ai-design-tokens' as tokens;
+
+/* ============================================================
+ * Dashboard Hero Panel — mirrors the Insights / Drift / Home /
+ * ROI hero pattern (see design.md). One rounded outer panel
+ * with a gradient title band + period segmented control on top
+ * and a 3-up filters band below, separated by a hairline
+ * neutrals-100 divider.
+ * ============================================================ */
+.dashboard-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.dashboard-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  background:
+    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
+    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.dashboard-hero__text { min-width: 0; }
+
+.dashboard-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.dashboard-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 640px;
+}
+
+.dashboard-hero__scope {
+  justify-self: end;
+
+  @media (max-width: 768px) {
+    justify-self: stretch;
+  }
+}
+
+/* Period segmented control — matches design.md's <p-selectButton>
+ * spec and the Insights eval-hero__scope chrome. */
+::ng-deep .dashboard-hero__scope .p-selectbutton {
+  display: inline-flex;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+  flex-wrap: wrap;
+
+  .p-togglebutton,
+  .p-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--flowx-text-secondary) !important;
+    padding: 0 14px !important;
+    height: 32px !important;
+    border-radius: 7px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background-color 120ms ease, color 120ms ease;
+
+    &.p-togglebutton-checked,
+    &.p-highlight {
+      background: var(--flowx-blue-500) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+.dashboard-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+:host-context(.flowx-dark) {
+  .dashboard-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .dashboard-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .dashboard-hero__scope .p-selectbutton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+
+  .p-togglebutton.p-togglebutton-checked,
+  .p-button.p-highlight {
+    background: var(--flowx-blue-400) !important;
+  }
+}
+
+/* ============================================================
+ * Widgets grid — the existing PrimeFlex 12-column grid is kept
+ * as-is. Each widget is its own Angular component with its own
+ * card chrome, so this page just orchestrates the layout.
+ * ============================================================ */
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+
+  > * { min-width: 0; }
+}
