@@ -1,0 +1,408 @@
+// Alerts & SLA Tracking page — hero panel + KPI cards + table cards.
+// Mirrors the Insights / Dashboard / Drift hero pattern (see design.md).
+
+// ── A. Hero panel ────────────────────────────────────────────
+.alerts-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.alerts-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.alerts-hero__text { min-width: 0; }
+
+.alerts-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.alerts-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 720px;
+}
+
+.alerts-hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-self: end;
+
+  @media (max-width: 768px) { justify-self: stretch; }
+}
+
+// Filters band — 4-up grid.
+.alerts-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── B. KPI strip ─────────────────────────────────────────────
+// Mirrors the Risk Dashboard's `.risk-kpi-card` spec: white card with
+// shadow-xs and radius-16, 24px padding, flex row with a 44×44 tinted
+// icon tile and a 28/1/800 tabular value below a 13/600 secondary
+// label. Each card carries its tone on both the icon tile and the
+// value text. Adds an `--orange` variant for the Unacknowledged tile
+// since the alerts palette needs a step between yellow and red.
+.alerts-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: var(--flowx-space-32, 32px);
+
+  @media (max-width: 1280px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+.alerts-kpi-card {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-16, 16px);
+  box-shadow: var(--flowx-shadow-xs);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+
+  &:hover {
+    box-shadow: var(--flowx-shadow-m);
+    transform: translateY(-2px);
+  }
+}
+
+.alerts-kpi-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  background: var(--flowx-neutrals-100);
+  color: var(--flowx-neutrals-500);
+
+  &--blue   { background: var(--flowx-blue-50);   color: var(--flowx-blue-500); }
+  &--red    { background: var(--flowx-red-50);    color: var(--flowx-red-500); }
+  &--yellow { background: var(--flowx-yellow-50); color: var(--flowx-yellow-600); }
+  &--orange { background: rgba(253, 107, 28, 0.10); color: var(--flowx-orange-500, #fd6b1c); }
+}
+
+.alerts-kpi-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.alerts-kpi-card__label {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--flowx-text-secondary);
+  margin-bottom: 8px;
+}
+
+.alerts-kpi-card__value {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--flowx-text-primary);
+
+  &--blue   { color: var(--flowx-blue-500); }
+  &--red    { color: var(--flowx-red-500); }
+  &--yellow { color: var(--flowx-yellow-600); }
+  &--orange { color: var(--flowx-orange-500, #fd6b1c); }
+}
+
+// ── C. Alert Rules / Alert History sub-cards ────────────────
+// `.stat-card` ships radius-12; bump it to radius-20 inside this page
+// so the table wrappers match the sub-card spec in design.md.
+.alerts-table-card {
+  border-radius: var(--flowx-radius-20, 20px);
+}
+
+// ── Table chrome ─────────────────────────────────────────────
+// Insights / Drift spec from design.md > PrimeNG > p-table > Drift
+// table spec: 11/1.2 · 700 · uppercase · 0.08em header on a tinted
+// `--flowx-surface-secondary` band, 14×20 padding; 14/1.2 · 600 body
+// with the same padding. Wrapped in `::ng-deep` because PrimeNG's
+// `<th>`/`<td>` cells render outside this component's view
+// encapsulation scope; scoped to the local `.alerts-table-card`
+// wrapper so the override doesn't bleed to other tables on the page.
+.alerts-table-card {
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-secondary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 20px;
+    }
+
+    .p-datatable-tbody > tr > td {
+      color: var(--flowx-text-primary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 14px 20px;
+      vertical-align: middle;
+    }
+  }
+}
+
+:host-context(.flowx-dark) .alerts-table-card ::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── D. SLA Compliance card ──────────────────────────────────
+// Same sub-card chrome as the Alert Rules / History tables. Each
+// SLA entry is an internal tile (radius-12, 1px neutrals-100 border,
+// 14×16 padding) per design.md's internal-tile spec, laid out as
+// dot + shield + rule name on the left, mono meta inline on the
+// right before the Compliant / Breached pill.
+.alerts-sla-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alerts-sla-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--flowx-neutrals-100);
+  background: var(--flowx-surface-primary);
+
+  @media (max-width: 720px) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+.alerts-sla-row__name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.alerts-sla-row__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--flowx-green-500, #008060);
+  box-shadow: 0 0 0 4px var(--flowx-green-50);
+  flex-shrink: 0;
+
+  &--breach {
+    background: var(--flowx-red-500);
+    box-shadow: 0 0 0 4px var(--flowx-red-50);
+  }
+}
+
+.alerts-sla-row__icon {
+  font-size: 15px;
+  color: var(--flowx-text-secondary);
+  flex-shrink: 0;
+}
+
+.alerts-sla-row__label {
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--flowx-text-primary);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alerts-sla-row__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--flowx-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+
+  code {
+    font-family: var(--flowx-font-monospace, ui-monospace, monospace);
+    font-size: 12px;
+    color: var(--flowx-text-primary);
+    background: transparent;
+    padding: 0;
+  }
+
+  strong {
+    color: var(--flowx-text-primary);
+    font-weight: 700;
+  }
+}
+
+.alerts-sla-row__sep {
+  color: var(--flowx-text-tertiary, var(--flowx-text-secondary));
+  opacity: 0.6;
+}
+
+// Pill chip — restyle the PrimeNG p-tag inside the SLA card to match
+// the canonical pill from design.md (radius-999, 4×10 padding,
+// 13/1/700 tabular-nums, tinted bg + border + text in the same tone
+// family). Scoped to `.alerts-sla-card` so it doesn't reach the tag
+// cells in the Alert Rules / History tables.
+.alerts-sla-card ::ng-deep .p-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--flowx-neutrals-100);
+  color: var(--flowx-text-primary);
+
+  &.p-tag-success {
+    background: var(--flowx-green-50);
+    color: var(--flowx-green-700, #005b44);
+    border-color: var(--flowx-green-100);
+  }
+
+  &.p-tag-danger {
+    background: var(--flowx-red-50);
+    color: var(--flowx-red-600, #d11f00);
+    border-color: var(--flowx-red-100);
+  }
+}
+
+:host-context(.flowx-dark) .alerts-sla-row {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(.flowx-dark) .alerts-sla-row__dot {
+  box-shadow: 0 0 0 4px rgba(0, 128, 96, 0.20);
+
+  &--breach { box-shadow: 0 0 0 4px rgba(230, 34, 0, 0.20); }
+}
+
+:host-context(.flowx-dark) .alerts-sla-card ::ng-deep .p-tag {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--flowx-text-primary);
+  border-color: rgba(255, 255, 255, 0.06);
+
+  &.p-tag-success {
+    background: rgba(0, 128, 96, 0.20);
+    color: var(--flowx-green-300);
+    border-color: rgba(0, 128, 96, 0.30);
+  }
+  &.p-tag-danger {
+    background: rgba(230, 34, 0, 0.20);
+    color: var(--flowx-red-300, #ee6b54);
+    border-color: rgba(230, 34, 0, 0.32);
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .alerts-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .alerts-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .alerts-kpi-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30); }
+
+  .alerts-kpi-card__icon {
+    background: rgba(255, 255, 255, 0.04);
+
+    &--blue   { background: rgba(51, 137, 224, 0.20); color: var(--flowx-blue-300); }
+    &--red    { background: rgba(230, 34, 0, 0.20);   color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { background: rgba(254, 185, 19, 0.20); color: var(--flowx-yellow-400, #fec742); }
+    &--orange { background: rgba(253, 107, 28, 0.22); color: #ff9966; }
+  }
+
+  .alerts-kpi-card__value {
+    &--blue   { color: var(--flowx-blue-300); }
+    &--red    { color: var(--flowx-red-300, #ee6b54); }
+    &--yellow { color: var(--flowx-yellow-400, #fec742); }
+    &--orange { color: #ff9966; }
+  }
+}
