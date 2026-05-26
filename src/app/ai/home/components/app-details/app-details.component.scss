@@ -315,7 +315,8 @@
 }
 
 // ─────────────────────────────────────────────
-// Action button overrides — keep them quiet
+// Action buttons — boxed FlowX secondary chrome (code / star / trash),
+// icon centered in a 32px square box.
 // ─────────────────────────────────────────────
 ::ng-deep {
   .project-card__actions {
@@ -324,15 +325,21 @@
       height: 32px !important;
       min-width: 32px !important;
       padding: 0 !important;
-      background: transparent;
-      border: none;
-      color: var(--flowx-text-secondary);
+      background: #ffffff;
+      border: 1px solid var(--flowx-neutrals-100);
+      color: var(--flowx-text-primary);
       border-radius: 8px;
-      transition: background-color 120ms ease, color 120ms ease;
-      display: grid !important;
-      place-items: center !important;
+      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       gap: 0 !important;
       line-height: 1;
+
+      // PrimeNG renders a zero-width ::after on icon-only buttons; in grid it
+      // pushed the icon into its own row (off-center vertically). Flex + this
+      // keeps the single icon truly centered.
+      &::after { display: none !important; }
 
       .p-button-icon,
       .p-icon-wrapper,
@@ -349,30 +356,23 @@
       }
 
       &:hover {
-        background: var(--flowx-blue-50);
-        color: var(--flowx-interactive);
+        background: var(--flowx-neutrals-50);
+        border-color: var(--flowx-neutrals-100);
+        color: var(--flowx-text-primary);
       }
 
-      &.p-button-danger:hover,
-      &.p-button-secondary:hover .pi-trash {
+      // Default-project star — keep the gold accent inside the box
+      &.p-button-warning {
+        color: var(--flowx-yellow-600, #b4830d);
+
+        &:hover { color: var(--flowx-yellow-600, #b4830d); }
+      }
+
+      // Trash button — danger-red icon on hover
+      &:has(.pi-trash):hover,
+      &:has(.pi-trash):focus-visible,
+      &:has(.pi-trash):active {
         color: var(--flowx-red-500);
-      }
-
-      // Trash button — bare icon
-      &:has(.pi-trash) {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-
-        &:hover,
-        &:focus,
-        &:focus-visible,
-        &:active {
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-          color: var(--flowx-red-500);
-        }
       }
     }
   }
@@ -433,23 +433,29 @@
 }
 
 :host-context(.flowx-dark) ::ng-deep .project-card__actions {
-  .p-button-icon-only:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--flowx-interactive);
-  }
+  // Boxed FlowX secondary chrome (dark) — code / star / trash
+  .p-button-icon-only {
+    background: transparent;
+    border: 1px solid #5b6a7e;
+    color: #ffffff;
 
-  .p-button-icon-only:has(.pi-trash) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    &:hover {
+      background: #475263;
+      border-color: #5b6a7e;
+      color: #ffffff;
+    }
 
-    &:hover,
-    &:focus,
-    &:focus-visible,
-    &:active {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
+    // Default-project star — keep the gold accent inside the box
+    &.p-button-warning {
+      color: var(--flowx-yellow-400, #f0c24b);
+
+      &:hover { color: var(--flowx-yellow-400, #f0c24b); }
+    }
+
+    // Trash button — danger-red icon on hover
+    &:has(.pi-trash):hover,
+    &:has(.pi-trash):focus-visible,
+    &:has(.pi-trash):active {
       color: var(--flowx-red-400, var(--flowx-red-500));
     }
   }

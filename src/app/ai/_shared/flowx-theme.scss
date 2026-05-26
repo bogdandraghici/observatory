@@ -651,6 +651,17 @@
   }
   .p-button .p-button-icon { font-size: 16px; }
 
+  // Icon-only — square box (Medium height 36px), icon centered, no label gap.
+  .p-button.p-button-icon-only {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    gap: 0;
+
+    .p-button-icon { margin: 0; }
+    .p-button-label { display: none; }
+  }
+
   // Brand Primary (filled) — light mode per button.json:
   //   Default #006bd8 / Hover #005fc0 / Pressed #004c99 / Disabled neutrals-100
   .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-button-help) {

@@ -1,5 +1,11 @@
 @use '../_shared/ai-design-tokens' as tokens;
 
+// Secondary button variant that keeps a neutral (theme-primary) label
+// instead of the FlowX blue secondary text — icon stays dark per the spec.
+:host ::ng-deep .p-button.btn--dark-label .p-button-label {
+  color: var(--flowx-text-primary);
+}
+
 // ── Drift Hero Panel ─────────────────────────────────────────
 // Same chrome as the home `.welcome-panel` and Agent Evaluations
 // `.eval-hero`: rounded outer panel (no border, soft shadow),

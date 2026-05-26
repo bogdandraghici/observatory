@@ -804,19 +804,28 @@
   }
 
   &__pencil {
-    background: none;
-    border: 0;
-    padding: 2px;
+    // Boxed FlowX secondary chrome, 28px square, icon centered.
+    background: #ffffff;
+    border: 1px solid var(--flowx-neutrals-100);
+    border-radius: 8px;
+    padding: 0;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
-    color: var(--flowx-neutrals-400);
+    color: var(--flowx-text-primary);
     font-size: 14px;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 
-    &:hover { color: var(--flowx-text-secondary); }
+    &:hover {
+      background: var(--flowx-neutrals-50);
+      border-color: var(--flowx-neutrals-100);
+      color: var(--flowx-text-primary);
+    }
   }
 
   &__rows {
@@ -887,12 +896,31 @@
   }
 }
 
+// Secondary button variant that keeps a neutral (theme-primary) label
+// instead of the FlowX blue secondary text — icon stays dark per the spec.
+:host ::ng-deep .p-button.roi-btn--dark-label .p-button-label {
+  color: var(--flowx-text-primary);
+}
+
 :host-context(.flowx-dark) .config-card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
 
   &__icon {
     background: rgba(51, 137, 224, 0.20);
     color: var(--flowx-blue-300);
+  }
+
+  // Pencil edit button — FlowX dark secondary chrome.
+  &__pencil {
+    background: transparent;
+    border-color: #5b6a7e;
+    color: #ffffff;
+
+    &:hover {
+      background: #475263;
+      border-color: #5b6a7e;
+      color: #ffffff;
+    }
   }
 
   &__pill--success {

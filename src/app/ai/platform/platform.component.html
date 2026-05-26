@@ -10,7 +10,7 @@
       </div>
 
       <div class="platform-hero__actions">
-        <p-button label="Refresh" icon="pi pi-refresh" severity="primary" [outlined]="true" (onClick)="loadInitialData()" [loading]="loading"></p-button>
+        <p-button label="Refresh" icon="pi pi-refresh" severity="secondary" (onClick)="loadInitialData()" [loading]="loading"></p-button>
       </div>
     </div>
 
@@ -350,7 +350,7 @@
                   <p-select [options]="eventTypeOptions" [(ngModel)]="eventTypeFilter" optionLabel="label" optionValue="value"
                     placeholder="All" (onChange)="onEventTypeChange()" appendTo="body"></p-select>
                 </div>
-                <p-button label="Refresh" icon="pi pi-refresh" severity="primary" [outlined]="true" size="small" (onClick)="loadEvents()"></p-button>
+                <p-button label="Refresh" icon="pi pi-refresh" severity="secondary" size="small" (onClick)="loadEvents()"></p-button>
               </div>
             </div>
             <p-table [value]="events" [paginator]="true" [rows]="20" styleClass="p-datatable-sm" [rowHover]="true">
@@ -541,7 +541,7 @@
               <p-inputNumber [(ngModel)]="logTailLines" [min]="10" [max]="5000" [showButtons]="true" [step]="100"
                 [style]="{width: '140px'}" (onInput)="fetchLogs()"></p-inputNumber>
             </div>
-            <p-button label="Refresh" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="fetchLogs()" [loading]="logLoading"></p-button>
+            <p-button label="Refresh" icon="pi pi-refresh" severity="secondary" size="small" (onClick)="fetchLogs()" [loading]="logLoading"></p-button>
           </div>
 
           @if (logLoading) {

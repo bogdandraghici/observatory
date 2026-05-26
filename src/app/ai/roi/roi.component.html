@@ -616,7 +616,7 @@
                 <i class="pi pi-list"></i>
                 Per-Execution ROI
               </div>
-              <p-button label="Compute Execution ROI" icon="pi pi-cog" severity="secondary" (onClick)="computeExecutionRoi()" [loading]="loading"></p-button>
+              <p-button label="Compute Execution ROI" icon="pi pi-cog" severity="secondary" styleClass="roi-btn--dark-label" (onClick)="computeExecutionRoi()" [loading]="loading"></p-button>
             </div>
               @if (executionRois.length > 0) {
                 <p-table [value]="executionRois" [rows]="10" [paginator]="true">
