@@ -48,7 +48,7 @@
   font-size: 16px;
   line-height: 24px;
   color: var(--flowx-text-secondary);
-  max-width: 760px;
+  max-width: 900px;
 }
 
 .roi-hero__filters {
@@ -325,6 +325,16 @@
 .roi-page .stat-card,
 .roi-page .stat-card--stacked {
   border-radius: var(--flowx-radius-20, 20px);
+}
+
+/* KPI stat cards (Financial ROI etc.) use a horizontal icon + content
+ * layout, so they need a flex gap between the icon and the text. The
+ * redesigned-page chrome (flowx-theme.scss) sets `gap: 0` on every
+ * `.stat-card` because stacked sub-cards space their children via
+ * `.card-title` / `.card-head` margins — but that strips the gap these
+ * icon-bearing cards rely on. Restore it just for them. */
+.roi-page .stat-card:not(.stat-card--stacked):has(> .stat-card__icon) {
+  gap: var(--flowx-space-16, 16px);
 }
 
 /* ============================================================

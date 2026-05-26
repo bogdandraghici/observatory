@@ -1,4 +1,11 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .regulatory-verdicts {
+  height: 100%;
+
   // Severity pills — three-tier palette matching the Designer regulatory-twin
   // colours so the same verdict renders consistently across products.
   .severity-pill {
