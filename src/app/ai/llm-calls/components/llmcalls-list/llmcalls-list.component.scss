@@ -2,88 +2,75 @@
 $gold: #006bd8;
 $gold-light: rgba(0, 107, 216, 0.1);
 
-// Container
-.llm-calls-table {
-  width: 100%;
+// ── Sub-card chrome ──────────────────────────────────────────
+// `.stat-card` ships as a radius-12 card from flowx-theme.scss. Bump
+// it to radius-20 inside this widget so it matches the sub-card spec
+// in design.md and lines up visually with the `.eval-card` containers
+// on the Insights dashboard.
+.llm-calls-card {
+  border-radius: var(--flowx-radius-20, 20px);
 }
 
-// Table Caption
-.table-caption {
+// Title + controls header row — per design.md, when a card has a
+// control row next to its title, wrap them in a flex row that owns
+// the 24px gap to the body, and zero the inner `.card-title`'s own
+// margin so it doesn't double up.
+.llm-calls-card__head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: var(--surface-ground);
-  border-bottom: 1px solid var(--surface-border);
 
-  &__filters {
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  &__search {
-    margin-left: auto;
-  }
+  .card-title { margin-bottom: 0; }
 }
 
-// Search input
-.search-input {
-  min-width: 200px;
-
-  @media (min-width: 768px) {
-    min-width: 280px;
-  }
+.llm-calls-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-// Table Styling
-::ng-deep .llm-table {
-  // Table Header
-  .p-datatable-thead > tr > th {
-    background: transparent !important;
-    color: var(--text-color) !important;
-    font-weight: 600 !important;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-    border: none !important;
-    border-bottom: 2px solid var(--surface-border) !important;
-  }
-
-  // Table Body
-  .p-datatable-tbody > tr {
-    background: var(--surface-card);
-    transition: background-color 150ms ease;
-
-    &:hover {
-      background: var(--surface-hover) !important;
+// ── Table chrome ─────────────────────────────────────────────
+// Insights / Drift spec from design.md > PrimeNG > p-table > Drift
+// table spec: 11/1.2 · 700 · uppercase · 0.08em header on a tinted
+// `--flowx-surface-secondary` band, 14×20 padding; 14/1 · 600 body
+// with the same 14×20 padding. Wrapped in `::ng-deep` because
+// PrimeNG's `<th>`/`<td>` cells render outside this component's
+// view encapsulation scope; scoped to the local `.llm-calls-card`
+// wrapper so the override doesn't bleed to other tables on the page.
+.llm-calls-card {
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-secondary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 20px;
     }
 
-    &.p-highlight {
-      background: $gold-light !important;
-    }
-
-    > td {
-      color: var(--text-color) !important;
-      padding: 0.875rem 1rem !important;
-      border: none !important;
-      border-bottom: 1px solid var(--surface-border) !important;
+    .p-datatable-tbody > tr > td {
+      color: var(--flowx-text-primary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      padding: 14px 20px;
       vertical-align: middle;
     }
   }
+}
 
-  // Paginator
-  .p-paginator {
-    background: var(--surface-ground) !important;
-    border: none !important;
-    border-top: 1px solid var(--surface-border) !important;
-    padding: 0.875rem 1rem !important;
-
-    .p-paginator-current {
-      color: var(--text-color-secondary) !important;
-    }
+:host-context(.flowx-dark) .llm-calls-card ::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--flowx-text-secondary);
   }
 }
 
