@@ -1,7 +1,8 @@
 // Sidebar & Menu Styles — FlowX Design System
 // Tokens: --flowx-* (declared in src/app/ai/_shared/flowx-theme.scss)
+// Visual reference: obs-hero/project/sidebar.jsx + screenshots/sidebar-v2.png
 
-$sidebar-width: 264px;
+$sidebar-width: 268px;
 $sidebar-collapsed-width: 0px;
 
 .layout-sidebar {
@@ -10,16 +11,16 @@ $sidebar-collapsed-width: 0px;
     height: calc(100vh - 4rem);
     z-index: 999;
     overflow-y: auto;
+    overflow-x: hidden;
     user-select: none;
     top: 4rem;
     left: 0;
     background: var(--flowx-surface-primary, #ffffff);
-    border-right: 1px solid var(--flowx-border-default, #cbd1db);
+    border-right: 1px solid var(--flowx-neutrals-100, #e3e8ed);
     transition: transform $transitionDuration, width $transitionDuration, left $transitionDuration;
-    padding: var(--flowx-space-16, 16px) var(--flowx-space-12, 12px);
+    padding: 0;
     font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
 
-    // Custom scrollbar
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
@@ -29,7 +30,6 @@ $sidebar-collapsed-width: 0px;
     &::-webkit-scrollbar-thumb:hover { background: var(--flowx-neutrals-400, #8390a2); }
 }
 
-// Collapsed sidebar state
 .layout-static-inactive {
     .layout-sidebar { transform: translateX(-100%); }
     .layout-main-container { margin-left: 0 !important; }
@@ -42,42 +42,53 @@ $sidebar-collapsed-width: 0px;
     list-style-type: none;
     display: flex;
     flex-direction: column;
-    gap: var(--flowx-space-4, 4px);
+    gap: 0;
 
     .layout-root-menuitem {
+        padding: 0 0 var(--flowx-space-8, 8px);
+
+        &:not(:first-child) {
+            border-top: 1px solid var(--flowx-neutrals-100, #e3e8ed);
+            margin-top: var(--flowx-space-4, 4px);
+        }
+
         > .layout-menuitem-root-text {
             display: flex;
             align-items: center;
-            font-size: 16px;
-            line-height: 12px;
+            gap: var(--flowx-space-12, 12px);
+            padding: var(--flowx-space-16, 16px) 14px var(--flowx-space-10, 10px);
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.4;
             font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--flowx-text-secondary, #64748b);
-            margin: var(--flowx-space-24, 24px) 0 var(--flowx-space-8, 8px) 0;
-            padding: var(--flowx-space-6, 6px) var(--flowx-space-12, 12px);
+            letter-spacing: -0.005em;
+            text-transform: none;
+            color: var(--flowx-text-primary, #1d232c);
             cursor: pointer;
-            transition: color 150ms ease;
             user-select: none;
-
-            &:hover { color: var(--flowx-text-primary, #1d232c); }
-        }
-
-        &:first-child > .layout-menuitem-root-text {
-            margin-top: var(--flowx-space-8, 8px);
         }
 
         > a { display: none; }
 
         .layout-menuitem-root-icon {
-            margin-right: var(--flowx-space-8, 8px);
-            color: var(--flowx-interactive, #006bd8);
-            font-size: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--flowx-radius-8, 8px);
+            background: var(--flowx-blue-50, #e6f0fb);
+            border: 1px solid var(--flowx-blue-100, #b0d1f3);
+            color: var(--flowx-blue-500, #006bd8);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            margin-right: 0;
+            flex: 0 0 auto;
         }
 
         .layout-root-toggler {
             margin-left: auto;
-            font-size: 10px;
+            font-size: 11px;
             color: var(--flowx-text-secondary, #64748b);
             transition: transform 200ms ease;
         }
@@ -97,32 +108,42 @@ $sidebar-collapsed-width: 0px;
         list-style-type: none;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
 
         a {
+            position: relative;
             display: flex;
             align-items: center;
-            position: relative;
+            gap: var(--flowx-space-12, 12px);
             outline: 0 none;
             color: var(--flowx-text-primary, #1d232c);
             cursor: pointer;
-            padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px);
-            margin: 0;
-            border-radius: var(--flowx-radius-6, 6px);
+            height: 36px;
+            margin: 1px 10px 1px 14px;
+            padding: 0 var(--flowx-space-12, 12px);
+            border-radius: var(--flowx-radius-8, 8px);
             font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
             font-size: 14px;
-            line-height: 24px;
+            line-height: 20px;
             font-weight: 400;
-            transition: background-color 150ms ease, color 150ms ease;
+            transition: background-color 120ms cubic-bezier(.2,0,.2,1), color 120ms ease;
             border: none;
             text-decoration: none;
 
             .layout-menuitem-icon {
-                margin-right: var(--flowx-space-12, 12px);
-                font-size: 16px;
+                margin-right: 0;
+                font-size: 18px;
                 color: var(--flowx-text-secondary, #64748b);
-                transition: color 150ms ease;
+                transition: color 120ms ease;
                 flex-shrink: 0;
+            }
+
+            .layout-menuitem-text {
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 20px;
             }
 
             .layout-submenu-toggler {
@@ -134,13 +155,24 @@ $sidebar-collapsed-width: 0px;
 
             &.active-route {
                 background: var(--flowx-blue-50, #e6f0fb);
-                color: var(--flowx-blue-700, #004c99);
+                color: var(--flowx-blue-600, #005fc0);
                 font-weight: 600;
 
-                .layout-menuitem-icon { color: var(--flowx-interactive, #006bd8); }
+                .layout-menuitem-icon { color: var(--flowx-blue-500, #006bd8); }
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    left: -14px;
+                    top: 4px;
+                    bottom: 4px;
+                    width: 3px;
+                    border-radius: 0 3px 3px 0;
+                    background: var(--flowx-blue-500, #006bd8);
+                }
             }
 
-            &:hover {
+            &:hover:not(.active-route) {
                 background: var(--flowx-neutrals-50, #f7f8f9);
                 color: var(--flowx-text-primary, #1d232c);
 
@@ -153,33 +185,32 @@ $sidebar-collapsed-width: 0px;
             }
         }
 
-        // Nested levels
+        // Deeper nesting (if any sub-item ever gains children): flatten — no left-border indent
         ul {
             overflow: hidden;
-            padding-left: var(--flowx-space-12, 12px);
-            border-left: 1px solid var(--flowx-border-default, #cbd1db);
-            margin-left: var(--flowx-space-16, 16px);
+            padding-left: 0;
+            border-left: none;
+            margin-left: 0;
 
             li a {
                 font-size: 13px;
-                line-height: 22px;
+                line-height: 20px;
             }
         }
     }
 }
 
-// Menu separator
 .menu-separator {
     height: 1px;
-    background: var(--flowx-border-default, #cbd1db);
-    margin: var(--flowx-space-16, 16px) var(--flowx-space-8, 8px);
+    background: var(--flowx-neutrals-100, #e3e8ed);
+    margin: var(--flowx-space-12, 12px) 14px;
 }
 
-// User profile at bottom of sidebar
+// User profile / footer block (rendered conditionally outside the menu list)
 .layout-menu + .mt-auto {
     margin-top: auto;
-    padding-top: var(--flowx-space-16, 16px);
-    border-top: 1px solid var(--flowx-border-default, #cbd1db);
+    padding: var(--flowx-space-12, 12px) 14px var(--flowx-space-16, 16px);
+    border-top: 1px solid var(--flowx-neutrals-100, #e3e8ed);
 
     hr { display: none; }
 
@@ -188,7 +219,7 @@ $sidebar-collapsed-width: 0px;
         align-items: center;
         gap: var(--flowx-space-12, 12px);
         padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px);
-        border-radius: var(--flowx-radius-6, 6px);
+        border-radius: var(--flowx-radius-8, 8px);
         color: var(--flowx-text-primary, #1d232c);
         text-decoration: none;
         transition: background-color 150ms ease;
@@ -212,13 +243,28 @@ $sidebar-collapsed-width: 0px;
 .flowx-dark {
     .layout-sidebar {
         background: var(--flowx-neutrals-900, #1d232c);
-        border-right-color: var(--flowx-neutrals-700, #475263);
+        border-right-color: rgba(255, 255, 255, 0.06);
     }
 
     .layout-menu {
-        .layout-root-menuitem > .layout-menuitem-root-text {
-            color: var(--flowx-neutrals-400, #8390a2);
-            &:hover { color: var(--flowx-neutrals-50, #f7f8f9); }
+        .layout-root-menuitem {
+            &:not(:first-child) {
+                border-top-color: rgba(255, 255, 255, 0.06);
+            }
+
+            > .layout-menuitem-root-text {
+                color: var(--flowx-neutrals-50, #f7f8f9);
+            }
+
+            .layout-menuitem-root-icon {
+                background: rgba(51, 137, 224, 0.18);
+                border-color: rgba(51, 137, 224, 0.30);
+                color: var(--flowx-blue-300, #549ce5);
+            }
+
+            .layout-root-toggler {
+                color: var(--flowx-neutrals-400, #8390a2);
+            }
         }
 
         ul a {
@@ -227,25 +273,27 @@ $sidebar-collapsed-width: 0px;
             .layout-menuitem-icon { color: var(--flowx-neutrals-400, #8390a2); }
 
             &.active-route {
-                background: rgba(0, 107, 216, 0.18);
+                background: rgba(51, 137, 224, 0.18);
                 color: var(--flowx-blue-300, #549ce5);
 
                 .layout-menuitem-icon { color: var(--flowx-blue-300, #549ce5); }
+
+                &::before { background: var(--flowx-blue-400, #3389e0); }
             }
 
-            &:hover {
+            &:hover:not(.active-route) {
                 background: var(--flowx-neutrals-800, #2a313a);
                 color: var(--flowx-neutrals-50, #f7f8f9);
+
+                .layout-menuitem-icon { color: var(--flowx-neutrals-50, #f7f8f9); }
             }
         }
-
-        ul ul { border-left-color: var(--flowx-neutrals-700, #475263); }
     }
 
-    .menu-separator { background: var(--flowx-neutrals-700, #475263); }
+    .menu-separator { background: rgba(255, 255, 255, 0.06); }
 
     .layout-menu + .mt-auto {
-        border-top-color: var(--flowx-neutrals-700, #475263);
+        border-top-color: rgba(255, 255, 255, 0.06);
 
         a {
             color: var(--flowx-neutrals-50, #f7f8f9);
