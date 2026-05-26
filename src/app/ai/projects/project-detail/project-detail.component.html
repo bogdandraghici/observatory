@@ -324,7 +324,7 @@
                     <td>{{ getBaselineForAgent(agent)?.manual_effort_hourly_rate ? '$' + getBaselineForAgent(agent).manual_effort_hourly_rate : '—' }}</td>
                     <td>{{ getBaselineForAgent(agent)?.avg_executions_per_period || '—' }}</td>
                     <td>
-                      <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" pTooltip="Configure baseline" tooltipPosition="top" (click)="openBaselineDialog(agent)"></p-button>
+                      <p-button icon="pi pi-cog" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Configure baseline" tooltipPosition="top" (click)="openBaselineDialog(agent)"></p-button>
                     </td>
                   </tr>
                 </ng-template>
@@ -446,11 +446,11 @@
                       <td>{{ getEvalSummary(ev.id)?.total_evaluated || 0 }}</td>
                       <td>
                         <div class="flex gap-1">
-                          <p-button icon="pi pi-list" [rounded]="true" [text]="true" severity="info" size="small" pTooltip="View results" tooltipPosition="top" (click)="viewResults(ev)"></p-button>
-                          <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" size="small" pTooltip="Run now" tooltipPosition="top" (click)="runEvaluator(ev)"></p-button>
-                          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" size="small" pTooltip="Edit" tooltipPosition="top" (click)="openEditEvaluator(ev)"></p-button>
-                          <p-button [icon]="ev.is_active ? 'pi pi-pause' : 'pi pi-play'" [rounded]="true" [text]="true" severity="secondary" size="small" [pTooltip]="ev.is_active ? 'Disable' : 'Enable'" tooltipPosition="top" (click)="toggleEvaluator(ev)"></p-button>
-                          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" size="small" pTooltip="Delete" tooltipPosition="top" (click)="deleteEvaluator(ev)"></p-button>
+                          <p-button icon="pi pi-list" [rounded]="true" [text]="true" styleClass="row-action" size="small" pTooltip="View results" tooltipPosition="top" (click)="viewResults(ev)"></p-button>
+                          <p-button icon="pi pi-play" [rounded]="true" [text]="true" styleClass="row-action" size="small" pTooltip="Run now" tooltipPosition="top" (click)="runEvaluator(ev)"></p-button>
+                          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" styleClass="row-action" size="small" pTooltip="Edit" tooltipPosition="top" (click)="openEditEvaluator(ev)"></p-button>
+                          <p-button [icon]="ev.is_active ? 'pi pi-pause' : 'pi pi-play'" [rounded]="true" [text]="true" styleClass="row-action" size="small" [pTooltip]="ev.is_active ? 'Disable' : 'Enable'" tooltipPosition="top" (click)="toggleEvaluator(ev)"></p-button>
+                          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" size="small" pTooltip="Delete" tooltipPosition="top" (click)="deleteEvaluator(ev)"></p-button>
                         </div>
                       </td>
                     </tr>

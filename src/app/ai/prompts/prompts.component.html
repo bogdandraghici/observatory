@@ -95,7 +95,7 @@
                 <td>{{ prompt.first_seen_at | date:'short' }}</td>
                 <td>{{ prompt.last_seen_at | date:'short' }}</td>
                 <td>
-                  <p-button icon="pi pi-history" [text]="true" severity="info" pTooltip="View version history" (click)="viewHistory(prompt)"></p-button>
+                  <p-button icon="pi pi-history" [text]="true" styleClass="row-action" pTooltip="View version history" (click)="viewHistory(prompt)"></p-button>
                 </td>
               </tr>
             </ng-template>
@@ -170,9 +170,9 @@
                 </td>
                 <td>
                   <div class="flex gap-1">
-                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" pTooltip="Edit" tooltipPosition="top" (click)="editPrompt(prompt)"></p-button>
-                    <p-button icon="pi pi-history" [text]="true" [rounded]="true" severity="info" pTooltip="Version history" tooltipPosition="top" (click)="viewManagedHistory(prompt)"></p-button>
-                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="deletePrompt(prompt)"></p-button>
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" styleClass="row-action" pTooltip="Edit" tooltipPosition="top" (click)="editPrompt(prompt)"></p-button>
+                    <p-button icon="pi pi-history" [text]="true" [rounded]="true" styleClass="row-action" pTooltip="Version history" tooltipPosition="top" (click)="viewManagedHistory(prompt)"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="deletePrompt(prompt)"></p-button>
                   </div>
                 </td>
               </tr>

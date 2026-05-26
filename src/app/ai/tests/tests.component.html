@@ -123,8 +123,8 @@
               <td><span class="text-sm" style="color:var(--text-color-secondary);">{{ previewText(tc.expected_output) }}</span></td>
               <td>{{ tc.created_at | date:'shortDate' }}</td>
               <td>
-                <p-button icon="pi pi-play" [rounded]="true" [text]="true" severity="success" (click)="runSingleTest(tc)" [loading]="tc._running" pTooltip="Run test"></p-button>
-                <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="deleteTestCase(tc)" pTooltip="Delete"></p-button>
+                <p-button icon="pi pi-play" [rounded]="true" [text]="true" styleClass="row-action" (click)="runSingleTest(tc)" [loading]="tc._running" pTooltip="Run test"></p-button>
+                <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" (click)="deleteTestCase(tc)" pTooltip="Delete"></p-button>
               </td>
             </tr>
           </ng-template>
@@ -169,7 +169,7 @@
               <td>{{ run.created_at | date:'short' }}</td>
               <td>{{ run.completed_at ? (run.completed_at | date:'short') : '-' }}</td>
               <td>
-                <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (click)="viewRunDetail(run)" pTooltip="View details"></p-button>
+                <p-button icon="pi pi-eye" [rounded]="true" [text]="true" styleClass="row-action" (click)="viewRunDetail(run)" pTooltip="View details"></p-button>
               </td>
             </tr>
           </ng-template>

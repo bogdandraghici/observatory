@@ -140,8 +140,8 @@
           </td>
           <td>
             <div class="flex gap-1">
-              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" pTooltip="Edit" tooltipPosition="top" (click)="editRule(rule)"></p-button>
-              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(rule)"></p-button>
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Edit" tooltipPosition="top" (click)="editRule(rule)"></p-button>
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(rule)"></p-button>
             </div>
           </td>
         </tr>
@@ -183,10 +183,10 @@
           <td>
             <div class="flex gap-1">
               @if (event.status === 'fired') {
-                <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="warn" pTooltip="Acknowledge" (click)="acknowledgeAlert(event)"></p-button>
+                <p-button icon="pi pi-check" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Acknowledge" (click)="acknowledgeAlert(event)"></p-button>
               }
               @if (event.status !== 'resolved') {
-                <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" severity="success" pTooltip="Resolve" (click)="resolveAlert(event)"></p-button>
+                <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Resolve" (click)="resolveAlert(event)"></p-button>
               }
             </div>
           </td>

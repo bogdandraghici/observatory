@@ -73,8 +73,8 @@
                     <td><p-tag [value]="t.is_active ? 'Active' : 'Inactive'" [severity]="t.is_active ? 'success' : 'secondary'"></p-tag></td>
                     <td>
                       <div class="flex gap-1">
-                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Edit" tooltipPosition="top" (click)="editTemplate(t)"></p-button>
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(t, 'template')"></p-button>
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" styleClass="row-action" pTooltip="Edit" tooltipPosition="top" (click)="editTemplate(t)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" styleClass="row-action row-action--danger" pTooltip="Delete" tooltipPosition="top" (click)="confirmDelete(t, 'template')"></p-button>
                       </div>
                     </td>
                   </tr>

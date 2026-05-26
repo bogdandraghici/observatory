@@ -136,8 +136,8 @@
                 </td>
                 <td>
                   @if (!fw.is_system) {
-                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditFrameworkForm(fw); $event.stopPropagation()" pTooltip="Edit"></p-button>
-                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteFramework(fw, $event)" pTooltip="Delete"></p-button>
+                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" styleClass="row-action" (onClick)="openEditFrameworkForm(fw); $event.stopPropagation()" pTooltip="Edit"></p-button>
+                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" styleClass="row-action row-action--danger" (onClick)="confirmDeleteFramework(fw, $event)" pTooltip="Delete"></p-button>
                   }
                 </td>
               </tr>
@@ -745,8 +745,8 @@
                                 }
                                 @if (!frameworkDetail.is_system) {
                                   <span class="obligation-card__meta-actions">
-                                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" (onClick)="openEditRequirementForm(req, $event)" pTooltip="Edit"></p-button>
-                                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="confirmDeleteRequirement(req, $event)" pTooltip="Delete"></p-button>
+                                    <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" size="small" styleClass="row-action" (onClick)="openEditRequirementForm(req, $event)" pTooltip="Edit"></p-button>
+                                    <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" styleClass="row-action row-action--danger" (onClick)="confirmDeleteRequirement(req, $event)" pTooltip="Delete"></p-button>
                                   </span>
                                 }
                               </div>

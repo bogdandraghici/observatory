@@ -475,7 +475,7 @@
               <td>{{ formatCost(exec.total_cost) }}</td>
               <td>{{ exec.created_at | date:'MMM d, h:mm a' }}</td>
               <td>
-                <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-rounded"
+                <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-rounded row-action"
                         pTooltip="Evaluate" tooltipPosition="top"
                         [loading]="exec._evaluating"
                         (click)="triggerEval(exec); $event.stopPropagation()"></button>

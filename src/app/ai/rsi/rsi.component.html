@@ -190,9 +190,9 @@
                     <td>{{ formatDuration(cycle.duration_seconds) }}</td>
                     <td>{{ cycle.started_at ? (cycle.started_at | date:'short') : '-' }}</td>
                     <td>
-                      <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (click)="viewCycle(cycle.cycle_id)" pTooltip="View details"></p-button>
+                      <p-button icon="pi pi-eye" [rounded]="true" [text]="true" styleClass="row-action" (click)="viewCycle(cycle.cycle_id)" pTooltip="View details"></p-button>
                       @if (cycle.status === 'AWAITING_APPROVAL') {
-                        <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (click)="promoteCycle(cycle.cycle_id)" pTooltip="Promote"></p-button>
+                        <p-button icon="pi pi-check" [rounded]="true" [text]="true" styleClass="row-action" (click)="promoteCycle(cycle.cycle_id)" pTooltip="Promote"></p-button>
                       }
                     </td>
                   </tr>
@@ -291,7 +291,7 @@
                     <td class="text-xs">{{ ver.created_by?.email || '-' }}</td>
                     <td>
                       @if (!ver.is_current) {
-                        <p-button icon="pi pi-history" [rounded]="true" [text]="true" severity="warn" (click)="restoreVersion(ver.version)" pTooltip="Restore this version"></p-button>
+                        <p-button icon="pi pi-history" [rounded]="true" [text]="true" styleClass="row-action" (click)="restoreVersion(ver.version)" pTooltip="Restore this version"></p-button>
                       }
                     </td>
                   </tr>
