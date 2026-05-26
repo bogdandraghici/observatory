@@ -8,6 +8,80 @@ $table-header-bg: transparent;
 $table-row-hover: rgba(255, 255, 255, 0.02);
 $code-bg: rgba(255, 255, 255, 0.05);
 
+// ── Sub-card chrome ──────────────────────────────────────────
+// `.stat-card` ships as a radius-12 card from flowx-theme.scss. Bump
+// it to radius-20 inside this widget so it matches the sub-card spec
+// in design.md and lines up visually with the LLM Calls / Insights
+// sub-cards.
+.traces-list-card {
+  border-radius: var(--flowx-radius-20, 20px);
+}
+
+// Title + controls header row — per design.md, when a card has a
+// control row next to its title, wrap them in a flex row that owns
+// the 24px gap to the body, and zero the inner `.card-title`'s own
+// margin so it doesn't double up.
+.traces-list-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .card-title { margin-bottom: 0; }
+}
+
+.traces-list-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// ── Table chrome ─────────────────────────────────────────────
+// Insights / Drift spec from design.md > PrimeNG > p-table > Drift
+// table spec: 11/1.2 · 700 · uppercase · 0.08em header on a tinted
+// `--flowx-surface-secondary` band, 14×20 padding; 14/1 · 600 body
+// with the same 14×20 padding. Wrapped in `::ng-deep` because
+// PrimeNG's `<th>`/`<td>` cells render outside this component's
+// view encapsulation scope; scoped to the local `.traces-list-card`
+// wrapper so the override doesn't bleed to other tables on the page.
+// No `white-space: nowrap` here — traces rows hold prompt/result
+// preview boxes that legitimately wrap.
+.traces-list-card {
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      color: var(--flowx-text-secondary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 20px;
+    }
+
+    .p-datatable-tbody > tr > td {
+      color: var(--flowx-text-primary);
+      font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 14px 20px;
+      vertical-align: middle;
+    }
+  }
+}
+
+:host-context(.flowx-dark) .traces-list-card ::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--flowx-text-secondary);
+  }
+}
+
 ::ng-deep {
   .details-table {
     .p-datatable,

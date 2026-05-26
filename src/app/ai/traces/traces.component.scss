@@ -1,1 +1,161 @@
-// Traces page styles
+// Traces page — hero panel + filters band. Mirrors the Insights /
+// Dashboard / LLM Calls / Analytics / Drift / ROI / Home hero pattern
+// (see design.md): one rounded outer panel containing a title band
+// (with the period segmented control pinned to the right column edge)
+// and a 3-up filters band below, separated by a hairline neutrals-100
+// divider. Light mode stays flat — the page canvas already carries
+// blue blob radials; only dark mode rebuilds the saturated translucent
+// gradient on the hero band itself.
+
+// ── Hero panel ───────────────────────────────────────────────
+.traces-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+// Grid pins the period control to the right column edge regardless of
+// title width. Right padding (40px) aligns with the filters band below
+// so the segmented control sits flush over the rightmost filter.
+.traces-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.traces-hero__text { min-width: 0; }
+
+.traces-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.traces-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 640px;
+}
+
+.traces-hero__scope {
+  justify-self: end;
+
+  @media (max-width: 768px) { justify-self: stretch; }
+}
+
+// Period segmented control — matches the chrome used by Insights, Dashboard,
+// LLM Calls, and Analytics. `height: auto` releases the 36px container
+// height set globally (flowx-theme.scss) so the 32px inner buttons + 4px×2
+// padding (= 40px) fit cleanly instead of overflowing.
+::ng-deep .traces-hero__scope .p-selectbutton {
+  display: inline-flex;
+  align-items: center;
+  height: auto;
+  background: var(--flowx-surface-secondary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+  flex-wrap: wrap;
+
+  .p-togglebutton,
+  .p-button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--flowx-text-secondary) !important;
+    padding: 0 14px !important;
+    height: 32px !important;
+    border-radius: 7px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: background-color 120ms ease, color 120ms ease;
+
+    &.p-togglebutton-checked,
+    &.p-highlight {
+      background: var(--flowx-blue-500) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+// Filters band — 3-up grid below the title band, same horizontal
+// padding so all edges line up.
+.traces-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+// CLAUDE.md: ship the dark counterpart in the same change. Rebuild
+// the hero gradient with translucent saturated blue radials and lift
+// the segmented control's active fill to blue-400.
+:host-context(.flowx-dark) {
+  .traces-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .traces-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+:host-context(.flowx-dark) ::ng-deep .traces-hero__scope .p-selectbutton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+
+  .p-togglebutton.p-togglebutton-checked,
+  .p-button.p-highlight {
+    background: var(--flowx-blue-400) !important;
+  }
+}
