@@ -390,24 +390,71 @@
 }
 
 /* ============================================================
- * Gap Analysis — requirement rows
- * Same tone-aware fill recipe as the summary tiles. Light mode
- * uses the FlowX 50 fills; dark mode swaps to translucent
- * saturated tokens. The 4px left rail keeps its 500-token color
- * in both modes (the saturated stops read on either surface).
+ * Gap Analysis — requirement rows (bordered-card variant)
+ * Neutral white card (radius 12, faint border, no tint, no left
+ * rail). Severity is carried by the leading code chip instead.
  * ============================================================ */
 .gap-row {
   background: var(--flowx-surface-primary);
+  border: 1px solid var(--flowx-neutrals-100);
+  border-radius: var(--flowx-radius-12, 12px);
+  padding: 14px 20px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 
-  &--danger  { background: var(--flowx-red-50,    #fde9e6); }
-  &--warning { background: var(--flowx-yellow-50, #fff8e7); }
-  &--success { background: var(--flowx-green-50,  #e6f2ef); }
+  &:hover {
+    border-color: var(--flowx-neutrals-200);
+    box-shadow: 0 2px 8px rgba(22, 52, 98, 0.06);
+  }
 }
 
-:host-context(.flowx-dark) .gap-row {
-  &--danger  { background: rgba(230, 34, 0,   0.22); }
-  &--warning { background: rgba(254, 185, 19, 0.18); }
-  &--success { background: rgba(0,   128, 96, 0.22); }
+// Leading code chip — tinted per severity tier (the only place the
+// row's tone shows now). Values come from the FlowX palette with hex
+// fallbacks so they render even if a 100/200 step is absent.
+.gap-row__code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 5px 9px;
+  border-radius: var(--flowx-radius-6, 6px);
+  border: 1px solid transparent;
+  font-family: var(--flowx-font-monospace, ui-monospace, monospace);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+
+  &--danger {
+    background: var(--flowx-red-50, #fde9e6);
+    color: var(--flowx-red-700, #a31800);
+    border-color: var(--flowx-red-200, #f4998a);
+  }
+  &--warning {
+    background: var(--flowx-yellow-50, #fff8e7);
+    color: var(--flowx-yellow-700, #b4830d);
+    border-color: var(--flowx-yellow-200, #ffdf92);
+  }
+  &--success {
+    background: var(--flowx-green-50, #e6f2ef);
+    color: var(--flowx-green-700, #005b44);
+    border-color: var(--flowx-green-200, #8ac5b6);
+  }
+}
+
+:host-context(.flowx-dark) {
+  .gap-row {
+    border-color: rgba(255, 255, 255, 0.06);
+
+    &:hover { border-color: rgba(255, 255, 255, 0.12); }
+  }
+
+  // Pastel 50/200 fills wash out on the slate — swap to translucent
+  // saturated tints with a lifted glyph color.
+  .gap-row__code {
+    &--danger  { background: rgba(230, 34, 0, 0.18);   color: #ff8a73; border-color: rgba(230, 34, 0, 0.36); }
+    &--warning { background: rgba(254, 185, 19, 0.16); color: #fed061; border-color: rgba(254, 185, 19, 0.34); }
+    &--success { background: rgba(0, 128, 96, 0.18);   color: #6fd0ab; border-color: rgba(0, 128, 96, 0.36); }
+  }
 }
 
 /* ============================================================
