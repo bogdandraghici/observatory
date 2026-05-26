@@ -1,17 +1,20 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">AI Registry</h1>
-      <p class="page-header__subtitle">Manage projects, vendors, and model catalog</p>
+<div class="ai-page registry-page">
+  <!-- Hero Panel — title band + filters band, single rounded card -->
+  <section class="registry-hero">
+    <div class="registry-hero__band">
+      <div class="registry-hero__text">
+        <h1 class="registry-hero__title">
+          AI <span class="text-accent">Registry</span>
+        </h1>
+        <p class="registry-hero__subtitle">
+          Manage projects, vendors, and the model catalog across your organization.
+        </p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="registry-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -21,6 +24,7 @@
           optionValue="id"
           placeholder="Select Organization"
           (onChange)="orgChanged($event)"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -33,301 +37,320 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <p-tabs [(value)]="activeTab">
-    <p-tablist>
-      <p-tab value="0">Projects</p-tab>
-      <p-tab value="1">Agents</p-tab>
-      <p-tab value="2">Vendors</p-tab>
-      <p-tab value="3">Models</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <!-- Projects Tab -->
-      <p-tabpanel value="0">
-        <div class="stat-card mt-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-folder"></i>
-              </div>
-              <span class="stat-card__title">Projects</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <p-select
-                [options]="lifecycleOptions"
-                [(ngModel)]="filterLifecycle"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Lifecycle"
-                (onChange)="applyAppFilters()"
-              ></p-select>
-              <p-select
-                [options]="riskOptions"
-                [(ngModel)]="filterRisk"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Risk Level"
-                (onChange)="applyAppFilters()"
-              ></p-select>
-            </div>
-          </div>
+  <!-- Tabs — flat underline navigation at the page level -->
+  <div class="registry-tabs">
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        <p-tab value="0">Projects</p-tab>
+        <p-tab value="1">Agents</p-tab>
+        <p-tab value="2">Vendors</p-tab>
+        <p-tab value="3">Models</p-tab>
+      </p-tablist>
 
-          <p-table [value]="apps" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Name</th>
-                <th>Owner</th>
-                <th>Lifecycle</th>
-                <th>Risk Level</th>
-                <th>Business Owner</th>
-                <th>Technical Owner</th>
-                <th>Tags</th>
-                <th style="width: 4rem"></th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-app>
-              <tr>
-                <td class="font-semibold">{{ app.name }}</td>
-                <td>{{ app.owner }}</td>
-                <td>
-                  @if (app.lifecycle_status) {
-                    <p-tag [value]="app.lifecycle_status" [severity]="getLifecycleSeverity(app.lifecycle_status)"></p-tag>
-                  }
-                </td>
-                <td>
-                  @if (app.risk_level) {
-                    <p-tag [value]="app.risk_level" [severity]="getRiskSeverity(app.risk_level)"></p-tag>
-                  }
-                </td>
-                <td>{{ app.business_owner || '-' }}</td>
-                <td>{{ app.technical_owner || '-' }}</td>
-                <td>
-                  @if (app.tags) {
-                    @for (tag of app.tags; track tag) {
-                      <p-chip [label]="tag" styleClass="mr-1"></p-chip>
-                    }
-                  }
-                </td>
-                <td>
-                  <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit Project" tooltipPosition="top" (click)="showAppDetail(app)"></p-button>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="8" class="text-center p-6">No projects found.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-
-      <!-- Agents Tab -->
-      <p-tabpanel value="1">
-        <div class="stat-card mt-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-users"></i>
-              </div>
-              <span class="stat-card__title">Agents</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <p-select
-                [options]="apps"
-                [(ngModel)]="agentsFilterApp"
-                optionLabel="name"
-                optionValue="id"
-                placeholder="Select Project"
-                (onChange)="loadProjectAgents(agentsFilterApp)"
-              ></p-select>
-            </div>
-          </div>
-
-          @if (!agentsFilterApp) {
-            <div style="color: var(--text-color-secondary)" class="text-center p-6">Select a project to view its agents.</div>
-          } @else {
-            <p-table [value]="projectAgents" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Agent Name</th>
-                  <th>Value Outcome Unit</th>
-                  <th>Baseline Status</th>
-                  <th>Task Description</th>
-                  <th>Hours/Exec</th>
-                  <th>Rate</th>
-                  <th>Avg Exec/Period</th>
-                  <th style="width: 5rem"></th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-agent>
-                <tr>
-                  <td class="font-semibold">{{ agent }}</td>
-                  <td>{{ getBaselineForAgent(agent)?.value_outcome_unit || '-' }}</td>
-                  <td>
-                    @if (getBaselineForAgent(agent)) {
-                      <p-tag value="Configured" severity="success"></p-tag>
-                    } @else {
-                      <p-tag value="Not Set" severity="warn"></p-tag>
-                    }
-                  </td>
-                  <td>{{ getBaselineForAgent(agent)?.task_description || '-' }}</td>
-                  <td>{{ getBaselineForAgent(agent)?.manual_effort_hours_per_execution || 0 }} hrs</td>
-                  <td>{{ getBaselineForAgent(agent) ? ('$' + getBaselineForAgent(agent).manual_effort_hourly_rate) : '-' }}</td>
-                  <td>{{ getBaselineForAgent(agent)?.avg_executions_per_period || '-' }}</td>
-                  <td>
-                    <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Configure Baseline" tooltipPosition="top" (click)="openBaselineConfig(agent)"></p-button>
-                  </td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr><td colspan="8" class="text-center p-6">No agents found for this project.</td></tr>
-              </ng-template>
-            </p-table>
-          }
-        </div>
-      </p-tabpanel>
-
-      <!-- Vendors Tab -->
-      <p-tabpanel value="2">
-        <div class="stat-card mt-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-building"></i>
-              </div>
-              <span class="stat-card__title">Vendors</span>
-            </div>
-            <p-button label="Add Vendor" icon="pi pi-plus" (click)="openNewVendor()"></p-button>
-          </div>
-
-          <p-table [value]="vendors" styleClass="p-datatable-sm" [paginator]="true" [rows]="20">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Name</th>
-                <th>Provider</th>
-                <th>Models</th>
-                <th>Approved</th>
-                <th>Data Residency</th>
-                <th>Certifications</th>
-                <th>Active</th>
-                <th style="width: 8rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-vendor>
-              <tr>
-                <td class="font-semibold">{{ vendor.name }}</td>
-                <td>{{ vendor.provider }}</td>
-                <td>{{ getVendorModelCount(vendor.provider) }}</td>
-                <td>{{ getVendorApprovedCount(vendor.provider) }}</td>
-                <td>{{ vendor.data_residency || '-' }}</td>
-                <td>
-                  @if (vendor.certifications) {
-                    @for (cert of vendor.certifications; track cert) {
-                      <p-chip [label]="cert" styleClass="mr-1"></p-chip>
-                    }
-                  }
-                </td>
-                <td>
-                  <p-tag [value]="vendor.is_active ? 'Active' : 'Inactive'" [severity]="vendor.is_active ? 'success' : 'secondary'"></p-tag>
-                </td>
-                <td>
-                  <div class="flex gap-1">
-                    <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit" tooltipPosition="top" (click)="openEditVendor(vendor)"></p-button>
-                    <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteVendor(vendor)"></p-button>
+      <p-tabpanels>
+        <!-- ═══ Projects Tab ═══ -->
+        <p-tabpanel value="0">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="registry-card-head">
+                <div class="registry-card-head__title">
+                  <div class="stat-card__icon">
+                    <i class="pi pi-folder"></i>
                   </div>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="8" class="text-center p-6">No vendors configured.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-
-      <!-- Models Tab -->
-      <p-tabpanel value="3">
-        <div class="stat-card mt-4" style="flex-direction: column; align-items: stretch;">
-          <div class="flex items-center justify-between mb-3 w-full">
-            <div class="flex items-center gap-2">
-              <div class="stat-card__icon">
-                <i class="pi pi-microchip"></i>
+                  <span class="stat-card__title">Projects</span>
+                </div>
+                <div class="registry-card-head__controls">
+                  <p-select
+                    [options]="lifecycleOptions"
+                    [(ngModel)]="filterLifecycle"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Lifecycle"
+                    (onChange)="applyAppFilters()"
+                    appendTo="body"
+                  ></p-select>
+                  <p-select
+                    [options]="riskOptions"
+                    [(ngModel)]="filterRisk"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Risk Level"
+                    (onChange)="applyAppFilters()"
+                    appendTo="body"
+                  ></p-select>
+                </div>
               </div>
-              <span class="stat-card__title">Models</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <p-select
-                [options]="providerOptions"
-                [(ngModel)]="filterProvider"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Provider"
-                [showClear]="true"
-                (onChange)="applyModelFilters()"
-              ></p-select>
-              <input type="text" pInputText [(ngModel)]="modelSearchQuery" placeholder="Search models..." class="w-[16rem]" (keyup.enter)="applyModelFilters()" />
-              <p-button label="Search" icon="pi pi-search" [outlined]="true"  (click)="applyModelFilters()"></p-button>
-              <p-button label="Sync from Profiles" icon="pi pi-sync" (click)="syncModels()"></p-button>
-              <p-button label="Sync from Providers" icon="pi pi-cloud-download" severity="secondary" (click)="syncFromProviders()" [loading]="syncingProviders"></p-button>
+
+              <p-table [value]="apps" [paginator]="true" [rows]="20">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Lifecycle</th>
+                    <th>Risk Level</th>
+                    <th>Business Owner</th>
+                    <th>Technical Owner</th>
+                    <th>Tags</th>
+                    <th style="width: 4rem"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-app>
+                  <tr>
+                    <td>{{ app.name }}</td>
+                    <td>{{ app.owner }}</td>
+                    <td>
+                      @if (app.lifecycle_status) {
+                        <p-tag [value]="app.lifecycle_status" [severity]="getLifecycleSeverity(app.lifecycle_status)"></p-tag>
+                      }
+                    </td>
+                    <td>
+                      @if (app.risk_level) {
+                        <p-tag [value]="app.risk_level" [severity]="getRiskSeverity(app.risk_level)"></p-tag>
+                      }
+                    </td>
+                    <td>{{ app.business_owner || '-' }}</td>
+                    <td>{{ app.technical_owner || '-' }}</td>
+                    <td>
+                      @if (app.tags) {
+                        @for (tag of app.tags; track tag) {
+                          <p-chip [label]="tag" styleClass="mr-1"></p-chip>
+                        }
+                      }
+                    </td>
+                    <td>
+                      <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit Project" tooltipPosition="top" (click)="showAppDetail(app)"></p-button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="8" class="registry-empty">No projects found.</td></tr>
+                </ng-template>
+              </p-table>
             </div>
           </div>
+        </p-tabpanel>
 
-          <p-table [value]="models" styleClass="p-datatable-sm" [paginator]="true" [rows]="25" [rowsPerPageOptions]="[25, 50, 100]">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Model ID</th>
-                <th>Provider</th>
-                <th>Short Name</th>
-                <th>Context Window</th>
-                <th>Capabilities</th>
-                <th>Cost ($/M in/out)</th>
-                <th>Intelligence</th>
-                <th>Performance</th>
-                <th>Approved</th>
-                <th style="width: 5rem">Actions</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-model>
-              <tr>
-                <td class="font-semibold">{{ model.model_id }}</td>
-                <td>{{ model.provider }}</td>
-                <td>{{ model.short_name || '-' }}</td>
-                <td>{{ model.max_input_tokens ? (model.max_input_tokens | number) : '-' }}</td>
-                <td>
-                  @for (cap of formatCapabilities(model.capabilities); track cap) {
-                    <p-tag [value]="cap" severity="info" styleClass="mr-1 mb-1"></p-tag>
-                  }
-                </td>
-                <td>{{ formatCost(model.costs) }}</td>
-                <td>{{ formatIntelligence(model.evaluations) }}</td>
-                <td>{{ formatTokensPerSecond(model.performance) }}</td>
-                <td>
-                  <p-tag [value]="model.is_approved ? 'Approved' : 'Pending'" [severity]="model.is_approved ? 'success' : 'warn'"></p-tag>
-                </td>
-                <td>
-                  <p-button
-                    [icon]="model.is_approved ? 'pi pi-times' : 'pi pi-check'"
-                    [rounded]="true"
-                    [text]="true"
-                    [severity]="model.is_approved ? 'danger' : 'success'"
-                    [styleClass]="model.is_approved ? 'action-chip action-chip--danger' : 'action-chip action-chip--success'"
-                    [pTooltip]="model.is_approved ? 'Revoke' : 'Approve'"
-                    (click)="toggleApproved(model)"
-                  ></p-button>
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr><td colspan="10" class="text-center p-6">No models in catalog. Click "Sync from Profiles" to populate.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+        <!-- ═══ Agents Tab ═══ -->
+        <p-tabpanel value="1">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="registry-card-head">
+                <div class="registry-card-head__title">
+                  <div class="stat-card__icon">
+                    <i class="pi pi-users"></i>
+                  </div>
+                  <span class="stat-card__title">Agents</span>
+                </div>
+                <div class="registry-card-head__controls">
+                  <p-select
+                    [options]="apps"
+                    [(ngModel)]="agentsFilterApp"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="Select Project"
+                    (onChange)="loadProjectAgents(agentsFilterApp)"
+                    appendTo="body"
+                  ></p-select>
+                </div>
+              </div>
+
+              @if (!agentsFilterApp) {
+                <div class="registry-empty">Select a project to view its agents.</div>
+              } @else {
+                <p-table [value]="projectAgents" [paginator]="true" [rows]="20">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Agent Name</th>
+                      <th>Value Outcome Unit</th>
+                      <th>Baseline Status</th>
+                      <th>Task Description</th>
+                      <th>Hours/Exec</th>
+                      <th>Rate</th>
+                      <th>Avg Exec/Period</th>
+                      <th style="width: 5rem"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-agent>
+                    <tr>
+                      <td>{{ agent }}</td>
+                      <td>{{ getBaselineForAgent(agent)?.value_outcome_unit || '-' }}</td>
+                      <td>
+                        @if (getBaselineForAgent(agent)) {
+                          <p-tag value="Configured" severity="success"></p-tag>
+                        } @else {
+                          <p-tag value="Not Set" severity="warn"></p-tag>
+                        }
+                      </td>
+                      <td>{{ getBaselineForAgent(agent)?.task_description || '-' }}</td>
+                      <td>{{ getBaselineForAgent(agent)?.manual_effort_hours_per_execution || 0 }} hrs</td>
+                      <td>{{ getBaselineForAgent(agent) ? ('$' + getBaselineForAgent(agent).manual_effort_hourly_rate) : '-' }}</td>
+                      <td>{{ getBaselineForAgent(agent)?.avg_executions_per_period || '-' }}</td>
+                      <td>
+                        <p-button icon="pi pi-cog" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Configure Baseline" tooltipPosition="top" (click)="openBaselineConfig(agent)"></p-button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr><td colspan="8" class="registry-empty">No agents found for this project.</td></tr>
+                  </ng-template>
+                </p-table>
+              }
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- ═══ Vendors Tab ═══ -->
+        <p-tabpanel value="2">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="registry-card-head">
+                <div class="registry-card-head__title">
+                  <div class="stat-card__icon">
+                    <i class="pi pi-building"></i>
+                  </div>
+                  <span class="stat-card__title">Vendors</span>
+                </div>
+                <div class="registry-card-head__controls">
+                  <p-button label="Add Vendor" icon="pi pi-plus" (click)="openNewVendor()"></p-button>
+                </div>
+              </div>
+
+              <p-table [value]="vendors" [paginator]="true" [rows]="20">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Name</th>
+                    <th>Provider</th>
+                    <th>Models</th>
+                    <th>Approved</th>
+                    <th>Data Residency</th>
+                    <th>Certifications</th>
+                    <th>Active</th>
+                    <th style="width: 8rem">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-vendor>
+                  <tr>
+                    <td>{{ vendor.name }}</td>
+                    <td>{{ vendor.provider }}</td>
+                    <td>{{ getVendorModelCount(vendor.provider) }}</td>
+                    <td>{{ getVendorApprovedCount(vendor.provider) }}</td>
+                    <td>{{ vendor.data_residency || '-' }}</td>
+                    <td>
+                      @if (vendor.certifications) {
+                        @for (cert of vendor.certifications; track cert) {
+                          <p-chip [label]="cert" styleClass="mr-1"></p-chip>
+                        }
+                      }
+                    </td>
+                    <td>
+                      <p-tag [value]="vendor.is_active ? 'Active' : 'Inactive'" [severity]="vendor.is_active ? 'success' : 'secondary'"></p-tag>
+                    </td>
+                    <td>
+                      <div class="flex gap-1">
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="primary" styleClass="action-chip action-chip--primary" pTooltip="Edit" tooltipPosition="top" (click)="openEditVendor(vendor)"></p-button>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" styleClass="action-chip action-chip--danger" pTooltip="Delete" tooltipPosition="top" (click)="deleteVendor(vendor)"></p-button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="8" class="registry-empty">No vendors configured.</td></tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+
+        <!-- ═══ Models Tab ═══ -->
+        <p-tabpanel value="3">
+          <div class="tab-stack">
+            <div class="stat-card stat-card--stacked">
+              <div class="registry-card-head">
+                <div class="registry-card-head__title">
+                  <div class="stat-card__icon">
+                    <i class="pi pi-microchip"></i>
+                  </div>
+                  <span class="stat-card__title">Models</span>
+                </div>
+                <div class="registry-card-head__controls">
+                  <p-select
+                    [options]="providerOptions"
+                    [(ngModel)]="filterProvider"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Provider"
+                    [showClear]="true"
+                    (onChange)="applyModelFilters()"
+                    appendTo="body"
+                  ></p-select>
+                  <input type="text" pInputText [(ngModel)]="modelSearchQuery" placeholder="Search models..." class="w-[16rem]" (keyup.enter)="applyModelFilters()" />
+                  <p-button label="Search" icon="pi pi-search" [outlined]="true" (click)="applyModelFilters()"></p-button>
+                  <p-button label="Sync from Profiles" icon="pi pi-sync" (click)="syncModels()"></p-button>
+                  <p-button label="Sync from Providers" icon="pi pi-cloud-download" severity="secondary" (click)="syncFromProviders()" [loading]="syncingProviders"></p-button>
+                </div>
+              </div>
+
+              <p-table [value]="models" [paginator]="true" [rows]="25" [rowsPerPageOptions]="[25, 50, 100]">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Model ID</th>
+                    <th>Provider</th>
+                    <th>Short Name</th>
+                    <th>Context Window</th>
+                    <th>Capabilities</th>
+                    <th>Cost ($/M in/out)</th>
+                    <th>Intelligence</th>
+                    <th>Performance</th>
+                    <th>Approved</th>
+                    <th style="width: 5rem">Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-model>
+                  <tr>
+                    <td>{{ model.model_id }}</td>
+                    <td>{{ model.provider }}</td>
+                    <td>{{ model.short_name || '-' }}</td>
+                    <td>{{ model.max_input_tokens ? (model.max_input_tokens | number) : '-' }}</td>
+                    <td>
+                      @for (cap of formatCapabilities(model.capabilities); track cap) {
+                        <p-tag [value]="cap" severity="info" styleClass="mr-1 mb-1"></p-tag>
+                      }
+                    </td>
+                    <td>{{ formatCost(model.costs) }}</td>
+                    <td>{{ formatIntelligence(model.evaluations) }}</td>
+                    <td>{{ formatTokensPerSecond(model.performance) }}</td>
+                    <td>
+                      <p-tag [value]="model.is_approved ? 'Approved' : 'Pending'" [severity]="model.is_approved ? 'success' : 'warn'"></p-tag>
+                    </td>
+                    <td>
+                      <p-button
+                        [icon]="model.is_approved ? 'pi pi-times' : 'pi pi-check'"
+                        [rounded]="true"
+                        [text]="true"
+                        [severity]="model.is_approved ? 'danger' : 'success'"
+                        [styleClass]="model.is_approved ? 'action-chip action-chip--danger' : 'action-chip action-chip--success'"
+                        [pTooltip]="model.is_approved ? 'Revoke' : 'Approve'"
+                        (click)="toggleApproved(model)"
+                      ></p-button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr><td colspan="10" class="registry-empty">No models in catalog. Click "Sync from Profiles" to populate.</td></tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 </div>
 
 <!-- Project Detail Dialog — FlowX S modal -->

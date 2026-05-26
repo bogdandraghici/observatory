@@ -1,22 +1,267 @@
-// Tinted chip-style background for row action icons (Projects, Agents,
-// Vendors, Models tables). PrimeNG's text/rounded buttons are otherwise
-// transparent, which makes the icons read as adornments rather than
-// interactive controls.
-//
-// We override the .p-button background via ::ng-deep + !important since
-// PrimeNG sets transparent on .p-button-text at higher specificity. Tints
-// are translucent saturated palette steps so they hold up in both light
-// and dark modes (per CLAUDE.md guidance on pastels on the dark slate).
+@use '../_shared/ai-design-tokens' as tokens;
 
+/* ============================================================
+ * Registry Hero Panel — mirrors the Drift / Home / Evaluations
+ * pattern (see design.md). One rounded outer panel with a
+ * gradient title band on top and a filters content band below,
+ * separated by a hairline neutrals-100 divider.
+ * ============================================================ */
+.registry-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.registry-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  background:
+    radial-gradient(900px 320px at -10% -40%, var(--flowx-blue-100) 0%, rgba(176, 209, 243, 0) 60%),
+    radial-gradient(700px 280px at 110% 130%, var(--flowx-blue-50) 0%, rgba(230, 240, 251, 0) 60%);
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    padding: 24px 24px 20px;
+  }
+}
+
+.registry-hero__text { min-width: 0; }
+
+.registry-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+
+  .text-accent { color: var(--flowx-interactive); }
+}
+
+.registry-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+  max-width: 720px;
+}
+
+.registry-hero__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: flex-end;
+  padding: 24px 40px;
+  max-width: 720px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 20px 24px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+:host-context(.flowx-dark) {
+  .registry-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .registry-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* ============================================================
+ * Tabs — flat underline navigation, identical chrome to ROI.
+ * Scoped to .registry-page so it doesn't bleed to other tab
+ * instances on other pages.
+ * ============================================================ */
+.registry-tabs { margin-bottom: 0; }
+
+::ng-deep .registry-page .registry-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list {
+    border-bottom: 1px solid var(--flowx-neutrals-100);
+    padding: 0;
+    gap: 0;
+    background: transparent;
+  }
+
+  .p-tab {
+    padding: 12px 16px;
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--flowx-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+
+    &:hover { color: var(--flowx-text-primary); }
+
+    &.p-tab-active,
+    &[aria-selected="true"] {
+      color: var(--flowx-blue-500);
+      font-weight: 700;
+      border-bottom-color: var(--flowx-blue-500);
+    }
+  }
+
+  .p-tablist-active-bar { display: none; }
+
+  .p-tabpanels {
+    background: transparent;
+    padding: 32px 0 0;
+    border: none;
+  }
+
+  .p-tabpanel { padding: 0; }
+}
+
+:host-context(.flowx-dark) ::ng-deep .registry-page .registry-tabs > .p-tabs {
+  .p-tablist,
+  .p-tablist-tab-list { border-bottom-color: rgba(255, 255, 255, 0.06); }
+
+  .p-tab.p-tab-active,
+  .p-tab[aria-selected="true"] {
+    color: var(--flowx-blue-300);
+    border-bottom-color: var(--flowx-blue-300);
+  }
+}
+
+/* ============================================================
+ * Tab content vertical stack — replaces inline mt-4 spacing.
+ * ============================================================ */
+.tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flowx-space-32, 32px);
+}
+
+/* ============================================================
+ * Sub-card chrome — design.md mandates radius-20 for sub-cards.
+ * The global .stat-card uses radius-12; bump it inside
+ * .registry-page so cards harmonize with Home / Drift / ROI.
+ * ============================================================ */
+.registry-page .stat-card,
+.registry-page .stat-card--stacked {
+  border-radius: var(--flowx-radius-20, 20px);
+}
+
+/* Card header row — title on the left, controls/actions on the right.
+ * Always sit 24px above the table body to satisfy the design.md
+ * "card title → first body element: 24px" rule. */
+.registry-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Empty-state copy inside an agent tab card. */
+.registry-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--flowx-text-secondary);
+  font-size: 14px;
+}
+
+/* ============================================================
+ * Table chrome inside sub-cards — drift spec (see design.md):
+ * 11/0.08em uppercase header tinted with surface-secondary,
+ * 14×20 cell padding, 14/1 semibold body. Scoped via ::ng-deep
+ * because PrimeNG renders <th>/<td> outside this component's
+ * view encapsulation, so non-deep selectors silently match
+ * nothing.
+ * ============================================================ */
+::ng-deep .registry-page .stat-card .p-datatable,
+::ng-deep .registry-page .stat-card--stacked .p-datatable {
+  .p-datatable-thead > tr > th {
+    background: var(--flowx-surface-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 14px 20px;
+  }
+
+  .p-datatable-tbody > tr {
+    cursor: default;
+
+    > td {
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 14px 20px;
+    }
+
+    &:last-child > td { border-bottom: none; }
+  }
+}
+
+/* ============================================================
+ * Tinted chip-style background for row action icons (Projects,
+ * Agents, Vendors, Models tables). PrimeNG's text/rounded
+ * buttons are otherwise transparent, which makes the icons read
+ * as adornments rather than interactive controls.
+ *
+ * Tints are translucent saturated palette steps so they hold up
+ * in both light and dark modes (per CLAUDE.md guidance on
+ * pastels on the dark slate).
+ * ============================================================ */
 :host ::ng-deep .p-button.action-chip {
   background-color: rgba(0, 107, 216, 0.12);
   transition: background-color 150ms ease;
 
-  // Center the row-action icon both axes. Without these overrides the
-  // icon reads off-center because PrimeNG renders an empty
-  // `.p-button-label` (`&nbsp;`) for icon-only buttons that takes
-  // vertical room, and the button's default padding isn't symmetric
-  // for a 2rem square. Force an inline-flex grid and zero the label.
+  /* Center the row-action icon on both axes. Without these overrides
+   * the icon reads off-center because PrimeNG renders an empty
+   * `.p-button-label` (`&nbsp;`) for icon-only buttons that takes
+   * vertical room, and the button's default padding isn't symmetric
+   * for a 2rem square. Force inline-flex and zero the label. */
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
