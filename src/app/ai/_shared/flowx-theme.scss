@@ -358,6 +358,66 @@
     gap: var(--flowx-space-8) !important;
   }
 
+  // Sub-card title primitive — the design.md / insights-dashboard /
+  // Drift / ROI / Registry / Risk pattern: 16/1.2/700 text-primary
+  // label preceded by an 18px text-secondary glyph, 8px gap. No
+  // chip background on the icon. Always followed by a 24px gap to
+  // the card body element.
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--flowx-space-8, 8px);
+    font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--flowx-text-primary);
+    margin-bottom: 24px;
+    min-width: 0;
+    flex-wrap: wrap;
+
+    i {
+      font-size: 18px;
+      color: var(--flowx-text-secondary);
+      flex-shrink: 0;
+    }
+  }
+
+  // Dashboard widget chrome — when the .ai-page wrapper also carries
+  // .dashboard-page, every nested `.stat-card` (Angular widget root)
+  // lifts to the sub-card spec: 20px radius, drift-spec table chrome.
+  // The lift sits in the global theme so it pierces the widget
+  // components' view encapsulation without needing per-widget rules.
+  &.dashboard-page .stat-card,
+  &.dashboard-page .stat-card--stacked {
+    border-radius: var(--flowx-radius-20, 20px);
+  }
+
+  &.dashboard-page .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: var(--flowx-surface-secondary);
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 14px 20px;
+    }
+    .p-datatable-tbody > tr {
+      cursor: default;
+
+      > td {
+        font-size: 14px;
+        line-height: 1.2;
+        font-weight: 600;
+        padding: 14px 20px;
+      }
+
+      &:last-child > td { border-bottom: none; }
+    }
+  }
+
   // Section-header icon — strip the 32x32 neutrals-50 swatch when the
   // icon is paired with a title (KPI tiles pair icon with __value and
   // keep their colored swatch — that pattern is untouched).

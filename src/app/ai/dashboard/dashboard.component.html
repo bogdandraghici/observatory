@@ -1,24 +1,24 @@
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Dashboard</h1>
-      <p class="page-header__subtitle">Monitor your AI application metrics</p>
+<div class="ai-page dashboard-page">
+  <!-- Hero Panel — title band + period scope + filters band -->
+  <section class="dashboard-hero">
+    <div class="dashboard-hero__band">
+      <div class="dashboard-hero__text">
+        <h1 class="dashboard-hero__title">Dashboard</h1>
+        <p class="dashboard-hero__subtitle">Monitor your AI application metrics across the selected period.</p>
+      </div>
+      <div class="dashboard-hero__scope">
+        <p-selectButton
+          [options]="periods"
+          [(ngModel)]="selectedPeriod"
+          [multiple]="false"
+          [allowEmpty]="false"
+          optionLabel="name"
+          optionValue="value"
+        ></p-selectButton>
+      </div>
     </div>
-    <div class="page-header__right">
-      <p-selectButton
-        [options]="periods"
-        [(ngModel)]="selectedPeriod"
-        [multiple]="false"
-        optionLabel="name"
-        optionValue="value"
-      ></p-selectButton>
-    </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="dashboard-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -29,6 +29,7 @@
           [showClear]="false"
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -41,6 +42,7 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -53,20 +55,20 @@
           [showClear]="false"
           (onChange)="appChanged($event)"
           placeholder="Select Project"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Widgets -->
-  <div class="grid grid-cols-12 items-stretch gap-4">
-    <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch ">
+  <div class="dashboard-widgets">
+    <div class="col-span-12 md:col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
       <llm-usage-widget
         [hours]="selectedPeriod"
         [appId]="selectedApp"
       ></llm-usage-widget>
     </div>
-
     <div class="col-span-12 lg:col-span-6 xl:col-span-6 self-stretch">
       <agent-usage-widget
         [hours]="selectedPeriod"

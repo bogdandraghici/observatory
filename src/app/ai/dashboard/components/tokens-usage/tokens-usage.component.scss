@@ -1,25 +1,9 @@
-// Tokens Usage Widget — FlowX Design System
-// Table styling inherits from the global FlowX theme (.ai-page .p-datatable).
+// Tokens Usage Widget — chrome inherits the global
+// .ai-page.dashboard-page card / table chrome.
 
 :host {
   display: block;
   height: 100%;
 }
 
-.tokens-usage {
-  height: 100%;
-
-  ::ng-deep .p-datatable {
-    .p-datatable-thead > tr > th {
-      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
-    }
-
-    .p-datatable-tbody > tr > td {
-      padding: var(--flowx-space-8, 8px) var(--flowx-space-12, 12px) !important;
-    }
-
-    .p-datatable-tbody > tr:last-child > td {
-      border-bottom: none !important;
-    }
-  }
-}
+.tokens-usage { height: 100%; }
