@@ -1,0 +1,217 @@
+@use '../_shared/ai-design-tokens' as tokens;
+
+:host { display: block; }
+
+// ── A. Hero panel ────────────────────────────────────────────
+// Rounded outer panel with a title band and a filters band below,
+// separated by a hairline neutrals-100 divider. Mirrors every other
+// redesigned page in this family.
+.audit-hero {
+  background: var(--flowx-surface-primary);
+  border: none;
+  border-radius: var(--flowx-radius-24, 24px);
+  box-shadow: var(--flowx-shadow-xs);
+  overflow: hidden;
+  margin-bottom: var(--flowx-space-32, 32px);
+}
+
+.audit-hero__band {
+  position: relative;
+  padding: 36px 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--flowx-neutrals-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 20px;
+    gap: 20px;
+  }
+}
+
+.audit-hero__text { min-width: 0; }
+
+.audit-hero__title {
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--flowx-text-primary);
+
+  @media (max-width: 768px) { font-size: 32px; }
+}
+
+.audit-hero__subtitle {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--flowx-text-secondary);
+}
+
+// Filters band — sits below the hero band inside the same panel.
+.audit-hero__filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 24px 40px;
+
+  @media (max-width: 1024px) {
+    flex-wrap: wrap;
+    padding: 20px 24px;
+  }
+}
+
+.audit-hero__filters-left {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .filter-group__label {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--flowx-text-secondary);
+  }
+
+  // Let inputs fill their grid column — drop legacy fixed widths.
+  ::ng-deep .p-inputtext,
+  ::ng-deep .p-select { width: 100%; }
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.audit-hero__run { flex: 0 0 auto; }
+
+// ── B. Table card ────────────────────────────────────────────
+// .audit-card piggybacks on the redesigned-page modifier block in
+// flowx-theme.scss (drift-spec chrome) — see &.audit-page there.
+.audit-card {
+  .audit-resource-id {
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--flowx-font-mono, "JetBrains Mono"), ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--flowx-text-secondary);
+  }
+}
+
+// ── Action pill (replaces <p-tag> in cells + dialog) ─────────
+// 999px radius, 13/1/700, tabular-nums, tinted bg + matching fg +
+// 1px border in the same tint family. Matches the score-pill spec
+// in design.md.
+.audit-action-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: var(--flowx-font-primary, "Open Sans"), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  &--success {
+    background: var(--flowx-green-50);
+    color: var(--flowx-green-600);
+    border-color: var(--flowx-green-100, rgba(0, 128, 96, 0.20));
+  }
+  &--info {
+    background: var(--flowx-blue-50);
+    color: var(--flowx-blue-600);
+    border-color: var(--flowx-blue-100, rgba(0, 107, 216, 0.20));
+  }
+  &--danger {
+    background: var(--flowx-red-50);
+    color: var(--flowx-red-600);
+    border-color: var(--flowx-red-100, rgba(230, 34, 0, 0.20));
+  }
+  &--neutral {
+    background: var(--flowx-neutrals-50);
+    color: var(--flowx-text-secondary);
+    border-color: var(--flowx-neutrals-100);
+  }
+}
+
+// ── Empty state ──────────────────────────────────────────────
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 2.5rem 1rem;
+  color: var(--flowx-text-secondary);
+
+  i {
+    font-size: 28px;
+    color: var(--flowx-neutrals-300, var(--flowx-text-secondary));
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+// ── Dark mode ────────────────────────────────────────────────
+:host-context(.flowx-dark) {
+  .audit-hero { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+
+  .audit-hero__band {
+    background:
+      radial-gradient(900px 320px at -10% -40%, rgba(51, 137, 224, 0.30) 0%, rgba(51, 137, 224, 0) 60%),
+      radial-gradient(700px 280px at 110% 130%, rgba(51, 137, 224, 0.18) 0%, rgba(51, 137, 224, 0) 60%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .audit-action-pill {
+    &--success {
+      background: rgba(0, 128, 96, 0.22);
+      color: var(--flowx-green-300, #4ec5a8);
+      border-color: rgba(0, 128, 96, 0.35);
+    }
+    &--info {
+      background: rgba(51, 137, 224, 0.20);
+      color: var(--flowx-blue-300, #549ce5);
+      border-color: rgba(51, 137, 224, 0.35);
+    }
+    &--danger {
+      background: rgba(230, 34, 0, 0.20);
+      color: var(--flowx-red-300, #f08272);
+      border-color: rgba(230, 34, 0, 0.35);
+    }
+    &--neutral {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--flowx-text-secondary);
+      border-color: rgba(255, 255, 255, 0.10);
+    }
+  }
+
+  .table-empty i { color: rgba(255, 255, 255, 0.35); }
+}

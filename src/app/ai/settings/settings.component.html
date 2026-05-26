@@ -1,17 +1,16 @@
 <p-toast></p-toast>
 
-<div class="ai-page">
-  <!-- Page Header -->
-  <header class="page-header">
-    <div class="page-header__left">
-      <h1 class="page-header__title">Settings</h1>
-      <p class="page-header__subtitle">Configure application settings</p>
+<div class="ai-page settings-page">
+  <!-- A. Hero panel — title band + filters band -->
+  <section class="settings-hero">
+    <div class="settings-hero__band">
+      <div class="settings-hero__text">
+        <h1 class="settings-hero__title">Settings</h1>
+        <p class="settings-hero__subtitle">Configure your project's identity, defaults, and observability hooks.</p>
+      </div>
     </div>
-  </header>
 
-  <!-- Filters Bar -->
-  <div class="filters-bar">
-    <div class="filters-bar__left">
+    <div class="settings-hero__filters">
       <div class="filter-group">
         <label class="filter-group__label">Organization</label>
         <p-select
@@ -22,6 +21,7 @@
           [showClear]="false"
           (onChange)="orgChanged($event)"
           placeholder="Select Organization"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -34,6 +34,7 @@
           [showClear]="true"
           (onChange)="workspaceChanged($event)"
           placeholder="All Workspaces"
+          appendTo="body"
         ></p-select>
       </div>
       <div class="filter-group">
@@ -46,93 +47,126 @@
           [showClear]="false"
           (onChange)="appChanged($event)"
           placeholder="Select Project"
+          appendTo="body"
         ></p-select>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Content -->
   @if (currentApp) {
-    <div class="stat-card stat-card--stacked">
-      <div class="flex items-center gap-2 mb-4">
-        <div class="stat-card__icon">
-          <i class="pi pi-cog"></i>
-        </div>
-        <span class="stat-card__title">Project Settings</span>
+    <!-- B. Project Settings card -->
+    <div class="settings-card stat-card stat-card--stacked">
+      <div class="card-title">
+        <i class="pi pi-cog"></i>
+        Project Settings
       </div>
 
-      <div class="flex flex-col gap-4">
-        <div class="flex flex-row items-center gap-2">
-          <span class="font-bold" style="min-width: 12rem; white-space: nowrap;">Application Id:</span>
-          <div class="flex flex-row items-center">
-            <span class="font-bold" style="font-family: monospace; white-space: nowrap;">{{ currentApp?.id }}</span>
-            <p-button
-              icon="pi pi-copy"
-              [rounded]="true"
-              [text]="true"
-              pTooltip="Copy value and use this in environment variable for your APP by setting FLOWX_OBSERVATORY_APP_ID"
-              (click)="copyToClipboard($event)"
-            ></p-button>
+      <div class="settings-form">
+        <div class="settings-form__row">
+          <div class="settings-form__label">
+            <span class="settings-form__label-text">Application ID</span>
+            <span class="settings-form__label-hint">Use this in <code>FLOWX_OBSERVATORY_APP_ID</code>.</span>
           </div>
-        </div>
-        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
-          <p class="font-bold" style="min-width: 12rem;">Name of the application:</p>
-          <input
-            pInputText
-            type="text"
-            [(ngModel)]="currentApp.name"
-            placeholder="Name of the app"
-          />
-        </div>
-        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
-          <p class="font-bold" style="min-width: 12rem;">Owner of the application:</p>
-          <input
-            pInputText
-            type="text"
-            [(ngModel)]="currentApp.owner"
-            placeholder="Owner of the app"
-          />
-        </div>
-        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
-          <p class="font-bold" style="min-width: 12rem;">Default filter:</p>
-          <p-selectButton
-            [options]="periods"
-            [(ngModel)]="currentApp.settings.period"
-            [multiple]="false"
-            optionLabel="name"
-            optionValue="value"
-          ></p-selectButton>
-        </div>
-
-        @if (currentApp?.settings.model) {
-          <div class="stat-card" style="flex-direction: column; align-items: stretch; margin-top: 0.5rem;">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="stat-card__icon">
-                <i class="pi pi-sliders-h"></i>
-              </div>
-              <span class="stat-card__title">Model Configuration</span>
+          <div class="settings-form__control">
+            <div class="settings-id-pill">
+              <span class="settings-id-pill__value">{{ currentApp?.id }}</span>
+              <p-button
+                icon="pi pi-copy"
+                [rounded]="true"
+                [text]="true"
+                pTooltip="Copy Application ID"
+                tooltipPosition="top"
+                (click)="copyToClipboard($event)"
+              ></p-button>
             </div>
-            <p-accordion class="w-full">
-              @for (item of currentApp?.settings.model | keyvalue; track item) {
-                <p-accordionTab header="{{ item.key }}">
-                  @for (param of item.value | keyvalue; track param) {
-                    <p>
-                      <span class="font-bold mr-2">{{ param.key + ' :' }}</span>{{ param.value }}
-                    </p>
-                  }
-                </p-accordionTab>
-              }
-            </p-accordion>
           </div>
-        }
-
-        <div class="flex items-center justify-end mt-2">
-          <p-button
-            label="Update Settings"
-            icon="pi pi-check"
-            (click)="updateAppSettings()"
-          ></p-button>
         </div>
+
+        <div class="settings-form__row">
+          <div class="settings-form__label">
+            <span class="settings-form__label-text">Project Name</span>
+            <span class="settings-form__label-hint">Displayed across the Observatory UI.</span>
+          </div>
+          <div class="settings-form__control">
+            <input
+              pInputText
+              type="text"
+              [(ngModel)]="currentApp.name"
+              placeholder="Name of the app"
+            />
+          </div>
+        </div>
+
+        <div class="settings-form__row">
+          <div class="settings-form__label">
+            <span class="settings-form__label-text">Owner</span>
+            <span class="settings-form__label-hint">The person responsible for this project.</span>
+          </div>
+          <div class="settings-form__control">
+            <input
+              pInputText
+              type="text"
+              [(ngModel)]="currentApp.owner"
+              placeholder="Owner of the app"
+            />
+          </div>
+        </div>
+
+        <div class="settings-form__row">
+          <div class="settings-form__label">
+            <span class="settings-form__label-text">Default Period</span>
+            <span class="settings-form__label-hint">Initial time window for dashboards.</span>
+          </div>
+          <div class="settings-form__control">
+            <p-selectButton
+              [options]="periods"
+              [(ngModel)]="currentApp.settings.period"
+              [multiple]="false"
+              optionLabel="name"
+              optionValue="value"
+            ></p-selectButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <p-button
+          label="Update Settings"
+          icon="pi pi-check"
+          (click)="updateAppSettings()"
+        ></p-button>
+      </div>
+    </div>
+
+    <!-- C. Model Configuration card (separate sub-card, not nested) -->
+    @if (currentApp?.settings.model) {
+      <div class="settings-card stat-card stat-card--stacked">
+        <div class="card-title">
+          <i class="pi pi-sliders-h"></i>
+          Model Configuration
+        </div>
+
+        <p-accordion class="w-full">
+          @for (item of currentApp?.settings.model | keyvalue; track item) {
+            <p-accordionTab header="{{ item.key }}">
+              <div class="settings-model-params">
+                @for (param of item.value | keyvalue; track param) {
+                  <div class="settings-model-params__row">
+                    <span class="settings-model-params__key">{{ param.key }}</span>
+                    <span class="settings-model-params__value">{{ param.value }}</span>
+                  </div>
+                }
+              </div>
+            </p-accordionTab>
+          }
+        </p-accordion>
+      </div>
+    }
+  } @else {
+    <div class="settings-card stat-card stat-card--stacked">
+      <div class="table-empty">
+        <i class="pi pi-cog"></i>
+        <span>Select a project to configure its settings.</span>
       </div>
     </div>
   }
