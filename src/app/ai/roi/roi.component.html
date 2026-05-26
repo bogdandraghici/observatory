@@ -141,16 +141,14 @@
           <div class="tab-stack">
             <!-- Controls -->
             <div class="stat-card stat-card--stacked">
-              <div class="flex align-items-center justify-between w-full">
-                <div class="flex align-items-center gap-2 items-center">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-bookmark"></i>
-                  </div>
-                  <span class="stat-card__title">Value Outcome Units</span>
-                </div>
-                <p-button label="Compute" icon="pi pi-calculator" (onClick)="computeVouBreakdown()" [loading]="loading"></p-button>
+              <div class="card-head">
+              <div class="card-title">
+                <i class="pi pi-bookmark"></i>
+                Value Outcome Units
               </div>
-              <div class="text-sm" style="color: var(--flowx-text-secondary); margin-top: 24px;">
+              <p-button label="Compute" icon="pi pi-calculator" (onClick)="computeVouBreakdown()" [loading]="loading"></p-button>
+            </div>
+              <div class="text-sm" style="color: var(--flowx-text-secondary);">
                 Groups agents by their Value Outcome Unit to show ROI per business outcome. Configure VOU labels in <strong>Registry &rarr; Agents</strong>.
               </div>
             </div>
@@ -192,12 +190,10 @@
 
               <!-- VOU Chart -->
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-bar"></i>
-                  </div>
-                  <span class="stat-card__title">Value Outcome Comparison</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-bar"></i>
+                Value Outcome Comparison
+              </div>
                 @if (vouChart) {
                   <div class="chart-container" style="height: 320px;">
                     <p-chart type="bar" [data]="vouChart" [options]="vouChartOptions" height="100%"></p-chart>
@@ -208,13 +204,11 @@
               <!-- VOU Detailed Tables -->
               @for (group of vouGroups; track group.group) {
                 <div class="stat-card stat-card--stacked">
-                  <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                    <div class="stat-card__icon">
-                      <i class="pi pi-bookmark"></i>
-                    </div>
-                    <span class="stat-card__title">{{ group.group }}</span>
-                    <span class="text-sm ml-2" style="color: var(--flowx-text-secondary);">({{ group.agents.length }} agents)</span>
-                  </div>
+                  <div class="card-title">
+                <i class="pi pi-bookmark"></i>
+                {{ group.group }}
+                <span class="text-sm ml-2" style="color: var(--flowx-text-secondary);">({{ group.agents.length }} agents)</span>
+              </div>
                   <p-table [value]="group.agents">
                     <ng-template pTemplate="header">
                       <tr>
@@ -251,12 +245,10 @@
 
               <!-- Grand Total -->
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-calculator"></i>
-                  </div>
-                  <span class="stat-card__title">Grand Total</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-calculator"></i>
+                Grand Total
+              </div>
                 <div class="grand-total">
                   <div class="grand-total__tile">
                     <span class="grand-total__label">Total Runs</span>
@@ -495,12 +487,10 @@
             <!-- Waterfall Chart -->
             @if (waterfallChart) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-bar"></i>
-                  </div>
-                  <span class="stat-card__title">ROI Waterfall</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-bar"></i>
+                ROI Waterfall
+              </div>
                 <div class="chart-container" style="height: 350px;">
                   <p-chart type="bar" [data]="waterfallChart" [options]="waterfallOptions" height="100%"></p-chart>
                 </div>
@@ -510,12 +500,10 @@
             <!-- Per-Agent Breakdown (Grouped by Value Outcome Unit) -->
             @if (agentBreakdown.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-users"></i>
-                  </div>
-                  <span class="stat-card__title">Per-Agent Breakdown</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-users"></i>
+                Per-Agent Breakdown
+              </div>
                 <table class="roi-breakdown-table">
                   <thead>
                     <tr>
@@ -571,12 +559,10 @@
             <!-- Projected Impact -->
             @if (projectionResult) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-line"></i>
-                  </div>
-                  <span class="stat-card__title">Projected Impact</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-line"></i>
+                Projected Impact
+              </div>
                 <div class="projected-impact">
                   <div class="projected-impact__tile">
                     <span class="projected-impact__label">30-Day Savings</span>
@@ -613,12 +599,10 @@
             <!-- ROI Trend Chart -->
             @if (trendChart) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-line"></i>
-                  </div>
-                  <span class="stat-card__title">ROI Trend</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-line"></i>
+                ROI Trend
+              </div>
                 <div class="chart-container" style="height: 300px;">
                   <p-chart type="line" [data]="trendChart" [options]="trendOptions"></p-chart>
                 </div>
@@ -627,15 +611,13 @@
 
             <!-- Per-Execution ROI -->
             <div class="stat-card stat-card--stacked">
-              <div class="flex align-items-center justify-between w-full" style="margin-bottom: 24px;">
-                <div class="flex align-items-center gap-2 items-center">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-list"></i>
-                  </div>
-                  <span class="stat-card__title">Per-Execution ROI</span>
-                </div>
-                <p-button label="Compute Execution ROI" icon="pi pi-cog" severity="secondary" (onClick)="computeExecutionRoi()" [loading]="loading"></p-button>
+              <div class="card-head">
+              <div class="card-title">
+                <i class="pi pi-list"></i>
+                Per-Execution ROI
               </div>
+              <p-button label="Compute Execution ROI" icon="pi pi-cog" severity="secondary" (onClick)="computeExecutionRoi()" [loading]="loading"></p-button>
+            </div>
               @if (executionRois.length > 0) {
                 <p-table [value]="executionRois" [rows]="10" [paginator]="true">
                   <ng-template pTemplate="header">
@@ -670,12 +652,10 @@
             <!-- Saved Financial History -->
             @if (savedFinancials.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-history"></i>
-                  </div>
-                  <span class="stat-card__title">Saved Financial Metrics</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-history"></i>
+                Saved Financial Metrics
+              </div>
                 <p-table [value]="savedFinancials" [rows]="5" [paginator]="true">
                   <ng-template pTemplate="header">
                     <tr>
@@ -870,12 +850,10 @@
             <!-- Saved Compliance History -->
             @if (savedCompliance.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-history"></i>
-                  </div>
-                  <span class="stat-card__title">Saved Compliance ROI</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-history"></i>
+                Saved Compliance ROI
+              </div>
                 <p-table [value]="savedCompliance" [rows]="5" [paginator]="true">
                   <ng-template pTemplate="header">
                     <tr>
@@ -906,18 +884,16 @@
           <div class="tab-stack">
             <!-- Benchmarks Card -->
             <div class="stat-card stat-card--stacked">
-              <div class="flex items-center justify-between w-full" style="margin-bottom: 24px;">
-                <div class="flex items-center gap-2">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-th-large"></i>
-                  </div>
-                  <span class="stat-card__title">Alternative Benchmarks</span>
-                </div>
-                <div class="flex gap-2">
+              <div class="card-head">
+              <div class="card-title">
+                <i class="pi pi-th-large"></i>
+                Alternative Benchmarks
+              </div>
+              <div class="flex gap-2">
                   <p-button label="Add Alternative" icon="pi pi-plus" (onClick)="openNewBenchmark()"></p-button>
                   <p-button label="Compare" icon="pi pi-chart-bar" severity="primary" [outlined]="true" (onClick)="compareBenchmarks()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
                   <p-button label="5-Year TCO" icon="pi pi-calendar" severity="primary" [outlined]="true" (onClick)="compare5Year()" [loading]="loading" [disabled]="benchmarks.length === 0"></p-button>
-                </div>
+            </div>
               </div>
               <p-table [value]="benchmarks">
                 <ng-template pTemplate="header">
@@ -930,7 +906,7 @@
                     <th>Audit Ready</th>
                     <th>Reg. Days</th>
                     <th>Satisfaction</th>
-                    <th style="width:100px">Actions</th>
+                    <th style="width: 7.5rem; white-space: nowrap;">Actions</th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-b>
@@ -943,7 +919,7 @@
                     <td [style.color]="getAuditReadinessColor(b.audit_readiness)">{{ b.audit_readiness }}</td>
                     <td>{{ b.regulatory_approval_days }}d</td>
                     <td>{{ b.employee_satisfaction_impact }}</td>
-                    <td>
+                    <td style="white-space: nowrap;">
                       <p-button icon="pi pi-pencil" [text]="true" (onClick)="openEditBenchmark(b)"></p-button>
                       <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="confirmDeleteBenchmark(b, $event)"></p-button>
                     </td>
@@ -958,12 +934,10 @@
             <!-- Comparison results -->
             @if (benchmarkComparison?.comparisons?.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-bar"></i>
-                  </div>
-                  <span class="stat-card__title">AI vs Alternatives — Annual Cost Comparison</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-bar"></i>
+                AI vs Alternatives — Annual Cost Comparison
+              </div>
                 <div class="flex justify-content-end" style="margin-bottom: 16px;">
                   <div class="ai-monthly-tile">
                     <span class="ai-monthly-tile__label">AI Monthly Cost</span>
@@ -1003,12 +977,10 @@
             <!-- 5-Year TCO -->
             @if (tcoComparison?.comparisons?.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-calendar"></i>
-                  </div>
-                  <span class="stat-card__title">5-Year Total Cost of Ownership</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-calendar"></i>
+                5-Year Total Cost of Ownership
+              </div>
                 <div class="tco-comparison" style="margin-bottom: 16px;">
                   <div class="tco-comparison__tile">
                     <span class="tco-comparison__label">AI 5-Year TCO</span>
@@ -1122,12 +1094,10 @@
             <!-- Results Card -->
             @if (sensitivityResult) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-pie"></i>
-                  </div>
-                  <span class="stat-card__title">Results ({{ sensitivityResult.num_simulations | number }} simulations)</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-pie"></i>
+                Results ({{ sensitivityResult.num_simulations | number }} simulations)
+              </div>
 
                 <!-- Scenario Buttons -->
                 @if (sensitivityResult.scenarios) {
@@ -1203,12 +1173,10 @@
             <!-- Tornado Chart -->
             @if (tornadoChart) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-sort-alt"></i>
-                  </div>
-                  <span class="stat-card__title">Tornado Chart — Parameter Impact on ROI</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-sort-alt"></i>
+                Tornado Chart — Parameter Impact on ROI
+              </div>
                 <div class="chart-container" style="height: 300px;">
                   <p-chart type="bar" [data]="tornadoChart" [options]="tornadoOptions" height="100%"></p-chart>
                 </div>
@@ -1218,12 +1186,10 @@
             <!-- Histogram chart -->
             @if (histogramChart) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-bar"></i>
-                  </div>
-                  <span class="stat-card__title">ROI Distribution</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-bar"></i>
+                ROI Distribution
+              </div>
                 <div class="chart-container" style="height: 300px;">
                   <p-chart type="bar" [data]="histogramChart" [options]="histogramOptions" height="100%"></p-chart>
                 </div>
@@ -1237,13 +1203,9 @@
           <div class="tab-stack">
             <!-- Controls Card -->
             <div class="stat-card stat-card--stacked">
-              <div class="flex align-items-center justify-between w-full" style="margin-bottom: 24px;">
-                <div class="flex align-items-center gap-2 items-center">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-users"></i>
-                  </div>
-                  <span class="stat-card__title">Multi-Project ROI Comparison</span>
-                </div>
+              <div class="card-title">
+                <i class="pi pi-users"></i>
+                Multi-Project ROI Comparison
               </div>
               <div class="roi-compare-controls">
                 <div class="roi-compare-controls__field">
@@ -1256,12 +1218,10 @@
 
             @if (agentComparisonChart) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-chart-bar"></i>
-                  </div>
-                  <span class="stat-card__title">Comparison Chart</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-chart-bar"></i>
+                Comparison Chart
+              </div>
                 <div class="chart-container" style="height: 300px;">
                   <p-chart type="bar" [data]="agentComparisonChart" [options]="agentComparisonChartOptions" height="100%"></p-chart>
                 </div>
@@ -1270,12 +1230,10 @@
 
             @if (agentComparison.length > 0) {
               <div class="stat-card stat-card--stacked">
-                <div class="flex align-items-center gap-2 items-center" style="margin-bottom: 24px;">
-                  <div class="stat-card__icon">
-                    <i class="pi pi-table"></i>
-                  </div>
-                  <span class="stat-card__title">Comparison Details</span>
-                </div>
+                <div class="card-title">
+                <i class="pi pi-table"></i>
+                Comparison Details
+              </div>
                 <p-table [value]="agentComparison" [rows]="10" [paginator]="true">
                   <ng-template pTemplate="header">
                     <tr>
