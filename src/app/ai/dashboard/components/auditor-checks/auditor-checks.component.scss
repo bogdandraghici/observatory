@@ -1,0 +1,25 @@
+.auditor-checks {
+  // Severity pills — high/medium/low palette for chat-style audit findings.
+  // Mirrors the regulatory-verdicts card colour language so the dashboard
+  // reads consistently across the two cards.
+  .severity-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &--high {
+      background: rgba(239, 68, 68, 0.12);  // red-500 @ 12%
+      color: rgb(185, 28, 28);              // red-700
+    }
+
+    &--medium {
+      background: rgba(245, 158, 11, 0.15); // amber-500 @ 15%
+      color: rgb(146, 64, 14);              // amber-800
+    }
+
+    &--low {
+      background: rgba(16, 185, 129, 0.12); // emerald-500 @ 12%
+      color: rgb(4, 120, 87);               // emerald-700
+    }
+  }
+}

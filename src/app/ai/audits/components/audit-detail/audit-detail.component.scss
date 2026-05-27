@@ -1,0 +1,115 @@
+// Audit Detail drawer — visual language mirrors the executions detail
+// (drawer + header + tabs) but the body is a simpler layout: KPI strip,
+// severity pills, three tabs (Findings / Context / Metadata).
+
+.audit-details-close {
+  // PrimeNG button gets a flat circular close affordance — same vibe as
+  // the executions drawer's close.
+  width: 2rem;
+  height: 2rem;
+}
+
+// ── KPI strip ──────────────────────────────────────────────────────────
+.audit-kpi {
+  background: var(--surface-50);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-color-secondary);
+  }
+
+  &__value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+}
+
+// ── Severity bucket pills (high/medium/low) ───────────────────────────
+.audit-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--high {
+    background: rgba(239, 68, 68, 0.12); // red-500 @ 12%
+    color: rgb(185, 28, 28);              // red-700
+  }
+
+  &--medium {
+    background: rgba(245, 158, 11, 0.15); // amber-500 @ 15%
+    color: rgb(146, 64, 14);              // amber-800
+  }
+
+  &--low {
+    background: rgba(16, 185, 129, 0.12); // emerald-500 @ 12%
+    color: rgb(4, 120, 87);               // emerald-700
+  }
+}
+
+// ── Section headers inside tabs ───────────────────────────────────────
+.audit-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  margin-bottom: 8px;
+}
+
+// ── Prose / JSON blocks ────────────────────────────────────────────────
+.audit-prose {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono, ui-monospace, "SF Mono", "JetBrains Mono", monospace);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-color);
+  background: var(--surface-50);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0;
+
+  &--muted {
+    color: var(--text-color-secondary);
+    font-size: 12.5px;
+  }
+}
+
+.audit-json {
+  @extend .audit-prose;
+  font-size: 12px;
+  line-height: 18px;
+  max-height: 360px;
+  overflow: auto;
+}
+
+// ── Metadata grid items ────────────────────────────────────────────────
+.audit-meta {
+  &__label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-color-secondary);
+    margin-bottom: 2px;
+  }
+
+  &__value {
+    font-size: 13px;
+    color: var(--text-color);
+    word-break: break-all;
+  }
+}

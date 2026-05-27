@@ -55,6 +55,11 @@ import { RouterModule } from '@angular/router'
           import('./executions/executions.module').then((m) => m.ExecutionsModule),
       },
       {
+        path: 'audits',
+        loadChildren: () =>
+          import('./audits/audits.module').then((m) => m.AuditsModule),
+      },
+      {
         path: 'developer-executions',
         loadChildren: () =>
           import('./developer-executions/developer-executions.module').then(

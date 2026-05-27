@@ -1,4 +1,6 @@
 import { Component } from '@angular/core'
+import { NavigationEnd, Router } from '@angular/router'
+import { filter } from 'rxjs/operators'
 import { AppConfig, LayoutService } from './layout/full-layout/service/app.layout.service'
 import { AppConfigService } from './app.config'
 
@@ -11,9 +13,18 @@ export class AppComponent {
   public forcedTheme: string | undefined
   constructor(
     private layoutService: LayoutService,
-    private readonly appConfigService: AppConfigService
+    private readonly appConfigService: AppConfigService,
+    private readonly router: Router,
   ) {
-    if (
+    // Theme resolution order on startup:
+    //   1. localStorage override — what the user picked last time via the
+    //      topbar toggle. Always wins.
+    //   2. `prefers-color-scheme: dark` — operating system preference.
+    //   3. Default light.
+    const stored = appConfigService.getStoredTheme()
+    if (stored) {
+      appConfigService.forceTheme(stored)
+    } else if (
       window.matchMedia &&
       window.matchMedia('(prefers-color-scheme: dark)').matches
     ) {
@@ -29,6 +40,36 @@ export class AppComponent {
         }
       },
     })
+    // Safety net for stuck body scroll locks. PrimeNG drawers / dialogs
+    // add `p-overflow-hidden` (and a few legacy variants) to `body` when
+    // they open with blockScroll/modal. If the component unmounts while
+    // closing (route change, fast nav, error), the class can stick and
+    // the whole page stops scrolling until refresh. Clear it on every
+    // navigation as a backstop — the drawers we control also pass
+    // `[blockScroll]=false` now, so this only fires for stragglers.
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe(() => {
+        const body = document.body
+        if (!body) {
+          return
+        }
+        body.classList.remove(
+          'p-overflow-hidden',
+          'p-overlay-mask',
+          'p-overlay-mask-leave',
+        )
+        // Clear any inline overflow lock the SDK sets directly on body.
+        if (body.style.overflow === 'hidden') {
+          body.style.overflow = ''
+        }
+        // Same defensive sweep on the html root — PrimeNG has set it
+        // there in some versions.
+        const html = document.documentElement
+        if (html?.style.overflow === 'hidden') {
+          html.style.overflow = ''
+        }
+      })
   }
 
   setLightTheme(): void {

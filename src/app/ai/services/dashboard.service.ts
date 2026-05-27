@@ -164,6 +164,66 @@ export class DashboardService {
     }
   }
 
+  async getAuditEvents(
+    app_id: any,
+    hours: any,
+    page: any,
+    size: any,
+    kind?: string,
+  ): Promise<any> {
+    // Lists rows from the `audit_event` table — one row per audit event
+    // (regulatory_verdict / regulatory_drift / auditor_check_*). Paginated
+    // and ordered newest-first by the backend.
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/analytics/audit-events/list?page=${page}&size=${size}`
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    const body = {
+      projectId: app_id,
+      hours,
+      kind: kind || null,
+    }
+    const options = {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
+  async getAuditorChecks(app_id: any, hours: any): Promise<any> {
+    // Surfaces chat-style audits (check_ui / check_process / extract_compliance)
+    // emitted by the Auditor agent. Backend aggregates runs with type in
+    // {auditor_check_ui, auditor_check_process, auditor_extract_compliance}
+    // over the configured window and returns kind / severity / latency /
+    // findings rollup.
+    const token = localStorage.getItem('access_token')
+    const url = `${API_URL}/api/analytics/auditor-checks`
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    const body = { projectId: app_id, hours }
+    const options = {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }
+    try {
+      const response: Response = await fetch(url, options)
+      return response.json()
+    } catch (error) {
+      this.handleError(error)
+    }
+  }
+
   async getCostAnalytics(app_id: any, hours: any, group_by = 'model'): Promise<any> {
     const token = localStorage.getItem('access_token')
     const url = `${API_URL}/api/analytics/usage/costs`

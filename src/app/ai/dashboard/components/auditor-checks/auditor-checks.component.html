@@ -1,0 +1,92 @@
+<div class="stat-card stat-card--stacked auditor-checks">
+  <div class="card-title">
+    <i class="pi pi-shield"></i>
+    Auditor Checks
+    @if (findingsTotal > 0) {
+      <span
+        class="ml-auto px-2 py-0.5 rounded text-[10px] font-medium"
+        style="background: var(--surface-100); color: var(--text-color-secondary);"
+        [title]="findingsTotal + ' total findings across ' + totalCount + ' audit(s)'"
+      >
+        <i class="pi pi-list"></i> {{ findingsTotal }} findings
+      </span>
+    }
+  </div>
+
+  <!-- Top line: total + severity tags -->
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+    <div>
+      <span class="stat-card__value--lg">{{ totalCount }}</span>
+      <span class="stat-card__label ml-2">audits</span>
+    </div>
+    @if (hasData) {
+      <div class="flex items-center gap-1.5">
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--high"
+          [title]="highCount + ' high-severity findings'"
+        >
+          <i class="pi pi-times-circle"></i> {{ highCount }}
+        </span>
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--medium"
+          [title]="mediumCount + ' medium-severity findings'"
+        >
+          <i class="pi pi-exclamation-triangle"></i> {{ mediumCount }}
+        </span>
+        <span
+          class="px-2 py-1 rounded text-xs font-medium severity-pill severity-pill--low"
+          [title]="lowCount + ' low-severity findings'"
+        >
+          <i class="pi pi-info-circle"></i> {{ lowCount }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Per-kind chart -->
+  @if (hasData) {
+    <div style="height: 110px;">
+      <p-chart
+        type="bar"
+        [data]="chartData"
+        [options]="chartOptions"
+        [style]="{ width: '100%', height: '100%' }"
+      ></p-chart>
+    </div>
+  }
+
+  <!-- Latency + findings/run footer -->
+  @if (hasData) {
+    <div class="mt-3 pt-3 grid grid-cols-3 gap-2 text-center"
+         style="border-top: 1px solid var(--surface-border);">
+      <div>
+        <div class="text-[10px] uppercase tracking-wide"
+             style="color: var(--text-color-secondary);">
+          p50 latency
+        </div>
+        <div class="text-sm font-semibold">{{ fmtMs(p50Ms) }}</div>
+      </div>
+      <div>
+        <div class="text-[10px] uppercase tracking-wide"
+             style="color: var(--text-color-secondary);">
+          p95 latency
+        </div>
+        <div class="text-sm font-semibold">{{ fmtMs(p95Ms) }}</div>
+      </div>
+      <div>
+        <div class="text-[10px] uppercase tracking-wide"
+             style="color: var(--text-color-secondary);">
+          Findings/run
+        </div>
+        <div class="text-sm font-semibold">{{ findingsPerRunAvg }}</div>
+      </div>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!hasData) {
+    <div style="height: 140px; display: flex; align-items: center; justify-content: center;">
+      <empty-state-widget message="No audits yet."></empty-state-widget>
+    </div>
+  }
+</div>

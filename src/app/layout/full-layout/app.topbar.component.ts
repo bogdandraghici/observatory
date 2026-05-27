@@ -7,6 +7,7 @@ import { NavigationEnd, Router } from '@angular/router'
 import { Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { AssistantService } from '../../assistant/assistant.service'
+import { AppConfigService } from '../../app.config'
 
 @Component({
     selector: 'app-topbar',
@@ -63,7 +64,8 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
     public layoutService: LayoutService,
     private oauthService: OAuthService,
     private router: Router,
-    private assistantService: AssistantService
+    private assistantService: AssistantService,
+    private appConfigService: AppConfigService,
   ) {}
 
   ngOnInit(): void {
@@ -110,9 +112,13 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
     if (this.darkMode) {
       this.setLightTheme()
       this.darkMode = false
+      // Persist the explicit choice so the next page load honours it
+      // instead of falling back to `prefers-color-scheme`.
+      this.appConfigService.setStoredTheme('light')
     } else {
       this.setDarkTheme()
       this.darkMode = true
+      this.appConfigService.setStoredTheme('dark')
     }
   }
 

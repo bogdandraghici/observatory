@@ -1,0 +1,204 @@
+<p-drawer
+  #sidebarRef
+  [(visible)]="detailVisible"
+  position="right"
+  [style]="{ width: '85vw' }"
+  [modal]="true"
+  [blockScroll]="false"
+  styleClass="audit-detail-drawer"
+>
+  <ng-template pTemplate="headless">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-6 py-4"
+        style="border-bottom: 1px solid var(--surface-border)"
+      >
+        <div class="flex items-center gap-4">
+          <p-button
+            type="button"
+            (click)="close()"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="false"
+            severity="primary"
+            styleClass="audit-details-close"
+          ></p-button>
+          <span class="font-semibold text-xl">Audit Detail</span>
+          @if (selectedAudit) {
+            <p-tag
+              [value]="kindLabel(selectedAudit.run_type)"
+              severity="info"
+              [rounded]="true"
+            ></p-tag>
+            <p-tag
+              [value]="selectedAudit.severity || '—'"
+              [severity]="severityClass(selectedAudit.severity)"
+            ></p-tag>
+            <span class="text-sm" style="color: var(--text-color-secondary)">
+              {{ formatTime(selectedAudit.created_at) }}
+            </span>
+          }
+        </div>
+
+        @if (selectedAudit?.id) {
+          <p-button
+            type="button"
+            label="Copy ID"
+            icon="pi pi-copy"
+            severity="secondary"
+            [text]="true"
+            (click)="copyToClipboard(selectedAudit.id)"
+            pTooltip="Copy audit_event id"
+            tooltipPosition="left"
+          ></p-button>
+        }
+      </div>
+
+      <!-- Body -->
+      @if (selectedAudit) {
+        <div class="flex-1 overflow-auto px-6 py-4">
+          <!-- KPI strip -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <div class="audit-kpi">
+              <div class="audit-kpi__label">Findings</div>
+              <div class="audit-kpi__value">{{ selectedAudit.finding_count ?? 0 }}</div>
+            </div>
+            <div class="audit-kpi">
+              <div class="audit-kpi__label">Duration</div>
+              <div class="audit-kpi__value">{{ fmtDuration(selectedAudit.duration_ms) }}</div>
+            </div>
+            <div class="audit-kpi">
+              <div class="audit-kpi__label">Agent</div>
+              <div class="audit-kpi__value">{{ selectedAudit.agent || '—' }}</div>
+            </div>
+            <div class="audit-kpi">
+              <div class="audit-kpi__label">Frameworks</div>
+              <div class="audit-kpi__value">
+                @if (selectedAudit.frameworks?.length) {
+                  @for (fw of selectedAudit.frameworks; track fw) {
+                    <p-tag [value]="fw" severity="info" [rounded]="true" styleClass="mr-1"></p-tag>
+                  }
+                } @else {
+                  —
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Severity bucket strip (only for chat-style audits that emit
+               a {high, medium, low} bucket in `output.severity`). -->
+          @let sevb = severityBreakdown(selectedAudit);
+          @if (sevb.high + sevb.medium + sevb.low > 0) {
+            <div class="flex items-center gap-2 mb-5">
+              <span class="audit-pill audit-pill--high">
+                <i class="pi pi-times-circle"></i> {{ sevb.high }} high
+              </span>
+              <span class="audit-pill audit-pill--medium">
+                <i class="pi pi-exclamation-triangle"></i> {{ sevb.medium }} medium
+              </span>
+              <span class="audit-pill audit-pill--low">
+                <i class="pi pi-info-circle"></i> {{ sevb.low }} low
+              </span>
+            </div>
+          }
+
+          <!-- Tabs -->
+          <p-tabs [(value)]="activeTab">
+            <p-tablist>
+              <p-tab value="findings">
+                <i class="pi pi-list mr-2"></i> Findings
+              </p-tab>
+              <p-tab value="context">
+                <i class="pi pi-file mr-2"></i> Context
+              </p-tab>
+              <p-tab value="metadata">
+                <i class="pi pi-database mr-2"></i> Metadata
+              </p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+              <!-- Findings -->
+              <p-tabpanel value="findings">
+                @if (responseText(selectedAudit)) {
+                  <pre class="audit-prose">{{ responseText(selectedAudit) }}</pre>
+                } @else {
+                  <p-message
+                    severity="info"
+                    text="No findings text persisted for this audit."
+                  ></p-message>
+                }
+                @if (reasoningText(selectedAudit)) {
+                  <div class="mt-4">
+                    <div class="audit-section-title">Reasoning</div>
+                    <pre class="audit-prose audit-prose--muted">{{ reasoningText(selectedAudit) }}</pre>
+                  </div>
+                }
+              </p-tabpanel>
+
+              <!-- Context -->
+              <p-tabpanel value="context">
+                <div class="audit-section-title">Prompt</div>
+                <pre class="audit-prose">{{
+                  selectedAudit?.input?.human_input ||
+                    selectedAudit?.extra?.human_input ||
+                    selectedAudit?.output?.input ||
+                    '—'
+                }}</pre>
+                <div class="audit-section-title mt-4">Audited artifact</div>
+                <pre class="audit-json">{{ (selectedAudit?.input ?? {}) | json }}</pre>
+              </p-tabpanel>
+
+              <!-- Metadata -->
+              <p-tabpanel value="metadata">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Audit ID</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.id || '—' }}</div>
+                  </div>
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Request ID</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.request_id || '—' }}</div>
+                  </div>
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Parent run</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.parent_run_id || '—' }}</div>
+                  </div>
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Project</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.project_id || '—' }}</div>
+                  </div>
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Workspace</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.workspace_id || '—' }}</div>
+                  </div>
+                  <div class="audit-meta">
+                    <div class="audit-meta__label">Org</div>
+                    <div class="audit-meta__value font-mono">{{ selectedAudit.org_id || '—' }}</div>
+                  </div>
+                </div>
+
+                <div class="audit-section-title">Tags</div>
+                @if (selectedAudit.tags?.length) {
+                  <div class="flex flex-wrap gap-1">
+                    @for (t of selectedAudit.tags; track t) {
+                      <p-tag [value]="t" severity="secondary" [rounded]="true"></p-tag>
+                    }
+                  </div>
+                } @else {
+                  <span style="color: var(--text-color-secondary)">No tags.</span>
+                }
+
+                <div class="audit-section-title mt-4">Raw output</div>
+                <pre class="audit-json">{{ (selectedAudit.output ?? {}) | json }}</pre>
+
+                <div class="audit-section-title mt-4">Extra</div>
+                <pre class="audit-json">{{ (selectedAudit.extra ?? {}) | json }}</pre>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      }
+    </div>
+  </ng-template>
+</p-drawer>

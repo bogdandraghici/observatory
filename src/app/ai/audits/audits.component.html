@@ -1,0 +1,69 @@
+<div class="ai-page">
+  <!-- A. Hero panel — title band (with period segmented control) + filters band -->
+  <section class="audits-hero">
+    <div class="audits-hero__band">
+      <div class="audits-hero__text">
+        <h1 class="audits-hero__title">Audits</h1>
+        <p class="audits-hero__subtitle">Browse individual audit events emitted by the Auditor agent and Regulatory Twin.</p>
+      </div>
+
+      <div class="audits-hero__scope">
+        <p-selectButton
+          [options]="periods"
+          [(ngModel)]="selectedPeriod"
+          [multiple]="false"
+          optionLabel="name"
+          optionValue="value"
+        ></p-selectButton>
+      </div>
+    </div>
+
+    <div class="audits-hero__filters">
+      <div class="filter-group">
+        <label class="filter-group__label">Organization</label>
+        <p-select
+          [options]="orgs"
+          [(ngModel)]="selectedOrg"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="orgChanged($event)"
+          placeholder="Select Organization"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Workspace</label>
+        <p-select
+          [options]="workspaces"
+          [(ngModel)]="selectedWorkspace"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          (onChange)="workspaceChanged($event)"
+          placeholder="All Workspaces"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group__label">Project</label>
+        <p-select
+          [options]="apps"
+          [(ngModel)]="selectedApp"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="false"
+          (onChange)="appChanged($event)"
+          placeholder="Select Project"
+          appendTo="body"
+        ></p-select>
+      </div>
+    </div>
+  </section>
+
+  <!-- B. Executions table widget -->
+  <audit-list-widget
+    [appId]="selectedApp"
+    [hours]="selectedPeriod"
+  ></audit-list-widget>
+</div>

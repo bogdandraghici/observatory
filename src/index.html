@@ -38,6 +38,38 @@
     <!-- FlowX Design System: Open Sans (primary) + JetBrains Mono (monospace) -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
     <!-- PrimeNG 21: Theme provided via @primeuix/themes in main.ts, dark mode via CSS class toggle -->
+    <!--
+      Theme bootstrap — runs synchronously before Angular so the page
+      paints in the right theme on the very first frame:
+        1. Persisted choice in localStorage wins (set by the topbar toggle).
+        2. Otherwise honour the OS `prefers-color-scheme`.
+        3. Otherwise fall back to the default light class on <html>.
+      AppComponent re-applies the same logic at runtime; this just removes
+      the FOUC + the race where the OS preference paints before the
+      stored override has had a chance to load.
+    -->
+    <script>
+      (function () {
+        try {
+          var key = 'flowx-observatory.theme';
+          var stored = null;
+          try { stored = window.localStorage.getItem(key); } catch (_) {}
+          var pref = (stored === 'dark' || stored === 'light')
+            ? stored
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light');
+          var root = document.documentElement;
+          if (pref === 'dark') {
+            root.classList.add('flowx-dark');
+            root.classList.remove('flowx-light');
+          } else {
+            root.classList.add('flowx-light');
+            root.classList.remove('flowx-dark');
+          }
+        } catch (_) { /* fail-open: keep default class on <html> */ }
+      })();
+    </script>
   </head>
 
   <body>

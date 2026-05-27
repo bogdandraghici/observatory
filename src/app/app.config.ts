@@ -5,6 +5,11 @@ import { AppConfig } from './domain/appconfig'
 import { AppState } from './domain/appstate'
 import { isPlatformBrowser } from '@angular/common'
 
+/** localStorage key for the user's explicit theme override. When set,
+ *  beats `prefers-color-scheme` at startup. Cleared = follow system. */
+export const THEME_STORAGE_KEY = 'flowx-observatory.theme'
+export type StoredTheme = 'dark' | 'light'
+
 /*
  * The way how you enforce a specific theme depends upon
  * the possibilities of your application.
@@ -71,6 +76,43 @@ export class AppConfigService {
 
   public forceTheme(theme?: string): void {
     this._forcedTheme$.next(theme)
+  }
+
+  // ─── Persistence ──────────────────────────────────────────────────────
+  // Theme toggle in the topbar persists the explicit choice here so
+  // subsequent reloads honour it (instead of always re-applying the
+  // OS-level `prefers-color-scheme`).
+
+  /** Return the user's persisted theme override, or `null` if none. */
+  public getStoredTheme(): StoredTheme | null {
+    if (!isPlatformBrowser(this.platformId)) {
+      return null
+    }
+    try {
+      const v = window.localStorage?.getItem(THEME_STORAGE_KEY)
+      return v === 'dark' || v === 'light' ? v : null
+    } catch {
+      // Private mode / disabled storage — fall through to system preference.
+      return null
+    }
+  }
+
+  /** Persist (or clear) the user's theme override. Pass `null` to revert
+   *  to following the OS preference on next load. */
+  public setStoredTheme(theme: StoredTheme | null): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return
+    }
+    try {
+      if (theme === null) {
+        window.localStorage?.removeItem(THEME_STORAGE_KEY)
+      } else {
+        window.localStorage?.setItem(THEME_STORAGE_KEY, theme)
+      }
+    } catch {
+      // Storage unavailable — silently degrade; the in-memory toggle
+      // still works for this session.
+    }
   }
 
   showMenu(): void {

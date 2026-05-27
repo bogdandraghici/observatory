@@ -1,0 +1,124 @@
+<div class="stat-card stat-card--stacked audit-list-card">
+  <div class="audit-list-card__head">
+    <div class="card-title">
+      <i class="pi pi-shield"></i>
+      Audits
+    </div>
+    <div class="audit-list-card__actions">
+      <p-select
+        [options]="agents"
+        [(ngModel)]="selectedAgent"
+        optionLabel="name"
+        [showClear]="true"
+        (onChange)="filterByAgent($event)"
+        placeholder="Filter by kind"
+        appendTo="body"
+      ></p-select>
+      <p-button
+        icon="pi pi-refresh"
+        [rounded]="true"
+        [text]="true"
+        pTooltip="Refresh"
+        tooltipPosition="top"
+        (click)="populateTable(null, appId, hours)"
+      ></p-button>
+    </div>
+  </div>
+
+  @if (appId && hours) {
+    <p-table
+      #dt2
+      [value]="audits"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [lazy]="true"
+      (onLazyLoad)="populateTable($event, appId, hours)"
+      selectionMode="single"
+      [(selection)]="selectedItem"
+      dataKey="id"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      (onRowSelect)="rowSelect($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      >
+      <ng-template pTemplate="header">
+        <tr>
+          <th><i class="pi pi-info-circle"></i></th>
+          <th>Time</th>
+          <th>Kind</th>
+          <th>Agent</th>
+          <th>Severity</th>
+          <th>Findings</th>
+          <th>Duration</th>
+          <th>Frameworks</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-audit>
+        <tr [pSelectableRow]="audit">
+          <td>
+            @if (audit.severity === 'high' || audit.severity === 'likely_violation') {
+              <span class="status-badge status-badge--error">
+                <i class="pi pi-exclamation-circle"></i>
+              </span>
+            } @else if (audit.severity === 'medium' || audit.severity === 'caution') {
+              <span class="status-badge status-badge--pending">
+                <i class="pi pi-exclamation-triangle"></i>
+              </span>
+            } @else {
+              <span class="status-badge status-badge--success">
+                <i class="pi pi-check-circle"></i>
+              </span>
+            }
+          </td>
+          <td>
+            {{ formatTime(audit.created_at) }}
+          </td>
+          <td>
+            <p-tag [value]="audit.kind_label" severity="info" [rounded]="true"></p-tag>
+          </td>
+          <td>
+            <p-tag [value]="audit.agent || '—'" severity="secondary" [rounded]="true"></p-tag>
+          </td>
+          <td>
+            <p-tag
+              [value]="audit.severity || '—'"
+              [severity]="severityClass(audit.severity)"
+            ></p-tag>
+          </td>
+          <td class="font-bold">
+            {{ audit.finding_count ?? 0 }}
+          </td>
+          <td class="font-bold">
+            {{ fmtDuration(audit.duration_ms) }}
+          </td>
+          <td>
+            @for (fw of (audit.frameworks ?? []); track fw) {
+              <p-tag
+                [value]="fw"
+                severity="info"
+                [rounded]="true"
+                styleClass="mr-1"
+              ></p-tag>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">
+            <empty-state-widget message="No audits found."></empty-state-widget>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>
+
+<audit-detail
+  [(detailVisible)]="detailVisible"
+  (detailVisibleChange)="hideDetails()"
+  [selectedAudit]="selectedItem"
+></audit-detail>
